@@ -13,8 +13,7 @@ def cli(ctx):
 
 @cli.command()
 @click.pass_context
-@click.option('--target', type=click.Choice(['ruby']), required=True, help='the build target')
-@click.option('--flavor', type=click.Choice(['alpine']), default='alpine', help='the base image Linux flavor')
+@click.option('--base-image', type=click.Choice(['ruby:2.2', 'ruby:2.2-alpine']), required=True, help='the base image')
 @click.option('--app-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='Application name - defaults to the name of the current working directory')
 @click.option('--command', type=click.STRING, default='bundle exec foreman start', help='The default command to run')
 @click.option('--test-command', type=click.STRING, default='bundle exec rspec', help='The test command to run')
@@ -22,11 +21,11 @@ def cli(ctx):
 @click.option('--target-port', type=click.STRING, default='80', help='The port to expose on the app container')
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
 @click.option('--with-mongo', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
-def scaffold(ctx, target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo):
+def scaffold(ctx, base_image, app_name, command, test_command, port, target_port, with_redis, with_mongo):
   """
   Initialize a Dockerfile, development.yml and test.yml in the current directory
   """
-  hokusai.scaffold(target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo)
+  hokusai.scaffold(base_image, app_name, command, test_command, port, target_port, with_redis, with_mongo)
 
 @cli.command()
 @click.pass_context

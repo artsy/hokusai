@@ -18,10 +18,11 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-def scaffold(target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo):
-  dockerfile = env.get_template("Dockerfile-%s-%s.j2" % (flavor, target))
+def scaffold(base_image, app_name, command, test_command, port, target_port, with_redis, with_mongo):
+  if 'ruby' in base_image:
+    dockerfile = env.get_template("Dockerfile-ruby.j2")
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
-    f.write(dockerfile.render(command=command, target_port=target_port))
+    f.write(dockerfile.render(base_image=base_image, command=command, target_port=target_port))
 
   with open(os.path.join(os.getcwd(), 'development.yml'), 'w') as f:
     development_services = {

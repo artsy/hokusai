@@ -1,6 +1,15 @@
-FROM ruby:2.2.6-alpine
+FROM {{ base_image }}
+
+{%- if 'alpine' in base_image %}
 RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers
+{%- else %}
+RUN apt-get update -qq && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+{%- endif %}
+
 RUN gem install bundler
+
+# throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
 
 # Set up working directory
 RUN mkdir /app
