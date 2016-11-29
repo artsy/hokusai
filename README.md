@@ -3,7 +3,7 @@ HOKUSAI
 
 Artsy Docker Development Toolkit
 
-<img height="300" align="left" src="hokusai.jpg">
+<img height="300" src="hokusai.jpg">
 
 ## Requirements
 
