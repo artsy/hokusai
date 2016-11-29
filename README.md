@@ -25,7 +25,7 @@ Run either `pip install .` or `python setup.py install`
 
 ### Scaffolding
 
-`hokusai scaffold` writes a Dockerfile, development.yml and test.yml in teh current directory
+`hokusai scaffold` writes a Dockerfile, development.yml and test.yml in the current directory
 
 ### Development
 

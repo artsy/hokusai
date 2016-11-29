@@ -1,7 +1,8 @@
 import os
 import sys
+import signal
 
-from subprocess import call
+from subprocess import call, check_output
 from collections import OrderedDict
 
 import yaml
@@ -10,6 +11,12 @@ from hokusai.lib import representers
 
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
+
+EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
 
 def scaffold(target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo):
   dockerfile = env.get_template("Dockerfile-%s-%s.j2" % (flavor, target))
@@ -78,68 +85,51 @@ def scaffold(target, flavor, app_name, command, test_command, port, target_port,
     ])
     f.write(yaml.safe_dump(test_data, default_flow_style=False))
 
-def call_and_exit(command):
-  sys.exit(call(command, shell=True))
-
 def development(docker_compose_yml):
-  command = """
   # kill and remove any running containers
-  cleanup () {
-    docker-compose -f %s kill
-    docker-compose -f %s rm -f
-  }
+  def cleanup(*args):
+    call("docker-compose -f %s kill" % docker_compose_yml, shell=True)
+    call("docker-compose -f %s rm -f" % docker_compose_yml, shell=True)
+    sys.exit(0)
 
   # catch exit, do cleanup
-  trap 'cleanup' HUP INT QUIT PIPE TERM
+  for sig in EXIT_SIGNALS:
+    signal.signal(sig, cleanup)
 
   # build and run the composed services
-  docker-compose -f %s up --build
-  """ % (docker_compose_yml, docker_compose_yml, docker_compose_yml)
-
-  call_and_exit(command)
+  call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
 
 def test(docker_compose_yml):
-  command = """
-  # define some colors to use for output
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  NC='\033[0m'
-
   # kill and remove any running containers
-  cleanup () {
-    docker-compose -f %s -p ci kill
-    docker-compose -f %s -p ci rm -f
-  }
+  def cleanup(*args):
+    print('%sTests Failed For Unexpected Reasons%s\n' % (RED, NC))
+    call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
+    call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
+    sys.exit(-1)
 
-  # catch unexpected failures, do cleanup and output an error message
-  trap 'cleanup ; printf "${RED}Tests Failed For Unexpected Reasons${NC}\n"'\
-    HUP INT QUIT PIPE TERM
+  # catch exit, do cleanup
+  for sig in EXIT_SIGNALS:
+    signal.signal(sig, cleanup)
 
   # build and run the composed services
-  docker-compose -f %s -p ci up --build -d
-  if [ $? -ne 0 ] ; then
-    printf "${RED}Docker Compose Failed${NC}\n"
-    exit -1
-  fi
+  if call("docker-compose -f %s -p ci up --build -d" % docker_compose_yml, shell=True) != 0:
+    print("%sDocker Compose Failed%s\n" % (RED, NC))
+    sys.exit(-1)
 
   # wait for the test service to complete and grab the exit code
-  TEST_EXIT_CODE=`docker wait ci_test_1`
+  test_exit_code = int(check_output('docker wait ci_test_1', shell=True))
 
   # output the logs for the test (for clarity)
-  docker logs ci_test_1
+  call('docker logs ci_test_1', shell=True)
 
   # inspect the output of the test and display respective message
-  if [ -z ${TEST_EXIT_CODE+x} ] || [ "$TEST_EXIT_CODE" -ne 0 ] ; then
-    printf "${RED}Tests Failed${NC} - Exit Code: $TEST_EXIT_CODE\n"
-  else
-    printf "${GREEN}Tests Passed${NC}\n"
-  fi
+  if test_exit_code != 0:
+    print('%sTests Failed%s - Exit Code: %s\n' % (RED, NC, test_exit_code))
+  else:
+    print("%sTests Passed%s" % (GREEN, NC))
 
-  # call the cleanup fuction
-  cleanup
+  # cleanup
+  call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
+  call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
 
-  # exit the script with the same code as the test service code
-  exit $TEST_EXIT_CODE
-  """ % (docker_compose_yml, docker_compose_yml, docker_compose_yml)
-
-  call_and_exit(command)
+  sys.exit(test_exit_code)

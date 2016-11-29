@@ -6,10 +6,6 @@ import click
 
 import hokusai
 
-TARGETS = [
-  'ruby'
-]
-
 @click.group()
 @click.pass_context
 def cli(ctx):
@@ -17,7 +13,7 @@ def cli(ctx):
 
 @cli.command()
 @click.pass_context
-@click.argument('target', type=click.STRING)
+@click.option('--target', type=click.Choice(['ruby']), required=True, help='the build target')
 @click.option('--flavor', type=click.Choice(['alpine']), default='alpine', help='the base image Linux flavor')
 @click.option('--app-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='Application name - defaults to the name of the current working directory')
 @click.option('--command', type=click.STRING, default='bundle exec foreman start', help='The default command to run')
@@ -30,10 +26,6 @@ def scaffold(ctx, target, flavor, app_name, command, test_command, port, target_
   """
   Initialize a Dockerfile, development.yml and test.yml in the current directory
   """
-  if target not in TARGETS:
-    print("Error: unsupported target '%s'. (choose from %s)" % (target, ', '.join(TARGETS)))
-    return
-
   hokusai.scaffold(target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo)
 
 @cli.command()
