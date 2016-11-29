@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import os
+
+import click
+
+import hokusai
+
+TARGETS = [
+  'ruby'
+]
+
+@click.group()
+@click.pass_context
+def cli(ctx):
+    pass
+
+@cli.command()
+@click.pass_context
+@click.argument('target', type=click.STRING)
+@click.option('--flavor', type=click.Choice(['alpine']), default='alpine', help='the base image Linux flavor')
+@click.option('--app-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='Application name - defaults to the name of the current working directory')
+@click.option('--command', type=click.STRING, default='bundle exec foreman start', help='The default command to run')
+@click.option('--test-command', type=click.STRING, default='bundle exec rspec', help='The test command to run')
+@click.option('--port', type=click.STRING, default='8080', help='The port to access on the host machine')
+@click.option('--target-port', type=click.STRING, default='80', help='The port to expose on the app container')
+@click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
+@click.option('--with-mongo', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
+def scaffold(ctx, target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo):
+  """
+  Initialize a Dockerfile, development.yml and test.yml in the current directory
+  """
+  if target not in TARGETS:
+    print("Error: unsupported target '%s'. (choose from %s)" % (target, ', '.join(TARGETS)))
+    return
+
+  hokusai.scaffold(target, flavor, app_name, command, test_command, port, target_port, with_redis, with_mongo)
+
+@cli.command()
+@click.pass_context
+@click.option('--docker-compose-yml', type=click.STRING, default='development.yml', help='docker-compose development file - defaults to development.yml')
+def dev(ctx, docker_compose_yml):
+  """
+  Boot the development stack
+  """
+  hokusai.development(docker_compose_yml)
+
+@cli.command()
+@click.pass_context
+@click.option('--docker-compose-yml', type=click.STRING, default='test.yml', help='docker-compose test file - defaults to test.yml')
+def test(ctx, docker_compose_yml):
+  """
+  Boot the test stack and run the test suite
+  """
+  hokusai.test(docker_compose_yml)
+
+if __name__ == '__main__':
+    cli(obj={})

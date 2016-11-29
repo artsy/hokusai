@@ -1,0 +1,23 @@
+FROM ruby:2.2.6-alpine
+RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers
+RUN gem install bundler
+
+# Set up working directory
+RUN mkdir /app
+
+# Set up gems
+WORKDIR /tmp
+ADD Gemfile Gemfile
+ADD Gemfile.lock Gemfile.lock
+RUN bundle install -j4
+
+# Finally, add the rest of our app's code
+# (this is done at the end so that changes to our app's code
+# don't bust Docker's cache)
+ADD . /app
+WORKDIR /app
+
+ENV PORT {{ target_port }}
+EXPOSE {{ target_port }}
+
+CMD {{ command }}
