@@ -18,9 +18,14 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-def scaffold(base_image, app_name, command, test_command, port, target_port, with_redis, with_mongo):
+def scaffold(base_image, command, test_command, app_name, port, target_port,
+              with_memcached, with_redis, with_mongo, with_postgres):
   if 'ruby' in base_image:
     dockerfile = env.get_template("Dockerfile-ruby.j2")
+  elif 'node' in base_image:
+    dockerfile = env.get_template("Dockerfile-node.j2")
+  else:
+    dockerfile = env.get_template("Dockerfile.j2")
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=command, target_port=target_port))
 
@@ -32,8 +37,14 @@ def scaffold(base_image, app_name, command, test_command, port, target_port, wit
       }
     }
 
-    if with_redis or with_mongo:
-      development_services[app_name]['environment'] = []
+    development_services[app_name]['environment'] = ["PORT=%s" % target_port]
+
+    if with_memcached:
+      development_services['memcached'] = {
+        'image': 'memcached',
+        'ports': ["11211:11211"]
+      }
+      development_services[app_name]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
     if with_redis:
       development_services['redis'] = {
@@ -49,6 +60,13 @@ def scaffold(base_image, app_name, command, test_command, port, target_port, wit
       }
       development_services[app_name]['environment'].append('MONGO_URL=mongodb://mongodb:27017/development')
 
+    if with_postgres:
+      development_services['postgres'] = {
+        'image': 'postgres:9.4',
+        'ports': ["5432:5432"]
+      }
+      development_services[app_name]['environment'].append('DATABASE_URL=postgresql://postgres/development')
+
     development_data = OrderedDict([
       ('version', '2'),
       ('services', development_services)
@@ -63,8 +81,14 @@ def scaffold(base_image, app_name, command, test_command, port, target_port, wit
       }
     }
 
-    if with_redis or with_mongo:
-      test_services['test']['environment'] = []
+    test_services['test']['environment'] = ["PORT=%s" % target_port]
+
+    if with_memcached:
+      test_services['memcached'] = {
+        'image': 'memcached',
+        'ports': ["11211:11211"]
+      }
+      test_services['test']['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
     if with_redis:
       test_services['redis'] = {
@@ -79,6 +103,13 @@ def scaffold(base_image, app_name, command, test_command, port, target_port, wit
         'ports': ["27017:27017"]
       }
       test_services['test']['environment'].append('MONGO_URL=mongodb://mongodb:27017/test')
+
+    if with_postgres:
+      test_services['postgres'] = {
+        'image': 'postgres:9.4',
+        'ports': ["5432:5432"]
+      }
+      test_services['test']['environment'].append('DATABASE_URL=postgresql://postgres/test')
 
     test_data = OrderedDict([
       ('version', '2'),
