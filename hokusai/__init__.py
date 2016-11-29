@@ -18,14 +18,21 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-def scaffold(base_image, command, test_command, app_name, port, target_port,
+def scaffold(language, base_image, app_name, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
-  if 'ruby' in base_image:
+  if language == 'ruby':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
-  elif 'node' in base_image:
+    command = 'bundle exec foreman start'
+    test_command = 'bundle exec rspec'
+  elif language == 'nodejs':
     dockerfile = env.get_template("Dockerfile-node.j2")
+    command = 'node index.js'
+    test_command = 'npm test'
   else:
     dockerfile = env.get_template("Dockerfile.j2")
+    command = "service %s start" % app_name
+    test_command = './test.sh'
+
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=command, target_port=target_port))
 

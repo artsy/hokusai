@@ -11,9 +11,8 @@ def cli():
     pass
 
 @cli.command()
+@click.option('--language', type=click.Choice(['ruby', 'nodejs']), required=True, help='The project language')
 @click.option('--base-image', type=click.STRING, required=True, help='The base image')
-@click.option('--command', type=click.STRING, required=True, help='The default command to run')
-@click.option('--test-command', type=click.STRING, required=True, help='The test command to run')
 @click.option('--app-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='Application name - defaults to the name of the current working directory')
 @click.option('--port', type=click.STRING, default='8080', help='The port to access on the host machine')
 @click.option('--target-port', type=click.STRING, default='80', help='The port to expose on the app container')
@@ -21,12 +20,12 @@ def cli():
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
 @click.option('--with-mongo', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
 @click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
-def scaffold(base_image, command, test_command, app_name, port, target_port,
+def scaffold(language, base_image, app_name, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
   """
   Initialize a Dockerfile, development.yml and test.yml in the current directory
   """
-  hokusai.scaffold(base_image, command, test_command, app_name, port, target_port,
+  hokusai.scaffold(language, base_image, app_name, port, target_port,
                     with_memcached, with_redis, with_mongo, with_postgres)
 
 @cli.command()
