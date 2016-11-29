@@ -8,7 +8,7 @@ setup(name='hokusai',
       author_email='isac@artsymail.com',
       license='MIT',
       packages=['hokusai'],
-      package_data={'hokusai': 'templates'},
+      package_data={'hokusai': ['templates']},
       install_requires=[
           'click==6.6',
           'Jinja2==2.8',
