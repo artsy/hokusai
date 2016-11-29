@@ -1,7 +1,9 @@
-hokusai
+HOKUSAI
 -------
 
 Artsy Docker Development Toolkit
+
+<img height="300" align="left" src="hokusai.jpg">
 
 ## Requirements
 
