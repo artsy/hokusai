@@ -24,14 +24,20 @@ def scaffold(language, base_image, app_name, port, target_port,
     dockerfile = env.get_template("Dockerfile-ruby.j2")
     command = 'bundle exec foreman start'
     test_command = 'bundle exec rspec'
+    development_environment = ["RACK_ENV=development"]
+    test_environment = ["RACK_ENV=test"]
   elif language == 'nodejs':
     dockerfile = env.get_template("Dockerfile-node.j2")
     command = 'node index.js'
     test_command = 'npm test'
+    development_environment = ["NODE_ENV=development"]
+    test_environment = ["NODE_ENV=test"]
   else:
     dockerfile = env.get_template("Dockerfile.j2")
     command = "service %s start" % app_name
-    test_command = './test.sh'
+    test_command = ''
+    development_environment = []
+    test_environment = []
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=command, target_port=target_port))
@@ -44,7 +50,7 @@ def scaffold(language, base_image, app_name, port, target_port,
       }
     }
 
-    development_services[app_name]['environment'] = ["PORT=%s" % target_port]
+    development_services[app_name]['environment'] = development_environment
 
     if with_memcached:
       development_services['memcached'] = {
@@ -88,7 +94,7 @@ def scaffold(language, base_image, app_name, port, target_port,
       }
     }
 
-    test_services['test']['environment'] = ["PORT=%s" % target_port]
+    test_services['test']['environment'] = test_environment
 
     if with_memcached:
       test_services['memcached'] = {

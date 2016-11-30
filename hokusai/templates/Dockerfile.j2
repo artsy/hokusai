@@ -12,7 +12,6 @@ RUN mkdir /app
 ADD . /app
 WORKDIR /app
 
-ENV PORT {{ target_port }}
 EXPOSE {{ target_port }}
 
 CMD {{ command }}

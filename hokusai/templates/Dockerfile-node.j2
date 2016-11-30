@@ -9,10 +9,17 @@ RUN apt-get update -qq && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Set up working directory
 RUN mkdir /app
 
+# Set up node modules
+WORKDIR /tmp
+ADD package.json package.json
+ADD npm-shrinkwrap.json npm-shrinkwrap.json
+RUN npm install -g --production
+
+# Finally, add the rest of our app's code
+# (this is done at the end so that changes to our app's code
+# don't bust Docker's cache)
 ADD . /app
 WORKDIR /app
-
-RUN npm install --production
 
 ENV PORT {{ target_port }}
 EXPOSE {{ target_port }}
