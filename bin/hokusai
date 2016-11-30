@@ -27,8 +27,11 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
   """
   Initialize a Dockerfile, development.yml and test.yml in the current directory
   """
-  hokusai.scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
-                    with_memcached, with_redis, with_mongo, with_postgres)
+  try:
+    hokusai.scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
+                      with_memcached, with_redis, with_mongo, with_postgres)
+  except hokusai.HokusaiConfigError, e:
+    print(e.message)
 
 @cli.command()
 @click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'development.yml'), help='docker-compose development file - defaults to development.yml')

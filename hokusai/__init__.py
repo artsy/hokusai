@@ -18,6 +18,8 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+YAML_HEADER = '---\n'
+
 class HokusaiConfig(object):
   def create(self, aws_account_id, aws_ecr_region):
     app_name = os.path.basename(os.getcwd())
@@ -29,11 +31,15 @@ class HokusaiConfig(object):
     }
 
     with open(os.path.join(os.getcwd(), '.hosukai'), 'w') as f:
-      f.write(yaml.safe_dump(config, default_flow_style=False))
+      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
+      f.write(payload)
 
-  def get(self, key):
+  def check(self):
     if not os.path.isfile(os.path.join(os.getcwd(), '.hosukai')):
       raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+
+  def get(self, key):
+    self.check()
 
     config_file = open(os.path.join(os.getcwd(), '.hosukai'), 'r')
     config_data = config_file.read()
@@ -46,8 +52,7 @@ class HokusaiConfig(object):
       return None
 
   def set(self, key, value):
-    if not os.path.isfile(os.path.join(os.getcwd(), '.hosukai')):
-      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+    self.check()
 
     config_file = open(os.path.join(os.getcwd(), '.hosukai'), 'r')
     config_data = config_file.read()
@@ -56,7 +61,8 @@ class HokusaiConfig(object):
 
     config[key] = value
     with open(os.path.join(os.getcwd(), '.hosukai'), 'w') as f:
-      f.write(yaml.safe_dump(config, default_flow_style=False))
+      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
+      f.write(payload)
 
     return key, value
 
@@ -85,6 +91,9 @@ def latest():
 
 def scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
+  config = HokusaiConfig()
+  config.check()
+
   app_name = os.path.basename(os.getcwd())
 
   if framework == 'rack':
@@ -97,7 +106,8 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
       test_command = 'bundle exec rspec'
     runtime_environment = {
       'development': ["RACK_ENV=development"],
-      'test': ["RACK_ENV=test"]
+      'test': ["RACK_ENV=test"],
+      'production': [{'name': 'RACK_ENV', 'value': 'production'}]
     }
 
   elif framework == 'nodejs':
@@ -110,7 +120,8 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
       test_command = 'npm test'
     runtime_environment = {
       'development': ["NODE_ENV=development"],
-      'test': ["NODE_ENV=test"]
+      'test': ["NODE_ENV=test"],
+      'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
   else:
@@ -123,7 +134,8 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
       test_command = ''
     runtime_environment = {
       'development': [],
-      'test': []
+      'test': [],
+      'production': []
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
@@ -178,8 +190,58 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
         ('version', '2'),
         ('services', services)
       ])
-      f.write(yaml.safe_dump(data, default_flow_style=False))
+      payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
+      f.write(payload)
 
+  with open(os.path.join(os.getcwd(), "production.yml"), 'w') as f:
+    deployment_data = OrderedDict([
+      ('apiVersion', 'extensions/v1beta1'),
+      ('kind', 'Deployment'),
+      ('metadata', {'name': app_name}),
+      ('spec', {
+        'replicas': 1,
+        'template': {
+          'metadata': {
+            'labels': {
+              'app': app_name
+              },
+              'name': app_name,
+              'namespace': 'default'
+            },
+            'spec': {
+              'containers': [
+                {
+                  'name': app_name,
+                  'image': "%s:latest" % config.get('aws-ecr-registry'),
+                  'env': runtime_environment['production'],
+                  'ports': [{'container_port': target_port}]
+                }
+              ]
+            }
+          }
+        }
+      )
+    ])
+
+    service_data = OrderedDict([
+      ('apiVersion', 'extensions/v1beta1'),
+      ('kind', 'Service'),
+      ('metadata', {
+        'labels': {'app': app_name},
+        'name': app_name,
+        'namespace': 'default'
+      }),
+      ('spec', {
+        'ports': [{'port': port, 'targetPort': target_port, 'protocol': 'TCP'}],
+        'selector': {'app': app_name},
+        'sessionAffinity': 'None',
+        'type': 'LoadBalancer'
+      })
+    ])
+
+    payload = YAML_HEADER + yaml.safe_dump(deployment_data, default_flow_style=False) + \
+            YAML_HEADER + yaml.safe_dump(service_data, default_flow_style=False)
+    f.write(payload)
 
 def development(docker_compose_yml):
   # kill and remove any running containers
