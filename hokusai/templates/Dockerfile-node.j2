@@ -13,7 +13,8 @@ RUN mkdir /app
 WORKDIR /tmp
 ADD package.json package.json
 ADD npm-shrinkwrap.json npm-shrinkwrap.json
-RUN npm install -g --production
+RUN npm install --production
+RUN cp -a /tmp/node_modules /app/
 
 # Finally, add the rest of our app's code
 # (this is done at the end so that changes to our app's code
