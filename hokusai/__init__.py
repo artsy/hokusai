@@ -18,6 +18,71 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+class HokusaiConfig(object):
+  def create(self, aws_account_id, aws_ecr_region):
+    app_name = os.path.basename(os.getcwd())
+
+    config = {
+      'aws-account-id': aws_account_id,
+      'aws-ecr-region': aws_ecr_region,
+      'aws-ecr-registry': "%s.dkr.ecr.%s.amazonaws.com/%s" % (aws_account_id, aws_ecr_region, app_name)
+    }
+
+    with open(os.path.join(os.getcwd(), '.hosukai'), 'w') as f:
+      f.write(yaml.safe_dump(config, default_flow_style=False))
+
+  def get(self, key):
+    if not os.path.isfile(os.path.join(os.getcwd(), '.hosukai')):
+      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+
+    config_file = open(os.path.join(os.getcwd(), '.hosukai'), 'r')
+    config_data = config_file.read()
+    config_file.close()
+    config = yaml.safe_load(config_data)
+
+    try:
+      return config[key]
+    except KeyError:
+      return None
+
+  def set(self, key, value):
+    if not os.path.isfile(os.path.join(os.getcwd(), '.hosukai')):
+      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+
+    config_file = open(os.path.join(os.getcwd(), '.hosukai'), 'r')
+    config_data = config_file.read()
+    config_file.close()
+    config = yaml.safe_load(config_data)
+
+    config[key] = value
+    with open(os.path.join(os.getcwd(), '.hosukai'), 'w') as f:
+      f.write(yaml.safe_dump(config, default_flow_style=False))
+
+    return key, value
+
+class HokusaiConfigError(Exception):
+  pass
+
+def configure(aws_account_id, aws_ecr_region):
+  config = HokusaiConfig()
+  config.create(aws_account_id, aws_ecr_region)
+
+def config_get(key):
+  config = HokusaiConfig()
+  return config.get(key)
+
+def config_set(key, value):
+  config = HokusaiConfig()
+  return config.set(key, value)
+
+def build():
+  config = HokusaiConfig()
+  call("docker build -t %s ." % config.get('aws-ecr-registry'), shell=True)
+
+def latest():
+  config = HokusaiConfig()
+  call("docker images %s" % config.get('aws-ecr-registry'), shell=True)
+
 def scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
   app_name = os.path.basename(os.getcwd())

@@ -46,5 +46,57 @@ def test(docker_compose_yml):
   """
   hokusai.test(docker_compose_yml)
 
+@cli.command()
+@click.option('--aws-account-id', type=click.STRING, required=True, help='Your AWS account ID')
+@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', help='Your AWS ECR region')
+def configure(aws_account_id, aws_ecr_region):
+  """
+  Configure Hokusai for the current project
+  """
+  hokusai.configure(aws_account_id, aws_ecr_region)
+
+@cli.command()
+@click.argument('key', type=click.STRING)
+def config_get(key):
+  """
+  Get a config value by key and print
+  """
+  try:
+    print hokusai.config_get(key)
+  except hokusai.HokusaiConfigError, e:
+    print(e.message)
+
+@cli.command()
+@click.argument('key', type=click.STRING)
+@click.argument('value', type=click.STRING)
+def config_set(key, value):
+  """
+  Set a config key to a given value
+  """
+  try:
+    print "Set %s to %s" % hokusai.config_set(key, value)
+  except hokusai.HokusaiConfigError, e:
+    print(e.message)
+
+@cli.command()
+def build():
+  """
+  Build and tag a docker image
+  """
+  try:
+    hokusai.build()
+  except hokusai.HokusaiConfigError, e:
+    print(e.message)
+
+@cli.command()
+def latest():
+  """
+  Show the latest build
+  """
+  try:
+    hokusai.latest()
+  except hokusai.HokusaiConfigError, e:
+    print(e.message)
+
 if __name__ == '__main__':
     cli(obj={})
