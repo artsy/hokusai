@@ -7,67 +7,12 @@ from collections import OrderedDict
 
 import yaml
 
-from hokusai.lib import representers
+from hokusai import representers
+from hokusai.config import *
+from hokusai.common import *
 
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
-
-EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
-
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-
-YAML_HEADER = '---\n'
-
-class HokusaiConfig(object):
-  def create(self, aws_account_id, aws_ecr_region):
-    app_name = os.path.basename(os.getcwd())
-
-    config = {
-      'aws-account-id': aws_account_id,
-      'aws-ecr-region': aws_ecr_region,
-      'aws-ecr-registry': "%s.dkr.ecr.%s.amazonaws.com/%s" % (aws_account_id, aws_ecr_region, app_name)
-    }
-
-    with open(os.path.join(os.getcwd(), '.hosukai'), 'w') as f:
-      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
-      f.write(payload)
-
-  def check(self):
-    if not os.path.isfile(os.path.join(os.getcwd(), '.hosukai')):
-      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
-
-  def get(self, key):
-    self.check()
-
-    config_file = open(os.path.join(os.getcwd(), '.hosukai'), 'r')
-    config_data = config_file.read()
-    config_file.close()
-    config = yaml.safe_load(config_data)
-
-    try:
-      return config[key]
-    except KeyError:
-      return None
-
-  def set(self, key, value):
-    self.check()
-
-    config_file = open(os.path.join(os.getcwd(), '.hosukai'), 'r')
-    config_data = config_file.read()
-    config_file.close()
-    config = yaml.safe_load(config_data)
-
-    config[key] = value
-    with open(os.path.join(os.getcwd(), '.hosukai'), 'w') as f:
-      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
-      f.write(payload)
-
-    return key, value
-
-class HokusaiConfigError(Exception):
-  pass
 
 def configure(aws_account_id, aws_ecr_region):
   config = HokusaiConfig()

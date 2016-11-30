@@ -1,0 +1,54 @@
+import os
+
+import yaml
+
+from hokusai.common import *
+
+class HokusaiConfigError(Exception):
+  pass
+
+class HokusaiConfig(object):
+  def create(self, aws_account_id, aws_ecr_region):
+    app_name = os.path.basename(os.getcwd())
+
+    config = {
+      'aws-account-id': aws_account_id,
+      'aws-ecr-region': aws_ecr_region,
+      'aws-ecr-registry': "%s.dkr.ecr.%s.amazonaws.com/%s" % (aws_account_id, aws_ecr_region, app_name)
+    }
+
+    with open(HOKUSAI_CONFIG_FILE, 'w') as f:
+      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
+      f.write(payload)
+
+  def check(self):
+    if not os.path.isfile(HOKUSAI_CONFIG_FILE):
+      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+
+  def get(self, key):
+    self.check()
+
+    config_file = open(HOKUSAI_CONFIG_FILE, 'r')
+    config_data = config_file.read()
+    config_file.close()
+    config = yaml.safe_load(config_data)
+
+    try:
+      return config[key]
+    except KeyError:
+      return None
+
+  def set(self, key, value):
+    self.check()
+
+    config_file = open(HOKUSAI_CONFIG_FILE, 'r')
+    config_data = config_file.read()
+    config_file.close()
+    config = yaml.safe_load(config_data)
+
+    config[key] = value
+    with open(HOKUSAI_CONFIG_FILE, 'w') as f:
+      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
+      f.write(payload)
+
+    return key, value
