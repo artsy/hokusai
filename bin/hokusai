@@ -11,21 +11,23 @@ def cli():
     pass
 
 @cli.command()
-@click.option('--language', type=click.Choice(['ruby', 'nodejs']), required=True, help='The project language')
+@click.option('--framework', type=click.Choice(['rack', 'nodejs']), required=True, help='The project framework')
 @click.option('--base-image', type=click.STRING, required=True, help='The base image')
-@click.option('--app-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='Application name - defaults to the name of the current working directory')
+@click.option('--run-command', type=click.STRING, help='Override the default run command')
+@click.option('--development-command', type=click.STRING, help='Override the default development command')
+@click.option('--test-command', type=click.STRING, help='Override the default test command')
 @click.option('--port', type=click.STRING, default='8080', help='The port to access on the host machine')
 @click.option('--target-port', type=click.STRING, default='80', help='The port to expose on the app container')
 @click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
 @click.option('--with-mongo', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
 @click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
-def scaffold(language, base_image, app_name, port, target_port,
+def scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
   """
   Initialize a Dockerfile, development.yml and test.yml in the current directory
   """
-  hokusai.scaffold(language, base_image, app_name, port, target_port,
+  hokusai.scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
                     with_memcached, with_redis, with_mongo, with_postgres)
 
 @cli.command()

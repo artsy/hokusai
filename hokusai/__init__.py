@@ -18,117 +18,103 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-def scaffold(language, base_image, app_name, port, target_port,
+def scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
-  if language == 'ruby':
+  app_name = os.path.basename(os.getcwd())
+
+  if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
-    command = 'bundle exec foreman start'
-    test_command = 'bundle exec rspec'
-    development_environment = ["RACK_ENV=development"]
-    test_environment = ["RACK_ENV=test"]
-  elif language == 'nodejs':
+    if run_command is None:
+      run_command = 'bundle exec foreman start'
+    if development_command is None:
+      development_command = 'bundle exec foreman start'
+    if test_command is None:
+      test_command = 'bundle exec rspec'
+    runtime_environment = {
+      'development': ["RACK_ENV=development"],
+      'test': ["RACK_ENV=test"]
+    }
+
+  elif framework == 'nodejs':
     dockerfile = env.get_template("Dockerfile-node.j2")
-    command = 'node index.js'
-    test_command = 'npm test'
-    development_environment = ["NODE_ENV=development"]
-    test_environment = ["NODE_ENV=test"]
+    if run_command is None:
+      run_command = 'node index.js'
+    if development_command is None:
+      development_command = 'node index.js'
+    if test_command is None:
+      test_command = 'npm test'
+    runtime_environment = {
+      'development': ["NODE_ENV=development"],
+      'test': ["NODE_ENV=test"]
+    }
+
   else:
     dockerfile = env.get_template("Dockerfile.j2")
-    command = "service %s start" % app_name
-    test_command = ''
-    development_environment = []
-    test_environment = []
+    if run_command is None:
+      run_command = "service %s start" % app_name
+    if development_command is None:
+      development_command = ''
+    if test_command is None:
+      test_command = ''
+    runtime_environment = {
+      'development': [],
+      'test': []
+    }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
-    f.write(dockerfile.render(base_image=base_image, command=command, target_port=target_port))
+    f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=target_port))
 
-  with open(os.path.join(os.getcwd(), 'development.yml'), 'w') as f:
-    development_services = {
-      app_name: {
-        'build': '.',
-        'ports': ["%s:%s" % (port, target_port)]
+  for idx, compose_environment in enumerate(['development', 'test']):
+    with open(os.path.join(os.getcwd(), "%s.yml" % compose_environment), 'w') as f:
+      services = {
+        app_name: {
+          'build': '.',
+          'ports': ["%s:%s" % (port, target_port)]
+        }
       }
-    }
 
-    development_services[app_name]['environment'] = development_environment
+      if compose_environment == 'development':
+        services[app_name]['command'] = development_command
+      if compose_environment == 'test':
+        services[app_name]['command'] = test_command
 
-    if with_memcached:
-      development_services['memcached'] = {
-        'image': 'memcached',
-        'ports': ["11211:11211"]
-      }
-      development_services[app_name]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
+      services[app_name]['environment'] = runtime_environment[compose_environment]
 
-    if with_redis:
-      development_services['redis'] = {
-        'image': 'redis:3.2-alpine',
-        'ports': ["6379:6379"]
-      }
-      development_services[app_name]['environment'].append('REDIS_URL=redis://redis:6379/0')
+      if with_memcached:
+        services['memcached'] = {
+          'image': 'memcached',
+          'ports': ["11211:11211"]
+        }
+        services[app_name]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
-    if with_mongo:
-      development_services['mongodb'] = {
-        'image': 'mongo:3.0',
-        'ports': ["27017:27017"]
-      }
-      development_services[app_name]['environment'].append('MONGO_URL=mongodb://mongodb:27017/development')
+      if with_redis:
+        services['redis'] = {
+          'image': 'redis:3.2-alpine',
+          'ports': ["6379:6379"]
+        }
+        services[app_name]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
 
-    if with_postgres:
-      development_services['postgres'] = {
-        'image': 'postgres:9.4',
-        'ports': ["5432:5432"]
-      }
-      development_services[app_name]['environment'].append('DATABASE_URL=postgresql://postgres/development')
+      if with_mongo:
+        services['mongodb'] = {
+          'image': 'mongo:3.0',
+          'ports': ["27017:27017"],
+          'command': 'mongod --smallfiles'
+        }
+        services[app_name]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
 
-    development_data = OrderedDict([
-      ('version', '2'),
-      ('services', development_services)
-    ])
-    f.write(yaml.safe_dump(development_data, default_flow_style=False))
+      if with_postgres:
+        services['postgres'] = {
+          'image': 'postgres:9.4',
+          'ports': ["5432:5432"]
+        }
+        services[app_name]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
 
-  with open(os.path.join(os.getcwd(), 'test.yml'), 'w') as f:
-    test_services = {
-      'test': {
-        'build': '.',
-        'command': test_command
-      }
-    }
+      data = OrderedDict([
+        ('version', '2'),
+        ('services', services)
+      ])
+      f.write(yaml.safe_dump(data, default_flow_style=False))
 
-    test_services['test']['environment'] = test_environment
-
-    if with_memcached:
-      test_services['memcached'] = {
-        'image': 'memcached',
-        'ports': ["11211:11211"]
-      }
-      test_services['test']['environment'].append('MEMCACHED_SERVERS=memcached:11211')
-
-    if with_redis:
-      test_services['redis'] = {
-        'image': 'redis:3.2-alpine',
-        'ports': ["6379:6379"]
-      }
-      test_services['test']['environment'].append('REDIS_URL=redis://redis:6379/1')
-
-    if with_mongo:
-      test_services['mongodb'] = {
-        'image': 'mongo:3.0',
-        'ports': ["27017:27017"]
-      }
-      test_services['test']['environment'].append('MONGO_URL=mongodb://mongodb:27017/test')
-
-    if with_postgres:
-      test_services['postgres'] = {
-        'image': 'postgres:9.4',
-        'ports': ["5432:5432"]
-      }
-      test_services['test']['environment'].append('DATABASE_URL=postgresql://postgres/test')
-
-    test_data = OrderedDict([
-      ('version', '2'),
-      ('services', test_services)
-    ])
-    f.write(yaml.safe_dump(test_data, default_flow_style=False))
 
 def development(docker_compose_yml):
   # kill and remove any running containers
@@ -145,6 +131,7 @@ def development(docker_compose_yml):
   call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
 
 def test(docker_compose_yml):
+  app_name = os.path.basename(os.getcwd())
   # kill and remove any running containers
   def cleanup(*args):
     print('%sTests Failed For Unexpected Reasons%s\n' % (RED, NC))
@@ -162,10 +149,10 @@ def test(docker_compose_yml):
     sys.exit(-1)
 
   # wait for the test service to complete and grab the exit code
-  test_exit_code = int(check_output('docker wait ci_test_1', shell=True))
+  test_exit_code = int(check_output("docker wait ci_%s_1" % app_name, shell=True))
 
   # output the logs for the test (for clarity)
-  call('docker logs ci_test_1', shell=True)
+  call("docker logs ci_%s_1" % app_name, shell=True)
 
   # inspect the output of the test and display respective message
   if test_exit_code != 0:
