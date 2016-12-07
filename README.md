@@ -11,8 +11,11 @@ Artsy Docker Development Toolkit
   - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
   - [Dinghy](https://github.com/codekitchen/dinghy)
 
-2) [Docker Compose](https://docs.docker.com/compose/)
-  If you install Docker for Mac, `docker-compose` is also installed. Otherwise run: `sudo pip install docker-compose`
+2) [Docker Compose](https://docs.docker.com/compose/) If you install Docker for Mac, `docker-compose` is also installed. Otherwise run: `sudo pip install docker-compose`
+
+3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) `pip install awscli`
+
+4) Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` environment variables.  You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories
 
 ## Setup
 
