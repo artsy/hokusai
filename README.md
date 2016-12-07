@@ -19,7 +19,9 @@ Artsy Docker Development Toolkit
 
 ## Setup
 
-Ensure `docker` and `docker-compose` are installed to your PATH
+Ensure `docker`, `docker-compose` and `aws` are installed to your PATH
+
+Ensure Python-development headers are installed - (on Debian run `sudo apt-get install python-dev`)
 
 Run either `pip install .` or `python setup.py install`
 
