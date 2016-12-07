@@ -2,44 +2,41 @@ import os
 import sys
 import signal
 
-from subprocess import call, check_output
+from subprocess import call, check_call, check_output, CalledProcessError
 from collections import OrderedDict
 
 import yaml
 
 from hokusai import representers
-from hokusai.config import *
+from hokusai.config import HokusaiConfig, HokusaiConfigError
 from hokusai.common import *
 
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
 def configure(aws_account_id, aws_ecr_region):
-  config = HokusaiConfig()
-  config.create(aws_account_id, aws_ecr_region)
+  HokusaiConfig().create(aws_account_id, aws_ecr_region)
 
-def config_get(key):
-  config = HokusaiConfig()
-  return config.get(key)
+def push(from_test_build, tags):
+  config = HokusaiConfig().check()
 
-def config_set(key, value):
-  config = HokusaiConfig()
-  return config.set(key, value)
+  login_command = check_output("aws ecr get-login --region %s" % config.get('aws-ecr-region'), shell=True)
+  check_call(login_command, shell=True)
 
-def build():
-  config = HokusaiConfig()
-  call("docker build -t %s ." % config.get('aws-ecr-registry'), shell=True)
+  if from_test_build:
+    build = "ci_%s:latest" % APP_NAME
+  else:
+    check_call("docker build -t %s ." % APP_NAME, shell=True)
+    build = "%s:latest" % APP_NAME
 
-def latest():
-  config = HokusaiConfig()
-  call("docker images %s" % config.get('aws-ecr-registry'), shell=True)
+  for tag in tags:
+    check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
+    check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
+
 
 def scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
               with_memcached, with_redis, with_mongo, with_postgres):
-  config = HokusaiConfig()
-  config.check()
-
-  app_name = os.path.basename(os.getcwd())
+  config = HokusaiConfig().check()
 
   if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
@@ -72,7 +69,7 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
   else:
     dockerfile = env.get_template("Dockerfile.j2")
     if run_command is None:
-      run_command = "service %s start" % app_name
+      run_command = "service %s start" % APP_NAME
     if development_command is None:
       development_command = ''
     if test_command is None:
@@ -89,32 +86,32 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
   for idx, compose_environment in enumerate(['development', 'test']):
     with open(os.path.join(os.getcwd(), "%s.yml" % compose_environment), 'w') as f:
       services = {
-        app_name: {
+        APP_NAME: {
           'build': '.',
           'ports': ["%s:%s" % (port, target_port)]
         }
       }
 
       if compose_environment == 'development':
-        services[app_name]['command'] = development_command
+        services[APP_NAME]['command'] = development_command
       if compose_environment == 'test':
-        services[app_name]['command'] = test_command
+        services[APP_NAME]['command'] = test_command
 
-      services[app_name]['environment'] = runtime_environment[compose_environment]
+      services[APP_NAME]['environment'] = runtime_environment[compose_environment]
 
       if with_memcached:
         services['memcached'] = {
           'image': 'memcached',
           'ports': ["11211:11211"]
         }
-        services[app_name]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
+        services[APP_NAME]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
       if with_redis:
         services['redis'] = {
           'image': 'redis:3.2-alpine',
           'ports': ["6379:6379"]
         }
-        services[app_name]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
+        services[APP_NAME]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
 
       if with_mongo:
         services['mongodb'] = {
@@ -122,14 +119,14 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
           'ports': ["27017:27017"],
           'command': 'mongod --smallfiles'
         }
-        services[app_name]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
+        services[APP_NAME]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
 
       if with_postgres:
         services['postgres'] = {
           'image': 'postgres:9.4',
           'ports': ["5432:5432"]
         }
-        services[app_name]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
+        services[APP_NAME]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
 
       data = OrderedDict([
         ('version', '2'),
@@ -142,21 +139,21 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
     deployment_data = OrderedDict([
       ('apiVersion', 'extensions/v1beta1'),
       ('kind', 'Deployment'),
-      ('metadata', {'name': app_name}),
+      ('metadata', {'name': APP_NAME}),
       ('spec', {
         'replicas': 1,
         'template': {
           'metadata': {
             'labels': {
-              'app': app_name
+              'app': APP_NAME
               },
-              'name': app_name,
+              'name': APP_NAME,
               'namespace': 'default'
             },
             'spec': {
               'containers': [
                 {
-                  'name': app_name,
+                  'name': APP_NAME,
                   'image': "%s:latest" % config.get('aws-ecr-registry'),
                   'env': runtime_environment['production'],
                   'ports': [{'container_port': target_port}]
@@ -172,13 +169,13 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
       ('apiVersion', 'extensions/v1beta1'),
       ('kind', 'Service'),
       ('metadata', {
-        'labels': {'app': app_name},
-        'name': app_name,
+        'labels': {'app': APP_NAME},
+        'name': APP_NAME,
         'namespace': 'default'
       }),
       ('spec', {
         'ports': [{'port': port, 'targetPort': target_port, 'protocol': 'TCP'}],
-        'selector': {'app': app_name},
+        'selector': {'app': APP_NAME},
         'sessionAffinity': 'None',
         'type': 'LoadBalancer'
       })
@@ -203,7 +200,6 @@ def development(docker_compose_yml):
   call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
 
 def test(docker_compose_yml):
-  app_name = os.path.basename(os.getcwd())
   # kill and remove any running containers
   def cleanup(*args):
     print('%sTests Failed For Unexpected Reasons%s\n' % (RED, NC))
@@ -221,10 +217,10 @@ def test(docker_compose_yml):
     sys.exit(-1)
 
   # wait for the test service to complete and grab the exit code
-  test_exit_code = int(check_output("docker wait ci_%s_1" % app_name, shell=True))
+  test_exit_code = int(check_output("docker wait ci_%s_1" % APP_NAME, shell=True))
 
   # output the logs for the test (for clarity)
-  call("docker logs ci_%s_1" % app_name, shell=True)
+  call("docker logs ci_%s_1" % APP_NAME, shell=True)
 
   # inspect the output of the test and display respective message
   if test_exit_code != 0:

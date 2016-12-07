@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
 import click
 
@@ -32,6 +33,7 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
                       with_memcached, with_redis, with_mongo, with_postgres)
   except hokusai.HokusaiConfigError, e:
     print(e.message)
+    sys.exit(-1)
 
 @cli.command()
 @click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'development.yml'), help='docker-compose development file - defaults to development.yml')
@@ -59,47 +61,22 @@ def configure(aws_account_id, aws_ecr_region):
   hokusai.configure(aws_account_id, aws_ecr_region)
 
 @cli.command()
-@click.argument('key', type=click.STRING)
-def config_get(key):
+@click.option('--from-test-build', type=click.BOOL, is_flag=True, help='Push the image last built by CI - else build a new image')
+@click.option('--tag', '-t', type=click.STRING, multiple=True, help="Tags to apply to the pushed image - defauls to 'latest' if none specified")
+def push(from_test_build, tag):
   """
-  Get a config value by key and print
+  Build and tag a docker image, then push to ECR
   """
-  try:
-    print hokusai.config_get(key)
-  except hokusai.HokusaiConfigError, e:
-    print(e.message)
+  if not len(tag):
+    tags = ['latest']
+  else:
+    tags = list(tag)
 
-@cli.command()
-@click.argument('key', type=click.STRING)
-@click.argument('value', type=click.STRING)
-def config_set(key, value):
-  """
-  Set a config key to a given value
-  """
   try:
-    print "Set %s to %s" % hokusai.config_set(key, value)
-  except hokusai.HokusaiConfigError, e:
+    hokusai.push(from_test_build, tags)
+  except (hokusai.HokusaiConfigError, hokusai.CalledProcessError), e:
     print(e.message)
-
-@cli.command()
-def build():
-  """
-  Build and tag a docker image
-  """
-  try:
-    hokusai.build()
-  except hokusai.HokusaiConfigError, e:
-    print(e.message)
-
-@cli.command()
-def latest():
-  """
-  Show the latest build
-  """
-  try:
-    hokusai.latest()
-  except hokusai.HokusaiConfigError, e:
-    print(e.message)
+    sys.exit(-1)
 
 if __name__ == '__main__':
     cli(obj={})

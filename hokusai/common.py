@@ -1,6 +1,8 @@
 import os
 import signal
 
+APP_NAME = os.path.basename(os.getcwd())
+
 HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), '.hosukai.yml')
 
 EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
