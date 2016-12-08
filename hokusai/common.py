@@ -10,3 +10,9 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 YAML_HEADER = '---\n'
+
+def print_green(msg):
+  print(GREEN + msg + NC)
+
+def print_red(msg):
+  print(RED + msg + NC)

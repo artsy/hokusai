@@ -11,7 +11,7 @@ from collections import OrderedDict
 import yaml
 
 from hokusai import representers
-from hokusai.config import HokusaiConfig, HokusaiConfigError
+from hokusai.config import HokusaiConfig
 from hokusai.common import *
 
 from jinja2 import Environment, PackageLoader
@@ -21,10 +21,10 @@ def check(interactive):
   return_code = 0
 
   def check_ok(check_item):
-    print(GREEN + u'\u2714 ' + check_item + ' found' + NC)
+    print_green(u'\u2714 ' + check_item + ' found')
 
   def check_err(check_item):
-    print(RED + u'\u2718 ' + check_item + ' not found' + NC)
+    print_red(u'\u2718 ' + check_item + ' not found')
 
   try:
     check_output('docker --version', stderr=STDOUT, shell=True)
@@ -65,6 +65,36 @@ def check(interactive):
         except Exception, e:
           print('pip install aws failed with error %s' % e.message)
 
+  try:
+    check_output('kubectl', stderr=STDOUT, shell=True)
+    check_ok('kubectl')
+  except CalledProcessError:
+    check_err('kubectl')
+    return_code += 1
+
+    if interactive:
+      install_kubectl = raw_input('Do you want to install kubectl? --> ')
+      if install_kubectl in ['y', 'Y', 'yes', 'Yes', 'YES']:
+        platform = raw_input('platform (default: darwin) --> ')
+        if not platform:
+          platform = 'darwin'
+        kubectl_version = raw_input('kubectl version (default: 1.4.0) --> ')
+        if not kubectl_version:
+          kubectl_version = '1.4.0'
+        install_to = raw_input('install kubectl to (default: /usr/local/bin) --> ')
+        if not install_to:
+          install_to = '/usr/local/bin'
+
+        mkpath('/tmp')
+
+        print("Downloading and installing kubectl %s to %s ..." % (kubectl_version, install_to))
+        urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
+        os.chmod(os.path.join('/tmp', 'kubectl'), 0755)
+        shutil.move(os.path.join('/tmp', 'kubectl'), os.path.join(install_to, 'kubectl'))
+
+        mkpath(os.path.join(os.environ.get('HOME'), '.kube'))
+        print("Now install your organization's kubectl config to ~/.kube/config")
+
   if os.path.isfile(os.path.join(os.environ.get('HOME'), '.kube', 'config')):
     check_ok('~/.kube/config')
   else:
@@ -100,19 +130,58 @@ def check(interactive):
 def push(from_test_build, tags):
   config = HokusaiConfig().check()
 
-  login_command = check_output("aws ecr get-login --region %s" % config.get('aws-ecr-region'), shell=True)
-  check_call(login_command, shell=True)
+  try:
+    login_command = check_output("aws ecr get-login --region %s" % config.get('aws-ecr-region'), shell=True)
+    check_call(login_command, shell=True)
 
-  if from_test_build:
-    build = "ci_%s:latest" % config.get('project-name')
-  else:
-    check_call("docker build -t %s ." % config.get('project-name'), shell=True)
-    build = "%s:latest" % config.get('project-name')
+    if from_test_build:
+      build = "ci_%s:latest" % config.get('project-name')
+    else:
+      check_call("docker build -t %s ." % config.get('project-name'), shell=True)
+      build = "%s:latest" % config.get('project-name')
 
-  for tag in tags:
-    check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
-    check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
+    for tag in tags:
+      check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
+      check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
+  except CalledProcessError:
+    print_red('Push failed')
+    sys.exit(-1)
 
+  print_green("Pushed %s" % build)
+
+def stack_up(context, kubernetes_yml):
+  config = HokusaiConfig().check()
+
+  try:
+    switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
+    print_green("Switched context to %s" % context)
+    if 'no context exists' in switch_context_result:
+      print_red("Context %s does not exist.  Check ~/.kube/config" % context)
+      sys.exit(-1)
+    elif 'switched to context' in switch_context_result:
+      check_call("kubectl create -f %s" % kubernetes_yml, shell=True)
+  except CalledProcessError:
+    print_red('Stack up failed')
+    sys.exit(-1)
+
+  print_green("Stack %s created" % kubernetes_yml)
+
+def stack_down(context, kubernetes_yml):
+  config = HokusaiConfig().check()
+
+  try:
+    switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
+    print_green("Switched context to %s" % context)
+    if 'no context exists' in switch_context_result:
+      print_red("Context %s does not exist.  Check ~/.kube/config" % context)
+      sys.exit(-1)
+    elif 'switched to context' in switch_context_result:
+      check_call("kubectl delete -f %s" % kubernetes_yml, shell=True)
+  except CalledProcessError:
+    print_red('Stack down failed')
+    sys.exit(-1)
+
+  print_green("Stack %s deleted" % kubernetes_yml)
 
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
@@ -215,41 +284,41 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         'name': config.get('project-name'),
         'image': "%s:latest" % config.get('aws-ecr-registry'),
         'env': runtime_environment['production'],
-        'ports': [{'container_port': target_port}]
+        'ports': [{'containerPort': target_port}]
       }
     ]
 
     if with_memcached:
       containers.append({
-        'name': "%s_memcached" % config.get('project-name'),
+        'name': "%s-memcached" % config.get('project-name'),
         'image': 'memcached',
-        'ports': [{'container_port': '11211'}]
+        'ports': [{'containerPort': 11211}]
       })
-      containers[0]['env'].append({'name': 'MEMCACHED_SERVERS', 'value': "%s_memcached:11211" % config.get('project-name')})
+      containers[0]['env'].append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.get('project-name')})
 
     if with_redis:
       containers.append({
-        'name': "%s_redis" % config.get('project-name'),
+        'name': "%s-redis" % config.get('project-name'),
         'image': 'redis:3.2-alpine',
-        'ports': [{'container_port': '6379'}]
+        'ports': [{'containerPort': 6379}]
       })
-      containers[0]['env'].append({'name': 'REDIS_URL', 'value': "redis://%s_redis:6379/0" % config.get('project-name')})
+      containers[0]['env'].append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.get('project-name')})
 
     if with_mongo:
       containers.append({
-        'name': "%s_mongodb" % config.get('project-name'),
+        'name': "%s-mongodb" % config.get('project-name'),
         'image': 'mongo:3.0',
-        'ports': [{'container_port': '27017'}]
+        'ports': [{'containerPort': 27017}]
       })
-      containers[0]['env'].append({'name': 'MONGO_URL', 'value': "mongodb://%s_mongodb:27017/production" % config.get('project-name')})
+      containers[0]['env'].append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/production" % config.get('project-name')})
 
     if with_postgres:
       containers.append({
-        'name': "%s_postgres" % config.get('project-name'),
+        'name': "%s-postgres" % config.get('project-name'),
         'image': 'postgres:9.4',
-        'ports': [{'container_port': '5432'}]
+        'ports': [{'containerPort': 5432}]
       })
-      containers[0]['env'].append({'name': 'DATABASE_URL', 'value': "postgresql://%s_postgres/production" % config.get('project-name')})
+      containers[0]['env'].append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/production" % config.get('project-name')})
 
     deployment_data = OrderedDict([
       ('apiVersion', 'extensions/v1beta1'),
@@ -293,6 +362,8 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
             YAML_HEADER + yaml.safe_dump(service_data, default_flow_style=False)
     f.write(payload)
 
+  print_green("Config created in ./hokusai")
+
 def development(docker_compose_yml):
   config = HokusaiConfig().check()
 
@@ -314,7 +385,7 @@ def test(docker_compose_yml):
 
   # kill and remove any running containers
   def cleanup(*args):
-    print('%sTests Failed For Unexpected Reasons%s\n' % (RED, NC))
+    print_red('Tests Failed For Unexpected Reasons\n')
     call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
     call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
     sys.exit(-1)
@@ -325,20 +396,26 @@ def test(docker_compose_yml):
 
   # build and run the composed services
   if call("docker-compose -f %s -p ci up --build -d" % docker_compose_yml, shell=True) != 0:
-    print("%sDocker Compose Failed%s\n" % (RED, NC))
+    print_red("Docker Compose Failed\n")
     sys.exit(-1)
 
   # wait for the test service to complete and grab the exit code
-  test_exit_code = int(check_output("docker wait ci_%s_1" % config.get('project-name'), shell=True))
+  try:
+    test_exit_code = int(check_output("docker wait ci_%s_1" % config.get('project-name'), shell=True))
+  except CalledProcessError:
+    print_red('Docker wait failed.')
+    call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
+    call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
+    sys.exit(-1)
 
   # output the logs for the test (for clarity)
   call("docker logs ci_%s_1" % config.get('project-name'), shell=True)
 
   # inspect the output of the test and display respective message
   if test_exit_code != 0:
-    print('%sTests Failed%s - Exit Code: %s\n' % (RED, NC, test_exit_code))
+    print_red('Tests Failed - Exit Code: %s\n' % test_exit_code)
   else:
-    print("%sTests Passed%s" % (GREEN, NC))
+    print_green("Tests Passed")
 
   # cleanup
   call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)

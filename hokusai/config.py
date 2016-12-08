@@ -1,4 +1,5 @@
 import os
+import sys
 
 import yaml
 
@@ -24,7 +25,8 @@ class HokusaiConfig(object):
 
   def check(self):
     if not os.path.isfile(HOKUSAI_CONFIG_FILE):
-      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+      print_red("Hokusai is not configured for this project - run 'hokusai configure'")
+      sys.exit(-1)
     return self
 
   def get(self, key):
