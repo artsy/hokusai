@@ -112,7 +112,7 @@ def stack_down(context, kubernetes_yml):
 
 @cli.command()
 @click.argument('context', type=click.STRING)
-@click.option('--tag', type=click.STRING, default='latest', help="Image tag to deploy - (defaults to 'latest')")
+@click.option('--tag', '-t', type=click.STRING, default='latest', help="Image tag to deploy - (defaults to 'latest')")
 def deploy(context, tag):
   """
   Deploy an image to the given context
