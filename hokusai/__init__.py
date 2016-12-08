@@ -66,20 +66,6 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
       'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
-  else:
-    dockerfile = env.get_template("Dockerfile.j2")
-    if run_command is None:
-      run_command = "service %s start" % APP_NAME
-    if development_command is None:
-      development_command = ''
-    if test_command is None:
-      test_command = ''
-    runtime_environment = {
-      'development': [],
-      'test': [],
-      'production': []
-    }
-
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=target_port))
 
@@ -87,13 +73,13 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
     with open(os.path.join(os.getcwd(), "%s.yml" % compose_environment), 'w') as f:
       services = {
         APP_NAME: {
-          'build': '.',
-          'ports': ["%s:%s" % (port, target_port)]
+          'build': '.'
         }
       }
 
       if compose_environment == 'development':
         services[APP_NAME]['command'] = development_command
+        services[APP_NAME]['ports'] = ["%s:%s" % (port, target_port)]
       if compose_environment == 'test':
         services[APP_NAME]['command'] = test_command
 
@@ -101,31 +87,35 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
 
       if with_memcached:
         services['memcached'] = {
-          'image': 'memcached',
-          'ports': ["11211:11211"]
+          'image': 'memcached'
         }
+        if compose_environment == 'development':
+          services['memcached']['ports'] = ["11211:11211"]
         services[APP_NAME]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
       if with_redis:
         services['redis'] = {
-          'image': 'redis:3.2-alpine',
-          'ports': ["6379:6379"]
+          'image': 'redis:3.2-alpine'
         }
+        if compose_environment == 'development':
+          services['redis']['ports'] = ["6379:6379"]
         services[APP_NAME]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
 
       if with_mongo:
         services['mongodb'] = {
           'image': 'mongo:3.0',
-          'ports': ["27017:27017"],
           'command': 'mongod --smallfiles'
         }
+        if compose_environment == 'development':
+          services['mongodb']['ports'] = ["27017:27017"]
         services[APP_NAME]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
 
       if with_postgres:
         services['postgres'] = {
-          'image': 'postgres:9.4',
-          'ports': ["5432:5432"]
+          'image': 'postgres:9.4'
         }
+        if compose_environment == 'development':
+          services['postgres']['ports'] = ["5432:5432"]
         services[APP_NAME]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
 
       data = OrderedDict([
@@ -136,6 +126,47 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
       f.write(payload)
 
   with open(os.path.join(os.getcwd(), "production.yml"), 'w') as f:
+    containers = [
+      {
+        'name': APP_NAME,
+        'image': "%s:latest" % config.get('aws-ecr-registry'),
+        'env': runtime_environment['production'],
+        'ports': [{'container_port': target_port}]
+      }
+    ]
+
+    if with_memcached:
+      containers.append({
+        'name': "%s_memcached" % APP_NAME,
+        'image': 'memcached',
+        'ports': [{'container_port': '11211'}]
+      })
+      containers[0]['env'].append({'name': 'MEMCACHED_SERVERS', 'value': "%s_memcached:11211" % APP_NAME})
+
+    if with_redis:
+      containers.append({
+        'name': "%s_redis" % APP_NAME,
+        'image': 'redis:3.2-alpine',
+        'ports': [{'container_port': '6379'}]
+      })
+      containers[0]['env'].append({'name': 'REDIS_URL', 'value': "redis://%s_redis:6379/0" % APP_NAME})
+
+    if with_mongo:
+      containers.append({
+        'name': "%s_mongodb" % APP_NAME,
+        'image': 'mongo:3.0',
+        'ports': [{'container_port': '27017'}]
+      })
+      containers[0]['env'].append({'name': 'MONGO_URL', 'value': "mongodb://%s_mongodb:27017/production" % APP_NAME})
+
+    if with_postgres:
+      containers.append({
+        'name': "%s_postgres" % APP_NAME,
+        'image': 'postgres:9.4',
+        'ports': [{'container_port': '5432'}]
+      })
+      containers[0]['env'].append({'name': 'DATABASE_URL', 'value': "postgresql://%s_postgres/production" % APP_NAME})
+
     deployment_data = OrderedDict([
       ('apiVersion', 'extensions/v1beta1'),
       ('kind', 'Deployment'),
@@ -151,14 +182,7 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
               'namespace': 'default'
             },
             'spec': {
-              'containers': [
-                {
-                  'name': APP_NAME,
-                  'image': "%s:latest" % config.get('aws-ecr-registry'),
-                  'env': runtime_environment['production'],
-                  'ports': [{'container_port': target_port}]
-                }
-              ]
+              'containers': containers
             }
           }
         }

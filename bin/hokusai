@@ -32,7 +32,7 @@ def scaffold(framework, base_image, run_command, development_command, test_comma
     hokusai.scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
                       with_memcached, with_redis, with_mongo, with_postgres)
   except hokusai.HokusaiConfigError, e:
-    print(e.message)
+    print("ERROR: %s" % e.message)
     sys.exit(-1)
 
 @cli.command()
@@ -75,7 +75,7 @@ def push(from_test_build, tag):
   try:
     hokusai.push(from_test_build, tags)
   except (hokusai.HokusaiConfigError, hokusai.CalledProcessError), e:
-    print(e.message)
+    print("ERROR: %s" % e.message)
     sys.exit(-1)
 
 if __name__ == '__main__':
