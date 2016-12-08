@@ -35,9 +35,13 @@ To upgrade to the latest changes in this repo, run: `pip install --upgrade .`
 
 See `hokusai {command} --help` for command-specific options
 
-### Scaffolding
+### Initializing a project
 
-`hokusai scaffold` writes a Dockerfile, development.yml and test.yml in the current directory
+`hokusai init` writes hokusai project config and creates a Dockerfile, development.yml and test.yml in the current directory
+
+### Checking dependencies
+
+`hokusai check` makes sure everything is set up correctly in your local environment
 
 ### Development
 

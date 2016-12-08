@@ -1,9 +1,14 @@
 import os
 import sys
 import signal
+import urllib
+import shutil
 
-from subprocess import call, check_call, check_output, CalledProcessError
+from distutils.dir_util import mkpath
+from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
 from collections import OrderedDict
+
+import pip
 
 import yaml
 
@@ -14,8 +19,71 @@ from hokusai.common import *
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
-def configure(aws_account_id, aws_ecr_region):
-  HokusaiConfig().create(aws_account_id, aws_ecr_region)
+def check(interactive):
+  return_code = 0
+
+  def check_ok(check_item):
+    print(GREEN + u'\u2714 ' + check_item + ' found' + NC)
+
+  def check_err(check_item):
+    print(RED + u'\u2718 ' + check_item + ' not found' + NC)
+
+  try:
+    check_output('docker --version', stderr=STDOUT, shell=True)
+    check_ok('docker')
+  except CalledProcessError:
+    check_err('docker')
+    return_code += 1
+
+  try:
+    check_output('docker-compose --version', stderr=STDOUT, shell=True)
+    check_ok('docker-compose')
+  except CalledProcessError:
+    check_err('docker-compose')
+    return_code += 1
+
+    if interactive:
+      install_docker_compose = raw_input('Do you want to install docker-compose? --> ')
+      if install_docker_compose in ['y', 'Y', 'yes', 'Yes', 'YES']:
+        pip.main(['install'], 'docker-compose')
+
+  try:
+    check_output('aws --version', stderr=STDOUT, shell=True)
+    check_ok('aws cli')
+  except CalledProcessError:
+    check_err('aws cli')
+    return_code += 1
+
+    if interactive:
+      install_aws_cli = raw_input('Do you want to install the aws cli? --> ')
+      if install_aws_cli in ['y', 'Y', 'yes', 'Yes', 'YES']:
+        pip.main(['install'], 'aws')
+
+  if os.path.isfile(os.path.join(os.getcwd(), '.hosukai.yml')):
+    check_ok('.hokusai.yml')
+  else:
+    check_err('.hokusai.yml')
+    return_code += 1
+
+  if os.path.isfile(os.path.join(os.getcwd(), 'development.yml')):
+    check_ok('developmen.yml')
+  else:
+    check_err('development.yml')
+    return_code += 1
+
+  if os.path.isfile(os.path.join(os.getcwd(), 'test.yml')):
+    check_ok('test.yml')
+  else:
+    check_err('test.yml')
+    return_code += 1
+
+  if os.path.isfile(os.path.join(os.getcwd(), 'production.yml')):
+    check_ok('production.yml')
+  else:
+    check_err('production.yml')
+    return_code += 1
+
+  sys.exit(return_code)
 
 def push(from_test_build, tags):
   config = HokusaiConfig().check()
@@ -34,9 +102,10 @@ def push(from_test_build, tags):
     check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
 
 
-def scaffold(framework, base_image, run_command, development_command, test_command, port, target_port,
-              with_memcached, with_redis, with_mongo, with_postgres):
-  config = HokusaiConfig().check()
+def init(aws_account_id, aws_ecr_region, framework, base_image,
+          run_command, development_command, test_command, port, target_port,
+            with_memcached, with_redis, with_mongo, with_postgres):
+  config = HokusaiConfig().create(aws_account_id, aws_ecr_region)
 
   if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
