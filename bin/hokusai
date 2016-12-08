@@ -70,7 +70,7 @@ def test(docker_compose_yml):
 
 @cli.command()
 @click.option('--from-test-build', type=click.BOOL, is_flag=True, help='Push the image last built by CI - else build a new image')
-@click.option('--tag', '-t', type=click.STRING, multiple=True, help="Tags to apply to the pushed image - defauls to 'latest' if none specified")
+@click.option('--tag', '-t', type=click.STRING, multiple=True, help="Tags to apply to the pushed image - defaults to 'latest' if none specified")
 def push(from_test_build, tag):
   """
   Build and tag a docker image, then push to ECR
@@ -109,6 +109,15 @@ def stack_down(context, kubernetes_yml):
   Delete the production stack in the given context
   """
   hokusai.stack_down(context, kubernetes_yml)
+
+@cli.command()
+@click.argument('context', type=click.STRING)
+@click.option('--tag', type=click.STRING, default='latest', help="Image tag to deploy - (defaults to 'latest')")
+def deploy(context, tag):
+  """
+  Deploy an image to the given context
+  """
+  hokusai.deploy(context, tag)
 
 if __name__ == '__main__':
     cli(obj={})

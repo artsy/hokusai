@@ -226,6 +226,23 @@ def stack_down(context, kubernetes_yml):
 
   print_green("Stack %s deleted" % kubernetes_yml)
 
+def deploy(context, tag):
+  config = HokusaiConfig().check()
+
+  try:
+    switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
+    print_green("Switched context to %s" % context)
+    if 'no context exists' in switch_context_result:
+      print_red("Context %s does not exist.  Check ~/.kube/config" % context)
+      sys.exit(-1)
+    elif 'switched to context' in switch_context_result:
+      check_call("kubectl set image deployment/%s %s=%s" % (config.get('project-name'), config.get('project-name'), "%s:%s" % (config.get('aws-ecr-registry'), tag)), shell=True)
+  except CalledProcessError:
+    print_red('Deployment failed')
+    sys.exit(-1)
+
+  print_green("Deployment updated to %s" % tag)
+
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
             with_memcached, with_redis, with_mongo, with_postgres):
