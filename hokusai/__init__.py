@@ -8,8 +8,6 @@ from distutils.dir_util import mkpath
 from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
 from collections import OrderedDict
 
-import pip
-
 import yaml
 
 from hokusai import representers
@@ -45,7 +43,11 @@ def check(interactive):
     if interactive:
       install_docker_compose = raw_input('Do you want to install docker-compose? --> ')
       if install_docker_compose in ['y', 'Y', 'yes', 'Yes', 'YES']:
-        pip.main(['install'], 'docker-compose')
+        try:
+          import pip
+          pip.main(['install'], 'docker-compose')
+        except Exception, e:
+          print('pip install docker-compose failed with error %s' % e.message)
 
   try:
     check_output('aws --version', stderr=STDOUT, shell=True)
@@ -57,30 +59,40 @@ def check(interactive):
     if interactive:
       install_aws_cli = raw_input('Do you want to install the aws cli? --> ')
       if install_aws_cli in ['y', 'Y', 'yes', 'Yes', 'YES']:
-        pip.main(['install'], 'aws')
+        try:
+          import pip
+          pip.main(['install'], 'aws')
+        except Exception, e:
+          print('pip install aws failed with error %s' % e.message)
 
-  if os.path.isfile(os.path.join(os.getcwd(), '.hosukai.yml')):
-    check_ok('.hokusai.yml')
+  if os.path.isfile(os.path.join(os.environ.get('HOME'), '.kube', 'config')):
+    check_ok('~/.kube/config')
   else:
-    check_err('.hokusai.yml')
+    check_err('~/.kube/config')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'development.yml')):
-    check_ok('developmen.yml')
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/config.yml')):
+    check_ok('hokusai/config.yml')
   else:
-    check_err('development.yml')
+    check_err('hokusai/config.yml')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'test.yml')):
-    check_ok('test.yml')
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/development.yml')):
+    check_ok('hokusai/development.yml')
   else:
-    check_err('test.yml')
+    check_err('hokusai/development.yml')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'production.yml')):
-    check_ok('production.yml')
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/test.yml')):
+    check_ok('hokusai/test.yml')
   else:
-    check_err('production.yml')
+    check_err('hokusai/test.yml')
+    return_code += 1
+
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/production.yml')):
+    check_ok('hokusai/production.yml')
+  else:
+    check_err('hokusai/production.yml')
     return_code += 1
 
   sys.exit(return_code)
