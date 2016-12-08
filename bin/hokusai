@@ -84,6 +84,16 @@ def push(from_test_build, tag):
 
 @cli.command()
 @click.argument('context', type=click.STRING)
+@click.argument('key', type=click.STRING)
+@click.argument('value', type=click.STRING)
+def add_secret(context, key, value):
+  """
+  Add a secret for the given context
+  """
+  hokusai.add_secret(context, key, value)
+
+@cli.command()
+@click.argument('context', type=click.STRING)
 @click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
 def stack_up(context, kubernetes_yml):
   """
