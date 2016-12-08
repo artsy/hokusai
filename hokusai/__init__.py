@@ -92,20 +92,23 @@ def push(from_test_build, tags):
   check_call(login_command, shell=True)
 
   if from_test_build:
-    build = "ci_%s:latest" % APP_NAME
+    build = "ci_%s:latest" % config.get('project-name')
   else:
-    check_call("docker build -t %s ." % APP_NAME, shell=True)
-    build = "%s:latest" % APP_NAME
+    check_call("docker build -t %s ." % config.get('project-name'), shell=True)
+    build = "%s:latest" % config.get('project-name')
 
   for tag in tags:
     check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
     check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
 
 
-def init(aws_account_id, aws_ecr_region, framework, base_image,
+def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
             with_memcached, with_redis, with_mongo, with_postgres):
-  config = HokusaiConfig().create(aws_account_id, aws_ecr_region)
+
+  mkpath(os.path.join(os.getcwd(), 'hokusai'))
+
+  config = HokusaiConfig().create(project_name, aws_account_id, aws_ecr_region)
 
   if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
@@ -139,20 +142,20 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=target_port))
 
   for idx, compose_environment in enumerate(['development', 'test']):
-    with open(os.path.join(os.getcwd(), "%s.yml" % compose_environment), 'w') as f:
+    with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % compose_environment), 'w') as f:
       services = {
-        APP_NAME: {
-          'build': '.'
+        config.get('project-name'): {
+          'build': '../'
         }
       }
 
       if compose_environment == 'development':
-        services[APP_NAME]['command'] = development_command
-        services[APP_NAME]['ports'] = ["%s:%s" % (port, target_port)]
+        services[config.get('project-name')]['command'] = development_command
+        services[config.get('project-name')]['ports'] = ["%s:%s" % (port, target_port)]
       if compose_environment == 'test':
-        services[APP_NAME]['command'] = test_command
+        services[config.get('project-name')]['command'] = test_command
 
-      services[APP_NAME]['environment'] = runtime_environment[compose_environment]
+      services[config.get('project-name')]['environment'] = runtime_environment[compose_environment]
 
       if with_memcached:
         services['memcached'] = {
@@ -160,7 +163,7 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['memcached']['ports'] = ["11211:11211"]
-        services[APP_NAME]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
+        services[config.get('project-name')]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
       if with_redis:
         services['redis'] = {
@@ -168,7 +171,7 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['redis']['ports'] = ["6379:6379"]
-        services[APP_NAME]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
+        services[config.get('project-name')]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
 
       if with_mongo:
         services['mongodb'] = {
@@ -177,7 +180,7 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['mongodb']['ports'] = ["27017:27017"]
-        services[APP_NAME]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
+        services[config.get('project-name')]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
 
       if with_postgres:
         services['postgres'] = {
@@ -185,7 +188,7 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['postgres']['ports'] = ["5432:5432"]
-        services[APP_NAME]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
+        services[config.get('project-name')]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
 
       data = OrderedDict([
         ('version', '2'),
@@ -194,10 +197,10 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
       payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
       f.write(payload)
 
-  with open(os.path.join(os.getcwd(), "production.yml"), 'w') as f:
+  with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
     containers = [
       {
-        'name': APP_NAME,
+        'name': config.get('project-name'),
         'image': "%s:latest" % config.get('aws-ecr-registry'),
         'env': runtime_environment['production'],
         'ports': [{'container_port': target_port}]
@@ -206,48 +209,48 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
 
     if with_memcached:
       containers.append({
-        'name': "%s_memcached" % APP_NAME,
+        'name': "%s_memcached" % config.get('project-name'),
         'image': 'memcached',
         'ports': [{'container_port': '11211'}]
       })
-      containers[0]['env'].append({'name': 'MEMCACHED_SERVERS', 'value': "%s_memcached:11211" % APP_NAME})
+      containers[0]['env'].append({'name': 'MEMCACHED_SERVERS', 'value': "%s_memcached:11211" % config.get('project-name')})
 
     if with_redis:
       containers.append({
-        'name': "%s_redis" % APP_NAME,
+        'name': "%s_redis" % config.get('project-name'),
         'image': 'redis:3.2-alpine',
         'ports': [{'container_port': '6379'}]
       })
-      containers[0]['env'].append({'name': 'REDIS_URL', 'value': "redis://%s_redis:6379/0" % APP_NAME})
+      containers[0]['env'].append({'name': 'REDIS_URL', 'value': "redis://%s_redis:6379/0" % config.get('project-name')})
 
     if with_mongo:
       containers.append({
-        'name': "%s_mongodb" % APP_NAME,
+        'name': "%s_mongodb" % config.get('project-name'),
         'image': 'mongo:3.0',
         'ports': [{'container_port': '27017'}]
       })
-      containers[0]['env'].append({'name': 'MONGO_URL', 'value': "mongodb://%s_mongodb:27017/production" % APP_NAME})
+      containers[0]['env'].append({'name': 'MONGO_URL', 'value': "mongodb://%s_mongodb:27017/production" % config.get('project-name')})
 
     if with_postgres:
       containers.append({
-        'name': "%s_postgres" % APP_NAME,
+        'name': "%s_postgres" % config.get('project-name'),
         'image': 'postgres:9.4',
         'ports': [{'container_port': '5432'}]
       })
-      containers[0]['env'].append({'name': 'DATABASE_URL', 'value': "postgresql://%s_postgres/production" % APP_NAME})
+      containers[0]['env'].append({'name': 'DATABASE_URL', 'value': "postgresql://%s_postgres/production" % config.get('project-name')})
 
     deployment_data = OrderedDict([
       ('apiVersion', 'extensions/v1beta1'),
       ('kind', 'Deployment'),
-      ('metadata', {'name': APP_NAME}),
+      ('metadata', {'name': config.get('project-name')}),
       ('spec', {
         'replicas': 1,
         'template': {
           'metadata': {
             'labels': {
-              'app': APP_NAME
+              'app': config.get('project-name')
               },
-              'name': APP_NAME,
+              'name': config.get('project-name'),
               'namespace': 'default'
             },
             'spec': {
@@ -262,13 +265,13 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
       ('apiVersion', 'extensions/v1beta1'),
       ('kind', 'Service'),
       ('metadata', {
-        'labels': {'app': APP_NAME},
-        'name': APP_NAME,
+        'labels': {'app': config.get('project-name')},
+        'name': config.get('project-name'),
         'namespace': 'default'
       }),
       ('spec', {
         'ports': [{'port': port, 'targetPort': target_port, 'protocol': 'TCP'}],
-        'selector': {'app': APP_NAME},
+        'selector': {'app': config.get('project-name')},
         'sessionAffinity': 'None',
         'type': 'LoadBalancer'
       })
@@ -279,6 +282,8 @@ def init(aws_account_id, aws_ecr_region, framework, base_image,
     f.write(payload)
 
 def development(docker_compose_yml):
+  config = HokusaiConfig().check()
+
   # kill and remove any running containers
   def cleanup(*args):
     call("docker-compose -f %s kill" % docker_compose_yml, shell=True)
@@ -293,6 +298,8 @@ def development(docker_compose_yml):
   call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
 
 def test(docker_compose_yml):
+  config = HokusaiConfig().check()
+
   # kill and remove any running containers
   def cleanup(*args):
     print('%sTests Failed For Unexpected Reasons%s\n' % (RED, NC))
@@ -310,10 +317,10 @@ def test(docker_compose_yml):
     sys.exit(-1)
 
   # wait for the test service to complete and grab the exit code
-  test_exit_code = int(check_output("docker wait ci_%s_1" % APP_NAME, shell=True))
+  test_exit_code = int(check_output("docker wait ci_%s_1" % config.get('project-name'), shell=True))
 
   # output the logs for the test (for clarity)
-  call("docker logs ci_%s_1" % APP_NAME, shell=True)
+  call("docker logs ci_%s_1" % config.get('project-name'), shell=True)
 
   # inspect the output of the test and display respective message
   if test_exit_code != 0:

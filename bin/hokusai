@@ -16,6 +16,7 @@ def cli():
     pass
 
 @cli.command()
+@click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-account-id', type=click.STRING, required=True, help='Your AWS account ID')
 @click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', help='Your AWS ECR region (default: us-east-1)')
 @click.option('--framework', type=click.Choice(['rack', 'nodejs']), required=True, help='The project framework')
@@ -29,14 +30,14 @@ def cli():
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
 @click.option('--with-mongo', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
 @click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
-def init(aws_account_id, aws_ecr_region, framework, base_image,
+def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
             with_memcached, with_redis, with_mongo, with_postgres):
   """
   Configure Hokusai for the current project
   """
   try:
-    hokusai.init(aws_account_id, aws_ecr_region, framework, base_image,
+    hokusai.init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
                   run_command, development_command, test_command, port, target_port,
                     with_memcached, with_redis, with_mongo, with_postgres)
   except hokusai.HokusaiConfigError, e:
@@ -52,7 +53,7 @@ def check(interactive):
   hokusai.check(interactive)
 
 @cli.command()
-@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'development.yml'), help='docker-compose development file - defaults to development.yml')
+@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/development.yml'), help='docker-compose development file - defaults to hokusai/development.yml')
 def dev(docker_compose_yml):
   """
   Boot the development stack
@@ -60,7 +61,7 @@ def dev(docker_compose_yml):
   hokusai.development(docker_compose_yml)
 
 @cli.command()
-@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'test.yml'), help='docker-compose test file - defaults to test.yml')
+@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/test.yml'), help='docker-compose test file - defaults to hokusai/test.yml')
 def test(docker_compose_yml):
   """
   Boot the test stack and run the test suite

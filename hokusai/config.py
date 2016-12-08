@@ -8,11 +8,12 @@ class HokusaiConfigError(Exception):
   pass
 
 class HokusaiConfig(object):
-  def create(self, aws_account_id, aws_ecr_region):
+  def create(self, project_name, aws_account_id, aws_ecr_region):
     config = {
+      'project-name': project_name,
       'aws-account-id': aws_account_id,
       'aws-ecr-region': aws_ecr_region,
-      'aws-ecr-registry': "%s.dkr.ecr.%s.amazonaws.com/%s" % (aws_account_id, aws_ecr_region, APP_NAME)
+      'aws-ecr-registry': "%s.dkr.ecr.%s.amazonaws.com/%s" % (aws_account_id, aws_ecr_region, project_name)
     }
 
     with open(HOKUSAI_CONFIG_FILE, 'w') as f:
