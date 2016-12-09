@@ -339,88 +339,42 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
       f.write(payload)
 
   with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
-    containers = [
-      {
-        'name': config.get('project-name'),
-        'image': "%s:latest" % config.get('aws-ecr-registry'),
-        'env': runtime_environment['production'],
-        'ports': [{'containerPort': target_port}]
-      }
-    ]
+    environment = runtime_environment['production']
 
     if with_memcached:
-      containers.append({
-        'name': "%s-memcached" % config.get('project-name'),
-        'image': 'memcached',
-        'ports': [{'containerPort': 11211}]
-      })
-      containers[0]['env'].append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.get('project-name')})
+      environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.get('project-name')})
+    if with_redis:
+      environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.get('project-name')})
+    if with_mongo:
+      environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/production" % config.get('project-name')})
+    if with_postgres:
+      environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/production" % config.get('project-name')})
+
+    deployment_data = build_deployment(config.get('project-name'),
+                                        "%s:latest" % config.get('aws-ecr-registry'),
+                                        target_port, environment=environment)
+
+    service_data = build_service(config.get('project-name'), port, target_port=target_port, internal=False)
+
+    production_yml = deployment_data + service_data
+
+    if with_memcached:
+      production_yml += build_deployment("%s-memcached" % config.get('project-name'), 'memcached', 11211)
+      production_yml += build_service("%s-memcached" % config.get('project-name'), 11211)
 
     if with_redis:
-      containers.append({
-        'name': "%s-redis" % config.get('project-name'),
-        'image': 'redis:3.2-alpine',
-        'ports': [{'containerPort': 6379}]
-      })
-      containers[0]['env'].append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.get('project-name')})
+      production_yml += build_deployment("%s-redis" % config.get('project-name'), 'redis:3.2-alpine', 6379)
+      production_yml += build_service("%s-redis" % config.get('project-name'), 6379)
 
     if with_mongo:
-      containers.append({
-        'name': "%s-mongodb" % config.get('project-name'),
-        'image': 'mongo:3.0',
-        'ports': [{'containerPort': 27017}]
-      })
-      containers[0]['env'].append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/production" % config.get('project-name')})
+      production_yml += build_deployment("%s-mongodb" % config.get('project-name'), 'mongodb:3.0', 27017)
+      production_yml += build_service("%s-mongodb" % config.get('project-name'), 27017)
 
     if with_postgres:
-      containers.append({
-        'name': "%s-postgres" % config.get('project-name'),
-        'image': 'postgres:9.4',
-        'ports': [{'containerPort': 5432}]
-      })
-      containers[0]['env'].append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/production" % config.get('project-name')})
+      production_yml += build_deployment("%s-postgres" % config.get('project-name'), 'postgres:9.4', 5432)
+      production_yml += build_service("%s-postgres" % config.get('project-name'), 5432)
 
-    deployment_data = OrderedDict([
-      ('apiVersion', 'extensions/v1beta1'),
-      ('kind', 'Deployment'),
-      ('metadata', {'name': config.get('project-name')}),
-      ('spec', {
-        'replicas': 1,
-        'template': {
-          'metadata': {
-            'labels': {
-              'app': config.get('project-name')
-              },
-              'name': config.get('project-name'),
-              'namespace': 'default'
-            },
-            'spec': {
-              'containers': containers
-            }
-          }
-        }
-      )
-    ])
-
-    service_data = OrderedDict([
-      ('apiVersion', 'extensions/v1beta1'),
-      ('kind', 'Service'),
-      ('metadata', {
-        'labels': {'app': config.get('project-name')},
-        'name': config.get('project-name'),
-        'namespace': 'default'
-      }),
-      ('spec', {
-        'ports': [{'port': port, 'targetPort': target_port, 'protocol': 'TCP'}],
-        'selector': {'app': config.get('project-name')},
-        'sessionAffinity': 'None',
-        'type': 'LoadBalancer'
-      })
-    ])
-
-    payload = YAML_HEADER + yaml.safe_dump(deployment_data, default_flow_style=False) + \
-            YAML_HEADER + yaml.safe_dump(service_data, default_flow_style=False)
-    f.write(payload)
+    f.write(production_yml)
 
   print_green("Config created in ./hokusai")
 

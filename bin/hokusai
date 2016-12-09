@@ -24,8 +24,8 @@ def cli():
 @click.option('--run-command', type=click.STRING, help='Override the default run command')
 @click.option('--development-command', type=click.STRING, help='Override the default development command')
 @click.option('--test-command', type=click.STRING, help='Override the default test command')
-@click.option('--port', type=click.STRING, default='8080', help='The port to access on the host machine (default: 8080)')
-@click.option('--target-port', type=click.STRING, default='80', help='The port to expose on the app container (default: 80)')
+@click.option('--port', type=click.INT, default=8080, help='The port to access on the host machine (default: 8080)')
+@click.option('--target-port', type=click.INT, default=80, help='The port to expose on the app container (default: 80)')
 @click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
 @click.option('--with-mongo', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
@@ -45,7 +45,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
     sys.exit(-1)
 
 @cli.command()
-@click.option('--interactive', type=click.BOOL, is_flag=True, help='Interactive console')
+@click.option('--interactive', type=click.BOOL, is_flag=True, help='Interactive console to install missing dependencies')
 def check(interactive):
   """
   Check hokusai dependencies and configuration
@@ -97,7 +97,7 @@ def add_secret(context, key, value):
 @click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
 def stack_up(context, kubernetes_yml):
   """
-  Create the production stack in the given context
+  Create the stack in the given context
   """
   hokusai.stack_up(context, kubernetes_yml)
 
@@ -106,7 +106,7 @@ def stack_up(context, kubernetes_yml):
 @click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
 def stack_down(context, kubernetes_yml):
   """
-  Delete the production stack in the given context
+  Delete the stack in the given context
   """
   hokusai.stack_down(context, kubernetes_yml)
 
