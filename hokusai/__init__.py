@@ -4,6 +4,7 @@ import signal
 import urllib
 import shutil
 import base64
+import getpass
 
 from distutils.dir_util import mkpath
 from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
@@ -45,11 +46,12 @@ def check(interactive):
     if interactive:
       install_docker_compose = raw_input('Do you want to install docker-compose? --> ')
       if install_docker_compose in ['y', 'Y', 'yes', 'Yes', 'YES']:
+        pwd = getpass.getpass('Enter your root password: ')
         try:
-          import pip
-          pip.main(['install'], 'docker-compose')
-        except Exception, e:
-          print('pip install docker-compose failed with error %s' % e.message)
+          check_output("echo %s | sudo -S pip install docker-compose" % pwd, stderr=STDOUT, shell=True)
+          print_green('docker-compose installed')
+        except CalledProcessError:
+          print_red("'sudo pip install docker-compose' failed")
 
   try:
     check_output('aws --version', stderr=STDOUT, shell=True)
@@ -61,11 +63,12 @@ def check(interactive):
     if interactive:
       install_aws_cli = raw_input('Do you want to install the aws cli? --> ')
       if install_aws_cli in ['y', 'Y', 'yes', 'Yes', 'YES']:
+        pwd = getpass.getpass('Enter your root password: ')
         try:
-          import pip
-          pip.main(['install'], 'aws')
-        except Exception, e:
-          print('pip install aws failed with error %s' % e.message)
+          check_output("echo %s | sudo -S pip install awscli" % pwd, stderr=STDOUT, shell=True)
+          print_green('aws cli installed')
+        except CalledProcessError:
+          print_red("'sudo pip install awscli' failed")
 
   try:
     check_output('kubectl', stderr=STDOUT, shell=True)
@@ -86,16 +89,16 @@ def check(interactive):
         install_to = raw_input('install kubectl to (default: /usr/local/bin) --> ')
         if not install_to:
           install_to = '/usr/local/bin'
-
-        mkpath('/tmp')
-
-        print("Downloading and installing kubectl %s to %s ..." % (kubectl_version, install_to))
-        urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
-        os.chmod(os.path.join('/tmp', 'kubectl'), 0755)
-        shutil.move(os.path.join('/tmp', 'kubectl'), os.path.join(install_to, 'kubectl'))
-
-        mkpath(os.path.join(os.environ.get('HOME'), '.kube'))
-        print("Now install your organization's kubectl config to ~/.kube/config")
+        try:
+          print("Downloading and installing kubectl %s to %s ..." % (kubectl_version, install_to))
+          urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
+          os.chmod(os.path.join('/tmp', 'kubectl'), 0755)
+          shutil.move(os.path.join('/tmp', 'kubectl'), os.path.join(install_to, 'kubectl'))
+          mkpath(os.path.join(os.environ.get('HOME'), '.kube'))
+          print_green("kubectl installed")
+          print_green("Now install your organization's kubectl config to ~/.kube/config")
+        except Exception, e:
+          print_red("Installing kubectl failed with error %s" % e.message)
 
   if os.path.isfile(os.path.join(os.environ.get('HOME'), '.kube', 'config')):
     check_ok('~/.kube/config')
