@@ -205,7 +205,7 @@ def stack_up(context, kubernetes_yml):
       print_red("Context %s does not exist.  Check ~/.kube/config" % context)
       sys.exit(-1)
     elif 'switched to context' in switch_context_result:
-      check_call("kubectl create -f %s" % kubernetes_yml, shell=True)
+      check_call("kubectl apply -f %s" % kubernetes_yml, shell=True)
   except CalledProcessError:
     print_red('Stack up failed')
     sys.exit(-1)
