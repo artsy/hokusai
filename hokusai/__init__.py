@@ -355,7 +355,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
 
     deployment_data = build_deployment(config.get('project-name'),
                                         "%s:latest" % config.get('aws-ecr-registry'),
-                                        target_port, environment=environment)
+                                        target_port, environment=environment, always_pull=True)
 
     service_data = build_service(config.get('project-name'), port, target_port=target_port, internal=False)
 

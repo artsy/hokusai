@@ -21,7 +21,7 @@ def print_green(msg):
 def print_red(msg):
   print(RED + msg + NC)
 
-def build_deployment(name, image, target_port, environment=None):
+def build_deployment(name, image, target_port, environment=None, always_pull=False):
   container = {
     'name': name,
     'image': image,
@@ -30,6 +30,9 @@ def build_deployment(name, image, target_port, environment=None):
 
   if environment is not None:
     container['env'] = environment
+
+  if always_pull:
+    container['imagePullPolicy'] = 'Always'
 
   deployment = OrderedDict([
     ('apiVersion', 'extensions/v1beta1'),
