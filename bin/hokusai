@@ -69,11 +69,18 @@ def test(docker_compose_yml):
   hokusai.test(docker_compose_yml)
 
 @cli.command()
+def build():
+  """
+  Build the latest docker image for the project
+  """
+  hokusai.build()
+
+@cli.command()
 @click.option('--from-test-build', type=click.BOOL, is_flag=True, help='Push the image last built by CI - else build a new image')
 @click.option('--tag', '-t', type=click.STRING, multiple=True, help="Tags to apply to the pushed image - defaults to 'latest' if none specified")
 def push(from_test_build, tag):
   """
-  Build and tag a docker image, then push to ECR
+  Push a docker image to ECR with the given tags
   """
   if not len(tag):
     tags = ['latest']

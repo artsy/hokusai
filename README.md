@@ -15,7 +15,7 @@ Artsy Docker Development Toolkit
 
 3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) `pip install awscli`
 
-4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/) Install the `kubectl` binary and configuration for your Kubernetes cluster
+4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/) Install the `kubectl` binary and kubectl configuration in `~/.kube/config` for your Kubernetes cluster
 
 4) Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` environment variables.  You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories
 
@@ -41,6 +41,11 @@ See `hokusai {command} --help` for command-specific options
 
 `hokusai init` writes hokusai project config to `hokusai/config.yml`, creates `hokusai/test.yml', `hokusai/development.yml' and `hokusai/production.yml' and creates a Dockerfile in the current directory
 
+Required options:
+  - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console
+  - `--framework`: Either "rack" or "nodejs"
+  - `--base-image`: The base docker image for the project `Dockerfile` - i.e. "ruby:2.2" or "ruby:2.2-alpine" - see [Docker Hub](https://hub.docker.com/) for valid base images
+
 ### Checking dependencies
 
 `hokusai check` makes sure everything is set up correctly in your local environment and for your project - the `--interactive` flag prompts to install `docker-compose`, `aws` and `kubectl`, if missing
@@ -55,9 +60,13 @@ See `hokusai {command} --help` for command-specific options
 
 ### Production
 
+#### Building an image
+
+`hokusai build` builds the latest docker image for the project
+
 #### Pushing an image
 
-`hokusai push` builds an image and pushes it to your AWS account's ECR repo for the named project
+`hokusai push` pushes an image to your AWS account's ECR repo for the named project
 
 #### Creating secrets
 

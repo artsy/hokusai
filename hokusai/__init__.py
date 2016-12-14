@@ -132,9 +132,17 @@ def check(interactive):
 
   sys.exit(return_code)
 
+def build():
+  config = HokusaiConfig().check()
+  try:
+    check_call("docker build -t %s ." % config.get('project-name'), shell=True)
+    print_green("Built %s:latest" % config.get('project-name'))
+  except CalledProcessError:
+    print_red('Build failed')
+    sys.exit(-1)
+
 def push(from_test_build, tags):
   config = HokusaiConfig().check()
-
   try:
     login_command = check_output("aws ecr get-login --region %s" % config.get('aws-ecr-region'), shell=True)
     check_call(login_command, shell=True)
@@ -148,11 +156,10 @@ def push(from_test_build, tags):
     for tag in tags:
       check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
       check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
+      print_green("Pushed %s to %s:%s" % (build, config.get('aws-ecr-registry'), tag))
   except CalledProcessError:
     print_red('Push failed')
     sys.exit(-1)
-
-  print_green("Pushed %s" % build)
 
 def add_secret(context, key, value):
   config = HokusaiConfig().check()
