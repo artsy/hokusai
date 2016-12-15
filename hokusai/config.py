@@ -5,9 +5,6 @@ import yaml
 
 from hokusai.common import *
 
-class HokusaiConfigError(Exception):
-  pass
-
 class HokusaiConfig(object):
   def create(self, project_name, aws_account_id, aws_ecr_region):
     config = {

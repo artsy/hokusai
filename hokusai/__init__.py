@@ -130,7 +130,7 @@ def check(interactive):
     check_err('hokusai/production.yml')
     return_code += 1
 
-  sys.exit(return_code)
+  return return_code
 
 def build():
   config = HokusaiConfig().check()
@@ -139,27 +139,31 @@ def build():
     print_green("Built %s:latest" % config.get('project-name'))
   except CalledProcessError:
     print_red('Build failed')
-    sys.exit(-1)
+    return -1
+  return 0
 
-def push(from_test_build, tags):
+def push(test_build, tags):
   config = HokusaiConfig().check()
+
   try:
     login_command = check_output("aws ecr get-login --region %s" % config.get('aws-ecr-region'), shell=True)
     check_call(login_command, shell=True)
 
-    if from_test_build:
+    if test_build:
       build = "ci_%s:latest" % config.get('project-name')
     else:
-      check_call("docker build -t %s ." % config.get('project-name'), shell=True)
       build = "%s:latest" % config.get('project-name')
 
     for tag in tags:
       check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
       check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
       print_green("Pushed %s to %s:%s" % (build, config.get('aws-ecr-registry'), tag))
+
   except CalledProcessError:
     print_red('Push failed')
-    sys.exit(-1)
+    return -1
+
+  return 0
 
 def add_secret(context, key, value):
   config = HokusaiConfig().check()
@@ -169,7 +173,7 @@ def add_secret(context, key, value):
     print_green("Switched context to %s" % context)
     if 'no context exists' in switch_context_result:
       print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      sys.exit(-1)
+      return -1
     elif 'switched to context' in switch_context_result:
       try:
         existing_secrets = check_output("kubectl get secret %s-secrets -o yaml" % config.get('project-name'), stderr=STDOUT, shell=True)
@@ -198,9 +202,10 @@ def add_secret(context, key, value):
 
   except CalledProcessError:
     print_red('Create secret failed')
-    sys.exit(-1)
+    return -1
 
   print_green("Secret %s created" % key)
+  return 0
 
 def stack_up(context, kubernetes_yml):
   config = HokusaiConfig().check()
@@ -210,14 +215,15 @@ def stack_up(context, kubernetes_yml):
     print_green("Switched context to %s" % context)
     if 'no context exists' in switch_context_result:
       print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      sys.exit(-1)
+      return -1
     elif 'switched to context' in switch_context_result:
       check_call("kubectl apply -f %s" % kubernetes_yml, shell=True)
   except CalledProcessError:
     print_red('Stack up failed')
-    sys.exit(-1)
+    return -1
 
   print_green("Stack %s created" % kubernetes_yml)
+  return 0
 
 def stack_down(context, kubernetes_yml):
   config = HokusaiConfig().check()
@@ -227,14 +233,15 @@ def stack_down(context, kubernetes_yml):
     print_green("Switched context to %s" % context)
     if 'no context exists' in switch_context_result:
       print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      sys.exit(-1)
+      return -1
     elif 'switched to context' in switch_context_result:
       check_call("kubectl delete -f %s" % kubernetes_yml, shell=True)
   except CalledProcessError:
     print_red('Stack down failed')
-    sys.exit(-1)
+    return -1
 
   print_green("Stack %s deleted" % kubernetes_yml)
+  return 0
 
 def deploy(context, tag):
   config = HokusaiConfig().check()
@@ -244,14 +251,15 @@ def deploy(context, tag):
     print_green("Switched context to %s" % context)
     if 'no context exists' in switch_context_result:
       print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      sys.exit(-1)
+      return -1
     elif 'switched to context' in switch_context_result:
       check_call("kubectl set image deployment/%s %s=%s" % (config.get('project-name'), config.get('project-name'), "%s:%s" % (config.get('aws-ecr-registry'), tag)), shell=True)
   except CalledProcessError:
     print_red('Deployment failed')
-    sys.exit(-1)
+    return -1
 
   print_green("Deployment updated to %s" % tag)
+  return 0
 
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
@@ -395,7 +403,7 @@ def development(docker_compose_yml):
   def cleanup(*args):
     call("docker-compose -f %s kill" % docker_compose_yml, shell=True)
     call("docker-compose -f %s rm -f" % docker_compose_yml, shell=True)
-    sys.exit(0)
+    return 0
 
   # catch exit, do cleanup
   for sig in EXIT_SIGNALS:
@@ -412,7 +420,7 @@ def test(docker_compose_yml):
     print_red('Tests Failed For Unexpected Reasons\n')
     call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
     call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
-    sys.exit(-1)
+    return -1
 
   # catch exit, do cleanup
   for sig in EXIT_SIGNALS:
@@ -421,7 +429,7 @@ def test(docker_compose_yml):
   # build and run the composed services
   if call("docker-compose -f %s -p ci up --build -d" % docker_compose_yml, shell=True) != 0:
     print_red("Docker Compose Failed\n")
-    sys.exit(-1)
+    return -1
 
   # wait for the test service to complete and grab the exit code
   try:
@@ -430,7 +438,7 @@ def test(docker_compose_yml):
     print_red('Docker wait failed.')
     call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
     call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
-    sys.exit(-1)
+    return -1
 
   # output the logs for the test (for clarity)
   call("docker logs ci_%s_1" % config.get('project-name'), shell=True)
@@ -445,4 +453,4 @@ def test(docker_compose_yml):
   call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
   call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
 
-  sys.exit(test_exit_code)
+  return test_exit_code
