@@ -7,15 +7,13 @@ Artsy Docker Development Toolkit
 
 ## Requirements
 
-1) Docker via either:
-  - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
-  - [Dinghy](https://github.com/codekitchen/dinghy)
+1) [Docker](https://docs.docker.com/)
 
-2) [Docker Compose](https://docs.docker.com/compose/) If you install Docker for Mac, `docker-compose` is also installed. Otherwise run: `sudo pip install docker-compose`
+2) [Docker Compose](https://docs.docker.com/compose/) If you install Docker for Mac, `docker-compose` is also installed. Otherwise install with: `sudo pip install docker-compose`
 
-3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) `pip install awscli`
+3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) Install with: `pip install awscli`
 
-4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/) Install the `kubectl` binary and kubectl configuration in `~/.kube/config` for your Kubernetes cluster
+4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/) Install the `kubectl` binary and kubectl configuration in `~/.kube/config` for your Kubernetes cluster - make sure the version of the `kubectl` binary matches your cluster
 
 4) Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` environment variables.  You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories
 
@@ -66,7 +64,7 @@ Required options:
 
 #### Pushing an image
 
-`hokusai push` pushes an image to your AWS account's ECR repo for the named project
+`hokusai push` pushes a locally built image to your AWS account's ECR repo for the named project
 
 #### Creating secrets
 
