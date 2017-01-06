@@ -399,10 +399,9 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
 def development(docker_compose_yml):
   config = HokusaiConfig().check()
 
-  # kill and remove any running containers
+  # kill any running containers
   def cleanup(*args):
     call("docker-compose -f %s kill" % docker_compose_yml, shell=True)
-    call("docker-compose -f %s rm -f" % docker_compose_yml, shell=True)
     return 0
 
   # catch exit, do cleanup
@@ -415,11 +414,10 @@ def development(docker_compose_yml):
 def test(docker_compose_yml):
   config = HokusaiConfig().check()
 
-  # kill and remove any running containers
+  # kill any running containers
   def cleanup(*args):
     print_red('Tests Failed For Unexpected Reasons\n')
     call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
-    call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
     return -1
 
   # catch exit, do cleanup
@@ -437,7 +435,6 @@ def test(docker_compose_yml):
   except CalledProcessError:
     print_red('Docker wait failed.')
     call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
-    call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
     return -1
 
   # output the logs for the test (for clarity)
@@ -451,6 +448,5 @@ def test(docker_compose_yml):
 
   # cleanup
   call("docker-compose -f %s -p ci kill" % docker_compose_yml, shell=True)
-  call("docker-compose -f %s -p ci rm -f" % docker_compose_yml, shell=True)
 
   return test_exit_code
