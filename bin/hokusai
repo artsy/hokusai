@@ -70,18 +70,13 @@ def build():
   sys.exit(hokusai.build())
 
 @cli.command()
+@click.argument('tag', type=click.STRING)
 @click.option('--test-build', type=click.BOOL, is_flag=True, help="Push the latest image output by 'test' - otherwise the latest image output by 'build'")
-@click.option('--tag', '-t', type=click.STRING, multiple=True, help="Tags to apply to the pushed image - defaults to 'latest' if none specified")
-def push(test_build, tag):
+def push(tag, test_build):
   """
-  Push a docker image to ECR with the given tags
+  Push a docker image to ECR with the given tag
   """
-  if not len(tag):
-    tags = ['latest']
-  else:
-    tags = list(tag)
-
-  sys.exit(hokusai.push(test_build, tags))
+  sys.exit(hokusai.push(tag, test_build))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
@@ -111,10 +106,10 @@ def stack_down(context):
 
 @cli.command()
 @click.argument('context', type=click.STRING)
-@click.option('--tag', '-t', type=click.STRING, default='latest', help="Image tag to deploy - (defaults to 'latest')")
+@click.argument('tag', type=click.STRING)
 def deploy(context, tag):
   """
-  Deploy an image to the given context
+  Deploy an image tag to the given context and update context tag to reference that image
   """
   sys.exit(hokusai.deploy(context, tag))
 
