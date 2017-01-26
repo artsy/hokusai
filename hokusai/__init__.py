@@ -223,6 +223,9 @@ def add_secret(context, key, value):
 def stack_up(context):
   config = HokusaiConfig().check()
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
+  if not os.path.isfile(kubernetes_yml):
+    print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
+    return -1
 
   try:
     switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
@@ -242,6 +245,9 @@ def stack_up(context):
 def stack_down(context):
   config = HokusaiConfig().check()
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
+  if not os.path.isfile(kubernetes_yml):
+    print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
+    return -1
 
   try:
     switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
@@ -433,6 +439,9 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
 def development():
   config = HokusaiConfig().check()
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  if not os.path.isfile(docker_compose_yml):
+    print_red("Yaml file %s does not exist." % docker_compose_yml)
+    return -1
 
   # exit cleanly
   def cleanup(*args):
@@ -448,6 +457,9 @@ def development():
 def test():
   config = HokusaiConfig().check()
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/test.yml')
+  if not os.path.isfile(docker_compose_yml):
+    print_red("Yaml file %s does not exist." % docker_compose_yml)
+    return -1
 
   # stop any running containers
   def cleanup(*args):
