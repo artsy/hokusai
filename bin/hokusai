@@ -49,20 +49,18 @@ def check(interactive):
   sys.exit(hokusai.check(interactive))
 
 @cli.command()
-@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/development.yml'), help='docker-compose development file - defaults to hokusai/development.yml')
-def dev(docker_compose_yml):
+def dev():
   """
   Boot the development stack
   """
-  sys.exit(hokusai.development(docker_compose_yml))
+  sys.exit(hokusai.development())
 
 @cli.command()
-@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/test.yml'), help='docker-compose test file - defaults to hokusai/test.yml')
-def test(docker_compose_yml):
+def test():
   """
   Boot the test stack and run the test suite
   """
-  sys.exit(hokusai.test(docker_compose_yml))
+  sys.exit(hokusai.test())
 
 @cli.command()
 def build():
@@ -97,21 +95,19 @@ def add_secret(context, key, value):
 
 @cli.command()
 @click.argument('context', type=click.STRING)
-@click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
-def stack_up(context, kubernetes_yml):
+def stack_up(context):
   """
   Create the stack in the given context
   """
-  sys.exit(hokusai.stack_up(context, kubernetes_yml))
+  sys.exit(hokusai.stack_up(context))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
-@click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
-def stack_down(context, kubernetes_yml):
+def stack_down(context):
   """
   Delete the stack in the given context
   """
-  sys.exit(hokusai.stack_down(context, kubernetes_yml))
+  sys.exit(hokusai.stack_down(context))
 
 @cli.command()
 @click.argument('context', type=click.STRING)

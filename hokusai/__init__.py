@@ -112,6 +112,12 @@ def check(interactive):
     check_err('hokusai/config.yml')
     return_code += 1
 
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):
+    check_ok('hokusai/common.yml')
+  else:
+    check_err('hokusai/common.yml')
+    return_code += 1
+
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/development.yml')):
     check_ok('hokusai/development.yml')
   else:
@@ -124,6 +130,12 @@ def check(interactive):
     check_err('hokusai/test.yml')
     return_code += 1
 
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/staging.yml')):
+    check_ok('hokusai/staging.yml')
+  else:
+    check_err('hokusai/staging.yml')
+    return_code += 1
+
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/production.yml')):
     check_ok('hokusai/production.yml')
   else:
@@ -134,8 +146,9 @@ def check(interactive):
 
 def build():
   config = HokusaiConfig().check()
+  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
   try:
-    check_call("docker build -t %s ." % config.project_name, shell=True)
+    check_call("docker-compose -f %s build" % docker_compose_yml, shell=True)
     print_green("Built %s:latest" % config.project_name)
   except CalledProcessError:
     print_red('Build failed')
@@ -207,8 +220,9 @@ def add_secret(context, key, value):
   print_green("Secret %s created" % key)
   return 0
 
-def stack_up(context, kubernetes_yml):
+def stack_up(context):
   config = HokusaiConfig().check()
+  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
 
   try:
     switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
@@ -225,8 +239,9 @@ def stack_up(context, kubernetes_yml):
   print_green("Stack %s created" % kubernetes_yml)
   return 0
 
-def stack_down(context, kubernetes_yml):
+def stack_down(context):
   config = HokusaiConfig().check()
+  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
 
   try:
     switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
@@ -280,6 +295,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
     runtime_environment = {
       'development': ["RACK_ENV=development"],
       'test': ["RACK_ENV=test"],
+      'staging': [{'name': 'RACK_ENV', 'value': 'staging'}],
       'production': [{'name': 'RACK_ENV', 'value': 'production'}]
     }
 
@@ -294,17 +310,34 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
     runtime_environment = {
       'development': ["NODE_ENV=development"],
       'test': ["NODE_ENV=test"],
+      'staging': [{'name': 'NODE_ENV', 'value': 'staging'}],
       'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=target_port))
 
+  with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
+    services = {
+      config.project_name: {
+        'build': '../'
+      }
+    }
+    data = OrderedDict([
+        ('version', '2'),
+        ('services', services)
+      ])
+    payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
+    f.write(payload)
+
   for idx, compose_environment in enumerate(['development', 'test']):
     with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % compose_environment), 'w') as f:
       services = {
         config.project_name: {
-          'build': '../'
+          'extends': {
+            'file': 'common.yml',
+            'service': config.project_name
+          }
         }
       }
 
@@ -356,48 +389,50 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
       payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
       f.write(payload)
 
-  with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
-    environment = runtime_environment['production']
+  for stack in ['staging', 'production']:
+    with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % stack), 'w') as f:
+      environment = runtime_environment[stack]
 
-    if with_memcached:
-      environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.project_name})
-    if with_redis:
-      environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.project_name})
-    if with_mongo:
-      environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/production" % config.project_name})
-    if with_postgres:
-      environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/production" % config.project_name})
+      if with_memcached:
+        environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.project_name})
+      if with_redis:
+        environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.project_name})
+      if with_mongo:
+        environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/%s" % (config.project_name, stack)})
+      if with_postgres:
+        environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/%s" % (config.project_name, stack)})
 
-    deployment_data = build_deployment(config.project_name,
-                                        "%s:latest" % config.aws_ecr_registry,
-                                        target_port, environment=environment, always_pull=True)
+      deployment_data = build_deployment(config.project_name,
+                                          "%s:latest" % config.aws_ecr_registry,
+                                          target_port, environment=environment, always_pull=True)
 
-    service_data = build_service(config.project_name, port, target_port=target_port, internal=False)
+      service_data = build_service(config.project_name, port, target_port=target_port, internal=False)
 
-    production_yml = deployment_data + service_data
+      stack_yaml = deployment_data + service_data
 
-    if with_memcached:
-      production_yml += build_deployment("%s-memcached" % config.project_name, 'memcached', 11211)
-      production_yml += build_service("%s-memcached" % config.project_name, 11211)
+      if with_memcached:
+        stack_yaml += build_deployment("%s-memcached" % config.project_name, 'memcached', 11211)
+        stack_yaml += build_service("%s-memcached" % config.project_name, 11211)
 
-    if with_redis:
-      production_yml += build_deployment("%s-redis" % config.project_name, 'redis:3.2-alpine', 6379)
-      production_yml += build_service("%s-redis" % config.project_name, 6379)
+      if with_redis:
+        stack_yaml += build_deployment("%s-redis" % config.project_name, 'redis:3.2-alpine', 6379)
+        stack_yaml += build_service("%s-redis" % config.project_name, 6379)
 
-    if with_mongo:
-      production_yml += build_deployment("%s-mongodb" % config.project_name, 'mongodb:3.0', 27017)
-      production_yml += build_service("%s-mongodb" % config.project_name, 27017)
+      if with_mongo:
+        stack_yaml += build_deployment("%s-mongodb" % config.project_name, 'mongodb:3.0', 27017)
+        stack_yaml += build_service("%s-mongodb" % config.project_name, 27017)
 
-    if with_postgres:
-      production_yml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432)
-      production_yml += build_service("%s-postgres" % config.project_name, 5432)
+      if with_postgres:
+        stack_yaml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432)
+        stack_yaml += build_service("%s-postgres" % config.project_name, 5432)
 
-    f.write(production_yml)
+      f.write(stack_yaml)
 
   print_green("Config created in ./hokusai")
 
-def development(docker_compose_yml):
+def development():
   config = HokusaiConfig().check()
+  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
 
   # exit cleanly
   def cleanup(*args):
@@ -410,8 +445,9 @@ def development(docker_compose_yml):
   # build and run the composed services
   call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
 
-def test(docker_compose_yml):
+def test():
   config = HokusaiConfig().check()
+  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/test.yml')
 
   # stop any running containers
   def cleanup(*args):
