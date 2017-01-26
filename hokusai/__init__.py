@@ -135,8 +135,8 @@ def check(interactive):
 def build():
   config = HokusaiConfig().check()
   try:
-    check_call("docker build -t %s ." % config.get('project-name'), shell=True)
-    print_green("Built %s:latest" % config.get('project-name'))
+    check_call("docker build -t %s ." % config.project_name, shell=True)
+    print_green("Built %s:latest" % config.project_name)
   except CalledProcessError:
     print_red('Build failed')
     return -1
@@ -146,18 +146,18 @@ def push(test_build, tags):
   config = HokusaiConfig().check()
 
   try:
-    login_command = check_output("aws ecr get-login --region %s" % config.get('aws-ecr-region'), shell=True)
+    login_command = check_output("aws ecr get-login --region %s" % config.aws_ecr_region, shell=True)
     check_call(login_command, shell=True)
 
     if test_build:
-      build = "ci_%s:latest" % config.get('project-name')
+      build = "ci_%s:latest" % config.project_name
     else:
-      build = "%s:latest" % config.get('project-name')
+      build = "%s:latest" % config.project_name
 
     for tag in tags:
-      check_call("docker tag %s %s:%s" % (build, config.get('aws-ecr-registry'), tag), shell=True)
-      check_call("docker push %s:%s" % (config.get('aws-ecr-registry'), tag), shell=True)
-      print_green("Pushed %s to %s:%s" % (build, config.get('aws-ecr-registry'), tag))
+      check_call("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag), shell=True)
+      check_call("docker push %s:%s" % (config.aws_ecr_registry, tag), shell=True)
+      print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, tag))
 
   except CalledProcessError:
     print_red('Push failed')
@@ -176,7 +176,7 @@ def add_secret(context, key, value):
       return -1
     elif 'switched to context' in switch_context_result:
       try:
-        existing_secrets = check_output("kubectl get secret %s-secrets -o yaml" % config.get('project-name'), stderr=STDOUT, shell=True)
+        existing_secrets = check_output("kubectl get secret %s-secrets -o yaml" % config.project_name, stderr=STDOUT, shell=True)
         secret_data = yaml.load(existing_secrets)['data']
       except CalledProcessError:
         secret_data = {}
@@ -187,8 +187,8 @@ def add_secret(context, key, value):
         ('apiVersion', 'v1'),
         ('kind', 'Secret'),
         ('metadata', {
-          'labels': {'app': config.get('project-name')},
-          'name': "%s-secrets" % config.get('project-name')
+          'labels': {'app': config.project_name},
+          'name': "%s-secrets" % config.project_name
         }),
         ('type', 'Opaque'),
         ('data', secret_data)
@@ -253,7 +253,7 @@ def deploy(context, tag):
       print_red("Context %s does not exist.  Check ~/.kube/config" % context)
       return -1
     elif 'switched to context' in switch_context_result:
-      check_call("kubectl set image deployment/%s %s=%s" % (config.get('project-name'), config.get('project-name'), "%s:%s" % (config.get('aws-ecr-registry'), tag)), shell=True)
+      check_call("kubectl set image deployment/%s %s=%s" % (config.project_name, config.project_name, "%s:%s" % (config.aws_ecr_registry, tag)), shell=True)
   except CalledProcessError:
     print_red('Deployment failed')
     return -1
@@ -303,18 +303,18 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
   for idx, compose_environment in enumerate(['development', 'test']):
     with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % compose_environment), 'w') as f:
       services = {
-        config.get('project-name'): {
+        config.project_name: {
           'build': '../'
         }
       }
 
       if compose_environment == 'development':
-        services[config.get('project-name')]['command'] = development_command
-        services[config.get('project-name')]['ports'] = ["%s:%s" % (port, target_port)]
+        services[config.project_name]['command'] = development_command
+        services[config.project_name]['ports'] = ["%s:%s" % (port, target_port)]
       if compose_environment == 'test':
-        services[config.get('project-name')]['command'] = test_command
+        services[config.project_name]['command'] = test_command
 
-      services[config.get('project-name')]['environment'] = runtime_environment[compose_environment]
+      services[config.project_name]['environment'] = runtime_environment[compose_environment]
 
       if with_memcached:
         services['memcached'] = {
@@ -322,7 +322,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['memcached']['ports'] = ["11211:11211"]
-        services[config.get('project-name')]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
+        services[config.project_name]['environment'].append('MEMCACHED_SERVERS=memcached:11211')
 
       if with_redis:
         services['redis'] = {
@@ -330,7 +330,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['redis']['ports'] = ["6379:6379"]
-        services[config.get('project-name')]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
+        services[config.project_name]['environment'].append("REDIS_URL=redis://redis:6379/%d" % idx)
 
       if with_mongo:
         services['mongodb'] = {
@@ -339,7 +339,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['mongodb']['ports'] = ["27017:27017"]
-        services[config.get('project-name')]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
+        services[config.project_name]['environment'].append("MONGO_URL=mongodb://mongodb:27017/%s" % compose_environment)
 
       if with_postgres:
         services['postgres'] = {
@@ -347,7 +347,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         }
         if compose_environment == 'development':
           services['postgres']['ports'] = ["5432:5432"]
-        services[config.get('project-name')]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
+        services[config.project_name]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
 
       data = OrderedDict([
         ('version', '2'),
@@ -360,37 +360,37 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
     environment = runtime_environment['production']
 
     if with_memcached:
-      environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.get('project-name')})
+      environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.project_name})
     if with_redis:
-      environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.get('project-name')})
+      environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379/0" % config.project_name})
     if with_mongo:
-      environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/production" % config.get('project-name')})
+      environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/production" % config.project_name})
     if with_postgres:
-      environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/production" % config.get('project-name')})
+      environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/production" % config.project_name})
 
-    deployment_data = build_deployment(config.get('project-name'),
-                                        "%s:latest" % config.get('aws-ecr-registry'),
+    deployment_data = build_deployment(config.project_name,
+                                        "%s:latest" % config.aws_ecr_registry,
                                         target_port, environment=environment, always_pull=True)
 
-    service_data = build_service(config.get('project-name'), port, target_port=target_port, internal=False)
+    service_data = build_service(config.project_name, port, target_port=target_port, internal=False)
 
     production_yml = deployment_data + service_data
 
     if with_memcached:
-      production_yml += build_deployment("%s-memcached" % config.get('project-name'), 'memcached', 11211)
-      production_yml += build_service("%s-memcached" % config.get('project-name'), 11211)
+      production_yml += build_deployment("%s-memcached" % config.project_name, 'memcached', 11211)
+      production_yml += build_service("%s-memcached" % config.project_name, 11211)
 
     if with_redis:
-      production_yml += build_deployment("%s-redis" % config.get('project-name'), 'redis:3.2-alpine', 6379)
-      production_yml += build_service("%s-redis" % config.get('project-name'), 6379)
+      production_yml += build_deployment("%s-redis" % config.project_name, 'redis:3.2-alpine', 6379)
+      production_yml += build_service("%s-redis" % config.project_name, 6379)
 
     if with_mongo:
-      production_yml += build_deployment("%s-mongodb" % config.get('project-name'), 'mongodb:3.0', 27017)
-      production_yml += build_service("%s-mongodb" % config.get('project-name'), 27017)
+      production_yml += build_deployment("%s-mongodb" % config.project_name, 'mongodb:3.0', 27017)
+      production_yml += build_service("%s-mongodb" % config.project_name, 27017)
 
     if with_postgres:
-      production_yml += build_deployment("%s-postgres" % config.get('project-name'), 'postgres:9.4', 5432)
-      production_yml += build_service("%s-postgres" % config.get('project-name'), 5432)
+      production_yml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432)
+      production_yml += build_service("%s-postgres" % config.project_name, 5432)
 
     f.write(production_yml)
 
@@ -430,14 +430,14 @@ def test(docker_compose_yml):
 
   # wait for the test service to complete and grab the exit code
   try:
-    test_exit_code = int(check_output("docker wait ci_%s_1" % config.get('project-name'), shell=True))
+    test_exit_code = int(check_output("docker wait ci_%s_1" % config.project_name, shell=True))
   except CalledProcessError:
     print_red('Docker wait failed.')
     call("docker-compose -f %s -p ci stop" % docker_compose_yml, shell=True)
     return -1
 
   # output the logs for the test (for clarity)
-  call("docker logs ci_%s_1" % config.get('project-name'), shell=True)
+  call("docker logs ci_%s_1" % config.project_name, shell=True)
 
   # inspect the output of the test and display respective message
   if test_exit_code != 0:
