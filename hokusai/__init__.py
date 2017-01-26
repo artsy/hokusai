@@ -148,8 +148,8 @@ def build():
   config = HokusaiConfig().check()
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
   try:
-    check_call("docker-compose -f %s build" % docker_compose_yml, shell=True)
-    print_green("Built %s:latest" % config.project_name)
+    check_call("docker-compose -f %s -p build build" % docker_compose_yml, shell=True)
+    print_green("Built build_%s:latest" % config.project_name)
   except CalledProcessError:
     print_red('Build failed')
     return -1
@@ -165,7 +165,7 @@ def push(test_build, tags):
     if test_build:
       build = "ci_%s:latest" % config.project_name
     else:
-      build = "%s:latest" % config.project_name
+      build = "build_%s:latest" % config.project_name
 
     for tag in tags:
       check_call("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag), shell=True)
@@ -409,7 +409,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/%s" % (config.project_name, stack)})
 
       deployment_data = build_deployment(config.project_name,
-                                          "%s:latest" % config.aws_ecr_registry,
+                                          "%s:%s" % (config.aws_ecr_registry, stack),
                                           target_port, environment=environment, always_pull=True)
 
       service_data = build_service(config.project_name, port, target_port=target_port, internal=False)
@@ -443,15 +443,12 @@ def development():
     print_red("Yaml file %s does not exist." % docker_compose_yml)
     return -1
 
-  # exit cleanly
   def cleanup(*args):
     return 0
 
-  # catch exit
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
-  # build and run the composed services
   call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
 
 def test():
