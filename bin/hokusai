@@ -10,6 +10,7 @@ from distutils.dir_util import mkpath
 import click
 
 import hokusai
+from hokusai.common import *
 
 @click.group()
 def cli():
@@ -49,20 +50,18 @@ def check(interactive):
   sys.exit(hokusai.check(interactive))
 
 @cli.command()
-@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/development.yml'), help='docker-compose development file - defaults to hokusai/development.yml')
-def dev(docker_compose_yml):
+def dev():
   """
   Boot the development stack
   """
-  sys.exit(hokusai.development(docker_compose_yml))
+  sys.exit(hokusai.development())
 
 @cli.command()
-@click.option('--docker-compose-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/test.yml'), help='docker-compose test file - defaults to hokusai/test.yml')
-def test(docker_compose_yml):
+def test():
   """
   Boot the test stack and run the test suite
   """
-  sys.exit(hokusai.test(docker_compose_yml))
+  sys.exit(hokusai.test())
 
 @cli.command()
 def build():
@@ -72,18 +71,13 @@ def build():
   sys.exit(hokusai.build())
 
 @cli.command()
+@click.argument('tag', type=click.STRING)
 @click.option('--test-build', type=click.BOOL, is_flag=True, help="Push the latest image output by 'test' - otherwise the latest image output by 'build'")
-@click.option('--tag', '-t', type=click.STRING, multiple=True, help="Tags to apply to the pushed image - defaults to 'latest' if none specified")
-def push(test_build, tag):
+def push(tag, test_build):
   """
-  Push a docker image to ECR with the given tags
+  Push a docker image to ECR with the given tag
   """
-  if not len(tag):
-    tags = ['latest']
-  else:
-    tags = list(tag)
-
-  sys.exit(hokusai.push(test_build, tags))
+  sys.exit(hokusai.push(tag, test_build))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
@@ -96,29 +90,31 @@ def add_secret(context, key, value):
   sys.exit(hokusai.add_secret(context, key, value))
 
 @cli.command()
+@click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-@click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
-def stack_up(context, kubernetes_yml):
+def stack(action, context):
   """
-  Create the stack in the given context
+  Actions:\n
+  up - Create / Update the stack in the given context\n
+  down - Delete the stack in the given context\n
+  status - Print the stack status in the given context
   """
-  sys.exit(hokusai.stack_up(context, kubernetes_yml))
+  if action == 'up':
+    sys.exit(hokusai.stack_up(context))
+  elif action == 'down':
+    sys.exit(hokusai.stack_down(context))
+  elif action == 'status':
+    sys.exit(hokusai.stack_status(context))
+  else:
+    print_red("ERROR: invalid stack action %s" % action)
+    sys.exit(-1)
 
 @cli.command()
 @click.argument('context', type=click.STRING)
-@click.option('--kubernetes-yml', type=click.STRING, default=os.path.join(os.getcwd(), 'hokusai/production.yml'), help='kubernetes config file - defaults to hokusai/production.yml')
-def stack_down(context, kubernetes_yml):
-  """
-  Delete the stack in the given context
-  """
-  sys.exit(hokusai.stack_down(context, kubernetes_yml))
-
-@cli.command()
-@click.argument('context', type=click.STRING)
-@click.option('--tag', '-t', type=click.STRING, default='latest', help="Image tag to deploy - (defaults to 'latest')")
+@click.argument('tag', type=click.STRING)
 def deploy(context, tag):
   """
-  Deploy an image to the given context
+  Deploy an image tag to the given context and update context tag to reference that image
   """
   sys.exit(hokusai.deploy(context, tag))
 

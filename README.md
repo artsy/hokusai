@@ -72,12 +72,16 @@ Required options:
 
 #### Launching a stack
 
-`hokusai stack_up {CONTEXT}` launches the stack defined in `hokusai/production.yml' for the given Kubernetes context
+`hokusai stack up {CONTEXT}` launches the stack defined in `hokusai/{CONTEXT}.yml' for the given Kubernetes context
 
 #### Deleting a stack
 
-`hokusai stack_down {CONTEXT}` deletes the stack defined in `hokusai/production.yml' for the given Kubernetes context
+`hokusai stack down {CONTEXT}` deletes the stack defined in `hokusai/{CONTEXT}.yml' for the given Kubernetes context
+
+#### Checking a stack status
+
+`hokusai stack status {CONTEXT}` prints the stack status defined in `hokusai/{CONTEXT}.yml' for the given Kubernetes context
 
 #### Rolling deployments
 
-`hokusai deploy {CONTEXT}` updates the Kubernetes deployment for the given context to `latest` or the given image tag
+`hokusai deploy {CONTEXT} {TAG}` updates the Kubernetes deployment for the given context to the given image tag
