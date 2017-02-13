@@ -71,6 +71,13 @@ def build():
   sys.exit(hokusai.build())
 
 @cli.command()
+def pull():
+  """
+  Pull all images and tags from the ECR
+  """
+  sys.exit(hokusai.pull())
+
+@cli.command()
 @click.argument('tag', type=click.STRING)
 @click.option('--test-build', type=click.BOOL, is_flag=True, help="Push the latest image output by 'test' - otherwise the latest image output by 'build'")
 def push(tag, test_build):
@@ -78,6 +85,13 @@ def push(tag, test_build):
   Push a docker image to ECR with the given tag
   """
   sys.exit(hokusai.push(tag, test_build))
+
+@cli.command()
+def images():
+  """
+  Show images and tags
+  """
+  sys.exit(hokusai.images())
 
 @cli.command()
 @click.argument('context', type=click.STRING)
@@ -117,6 +131,26 @@ def deploy(context, tag):
   Deploy an image tag to the given context and update context tag to reference that image
   """
   sys.exit(hokusai.deploy(context, tag))
+
+@cli.command()
+@click.argument('context', type=click.STRING)
+@click.option('--shell', type=click.STRING, default='bash', help='The shell to run (defaults to bash)')
+@click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
+def console(context, shell, env):
+  """
+  Launch a new container and attach a shell in the given context
+  """
+  sys.exit(hokusai.console(context, shell, env))
+
+@cli.command()
+@click.argument('context', type=click.STRING)
+@click.argument('command', type=click.STRING)
+@click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
+def run(context, command, env):
+  """
+  Launch a new container and run a command in the given context
+  """
+  sys.exit(hokusai.run(context, command, env))
 
 if __name__ == '__main__':
   cli(obj={})
