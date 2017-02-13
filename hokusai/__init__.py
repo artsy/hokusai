@@ -5,6 +5,7 @@ import urllib
 import shutil
 import base64
 import getpass
+import datetime
 
 from distutils.dir_util import mkpath
 from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
@@ -315,9 +316,16 @@ def deploy(context, tag):
     try:
       login_command = check_output("aws ecr get-login --region %s" % config.aws_ecr_region, shell=True)
       check_call(login_command, shell=True)
+
       check_call("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, context), shell=True)
       check_call("docker push %s:%s" % (config.aws_ecr_registry, context), shell=True)
       print_green("Updated tag %s:%s -> %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, context))
+
+      deployment_tag = "%s--%s" % (context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
+      check_call("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag), shell=True)
+      check_call("docker push %s:%s" % (config.aws_ecr_registry, deployment_tag), shell=True)
+      print_green("Updated tag %s:%s -> %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
+
     except CalledProcessError:
       print_red('Failed to update tags')
       return -1
