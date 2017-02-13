@@ -56,19 +56,34 @@ Required options:
 
 `hokusai test` boots a testing stack as defined in `hokusai/test.yml` and exits with the return code of the test command
 
-### Production
+
+### Working with images
 
 #### Building an image
 
 `hokusai build` builds the latest docker image for the project
 
+#### Pulling images
+
+`hokusai pull` pulls images and tags for your project from your AWS account's ECR repo for the named project
+
 #### Pushing an image
 
 `hokusai push` pushes a locally built image to your AWS account's ECR repo for the named project
 
+#### Listing images
+
+`hokusai images` lists all project images in your local docker registry
+
+
+### Working with secrets
+
 #### Creating secrets
 
 `hokusai add_secret {CONTEXT} {KEY} {VALUE}` adds a secret to Kubernetes for the given context.  The secrets created are added to the Kubernetes secret object `{project}-secrets`
+
+
+### Working with Kubernetes
 
 #### Launching a stack
 
@@ -82,6 +97,14 @@ Required options:
 
 `hokusai stack status {CONTEXT}` prints the stack status defined in `hokusai/{CONTEXT}.yml' for the given Kubernetes context
 
-#### Rolling deployments
+#### Deploying
 
 `hokusai deploy {CONTEXT} {TAG}` updates the Kubernetes deployment for the given context to the given image tag
+
+#### Running a console
+
+`hokusai console {CONTEXT}` launches a container and attaches a shell session in the given context
+
+#### Running a command
+
+`hokusai run {CONTEXT} {COMMAND}` launches a container and runs the given command in the given context.  It exits with the status code of the command run in the container (useful for `rake` tasks, etc)
