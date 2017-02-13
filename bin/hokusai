@@ -135,22 +135,24 @@ def deploy(context, tag):
 @cli.command()
 @click.argument('context', type=click.STRING)
 @click.option('--shell', type=click.STRING, default='bash', help='The shell to run (defaults to bash)')
+@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-def console(context, shell, env):
+def console(context, shell, tag, env):
   """
   Launch a new container and attach a shell in the given context
   """
-  sys.exit(hokusai.console(context, shell, env))
+  sys.exit(hokusai.console(context, shell, tag, env))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
 @click.argument('command', type=click.STRING)
+@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-def run(context, command, env):
+def run(context, command, tag, env):
   """
   Launch a new container and run a command in the given context
   """
-  sys.exit(hokusai.run(context, command, env))
+  sys.exit(hokusai.run(context, command, tag, env))
 
 if __name__ == '__main__':
   cli(obj={})

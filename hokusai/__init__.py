@@ -331,7 +331,7 @@ def deploy(context, tag):
   print_green("Deployment updated to %s" % tag)
   return 0
 
-def console(context, shell, env):
+def console(context, shell, tag, env):
   config = HokusaiConfig().check()
 
   switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
@@ -341,9 +341,13 @@ def console(context, shell, env):
     return -1
 
   environment = ' '.join(map(lambda x: '--env="%s"' % x, env))
-  call("kubectl run %s-shell-%s -t -i --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, context, environment, shell), shell=True)
+  if tag is not None:
+    image_tag = tag
+  else:
+    image_tag = context
+  call("kubectl run %s-shell-%s -t -i --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, image_tag, environment, shell), shell=True)
 
-def run(context, command, env):
+def run(context, command, tag, env):
   config = HokusaiConfig().check()
 
   switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
@@ -353,7 +357,11 @@ def run(context, command, env):
     return -1
 
   environment = ' '.join(map(lambda x: '--env="%s"' % x, env))
-  return call("kubectl run %s-run-%s --attach --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, context, environment, command), shell=True)
+  if tag is not None:
+    image_tag = tag
+  else:
+    image_tag = context
+  return call("kubectl run %s-run-%s --attach --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, image_tag, environment, command), shell=True)
 
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
