@@ -5,6 +5,7 @@ import urllib
 import shutil
 import base64
 import getpass
+import datetime
 
 from distutils.dir_util import mkpath
 from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
@@ -155,6 +156,17 @@ def build():
     return -1
   return 0
 
+def pull():
+  config = HokusaiConfig().check()
+  print("Pulling from %s..." % config.aws_ecr_registry)
+  try:
+    check_output("docker pull %s --all-tags" % config.aws_ecr_registry, shell=True)
+    print_green("Pulled succeeded")
+  except CalledProcessError:
+    print_red('Pull failed')
+    return -1
+  return 0
+
 def push(tag, test_build):
   config = HokusaiConfig().check()
 
@@ -175,6 +187,14 @@ def push(tag, test_build):
     print_red('Push failed')
     return -1
 
+  return 0
+
+def images():
+  config = HokusaiConfig().check()
+  try:
+    check_call("docker images %s" % config.aws_ecr_registry, shell=True)
+  except CalledProcessError:
+    return -1
   return 0
 
 def add_secret(context, key, value):
@@ -292,15 +312,23 @@ def deploy(context, tag):
     print_red("Context %s does not exist.  Check ~/.kube/config" % context)
     return -1
 
-  try:
-    login_command = check_output("aws ecr get-login --region %s" % config.aws_ecr_region, shell=True)
-    check_call(login_command, shell=True)
-    check_call("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, context), shell=True)
-    check_call("docker push %s:%s" % (config.aws_ecr_registry, context), shell=True)
-    print_green("Updated tag %s:%s -> %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, context))
-  except CalledProcessError:
-    print_red('Failed to update tags')
-    return -1
+  if context != tag:
+    try:
+      login_command = check_output("aws ecr get-login --region %s" % config.aws_ecr_region, shell=True)
+      check_call(login_command, shell=True)
+
+      check_call("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, context), shell=True)
+      check_call("docker push %s:%s" % (config.aws_ecr_registry, context), shell=True)
+      print_green("Updated tag %s:%s -> %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, context))
+
+      deployment_tag = "%s--%s" % (context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
+      check_call("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag), shell=True)
+      check_call("docker push %s:%s" % (config.aws_ecr_registry, deployment_tag), shell=True)
+      print_green("Updated tag %s:%s -> %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
+
+    except CalledProcessError:
+      print_red('Failed to update tags')
+      return -1
 
   try:
     check_call("kubectl set image deployment/%s %s=%s" % (config.project_name, config.project_name, "%s:%s" % (config.aws_ecr_registry, tag)), shell=True)
@@ -310,6 +338,38 @@ def deploy(context, tag):
 
   print_green("Deployment updated to %s" % tag)
   return 0
+
+def console(context, shell, tag, env):
+  config = HokusaiConfig().check()
+
+  switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
+  print_green("Switched context to %s" % context)
+  if 'no context exists' in switch_context_result:
+    print_red("Context %s does not exist.  Check ~/.kube/config" % context)
+    return -1
+
+  environment = ' '.join(map(lambda x: '--env="%s"' % x, env))
+  if tag is not None:
+    image_tag = tag
+  else:
+    image_tag = context
+  call("kubectl run %s-shell-%s -t -i --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, image_tag, environment, shell), shell=True)
+
+def run(context, command, tag, env):
+  config = HokusaiConfig().check()
+
+  switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
+  print_green("Switched context to %s" % context)
+  if 'no context exists' in switch_context_result:
+    print_red("Context %s does not exist.  Check ~/.kube/config" % context)
+    return -1
+
+  environment = ' '.join(map(lambda x: '--env="%s"' % x, env))
+  if tag is not None:
+    image_tag = tag
+  else:
+    image_tag = context
+  return call("kubectl run %s-run-%s --attach --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, image_tag, environment, command), shell=True)
 
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
