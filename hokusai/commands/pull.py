@@ -12,7 +12,7 @@ def pull():
 
     print("Pulling from %s..." % config.aws_ecr_registry)
     check_output("docker pull %s --all-tags" % config.aws_ecr_registry, shell=True)
-    print_green("Pulled succeeded")
+    print_green("Pull succeeded")
   except CalledProcessError:
     print_red('Pull failed')
     return -1
