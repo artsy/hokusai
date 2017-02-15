@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 
-import os
 import sys
-import shutil
-import urllib
-
-from distutils.dir_util import mkpath
 
 import click
 
