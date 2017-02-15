@@ -80,11 +80,7 @@ Required options:
   - `--base-image`: The base docker image for the project `Dockerfile` - i.e. "ruby:2.2" or "ruby:2.2-alpine" - see [Docker Hub](https://hub.docker.com/) for valid base images.
 
 
-#### Pulling images
-
-`hokusai pull` pulls images and tags for your project from your AWS account's ECR repo for the named project
-
-#### Pushing an image
+### Development
 
 * `hokusai dev` - Boot a development stack as defined in `hokusai/development.yml`.
 * `hokusai test` - Boot a testing stack as defined in `hokusai/test.yml` and exits with the return code of the test command.
