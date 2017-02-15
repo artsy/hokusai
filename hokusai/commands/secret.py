@@ -1,3 +1,4 @@
+import os
 import base64
 
 from collections import OrderedDict
@@ -7,7 +8,7 @@ from tempfile import NamedTemporaryFile
 import yaml
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, print_green
 
 def add_secret(context, key, value):
   config = HokusaiConfig().check()

@@ -1,10 +1,12 @@
+import os
+
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, print_green
 
 def stack_up(context):
-  config = HokusaiConfig().check()
+  HokusaiConfig().check()
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
@@ -26,7 +28,7 @@ def stack_up(context):
   return 0
 
 def stack_down(context):
-  config = HokusaiConfig().check()
+  HokusaiConfig().check()
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
@@ -48,7 +50,7 @@ def stack_down(context):
   return 0
 
 def stack_status(context):
-  config = HokusaiConfig().check()
+  HokusaiConfig().check()
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)

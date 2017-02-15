@@ -1,10 +1,13 @@
+import os
+import signal
+
 from subprocess import call
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, EXIT_SIGNALS
 
 def development():
-  config = HokusaiConfig().check()
+  HokusaiConfig().check()
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
     print_red("Yaml file %s does not exist." % docker_compose_yml)

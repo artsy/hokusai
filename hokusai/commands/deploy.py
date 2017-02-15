@@ -3,7 +3,7 @@ import datetime
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, print_green
 
 def deploy(context, tag):
   config = HokusaiConfig().check()

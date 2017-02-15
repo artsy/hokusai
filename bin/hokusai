@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+import os
 import sys
 
 import click
 
 import hokusai
-from hokusai.common import *
+from hokusai.common import print_red
 
 @click.group()
 def cli():

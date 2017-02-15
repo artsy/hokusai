@@ -1,7 +1,10 @@
+import os
+import signal
+
 from subprocess import call, check_output, CalledProcessError
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, print_green, EXIT_SIGNALS
 
 def test():
   config = HokusaiConfig().check()

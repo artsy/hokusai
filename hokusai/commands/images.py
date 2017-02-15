@@ -1,7 +1,7 @@
 from subprocess import check_call, CalledProcessError
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_green
 
 def images():
   config = HokusaiConfig().check()

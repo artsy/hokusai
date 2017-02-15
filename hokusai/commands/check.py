@@ -6,7 +6,7 @@ from distutils.dir_util import mkpath
 
 from subprocess import check_output, CalledProcessError, STDOUT
 
-from hokusai.common import *
+from hokusai.common import print_red, print_green
 
 def check(interactive):
   return_code = 0

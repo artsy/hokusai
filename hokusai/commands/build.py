@@ -1,8 +1,9 @@
+import os
+
 from subprocess import check_call, CalledProcessError
 
-
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, print_green
 
 def build():
   config = HokusaiConfig().check()

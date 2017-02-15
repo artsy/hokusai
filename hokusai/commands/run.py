@@ -1,7 +1,9 @@
+import os
+
 from subprocess import call, check_output, STDOUT
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_red, print_green
 
 def run(context, command, tag, env):
   config = HokusaiConfig().check()

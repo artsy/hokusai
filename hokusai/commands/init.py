@@ -1,3 +1,5 @@
+import os
+
 from distutils.dir_util import mkpath
 from collections import OrderedDict
 
@@ -7,7 +9,7 @@ from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import *
+from hokusai.common import print_green, build_service, build_deployment, YAML_HEADER
 
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
