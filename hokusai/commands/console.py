@@ -19,4 +19,5 @@ def console(context, shell, tag, env):
     image_tag = tag
   else:
     image_tag = context
-  call("kubectl run %s-shell-%s -t -i --image=%s:%s --restart=OnFailure --rm %s -- %s" % (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, image_tag, environment, shell), shell=True)
+  call("kubectl run %s-shell-%s -t -i --image=%s:%s --restart=OnFailure --rm %s -- %s" %
+       (config.project_name, os.environ.get('USER'), config.aws_ecr_registry, image_tag, environment, shell), shell=True)

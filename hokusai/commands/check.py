@@ -79,7 +79,8 @@ def check(interactive):
           install_to = '/usr/local/bin'
         try:
           print("Downloading and installing kubectl %s to %s ..." % (kubectl_version, install_to))
-          urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
+          urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl"
+                             % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
           os.chmod(os.path.join('/tmp', 'kubectl'), 0755)
           shutil.move(os.path.join('/tmp', 'kubectl'), os.path.join(install_to, 'kubectl'))
           mkpath(os.path.join(os.environ.get('HOME'), '.kube'))
