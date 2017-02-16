@@ -2,6 +2,7 @@ import os
 
 from collections import OrderedDict
 from subprocess import check_output, CalledProcessError, STDOUT
+
 import yaml
 
 from hokusai.config import HokusaiConfig

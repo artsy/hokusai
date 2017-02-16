@@ -1,5 +1,7 @@
 import os
 import signal
+import string
+import random
 
 from collections import OrderedDict
 
@@ -20,6 +22,12 @@ def print_green(msg):
 
 def print_red(msg):
   print(RED + msg + NC)
+
+def k8s_uuid():
+  uuid = []
+  for i in range(0,5):
+    uuid.append(random.choice(string.lowercase))
+  return ''.join(uuid)
 
 def build_deployment(name, image, target_port, environment=None, always_pull=False):
   container = {
