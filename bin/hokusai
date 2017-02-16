@@ -90,14 +90,38 @@ def images():
   sys.exit(hokusai.images())
 
 @cli.command()
+@click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-@click.argument('key', type=click.STRING)
-@click.argument('value', type=click.STRING)
-def add_secret(context, key, value):
+def config(action, context):
   """
-  Add a secret for the given context
+  Actions:\n
+  pull - Pull config from CONTEXT and write to hokusai/{CONTEXT}-config.yml\n
+  push - Push config from hokusai/{CONTEXT}-config.yml to CONTEXT
   """
-  sys.exit(hokusai.add_secret(context, key, value))
+  if action == 'pull':
+    sys.exit(hokusai.pull_config(context))
+  elif action == 'push':
+    sys.exit(hokusai.push_config(context))
+  else:
+    print_red("Invalid config action %s" % action)
+    sys.exit(-1)
+
+@cli.command()
+@click.argument('action', type=click.STRING)
+@click.argument('context', type=click.STRING)
+def secrets(action, context):
+  """
+  Actions:\n
+  pull - Pull secrets from CONTEXT and write to hokusai/{CONTEXT}-secrets.yml\n
+  push - Push secrets from hokusai/{CONTEXT}-secrets.yml to CONTEXT
+  """
+  if action == 'pull':
+    sys.exit(hokusai.pull_secrets(context))
+  elif action == 'push':
+    sys.exit(hokusai.push_secrets(context))
+  else:
+    print_red("Invalid secret action %s" % action)
+    sys.exit(-1)
 
 @cli.command()
 @click.argument('action', type=click.STRING)

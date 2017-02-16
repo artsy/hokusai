@@ -49,6 +49,9 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
       'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
+  with open(os.path.join(os.getcwd(), 'hokusai', '.gitignore'), 'w') as f:
+    f.write('*-secrets.yml\n')
+
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=target_port))
 
