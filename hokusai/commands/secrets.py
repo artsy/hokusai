@@ -25,6 +25,7 @@ def pull_secrets(context):
         secret_data = yaml.load(existing_secrets)['data']
       except CalledProcessError, e:
         if 'Error from server: secrets "%s-secrets" not found' % config.project_name in e.output:
+          print("Secret %s-secrets not found. Creating..." % config.project_name)
           secret_data = {}
         else:
           return -1
@@ -51,7 +52,11 @@ def pull_secrets(context):
   return 0
 
 def push_secrets(context):
-  config = HokusaiConfig().check()
+  HokusaiConfig().check()
+
+  if not os.path.isfile(os.path.join(os.getcwd(), 'hokusai', "%s-secrets.yml" % context)):
+    print_red("Secrets file hokusai/%s-secrets.yml does not exist" % context)
+    return -1
 
   try:
     switch_context_result = check_output("kubectl config use-context %s"

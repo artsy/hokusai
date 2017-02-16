@@ -86,17 +86,23 @@ Required options:
 * `hokusai test` - Boot a testing stack as defined in `hokusai/test.yml` and exits with the return code of the test command.
 
 
-### Working with images
+### Working with Images
 
 * `hokusai build` - Build the latest docker image for the project.
 * `hokusai pull` - Pull images for your project from your AWS ECR repo.
 * `hokusai push` - Push a locally built image to your AWS ECR repo.
 * `hokusai images` - List all project images in your local docker registry.
 
+### Working with ConfigMaps
 
-### Working with secrets
+* `hokusai config pull` - Pulls config from the Kubernetes server and writes to the `hokusai` directory.
+* `hokusai config push` - Pushes config from the hokusai directory to the Kubernetes server. Config is created for the project as the Kubernetes ConfigMap object `{project}-config`
 
-* `hokusai add_secret` - Add a secret to Kubernetes for a given context. The secrets created are added to the Kubernetes secret object `{project}-secrets`.
+
+### Working with Secrets
+
+* `hokusai secret pull` - Pulls secrets from the Kubernetes server and writes to the `hokusai` directory.
+* `hokusai secret push` - Pushes secrets from the hokusai directory to the Kubernetes server. Secrets are created for the project as the Kubernetes Secret object `{project}-secrets`
 
 ### Working with Stacks
 

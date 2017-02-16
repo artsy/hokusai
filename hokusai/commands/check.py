@@ -95,6 +95,12 @@ def check(interactive):
     check_err('~/.kube/config')
     return_code += 1
 
+  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/.gitignore')):
+    check_ok('hokusai/.gitignore')
+  else:
+    check_err('hokusai/.gitignore')
+    return_code += 1
+
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/config.yml')):
     check_ok('hokusai/config.yml')
   else:

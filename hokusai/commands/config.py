@@ -24,6 +24,7 @@ def pull_config(context):
         configmap_data = yaml.load(existing_configmap)['data']
       except CalledProcessError, e:
         if 'Error from server: configmaps "%s-config" not found' % config.project_name in e.output:
+          print("ConfigMap %s-config not found. Creating..." % config.project_name)
           configmap_data = {}
         else:
           return -1
@@ -49,7 +50,11 @@ def pull_config(context):
   return 0
 
 def push_config(context):
-  config = HokusaiConfig().check()
+  HokusaiConfig().check()
+
+  if not os.path.isfile(os.path.join(os.getcwd(), 'hokusai', "%s-config.yml" % context)):
+    print_red("Secrets file hokusai/%s-config.yml does not exist" % context)
+    return -1
 
   try:
     switch_context_result = check_output("kubectl config use-context %s"
