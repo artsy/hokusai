@@ -3,7 +3,7 @@ import sys
 
 import yaml
 
-from hokusai.common import *
+from hokusai.common import print_red, HOKUSAI_CONFIG_FILE, YAML_HEADER
 
 class HokusaiConfig(object):
   def create(self, project_name, aws_account_id, aws_ecr_region):

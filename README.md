@@ -21,7 +21,7 @@ If you install Docker for Mac, `docker-compose` is also installed. Otherwise ins
 
 Install with: `pip install awscli`. Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` environment variables. You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories.
 
-4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/) 
+4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/)
 
 Install the `kubectl` binary and kubectl configuration in `~/.kube/config` for your Kubernetes cluster - make sure the version of the `kubectl` binary matches your cluster.
 
@@ -70,7 +70,7 @@ Run
 
 ```
 hokusai init
-``` 
+```
 
 This writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
 
@@ -79,21 +79,30 @@ Required options:
   - `--framework`: Either "rack" or "nodejs".
   - `--base-image`: The base docker image for the project `Dockerfile` - i.e. "ruby:2.2" or "ruby:2.2-alpine" - see [Docker Hub](https://hub.docker.com/) for valid base images.
 
+
 ### Development
 
 * `hokusai dev` - Boot a development stack as defined in `hokusai/development.yml`.
 * `hokusai test` - Boot a testing stack as defined in `hokusai/test.yml` and exits with the return code of the test command.
 
-### Working with images
+
+### Working with Images
 
 * `hokusai build` - Build the latest docker image for the project.
 * `hokusai pull` - Pull images for your project from your AWS ECR repo.
 * `hokusai push` - Push a locally built image to your AWS ECR repo.
 * `hokusai images` - List all project images in your local docker registry.
 
-### Working with secrets
+### Working with ConfigMaps
 
-* `hokusai add_secret` - Add a secret to Kubernetes for a given context. The secrets created are added to the Kubernetes secret object `{project}-secrets`.
+* `hokusai config pull` - Pulls config from the Kubernetes server and writes to the `hokusai` directory.
+* `hokusai config push` - Pushes config from the hokusai directory to the Kubernetes server. Config is created for the project as the Kubernetes ConfigMap object `{project}-config`
+
+
+### Working with Secrets
+
+* `hokusai secret pull` - Pulls secrets from the Kubernetes server and writes to the `hokusai` directory.
+* `hokusai secret push` - Pushes secrets from the hokusai directory to the Kubernetes server. Secrets are created for the project as the Kubernetes Secret object `{project}-secrets`
 
 ### Working with Stacks
 

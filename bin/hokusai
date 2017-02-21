@@ -2,15 +2,11 @@
 
 import os
 import sys
-import shutil
-import urllib
-
-from distutils.dir_util import mkpath
 
 import click
 
 import hokusai
-from hokusai.common import *
+from hokusai.common import print_red
 
 @click.group()
 def cli():
@@ -94,14 +90,38 @@ def images():
   sys.exit(hokusai.images())
 
 @cli.command()
+@click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-@click.argument('key', type=click.STRING)
-@click.argument('value', type=click.STRING)
-def add_secret(context, key, value):
+def config(action, context):
   """
-  Add a secret for the given context
+  Actions:\n
+  pull - Pull config from CONTEXT and write to hokusai/{CONTEXT}-config.yml\n
+  push - Push config from hokusai/{CONTEXT}-config.yml to CONTEXT
   """
-  sys.exit(hokusai.add_secret(context, key, value))
+  if action == 'pull':
+    sys.exit(hokusai.pull_config(context))
+  elif action == 'push':
+    sys.exit(hokusai.push_config(context))
+  else:
+    print_red("Invalid config action %s" % action)
+    sys.exit(-1)
+
+@cli.command()
+@click.argument('action', type=click.STRING)
+@click.argument('context', type=click.STRING)
+def secrets(action, context):
+  """
+  Actions:\n
+  pull - Pull secrets from CONTEXT and write to hokusai/{CONTEXT}-secrets.yml\n
+  push - Push secrets from hokusai/{CONTEXT}-secrets.yml to CONTEXT
+  """
+  if action == 'pull':
+    sys.exit(hokusai.pull_secrets(context))
+  elif action == 'push':
+    sys.exit(hokusai.push_secrets(context))
+  else:
+    print_red("Invalid secret action %s" % action)
+    sys.exit(-1)
 
 @cli.command()
 @click.argument('action', type=click.STRING)
@@ -136,23 +156,27 @@ def deploy(context, tag):
 @click.argument('context', type=click.STRING)
 @click.option('--shell', type=click.STRING, default='bash', help='The shell to run (defaults to bash)')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
+@click.option('--with-config/--without-config', default=True, help="Inject config as environment variables")
+@click.option('--with-secrets/--without-secrets', default=True, help="Inject secrets as environment variables")
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-def console(context, shell, tag, env):
+def console(context, shell, tag, with_config, with_secrets, env):
   """
   Launch a new container and attach a shell in the given context
   """
-  sys.exit(hokusai.console(context, shell, tag, env))
+  sys.exit(hokusai.console(context, shell, tag, with_config, with_secrets, env))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
 @click.argument('command', type=click.STRING)
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
+@click.option('--with-config/--without-config', default=True, help="Inject config as environment variables")
+@click.option('--with-secrets/--without-secrets', default=True, help="Inject secrets as environment variables")
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-def run(context, command, tag, env):
+def run(context, command, tag, with_config, with_secrets, env):
   """
   Launch a new container and run a command in the given context
   """
-  sys.exit(hokusai.run(context, command, tag, env))
+  sys.exit(hokusai.run(context, command, tag, with_config, with_secrets, env))
 
 if __name__ == '__main__':
   cli(obj={})
