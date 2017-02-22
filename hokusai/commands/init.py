@@ -49,6 +49,21 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
       'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
+  elif framework == 'elixir':
+    dockerfile = env.get_template("Dockerfile-elixir.j2")
+    if run_command is None:
+      run_command = 'mix run --no-halt'
+    if development_command is None:
+      development_command = 'mix run'
+    if test_command is None:
+      test_command = 'mix test'
+    runtime_environment = {
+      'development': ["MIX_ENV=dev"],
+      'test': ["MIX_ENV=test"],
+      'staging': [{'name': 'MIX_ENV', 'value': 'prod'}],
+      'production': [{'name': 'MIX_ENV', 'value': 'prod'}]
+    }
+
   with open(os.path.join(os.getcwd(), 'hokusai', '.gitignore'), 'w') as f:
     f.write('*-secrets.yml\n')
 
