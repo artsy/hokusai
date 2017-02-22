@@ -17,7 +17,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
-  config = HokusaiConfig().create(project_name, aws_account_id, aws_ecr_region)
+  config = HokusaiConfig().create(project_name.lower(), aws_account_id, aws_ecr_region)
 
   if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
