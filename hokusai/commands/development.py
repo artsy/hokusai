@@ -6,7 +6,7 @@ from subprocess import call
 from hokusai.config import HokusaiConfig
 from hokusai.common import print_red, EXIT_SIGNALS
 
-def development():
+def development(rebuild):
   HokusaiConfig().check()
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
@@ -19,4 +19,9 @@ def development():
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
-  call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
+  if rebuild:
+    command = "docker-compose -f %s up --build" % docker_compose_yml
+  else:
+    command = "docker-compose -f %s up" % docker_compose_yml
+
+  call(command, shell=True)

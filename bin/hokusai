@@ -46,11 +46,12 @@ def check(interactive):
   sys.exit(hokusai.check(interactive))
 
 @cli.command()
-def dev():
+@click.option('--rebuild', type=click.BOOL, is_flag=True, help='Rebuild the project image when bringing up the stack (default: False)')
+def dev(rebuild):
   """
   Boot the development stack
   """
-  sys.exit(hokusai.development())
+  sys.exit(hokusai.development(rebuild))
 
 @cli.command()
 def test():
