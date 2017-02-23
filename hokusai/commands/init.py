@@ -17,7 +17,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
-  config = HokusaiConfig().create(project_name.lower(), aws_account_id, aws_ecr_region)
+  config = HokusaiConfig().create(project_name.lower().replace('_', '-'), aws_account_id, aws_ecr_region)
 
   if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
@@ -26,7 +26,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
     if development_command is None:
       development_command = 'bundle exec foreman start'
     if test_command is None:
-      test_command = 'bundle exec rspec'
+      test_command = 'bundle exec rake'
     runtime_environment = {
       'development': ["RACK_ENV=development"],
       'test': ["RACK_ENV=test"],
