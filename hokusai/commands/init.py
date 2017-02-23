@@ -13,7 +13,7 @@ from hokusai.common import print_green, build_service, build_deployment, YAML_HE
 
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
-            with_memcached, with_redis, with_mongo, with_postgres, with_rabbit):
+            with_memcached, with_redis, with_mongo, with_postgres, with_rabbitmq):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
@@ -135,7 +135,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           services['postgres']['ports'] = ["5432:5432"]
         services[config.project_name]['environment'].append("DATABASE_URL=postgresql://postgres/%s" % compose_environment)
 
-      if with_rabbit:
+      if with_rabbitmq:
         services['rabbitmq'] = {
           'image': 'rabbitmq:3.6-management'
         }
@@ -162,7 +162,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017/%s" % (config.project_name, stack)})
       if with_postgres:
         environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/%s" % (config.project_name, stack)})
-      if with_rabbit:
+      if with_rabbitmq:
         environment.append({'name': 'RABBITMQ_URL', 'value': "amqp://%s-rabbitmq/%s" % (config.project_name, stack)})
 
       deployment_data = build_deployment(config.project_name,
@@ -189,7 +189,7 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
         stack_yaml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432)
         stack_yaml += build_service("%s-postgres" % config.project_name, 5432)
 
-      if with_rabbit:
+      if with_rabbitmq:
         stack_yaml += build_deployment("%s-rabbitmq" % config.project_name, 'rabbitmq:3.6-management', 5672)
         stack_yaml += build_service("%s-rabbitmq" % config.project_name, 5672)
 
