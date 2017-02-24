@@ -96,32 +96,36 @@ def images():
 def config(action, context):
   """
   Actions:\n
-  pull - Pull config from CONTEXT and write to hokusai/{CONTEXT}-config.yml\n
-  push - Push config from hokusai/{CONTEXT}-config.yml to CONTEXT
+  pull - Pull config from the kubectl {CONTEXT} and write to hokusai/{CONTEXT}-config.yml\n
+  push - Push config from hokusai/{CONTEXT}-config.yml to the kubectl {CONTEXT}
   """
   if action == 'pull':
     sys.exit(hokusai.pull_config(context))
   elif action == 'push':
     sys.exit(hokusai.push_config(context))
   else:
-    print_red("Invalid config action %s" % action)
+    print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command()
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-def secrets(action, context):
+@click.argument('secret', type=click.STRING, nargs=-1)
+def secrets(action, context, secret):
   """
   Actions:\n
-  pull - Pull secrets from CONTEXT and write to hokusai/{CONTEXT}-secrets.yml\n
-  push - Push secrets from hokusai/{CONTEXT}-secrets.yml to CONTEXT
+  get - print secrets in the kubectl {CONTEXT}\n
+  set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'\n
+  unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'
   """
-  if action == 'pull':
-    sys.exit(hokusai.pull_secrets(context))
-  elif action == 'push':
-    sys.exit(hokusai.push_secrets(context))
+  if action == 'get':
+    sys.exit(hokusai.get_secrets(context))
+  elif action == 'set':
+    sys.exit(hokusai.set_secrets(context, secret))
+  elif action == 'unset':
+    sys.exit(hokusai.unset_secrets(context, secret))
   else:
-    print_red("Invalid secret action %s" % action)
+    print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command()
@@ -130,9 +134,9 @@ def secrets(action, context):
 def stack(action, context):
   """
   Actions:\n
-  up - Create / Update the stack in the given context\n
-  down - Delete the stack in the given context\n
-  status - Print the stack status in the given context
+  up - Create / Update the stack in the kubectl {CONTEXT}\n
+  down - Delete the stack in the kubectl {CONTEXT}\n
+  status - Print the stack status in the kubectl {CONTEXT}
   """
   if action == 'up':
     sys.exit(hokusai.stack_up(context))
@@ -141,7 +145,7 @@ def stack(action, context):
   elif action == 'status':
     sys.exit(hokusai.stack_status(context))
   else:
-    print_red("ERROR: invalid stack action %s" % action)
+    print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command()
@@ -149,7 +153,7 @@ def stack(action, context):
 @click.argument('tag', type=click.STRING)
 def deploy(context, tag):
   """
-  Deploy an image tag to the given context and update context tag to reference that image
+  Deploy an image tag to the kubectl {CONTEXT} and update the tag {CONTEXT} to reference that image
   """
   sys.exit(hokusai.deploy(context, tag))
 
@@ -162,7 +166,7 @@ def deploy(context, tag):
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 def console(context, shell, tag, with_config, with_secrets, env):
   """
-  Launch a new container and attach a shell in the given context
+  Launch a new container and attach a shell in the kubectl {CONTEXT}
   """
   sys.exit(hokusai.console(context, shell, tag, with_config, with_secrets, env))
 
@@ -175,7 +179,7 @@ def console(context, shell, tag, with_config, with_secrets, env):
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 def run(context, command, tag, with_config, with_secrets, env):
   """
-  Launch a new container and run a command in the given context
+  Launch a new container and run a command in the kubectl {CONTEXT}
   """
   sys.exit(hokusai.run(context, command, tag, with_config, with_secrets, env))
 
