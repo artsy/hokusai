@@ -101,8 +101,9 @@ Required options:
 
 ### Working with Secrets
 
-* `hokusai secret pull` - Pulls secrets from the Kubernetes server and writes to the `hokusai` directory.
-* `hokusai secret push` - Pushes secrets from the hokusai directory to the Kubernetes server. Secrets are created for the project as the Kubernetes Secret object `{project}-secrets`
+* `hokusai secrets get` - Prints secrets stored on the Kubernetes server
+* `hokusai secrets set` - Sets secrets on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes Secret object `{project}-secrets`
+* `hokusai secrets unset` - Removes secrets stored on the Kubernetes server
 
 ### Working with Stacks
 
