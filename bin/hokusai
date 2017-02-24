@@ -115,8 +115,8 @@ def secrets(action, context, secret):
   """
   Actions:\n
   get - print secrets in the kubectl {CONTEXT}\n
-  set - set {SECRET} in the kubectl {CONTEXT}\n
-  unset - Unset {SECRET} from the kubectl {CONTEXT}
+  set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'\n
+  unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'
   """
   if action == 'get':
     sys.exit(hokusai.get_secrets(context))
