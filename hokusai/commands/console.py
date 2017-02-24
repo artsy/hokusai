@@ -1,4 +1,5 @@
 import os
+import base64
 
 from subprocess import call, check_output, CalledProcessError, STDOUT
 
@@ -50,7 +51,10 @@ def console(context, shell, tag, with_config, with_secrets, env):
           raise
 
       for k, v in secret_data.iteritems():
-        env.append("%s=%s" % (k, v))
+        try:
+          env.append("%s=%s" % (k, base64.b64decode(v)))
+        except TypeError:
+          continue
 
     environment = ' '.join(map(lambda x: '--env="%s"' % x, env))
 
