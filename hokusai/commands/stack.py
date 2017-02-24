@@ -3,7 +3,7 @@ import os
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green
+from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError
 
 def stack_up(context):
   HokusaiConfig().check()
@@ -13,15 +13,15 @@ def stack_up(context):
     return -1
 
   try:
-    switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
-    print_green("Switched context to %s" % context)
-    if 'no context exists' in switch_context_result:
-      print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      return -1
-    elif 'switched to context' in switch_context_result:
-      check_call("kubectl apply -f %s" % kubernetes_yml, shell=True)
-  except CalledProcessError:
-    print_red('Stack up failed')
+    select_context(context)
+  except HokusaiCommandError, e:
+    print_red(repr(e))
+    return -1
+
+  try:
+    check_call(verbose("kubectl apply -f %s" % kubernetes_yml), shell=True)
+  except CalledProcessError, e:
+    print_red("Stack up failed with error: %s" % e.output)
     return -1
 
   print_green("Stack %s created" % kubernetes_yml)
@@ -29,21 +29,22 @@ def stack_up(context):
 
 def stack_down(context):
   HokusaiConfig().check()
+
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
   try:
-    switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
-    print_green("Switched context to %s" % context)
-    if 'no context exists' in switch_context_result:
-      print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      return -1
-    elif 'switched to context' in switch_context_result:
-      check_call("kubectl delete -f %s" % kubernetes_yml, shell=True)
-  except CalledProcessError:
-    print_red('Stack down failed')
+    select_context(context)
+  except HokusaiCommandError, e:
+    print_red(repr(e))
+    return -1
+
+  try:
+    check_call(verbose("kubectl delete -f %s" % kubernetes_yml), shell=True)
+  except CalledProcessError, e:
+    print_red("Stack down failed with error: %s" % e.output)
     return -1
 
   print_green("Stack %s deleted" % kubernetes_yml)
@@ -51,21 +52,21 @@ def stack_down(context):
 
 def stack_status(context):
   HokusaiConfig().check()
+
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
   try:
-    switch_context_result = check_output("kubectl config use-context %s" % context, stderr=STDOUT, shell=True)
-    print_green("Switched context to %s" % context)
-    if 'no context exists' in switch_context_result:
-      print_red("Context %s does not exist.  Check ~/.kube/config" % context)
-      return -1
-    elif 'switched to context' in switch_context_result:
-      check_call("kubectl describe -f %s" % kubernetes_yml, shell=True)
-  except CalledProcessError:
-    print_red('Stack status failed')
+    select_context(context)
+  except HokusaiCommandError, e:
+    print_red(repr(e))
+    return -1
+
+  try:
+    check_call(verbose("kubectl describe -f %s" % kubernetes_yml), shell=True)
+  except CalledProcessError, e:
+    print_red("Stack status failed with error: %s" % e.output)
     return -1
   return 0
-

@@ -5,23 +5,47 @@ import random
 
 from collections import OrderedDict
 
+from subprocess import check_output, CalledProcessError, STDOUT
+
 import yaml
+
+from termcolor import cprint
 
 HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
 
 EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-
 YAML_HEADER = '---\n'
 
+VERBOSE = False
+
+class HokusaiCommandError(Exception):
+  pass
+
 def print_green(msg):
-  print(GREEN + msg + NC)
+  cprint(msg, 'green')
 
 def print_red(msg):
-  print(RED + msg + NC)
+  cprint(msg, 'red')
+
+def set_output(v):
+  if v:
+    global VERBOSE
+    VERBOSE = True
+
+def verbose(msg):
+  if VERBOSE: cprint("==> hokusai exec `%s`" % msg, 'yellow')
+  return msg
+
+def select_context(context):
+  try:
+    context_result = check_output(verbose("kubectl config use-context %s" % context), stderr=STDOUT, shell=True)
+  except CalledProcessError, e:
+    raise HokusaiCommandError("Error selecting context %s: %s" % (context, e.output))
+  if 'no context exists' in context_result:
+    raise HokusaiCommandError("Context %s does not exist.  Check ~/.kube/config" % context)
+  if 'switched to context' not in context_result:
+    raise HokusaiCommandError("Could not select context %s" % context)
 
 def k8s_uuid():
   uuid = []
