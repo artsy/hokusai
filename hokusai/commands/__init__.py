@@ -6,6 +6,7 @@ from hokusai.commands.deploy import deploy
 from hokusai.commands.development import development
 from hokusai.commands.images import images
 from hokusai.commands.init import init
+from hokusai.commands.promote import promote
 from hokusai.commands.pull import pull
 from hokusai.commands.push import push
 from hokusai.commands.run import run

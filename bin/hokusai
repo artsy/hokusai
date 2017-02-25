@@ -172,10 +172,23 @@ def stack(action, context, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(context, tag, verbose):
   """
-  Deploy an image tag to the kubectl {CONTEXT} and update the tag {CONTEXT} to reference that image
+  Deploy an image tag to the kubectl {CONTEXT}
+  and update the tag named {CONTEXT} to reference that tag
   """
   set_output(verbose)
   sys.exit(hokusai.deploy(context, tag))
+
+@cli.command()
+@click.argument('context', type=click.STRING)
+@click.argument('from-context', type=click.STRING)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def promote(context, from_context, verbose):
+  """
+  Update the deployment on {CONTEXT} with the image tag currently deployed on {FROM_CONTEXT}
+  and update the tag named {CONTEXT} to reference that tag
+  """
+  set_output(verbose)
+  sys.exit(hokusai.promote(context, from_context))
 
 @cli.command()
 @click.argument('context', type=click.STRING)

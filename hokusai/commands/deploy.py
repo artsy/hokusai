@@ -3,7 +3,7 @@ import datetime
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError
+from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError, kubernetes_object
 
 def deploy(context, tag):
   config = HokusaiConfig().check()
@@ -18,6 +18,8 @@ def deploy(context, tag):
     try:
       login_command = check_output(verbose("aws ecr get-login --region %s" % config.aws_ecr_region), shell=True)
       check_call(login_command, shell=True)
+
+      check_call(verbose("docker pull %s:%s" % (config.aws_ecr_registry, tag)), shell=True)
 
       check_call(verbose("docker tag %s:%s %s:%s" %
                        (config.aws_ecr_registry, tag, config.aws_ecr_registry, context)), shell=True)
@@ -35,9 +37,19 @@ def deploy(context, tag):
       print_red("Updating tags failed with error: %s" % e.output)
       return -1
 
+
+  deployments = kubernetes_object('deployment', selector="app=%s" % config.project_name)
+  if len(deployment['items']) != 1:
+    print_red("Multiple deployments found for %s" % config.project_name)
+    return -1
+
+  deployment = deployments['items'][0]
+  containers = deployment['spec']['template']['spec']['containers']
+  container_names = [container['name'] for container in containers]
+  deployment_targets = ["%s=%s" % (name, "%s:%s" % (config.aws_ecr_registry, tag)) for name in container_names]
+
   try:
-    check_call(verbose("kubectl set image deployment/%s %s=%s" % (config.project_name, config.project_name, "%s:%s"
-                                                              % (config.aws_ecr_registry, tag))), shell=True)
+    check_call(verbose("kubectl set image deployment/%s %s" % (config.project_name, ' '.join(deployment_targets))), shell=True)
   except CalledProcessError, e:
     print_red("Deployment failed with error: %s" % e.output)
     return -1

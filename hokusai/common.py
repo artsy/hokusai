@@ -2,6 +2,7 @@ import os
 import signal
 import string
 import random
+import json
 
 from collections import OrderedDict
 
@@ -46,6 +47,21 @@ def select_context(context):
     raise HokusaiCommandError("Context %s does not exist.  Check ~/.kube/config" % context)
   if 'switched to context' not in context_result:
     raise HokusaiCommandError("Could not select context %s" % context)
+
+def kubernetes_object(obj, selector=None):
+  if selector is not None:
+    cmd = "kubectl get %s --selector %s -o json" % (obj, selector)
+  else:
+    cmd = "kubectl get %s -o json" % obj
+
+  try:
+    payload = check_output(verbose(cmd), stderr=STDOUT, shell=True)
+  except CalledProcessError:
+    raise HokusaiCommandError("Could not get object %s" % obj)
+  try:
+    return json.loads(payload)
+  except ValueError:
+    raise HokusaiCommandError("Could not parse object %s" % obj)
 
 def k8s_uuid():
   uuid = []
