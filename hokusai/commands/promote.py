@@ -6,7 +6,7 @@ from subprocess import check_output, check_call, CalledProcessError, STDOUT
 from hokusai.config import HokusaiConfig
 from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError, kubernetes_object
 
-def promote(context, from_context):
+def promote(from_context, context):
   config = HokusaiConfig().check()
 
   try:
