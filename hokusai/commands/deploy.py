@@ -39,7 +39,7 @@ def deploy(context, tag):
 
 
   deployments = kubernetes_object('deployment', selector="app=%s" % config.project_name)
-  if len(deployment['items']) != 1:
+  if len(deployments['items']) != 1:
     print_red("Multiple deployments found for %s" % config.project_name)
     return -1
 
