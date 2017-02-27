@@ -6,7 +6,7 @@ import sys
 import click
 
 import hokusai
-from hokusai.common import print_red
+from hokusai.common import print_red, set_output
 
 @click.group()
 def cli():
@@ -47,58 +47,72 @@ def check(interactive):
   sys.exit(hokusai.check(interactive))
 
 @cli.command()
-def dev():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def dev(verbose):
   """
   Boot the development stack
   """
+  set_output(verbose)
   sys.exit(hokusai.development())
 
 @cli.command()
-def test():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def test(verbose):
   """
   Boot the test stack and run the test suite
   """
+  set_output(verbose)
   sys.exit(hokusai.test())
 
 @cli.command()
-def build():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def build(verbose):
   """
   Build the latest docker image for the project
   """
+  set_output(verbose)
   sys.exit(hokusai.build())
 
 @cli.command()
-def pull():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def pull(verbose):
   """
   Pull all images and tags from the ECR
   """
+  set_output(verbose)
   sys.exit(hokusai.pull())
 
 @cli.command()
 @click.argument('tag', type=click.STRING)
 @click.option('--test-build', type=click.BOOL, is_flag=True, help="Push the latest image output by 'test' - otherwise the latest image output by 'build'")
-def push(tag, test_build):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def push(tag, test_build, verbose):
   """
   Push a docker image to ECR with the given tag
   """
+  set_output(verbose)
   sys.exit(hokusai.push(tag, test_build))
 
 @cli.command()
-def images():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def images(verbose):
   """
   Show images and tags
   """
+  set_output(verbose)
   sys.exit(hokusai.images())
 
 @cli.command()
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-def config(action, context):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def config(action, context, verbose):
   """
   Actions:\n
   pull - Pull config from the kubectl {CONTEXT} and write to hokusai/{CONTEXT}-config.yml\n
   push - Push config from hokusai/{CONTEXT}-config.yml to the kubectl {CONTEXT}
   """
+  set_output(verbose)
   if action == 'pull':
     sys.exit(hokusai.pull_config(context))
   elif action == 'push':
@@ -111,13 +125,15 @@ def config(action, context):
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
 @click.argument('secret', type=click.STRING, nargs=-1)
-def secrets(action, context, secret):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def secrets(action, context, secret, verbose):
   """
   Actions:\n
   get - print secrets in the kubectl {CONTEXT}\n
   set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'\n
   unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'
   """
+  set_output(verbose)
   if action == 'get':
     sys.exit(hokusai.get_secrets(context))
   elif action == 'set':
@@ -131,13 +147,15 @@ def secrets(action, context, secret):
 @cli.command()
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-def stack(action, context):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def stack(action, context, verbose):
   """
   Actions:\n
   up - Create / Update the stack in the kubectl {CONTEXT}\n
   down - Delete the stack in the kubectl {CONTEXT}\n
   status - Print the stack status in the kubectl {CONTEXT}
   """
+  set_output(verbose)
   if action == 'up':
     sys.exit(hokusai.stack_up(context))
   elif action == 'down':
@@ -151,11 +169,26 @@ def stack(action, context):
 @cli.command()
 @click.argument('context', type=click.STRING)
 @click.argument('tag', type=click.STRING)
-def deploy(context, tag):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def deploy(context, tag, verbose):
   """
-  Deploy an image tag to the kubectl {CONTEXT} and update the tag {CONTEXT} to reference that image
+  Deploy an image tag to the kubectl {CONTEXT}
+  and update the tag named {CONTEXT} to reference that tag
   """
+  set_output(verbose)
   sys.exit(hokusai.deploy(context, tag))
+
+@cli.command()
+@click.argument('from-context', type=click.STRING)
+@click.argument('context', type=click.STRING)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def promote(from_context, context, verbose):
+  """
+  Update the deployment on {CONTEXT} with the image tag currently deployed on {FROM_CONTEXT}
+  and update the tag named {CONTEXT} to reference that tag
+  """
+  set_output(verbose)
+  sys.exit(hokusai.promote(from_context, context))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
@@ -164,10 +197,12 @@ def deploy(context, tag):
 @click.option('--with-config/--without-config', default=True, help="Inject config as environment variables")
 @click.option('--with-secrets/--without-secrets', default=True, help="Inject secrets as environment variables")
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-def console(context, shell, tag, with_config, with_secrets, env):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def console(context, shell, tag, with_config, with_secrets, env, verbose):
   """
   Launch a new container and attach a shell in the kubectl {CONTEXT}
   """
+  set_output(verbose)
   sys.exit(hokusai.console(context, shell, tag, with_config, with_secrets, env))
 
 @cli.command()
@@ -177,10 +212,12 @@ def console(context, shell, tag, with_config, with_secrets, env):
 @click.option('--with-config/--without-config', default=True, help="Inject config as environment variables")
 @click.option('--with-secrets/--without-secrets', default=True, help="Inject secrets as environment variables")
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-def run(context, command, tag, with_config, with_secrets, env):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def run(context, command, tag, with_config, with_secrets, env, verbose):
   """
   Launch a new container and run a command in the kubectl {CONTEXT}
   """
+  set_output(verbose)
   sys.exit(hokusai.run(context, command, tag, with_config, with_secrets, env))
 
 if __name__ == '__main__':

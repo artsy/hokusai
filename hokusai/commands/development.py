@@ -4,7 +4,7 @@ import signal
 from subprocess import call
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, EXIT_SIGNALS
+from hokusai.common import print_red, EXIT_SIGNALS, verbose
 
 def development():
   HokusaiConfig().check()
@@ -19,4 +19,4 @@ def development():
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
-  call("docker-compose -f %s up --build" % docker_compose_yml, shell=True)
+  call(verbose("docker-compose -f %s up --build" % docker_compose_yml), shell=True)

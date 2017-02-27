@@ -114,6 +114,7 @@ Required options:
 ### Deployment
 
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
+* `hokusai promote` - Update the Kubernetes deployment in a given context to match the deployment in another context
 
 ### Running a console
 
