@@ -55,7 +55,7 @@ def set_secrets(context, secrets):
     if '=' not in secret:
       print_red("Error: secrets must be of the form 'KEY=VALUE'")
       return -1
-    split_secret = secret.split('=')
+    split_secret = secret.split('=', 1)
     secret_data.update({split_secret[0]: base64.b64encode(split_secret[1])})
 
   secret_yaml = OrderedDict([
