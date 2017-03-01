@@ -39,12 +39,11 @@ def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
                   with_memcached, with_redis, with_mongo, with_postgres, with_rabbitmq)
 
 @cli.command()
-@click.option('--interactive', type=click.BOOL, is_flag=True, help='Interactive console to install missing dependencies')
-def check(interactive):
+def check():
   """
   Check hokusai dependencies and configuration
   """
-  sys.exit(hokusai.check(interactive))
+  sys.exit(hokusai.check())
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')

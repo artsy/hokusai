@@ -19,7 +19,7 @@ If you install Docker for Mac, `docker-compose` is also installed. Otherwise ins
 
 3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) 
 
-Install with: `pip install awscli`. Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` environment variables. You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories.
+Install with: `pip install awscli`. Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` environment variables. You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories.
 
 4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/)
 
@@ -43,12 +43,12 @@ pip install .
 
 And `hokusai` should now be installed on your PATH.
 
-Ensure the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and optionally `AWS_REGION`, `AWS_ACCOUNT_ID` are set in your shell.
+Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and `$AWS_ACCOUNT_ID` are set in your shell.
 
 Now run
 
 ```
-hokusai check --interactive
+hokusai check
 ```
 
 to ensure everything is set up correctly.
