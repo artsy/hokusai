@@ -21,7 +21,7 @@ def cli():
 @click.option('--run-command', type=click.STRING, help='Override the default run command')
 @click.option('--development-command', type=click.STRING, help='Override the default development command')
 @click.option('--test-command', type=click.STRING, help='Override the default test command')
-@click.option('--port', type=click.INT, default=8080, help='The port to access on the host machine (default: 8080)')
+@click.option('--port', type=click.INT, default=80, help='The port to access on the host machine (default: 80)')
 @click.option('--target-port', type=click.INT, default=80, help='The port to expose on the app container (default: 80)')
 @click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
