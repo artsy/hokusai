@@ -34,7 +34,7 @@ def promote(from_context, context):
     print_red("Refusing to deploy unmanaged image %s - aborting..." % base_image)
     return -1
 
-  tag = base_image.split(':')[1]
+  tag = base_image.rsplit(':', 1)[1]
 
   print_green("Deploying %s to %s" % (tag, context))
 
