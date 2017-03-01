@@ -43,6 +43,8 @@ pip install .
 
 And `hokusai` should now be installed on your PATH.
 
+Ensure the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and optionally `AWS_ACCOUNT_ID` are set in your shell.
+
 Now run
 
 ```
