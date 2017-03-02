@@ -1,8 +1,4 @@
 import os
-import urllib
-import shutil
-
-from distutils.dir_util import mkpath
 
 from subprocess import check_output, CalledProcessError, STDOUT
 
