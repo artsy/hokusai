@@ -13,6 +13,20 @@ def cli():
     pass
 
 @cli.command()
+@click.option('--kubectl-version', type=click.STRING, default='1.4.7')
+@click.option('--platform', type=click.STRING, default='darwin')
+@click.option('--install-to', type=click.STRING, default='/usr/local/bin')
+@click.option('--install-kubeconfig-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'))
+@click.option('--s3-bucket', type=click.STRING, required=True, help="The S3 bucket name containing your org's kubectl config file")
+@click.option('--s3-key', type=click.STRING, required=True, help="The S3 key of your org's kubectl config file")
+@click.option('--s3-bucket-region', type=click.STRING, default='us-east-1', help="The S3 bucket region")
+def install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region):
+  """
+  Install and configure kubectl
+  """
+  sys.exit(hokusai.install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region))
+
+@cli.command()
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID')
 @click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_REGION', help='Your AWS ECR region (default: $AWS_REGION or \'us-east-1\')')

@@ -14,7 +14,8 @@ setup(name='hokusai',
           'MarkupSafe==0.23',
           'Jinja2==2.8',
           'PyYAML==3.12',
-          'termcolor==1.1.0'
+          'termcolor==1.1.0',
+          'boto==2.43.0'
       ],
       zip_safe=False,
       include_package_data = True,

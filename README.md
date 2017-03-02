@@ -13,51 +13,25 @@ Hokusai works with [Kubernetes](https://kubernetes.io/) and [Docker](https://www
 
 1) [Docker](https://docs.docker.com/)
 
+If you use homebrew, install Docker for Mac with: `brew tap caskroom/cask && brew cask install docker`
+
 2) [Docker Compose](https://docs.docker.com/compose/)
 
-If you install Docker for Mac, `docker-compose` is also installed. Otherwise install with: `sudo pip install docker-compose`.
+If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `pip install docker-compose`.
 
-3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) 
+3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
 Install with: `pip install awscli`. Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` environment variables. You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories.
 
-4) [kubectl](http://kubernetes.io/docs/user-guide/prereqs/)
-
-Install the `kubectl` binary and kubectl configuration in `~/.kube/config` for your Kubernetes cluster - make sure the version of the `kubectl` binary matches your cluster.
-
 ## Setup
 
-Ensure `docker`, `docker-compose`, `kubectl` and `aws` are installed to your PATH.
+Install Hokusai with `pip install .` and `hokusai` will be installed on your PATH.
 
-Ensure Python-development headers are installed. On Debian run
+Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
-```
-sudo apt-get install python-dev
-```
+Now run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
 
-Now package Hokusai with
-
-```
-pip install .
-```
-
-And `hokusai` should now be installed on your PATH.
-
-Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and `$AWS_ACCOUNT_ID` are set in your shell.
-
-Now run
-
-```
-hokusai check
-```
-
-to ensure everything is set up correctly.
-
-To upgrade to the latest changes in this repo, just run
-
-```
-pip install --upgrade .
-```
+To upgrade to the latest changes in this repo, run `pip install --upgrade .`
 
 ## Use
 
@@ -66,21 +40,24 @@ hokusai --help
 hokusai {command} --help
 ```
 
+### Installing Dependencies
+
+* `hokusai install` - installs and configures kubectl
+
+Required options:
+  - `--s3-bucket`: The S3 bucket containing your org's kubectl config file
+  - `--s3-key`: The S3 key of your org's kubectl config file
+
 ### Initializing a project
 
-Run
-
-```
-hokusai init
-```
-
-This writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
+* `hokusai init` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
   - `--framework`: Either "rack" or "nodejs".
   - `--base-image`: The base docker image for the project `Dockerfile` - i.e. "ruby:2.2" or "ruby:2.2-alpine" - see [Docker Hub](https://hub.docker.com/) for valid base images.
 
+* `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
 
 ### Development
 
