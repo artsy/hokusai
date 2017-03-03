@@ -40,6 +40,8 @@ hokusai --help
 hokusai {command} --help
 ```
 
+You can add `-v` (Verbose) to any command which will show you details of the commands Hokusai will run.
+
 ### Installing Dependencies
 
 * `hokusai install` - installs and configures kubectl
@@ -72,6 +74,15 @@ Required options:
 * `hokusai push` - Push a locally built image to your AWS ECR repo.
 * `hokusai images` - List all project images in your local docker registry.
 
+### Working with Kubernetes
+Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `install` commands provide basic setup for this:
+```bash
+hokusai install --help
+```
+Recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
+```bash
+hokusai install --s3-bucket <bucket name> --s3-key <file key>
+```
 ### Working with ConfigMaps
 
 * `hokusai config pull` - Pulls config from the Kubernetes server and writes to the `hokusai` directory.
