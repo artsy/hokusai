@@ -40,6 +40,8 @@ hokusai --help
 hokusai {command} --help
 ```
 
+You can add `-v` (Verbose) to any command which will show you details of the commands Hokusai will run.
+
 ### Installing Dependencies
 
 * `hokusai install` - installs and configures kubectl
