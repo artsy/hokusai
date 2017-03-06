@@ -3,7 +3,7 @@ HOKUSAI
 
 Artsy Docker Development Toolkit
 
-<img height="300" src="hokusai.jpg">
+<a href="https://www.artsy.net/article/artsy-editorial-7-things-you-didn-t-know-about-hokusai-painter-of-the-great-wave"><img height="300" src="hokusai.jpg"></a>
 
 ## About
 
