@@ -40,13 +40,9 @@ def verbose(msg):
 
 def select_context(context):
   try:
-    context_result = check_output(verbose("kubectl config use-context %s" % context), stderr=STDOUT, shell=True)
+    check_output(verbose("kubectl config use-context %s" % context), stderr=STDOUT, shell=True)
   except CalledProcessError, e:
     raise HokusaiCommandError("Error selecting context %s: %s" % (context, e.output))
-  if 'no context exists' in context_result:
-    raise HokusaiCommandError("Context %s does not exist.  Check ~/.kube/config" % context)
-  if 'switched to context' not in context_result:
-    raise HokusaiCommandError("Could not select context %s" % context)
 
 def kubernetes_object(obj, selector=None):
   if selector is not None:

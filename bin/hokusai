@@ -13,7 +13,7 @@ def cli():
     pass
 
 @cli.command()
-@click.option('--kubectl-version', type=click.STRING, default='1.4.7')
+@click.option('--kubectl-version', type=click.STRING, default='1.5.2')
 @click.option('--platform', type=click.STRING, default='darwin')
 @click.option('--install-to', type=click.STRING, default='/usr/local/bin')
 @click.option('--install-kubeconfig-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'))
