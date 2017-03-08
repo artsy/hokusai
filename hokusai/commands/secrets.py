@@ -44,7 +44,7 @@ def set_secrets(context, secrets):
                                         % config.project_name), stderr=STDOUT, shell=True)
     secret_data = yaml.load(existing_secrets)['data']
   except CalledProcessError, e:
-    if 'Error from server: secrets "%s-secrets" not found' % config.project_name in e.output:
+    if 'secrets "%s-secrets" not found' % config.project_name in e.output:
       print_green("%s-secrets not found. Creating..." % config.project_name)
       secret_data = {}
     else:
