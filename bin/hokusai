@@ -118,25 +118,6 @@ def images(verbose):
 @cli.command()
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def config(action, context, verbose):
-  """
-  Actions:\n
-  pull - Pull config from the kubectl {CONTEXT} and write to hokusai/{CONTEXT}-config.yml\n
-  push - Push config from hokusai/{CONTEXT}-config.yml to the kubectl {CONTEXT}
-  """
-  set_output(verbose)
-  if action == 'pull':
-    sys.exit(hokusai.pull_config(context))
-  elif action == 'push':
-    sys.exit(hokusai.push_config(context))
-  else:
-    print_red("Error: Invalid action %s" % action)
-    sys.exit(-1)
-
-@cli.command()
-@click.argument('action', type=click.STRING)
-@click.argument('context', type=click.STRING)
 @click.argument('secret', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def secrets(action, context, secret, verbose):
@@ -207,31 +188,27 @@ def promote(from_context, context, verbose):
 @click.argument('context', type=click.STRING)
 @click.option('--shell', type=click.STRING, default='bash', help='The shell to run (defaults to bash)')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
-@click.option('--with-config/--without-config', default=True, help="Inject config as environment variables")
-@click.option('--with-secrets/--without-secrets', default=True, help="Inject secrets as environment variables")
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def console(context, shell, tag, with_config, with_secrets, env, verbose):
+def console(context, shell, tag, env, verbose):
   """
   Launch a new container and attach a shell in the kubectl {CONTEXT}
   """
   set_output(verbose)
-  sys.exit(hokusai.console(context, shell, tag, with_config, with_secrets, env))
+  sys.exit(hokusai.console(context, shell, tag, env))
 
 @cli.command()
 @click.argument('context', type=click.STRING)
 @click.argument('command', type=click.STRING)
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
-@click.option('--with-config/--without-config', default=True, help="Inject config as environment variables")
-@click.option('--with-secrets/--without-secrets', default=True, help="Inject secrets as environment variables")
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(context, command, tag, with_config, with_secrets, env, verbose):
+def run(context, command, tag, env, verbose):
   """
   Launch a new container and run a command in the kubectl {CONTEXT}
   """
   set_output(verbose)
-  sys.exit(hokusai.run(context, command, tag, with_config, with_secrets, env))
+  sys.exit(hokusai.run(context, command, tag, env))
 
 if __name__ == '__main__':
   cli(obj={})

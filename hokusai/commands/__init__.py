@@ -1,6 +1,5 @@
 from hokusai.commands.build import build
 from hokusai.commands.check import check
-from hokusai.commands.config import pull_config, push_config
 from hokusai.commands.console import console
 from hokusai.commands.deploy import deploy
 from hokusai.commands.development import development

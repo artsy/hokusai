@@ -83,11 +83,6 @@ Recommended approach is to upload your `kubectl` config to S3 and use following 
 ```bash
 hokusai install --s3-bucket <bucket name> --s3-key <file key>
 ```
-### Working with ConfigMaps
-
-* `hokusai config pull` - Pulls config from the Kubernetes server and writes to the `hokusai` directory.
-* `hokusai config push` - Pushes config from the hokusai directory to the Kubernetes server. Config is created for the project as the Kubernetes ConfigMap object `{project}-config`
-
 
 ### Working with Secrets
 
