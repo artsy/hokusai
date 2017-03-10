@@ -1,5 +1,6 @@
 import os
 import datetime
+import json
 
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
@@ -66,10 +67,22 @@ def promote(from_context, context):
     print_red("Updating tags failed with error: %s" % e.output)
     return -1
 
-  deployment_targets = ["%s=%s" % (name, "%s:%s" % (config.aws_ecr_registry, tag)) for name in container_names]
+  deployment_targets = [{"name": name, "image": "%s:%s" % (config.aws_ecr_registry, tag)} for name in container_names]
+  patch = {
+    "spec": {
+      "template": {
+        "metadata": {
+          "labels": {"deploymentTimestamp": datetime.datetime.utcnow().strftime("%s%f")}
+        },
+        "spec": {
+          "containers": deployment_targets
+        }
+      }
+    }
+  }
 
   try:
-    check_call(verbose("kubectl set image deployment/%s %s" % (config.project_name, ' '.join(deployment_targets))), shell=True)
+    check_call(verbose("kubectl patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))), shell=True)
   except CalledProcessError, e:
     print_red("Promotion failed with error: %s" % e.output)
     return -1

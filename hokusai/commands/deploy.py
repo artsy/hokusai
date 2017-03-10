@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
@@ -46,10 +47,22 @@ def deploy(context, tag):
   deployment = deployments['items'][0]
   containers = deployment['spec']['template']['spec']['containers']
   container_names = [container['name'] for container in containers]
-  deployment_targets = ["%s=%s" % (name, "%s:%s" % (config.aws_ecr_registry, tag)) for name in container_names]
+  deployment_targets = [{"name": name, "image": "%s:%s" % (config.aws_ecr_registry, tag)} for name in container_names]
+  patch = {
+    "spec": {
+      "template": {
+        "metadata": {
+          "labels": {"deploymentTimestamp": datetime.datetime.utcnow().strftime("%s%f")}
+        },
+        "spec": {
+          "containers": deployment_targets
+        }
+      }
+    }
+  }
 
   try:
-    check_call(verbose("kubectl set image deployment/%s %s" % (config.project_name, ' '.join(deployment_targets))), shell=True)
+    check_call(verbose("kubectl patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))), shell=True)
   except CalledProcessError, e:
     print_red("Deployment failed with error: %s" % e.output)
     return -1
