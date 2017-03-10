@@ -17,21 +17,17 @@ If you use homebrew, install Docker for Mac with: `brew tap caskroom/cask && bre
 
 2) [Docker Compose](https://docs.docker.com/compose/)
 
-If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `pip install docker-compose`.
-
-3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
-
-Install with: `pip install awscli`. Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` environment variables. You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories.
+If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `(sudo) pip install docker-compose`.
 
 ## Setup
 
-Install Hokusai with `pip install .` and `hokusai` will be installed on your PATH.
+Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on your PATH.
 
 Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
 Now run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
 
-To upgrade to the latest changes in this repo, run `pip install --upgrade .`
+To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
 
 ## Use
 

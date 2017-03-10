@@ -3,12 +3,14 @@ import signal
 import string
 import random
 import json
+import base64
 
 from collections import OrderedDict
 
 from subprocess import check_output, CalledProcessError, STDOUT
 
 import yaml
+import boto3
 
 from termcolor import cprint
 
@@ -64,6 +66,18 @@ def k8s_uuid():
   for i in range(0,5):
     uuid.append(random.choice(string.lowercase))
   return ''.join(uuid)
+
+def get_ecr_login(aws_account_id):
+  client = boto3.client('ecr')
+  try:
+    res = client.get_authorization_token(registryIds=[str(aws_account_id)])['authorizationData'][0]
+    token = base64.b64decode(res['authorizationToken'])
+    username = token.split(':')[0]
+    password = token.split(':')[1]
+    return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])
+  except Exception, e:
+    print_red("Get ECR authorization token failed with error: %s" % repr(e))
+    return None
 
 def build_deployment(name, image, target_port, environment=None, always_pull=False):
   container = {

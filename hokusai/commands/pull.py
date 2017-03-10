@@ -1,13 +1,16 @@
 from subprocess import check_output, check_call, CalledProcessError
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, verbose
+from hokusai.common import print_red, print_green, verbose, get_ecr_login
 
 def pull():
   config = HokusaiConfig().check()
 
+  login_command = get_ecr_login(config.aws_account_id)
+  if login_command is None:
+    return -1
+
   try:
-    login_command = check_output(verbose("aws ecr get-login --region %s" % config.aws_ecr_region), shell=True)
     check_call(verbose(login_command), shell=True)
     print_green("Pulling from %s..." % config.aws_ecr_registry)
     check_output(verbose("docker pull %s --all-tags" % config.aws_ecr_registry), shell=True)

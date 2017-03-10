@@ -5,7 +5,7 @@ import json
 from subprocess import check_output, check_call, CalledProcessError, STDOUT
 
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError, kubernetes_object
+from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError, kubernetes_object, get_ecr_login
 
 def promote(from_context, context):
   config = HokusaiConfig().check()
@@ -45,8 +45,11 @@ def promote(from_context, context):
     print_red(repr(e))
     return -1
 
+  login_command = get_ecr_login(config.aws_account_id)
+  if login_command is None:
+    return -1
+
   try:
-    login_command = check_output(verbose("aws ecr get-login --region %s" % config.aws_ecr_region), shell=True)
     check_call(login_command, shell=True)
 
     check_call(verbose("docker pull %s:%s" % (config.aws_ecr_registry, tag)), shell=True)

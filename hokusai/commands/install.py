@@ -4,8 +4,7 @@ import shutil
 
 from distutils.dir_util import mkpath
 
-import boto
-from boto.s3.key import Key
+import boto3
 
 from hokusai.common import print_red, print_green
 
@@ -24,11 +23,8 @@ def install(kubectl_version, platform, install_to, install_kubeconfig_to, bucket
     if not os.path.isdir(install_kubeconfig_to):
       mkpath(install_kubeconfig_to)
 
-    conn = boto.s3.connect_to_region(bucket_region)
-    bucket = conn.get_bucket(conn.lookup(bucket_name))
-    k = Key(bucket)
-    k.key = key_name
-    k.get_contents_to_filename(os.path.join(install_kubeconfig_to, 'config'))
+    bucket = boto3.resource('s3').Bucket(bucket_name)
+    bucket.download_file(key_name, os.path.join(install_kubeconfig_to, 'config'))
 
   except Exception, e:
     print_red("Error configuring kubectl: %s" % repr(e))
