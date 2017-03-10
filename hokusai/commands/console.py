@@ -1,5 +1,6 @@
 import os
 import base64
+import json
 
 from subprocess import call, check_output, CalledProcessError, STDOUT
 
@@ -22,7 +23,7 @@ def console(context, shell, tag, with_config, with_secrets, env):
   else:
     image_tag = context
 
-  env = list(env)
+  environment = map(lambda x: {"name": x.split('=')[0], "value": x.split('=')[1]}, env)
 
   if with_config:
     try:
@@ -37,7 +38,7 @@ def console(context, shell, tag, with_config, with_secrets, env):
         return -1
 
     for k, v in configmap_data.iteritems():
-      env.append("%s=%s" % (k, v))
+      environment.append({"name": k, "value": v})
 
   if with_secrets:
     try:
@@ -53,20 +54,43 @@ def console(context, shell, tag, with_config, with_secrets, env):
 
     for k, v in secret_data.iteritems():
       try:
-        env.append("%s=%s" % (k, base64.b64decode(v)))
+        environment.append({"name": k, "value": base64.b64decode(v)})
       except TypeError:
         continue
-
-  environment = ' '.join(map(lambda x: '--env="%s"' % x, env))
 
   if os.environ.get('USER') is not None:
     job_id = "%s-%s" % (os.environ.get('USER'), k8s_uuid())
   else:
     job_id = k8s_uuid()
 
+  job_name = "%s-shell-%s" % (config.project_name, job_id)
+  image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
+
+  overrides = {
+    "apiVersion": "batch/v1",
+    "spec": {
+      "template": {
+        "spec": {
+          "containers": [
+            {
+              "args": [ shell ],
+              "name": job_name,
+              "image": image_name,
+              "imagePullPolicy": "Always",
+              "env": environment,
+              "stdin": True,
+              "stdinOnce": True,
+              "tty": True
+            }
+          ]
+        }
+      }
+    }
+  }
+
   try:
-    call(verbose("kubectl run %s-shell-%s -t -i --image=%s:%s --image-pull-policy=Always --restart=OnFailure --rm %s -- %s" %
-             (config.project_name, job_id, config.aws_ecr_registry, image_tag, environment, shell)), shell=True)
+    call(verbose("kubectl run %s -t -i --image=%s --restart=OnFailure --overrides='%s' --rm" %
+             (job_name, image_name, json.dumps(overrides))), shell=True)
   except CalledProcessError, e:
     print_red("Launching console failed with error %s" % e.output)
     return -1
