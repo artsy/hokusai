@@ -65,7 +65,7 @@ def run(context, command, tag, with_config, with_secrets, env):
     job_id = k8s_uuid()
 
   try:
-    return call(verbose("kubectl run %s-run-%s --attach --image=%s:%s --restart=OnFailure --rm %s -- %s" %
+    return call(verbose("kubectl run %s-run-%s --attach --image=%s:%s --image-pull-policy=Always --restart=OnFailure --rm %s -- %s" %
                     (config.project_name, job_id, config.aws_ecr_registry, image_tag, environment, command)), shell=True)
   except CalledProcessError, e:
     print_red("Running command failed with error %s" % e.output)

@@ -65,7 +65,7 @@ def console(context, shell, tag, with_config, with_secrets, env):
     job_id = k8s_uuid()
 
   try:
-    call(verbose("kubectl run %s-shell-%s -t -i --image=%s:%s --restart=OnFailure --rm %s -- %s" %
+    call(verbose("kubectl run %s-shell-%s -t -i --image=%s:%s --image-pull-policy=Always --restart=OnFailure --rm %s -- %s" %
              (config.project_name, job_id, config.aws_ecr_registry, image_tag, environment, shell)), shell=True)
   except CalledProcessError, e:
     print_red("Launching console failed with error %s" % e.output)
