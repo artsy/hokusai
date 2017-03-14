@@ -28,13 +28,6 @@ def check():
     return_code += 1
 
   try:
-    check_output('aws --version', stderr=STDOUT, shell=True)
-    check_ok('aws cli')
-  except CalledProcessError:
-    check_err('aws cli')
-    return_code += 1
-
-  try:
     check_output('kubectl', stderr=STDOUT, shell=True)
     check_ok('kubectl')
   except CalledProcessError:
