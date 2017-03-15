@@ -67,29 +67,25 @@ def console(context, shell, tag, with_config, with_secrets, env):
   image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
 
   overrides = {
-    "apiVersion": "batch/v1",
-    "spec": {
-      "template": {
-        "spec": {
-          "containers": [
-            {
-              "args": [ shell ],
-              "name": job_name,
-              "image": image_name,
-              "imagePullPolicy": "Always",
-              "env": environment,
-              "stdin": True,
-              "stdinOnce": True,
-              "tty": True
-            }
-          ]
-        }
+    "apiVersion": "v1",
+      "spec": {
+        "containers": [
+          {
+            "args": [ shell ],
+            "name": job_name,
+            "image": image_name,
+            "imagePullPolicy": "Always",
+            "env": environment,
+            "stdin": True,
+            "stdinOnce": True,
+            "tty": True
+          }
+        ]
       }
     }
-  }
 
   try:
-    call(verbose("kubectl run %s -t -i --image=%s --restart=OnFailure --overrides='%s' --rm" %
+    call(verbose("kubectl run %s -t -i --image=%s --restart=Never --overrides='%s' --rm" %
              (job_name, image_name, json.dumps(overrides))), shell=True)
   except CalledProcessError, e:
     print_red("Launching console failed with error %s" % e.output)
