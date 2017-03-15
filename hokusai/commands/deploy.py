@@ -1,46 +1,35 @@
+import sys
 import datetime
 import json
 
-from subprocess import check_output, check_call, CalledProcessError, STDOUT
-
+from hokusai.command import command
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError, kubernetes_object, get_ecr_login
+from hokusai.common import print_green, shout, select_context, kubernetes_object, get_ecr_login
 
+@command
 def deploy(context, tag):
   config = HokusaiConfig().check()
 
-  try:
-    select_context(context)
-  except HokusaiCommandError, e:
-    print_red(repr(e))
-    return -1
+  select_context(context)
 
   if context != tag:
-    login_command = get_ecr_login(config.aws_account_id)
-    if login_command is None:
-      return -1
+    shout(get_ecr_login(config.aws_account_id))
 
-    try:
-      check_call(login_command, shell=True)
+    shout("docker pull %s:%s" % (config.aws_ecr_registry, tag))
 
-      check_call(verbose("docker pull %s:%s" % (config.aws_ecr_registry, tag)), shell=True)
+    shout("docker tag %s:%s %s:%s" %
+                     (config.aws_ecr_registry, tag, config.aws_ecr_registry, context))
 
-      check_call(verbose("docker tag %s:%s %s:%s" %
-                       (config.aws_ecr_registry, tag, config.aws_ecr_registry, context)), shell=True)
-      check_call(verbose("docker push %s:%s" % (config.aws_ecr_registry, context)), shell=True)
-      print_green("Updated tag %s:%s -> %s:%s" %
-                  (config.aws_ecr_registry, tag, config.aws_ecr_registry, context))
+    shout("docker push %s:%s" % (config.aws_ecr_registry, context))
+    print_green("Updated tag %s:%s -> %s:%s" %
+                (config.aws_ecr_registry, tag, config.aws_ecr_registry, context))
 
-      deployment_tag = "%s--%s" % (context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      check_call(verbose("docker tag %s:%s %s:%s"
-                       % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag)), shell=True)
-      check_call(verbose("docker push %s:%s" % (config.aws_ecr_registry, deployment_tag)), shell=True)
-      print_green("Updated tag %s:%s -> %s:%s"
-                  % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
-    except CalledProcessError, e:
-      print_red("Updating tags failed with error: %s" % e.output)
-      return -1
-
+    deployment_tag = "%s--%s" % (context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
+    shout("docker tag %s:%s %s:%s"
+                     % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
+    shout("docker push %s:%s" % (config.aws_ecr_registry, deployment_tag))
+    print_green("Updated tag %s:%s -> %s:%s"
+                % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
 
   deployments = kubernetes_object('deployment', selector="app=%s" % config.project_name)
   if len(deployments['items']) != 1:
@@ -64,11 +53,5 @@ def deploy(context, tag):
     }
   }
 
-  try:
-    check_call(verbose("kubectl patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))), shell=True)
-  except CalledProcessError, e:
-    print_red("Deployment failed with error: %s" % e.output)
-    return -1
-
+  shout("kubectl patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch)))
   print_green("Deployment updated to %s" % tag)
-  return 0

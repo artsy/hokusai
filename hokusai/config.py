@@ -5,6 +5,9 @@ import yaml
 
 from hokusai.common import print_red, HOKUSAI_CONFIG_FILE, YAML_HEADER
 
+class HokusaiConfigError(Exception):
+  pass
+
 class HokusaiConfig(object):
   def create(self, project_name, aws_account_id, aws_ecr_region):
     config = {
@@ -21,8 +24,7 @@ class HokusaiConfig(object):
 
   def check(self):
     if not os.path.isfile(HOKUSAI_CONFIG_FILE):
-      print_red("Hokusai is not configured for this project - run 'hokusai configure'")
-      sys.exit(-1)
+      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
     return self
 
   def get(self, key):

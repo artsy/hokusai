@@ -7,7 +7,7 @@ import base64
 
 from collections import OrderedDict
 
-from subprocess import check_output, CalledProcessError, STDOUT
+from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
 
 import yaml
 import boto3
@@ -21,9 +21,6 @@ EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, si
 YAML_HEADER = '---\n'
 
 VERBOSE = False
-
-class HokusaiCommandError(Exception):
-  pass
 
 def print_green(msg):
   cprint(msg, 'green')
@@ -40,26 +37,24 @@ def verbose(msg):
   if VERBOSE: cprint("==> hokusai exec `%s`" % msg, 'yellow')
   return msg
 
+def returncode(command):
+  return call(verbose(command), stderr=STDOUT, shell=True)
+
+def shout(command, print_output=False):
+  if print_output:
+    return check_call(verbose(command), stderr=STDOUT, shell=True)
+  else:
+    return check_output(verbose(command), stderr=STDOUT, shell=True)
+
 def select_context(context):
-  try:
-    check_output(verbose("kubectl config use-context %s" % context), stderr=STDOUT, shell=True)
-  except CalledProcessError, e:
-    raise HokusaiCommandError("Error selecting context %s: %s" % (context, e.output))
+  shout("kubectl config use-context %s" % context)
 
 def kubernetes_object(obj, selector=None):
   if selector is not None:
     cmd = "kubectl get %s --selector %s -o json" % (obj, selector)
   else:
     cmd = "kubectl get %s -o json" % obj
-
-  try:
-    payload = check_output(verbose(cmd), stderr=STDOUT, shell=True)
-  except CalledProcessError:
-    raise HokusaiCommandError("Could not get object %s" % obj)
-  try:
-    return json.loads(payload)
-  except ValueError:
-    raise HokusaiCommandError("Could not parse object %s" % obj)
+  return json.loads(shout(cmd))
 
 def k8s_uuid():
   uuid = []
@@ -69,15 +64,11 @@ def k8s_uuid():
 
 def get_ecr_login(aws_account_id):
   client = boto3.client('ecr')
-  try:
-    res = client.get_authorization_token(registryIds=[str(aws_account_id)])['authorizationData'][0]
-    token = base64.b64decode(res['authorizationToken'])
-    username = token.split(':')[0]
-    password = token.split(':')[1]
-    return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])
-  except Exception, e:
-    print_red("Get ECR authorization token failed with error: %s" % repr(e))
-    return None
+  res = client.get_authorization_token(registryIds=[str(aws_account_id)])['authorizationData'][0]
+  token = base64.b64decode(res['authorizationToken'])
+  username = token.split(':')[0]
+  password = token.split(':')[1]
+  return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])
 
 def build_deployment(name, image, target_port, environment=None, always_pull=False):
   container = {

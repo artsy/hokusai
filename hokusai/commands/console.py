@@ -2,21 +2,17 @@ import os
 import base64
 import json
 
-from subprocess import call, check_output, CalledProcessError, STDOUT
-
 import yaml
 
+from hokusai.command import command
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, k8s_uuid, verbose, select_context, HokusaiCommandError
+from hokusai.common import shout, k8s_uuid, select_context
 
+@command
 def console(context, shell, tag, env):
   config = HokusaiConfig().check()
 
-  try:
-    select_context(context)
-  except HokusaiCommandError, e:
-    print_red(repr(e))
-    return -1
+  select_context(context)
 
   if tag is not None:
     image_tag = tag
@@ -24,23 +20,10 @@ def console(context, shell, tag, env):
     image_tag = context
 
   environment = map(lambda x: {"name": x.split('=')[0], "value": x.split('=')[1]}, env)
-
-  try:
-    existing_secrets = check_output(verbose("kubectl get secret %s-secrets -o yaml"
-                                            % config.project_name), stderr=STDOUT, shell=True)
-    secret_data = yaml.load(existing_secrets)['data']
-  except CalledProcessError, e:
-    if 'Error from server: secrets "%s-secrets" not found' % config.project_name in e.output:
-      secret_data = {}
-    else:
-      print_red("Error fetching secrets: %s" % e.output)
-      return -1
-
+  existing_secrets = shout("kubectl get secret %s-secrets -o yaml" % config.project_name)
+  secret_data = yaml.load(existing_secrets)['data']
   for k, v in secret_data.iteritems():
-    try:
-      environment.append({"name": k, "value": base64.b64decode(v)})
-    except TypeError:
-      continue
+    environment.append({"name": k, "value": base64.b64decode(v)})
 
   if os.environ.get('USER') is not None:
     job_id = "%s-%s" % (os.environ.get('USER'), k8s_uuid())
@@ -51,30 +34,22 @@ def console(context, shell, tag, env):
   image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
 
   overrides = {
-    "apiVersion": "batch/v1",
-    "spec": {
-      "template": {
-        "spec": {
-          "containers": [
-            {
-              "args": [ shell ],
-              "name": job_name,
-              "image": image_name,
-              "imagePullPolicy": "Always",
-              "env": environment,
-              "stdin": True,
-              "stdinOnce": True,
-              "tty": True
-            }
-          ]
-        }
+    "apiVersion": "v1",
+      "spec": {
+        "containers": [
+          {
+            "args": [ shell ],
+            "name": job_name,
+            "image": image_name,
+            "imagePullPolicy": "Always",
+            "env": environment,
+            "stdin": True,
+            "stdinOnce": True,
+            "tty": True
+          }
+        ]
       }
     }
-  }
 
-  try:
-    call(verbose("kubectl run %s -t -i --image=%s --restart=OnFailure --overrides='%s' --rm" %
-             (job_name, image_name, json.dumps(overrides))), shell=True)
-  except CalledProcessError, e:
-    print_red("Launching console failed with error %s" % e.output)
-    return -1
+  shout("kubectl run %s -t -i --image=%s --restart=Never --overrides='%s' --rm" %
+             (job_name, image_name, json.dumps(overrides)), print_output=True)

@@ -1,9 +1,9 @@
 import os
 
-from subprocess import check_output, CalledProcessError, STDOUT
+from hokusai.command import command
+from hokusai.common import print_red, print_green, shout, CalledProcessError
 
-from hokusai.common import print_red, print_green
-
+@command
 def check():
   return_code = 0
 
@@ -14,21 +14,21 @@ def check():
     print_red(u'\u2718 ' + check_item + ' not found')
 
   try:
-    check_output('docker --version', stderr=STDOUT, shell=True)
+    shout('docker --version')
     check_ok('docker')
   except CalledProcessError:
     check_err('docker')
     return_code += 1
 
   try:
-    check_output('docker-compose --version', stderr=STDOUT, shell=True)
+    shout('docker-compose --version')
     check_ok('docker-compose')
   except CalledProcessError:
     check_err('docker-compose')
     return_code += 1
 
   try:
-    check_output('kubectl', stderr=STDOUT, shell=True)
+    shout('kubectl')
     check_ok('kubectl')
   except CalledProcessError:
     check_err('kubectl')

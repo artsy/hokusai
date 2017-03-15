@@ -24,7 +24,7 @@ def install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_buc
   """
   Install and configure kubectl
   """
-  sys.exit(hokusai.install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region))
+  hokusai.install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region)
 
 @cli.command()
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
@@ -57,7 +57,7 @@ def check():
   """
   Check hokusai dependencies and configuration
   """
-  sys.exit(hokusai.check())
+  hokusai.check()
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -66,7 +66,7 @@ def dev(verbose):
   Boot the development stack
   """
   set_output(verbose)
-  sys.exit(hokusai.development())
+  hokusai.development()
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -75,7 +75,7 @@ def test(verbose):
   Boot the test stack and run the test suite
   """
   set_output(verbose)
-  sys.exit(hokusai.test())
+  hokusai.test()
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -84,7 +84,7 @@ def build(verbose):
   Build the latest docker image for the project
   """
   set_output(verbose)
-  sys.exit(hokusai.build())
+  hokusai.build()
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -93,18 +93,17 @@ def pull(verbose):
   Pull all images and tags from the ECR
   """
   set_output(verbose)
-  sys.exit(hokusai.pull())
+  hokusai.pull()
 
 @cli.command()
 @click.argument('tag', type=click.STRING)
-@click.option('--test-build', type=click.BOOL, is_flag=True, help="Push the latest image output by 'test' - otherwise the latest image output by 'build'")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def push(tag, test_build, verbose):
+def push(tag, verbose):
   """
   Push a docker image to ECR with the given tag
   """
   set_output(verbose)
-  sys.exit(hokusai.push(tag, test_build))
+  hokusai.push(tag)
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -113,7 +112,7 @@ def images(verbose):
   Show images and tags
   """
   set_output(verbose)
-  sys.exit(hokusai.images())
+  hokusai.images()
 
 @cli.command()
 @click.argument('action', type=click.STRING)
@@ -129,11 +128,11 @@ def secrets(action, context, secret, verbose):
   """
   set_output(verbose)
   if action == 'get':
-    sys.exit(hokusai.get_secrets(context))
+    hokusai.get_secrets(context)
   elif action == 'set':
-    sys.exit(hokusai.set_secrets(context, secret))
+    hokusai.set_secrets(context, secret)
   elif action == 'unset':
-    sys.exit(hokusai.unset_secrets(context, secret))
+    hokusai.unset_secrets(context, secret)
   else:
     print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
@@ -151,11 +150,11 @@ def stack(action, context, verbose):
   """
   set_output(verbose)
   if action == 'up':
-    sys.exit(hokusai.stack_up(context))
+    hokusai.stack_up(context)
   elif action == 'down':
-    sys.exit(hokusai.stack_down(context))
+    hokusai.stack_down(context)
   elif action == 'status':
-    sys.exit(hokusai.stack_status(context))
+    hokusai.stack_status(context)
   else:
     print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
@@ -170,7 +169,7 @@ def deploy(context, tag, verbose):
   and update the tag named {CONTEXT} to reference that tag
   """
   set_output(verbose)
-  sys.exit(hokusai.deploy(context, tag))
+  hokusai.deploy(context, tag)
 
 @cli.command()
 @click.argument('from-context', type=click.STRING)
@@ -182,7 +181,7 @@ def promote(from_context, context, verbose):
   and update the tag named {CONTEXT} to reference that tag
   """
   set_output(verbose)
-  sys.exit(hokusai.promote(from_context, context))
+  hokusai.promote(from_context, context)
 
 @cli.command()
 @click.argument('context', type=click.STRING)
@@ -195,7 +194,7 @@ def console(context, shell, tag, env, verbose):
   Launch a new container and attach a shell in the kubectl {CONTEXT}
   """
   set_output(verbose)
-  sys.exit(hokusai.console(context, shell, tag, env))
+  hokusai.console(context, shell, tag, env)
 
 @cli.command()
 @click.argument('context', type=click.STRING)
@@ -208,7 +207,7 @@ def run(context, command, tag, env, verbose):
   Launch a new container and run a command in the kubectl {CONTEXT}
   """
   set_output(verbose)
-  sys.exit(hokusai.run(context, command, tag, env))
+  hokusai.run(context, command, tag, env)
 
 if __name__ == '__main__':
   cli(obj={})

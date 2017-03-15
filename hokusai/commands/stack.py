@@ -1,10 +1,10 @@
 import os
 
-from subprocess import check_output, check_call, CalledProcessError, STDOUT
-
+from hokusai.command import command
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, verbose, select_context, HokusaiCommandError
+from hokusai.common import print_red, print_green, shout, select_context
 
+@command
 def stack_up(context):
   HokusaiConfig().check()
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
@@ -12,21 +12,11 @@ def stack_up(context):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
-  try:
-    select_context(context)
-  except HokusaiCommandError, e:
-    print_red(repr(e))
-    return -1
+  select_context(context)
+  shout("kubectl apply -f %s" % kubernetes_yml)
+  print_green("Stack %s updated" % context)
 
-  try:
-    check_call(verbose("kubectl apply -f %s" % kubernetes_yml), shell=True)
-  except CalledProcessError, e:
-    print_red("Stack up failed with error: %s" % e.output)
-    return -1
-
-  print_green("Stack %s created" % kubernetes_yml)
-  return 0
-
+@command
 def stack_down(context):
   HokusaiConfig().check()
 
@@ -35,21 +25,11 @@ def stack_down(context):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
-  try:
-    select_context(context)
-  except HokusaiCommandError, e:
-    print_red(repr(e))
-    return -1
-
-  try:
-    check_call(verbose("kubectl delete -f %s" % kubernetes_yml), shell=True)
-  except CalledProcessError, e:
-    print_red("Stack down failed with error: %s" % e.output)
-    return -1
-
+  select_context(context)
+  shout("kubectl delete -f %s" % kubernetes_yml)
   print_green("Stack %s deleted" % kubernetes_yml)
-  return 0
 
+@command
 def stack_status(context):
   HokusaiConfig().check()
 
@@ -58,15 +38,5 @@ def stack_status(context):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
-  try:
-    select_context(context)
-  except HokusaiCommandError, e:
-    print_red(repr(e))
-    return -1
-
-  try:
-    check_call(verbose("kubectl describe -f %s" % kubernetes_yml), shell=True)
-  except CalledProcessError, e:
-    print_red("Stack status failed with error: %s" % e.output)
-    return -1
-  return 0
+  select_context(context)
+  shout("kubectl describe -f %s" % kubernetes_yml, print_output=True)

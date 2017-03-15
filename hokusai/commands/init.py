@@ -8,9 +8,11 @@ import yaml
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
+from hokusai.command import command
 from hokusai.config import HokusaiConfig
 from hokusai.common import print_green, build_service, build_deployment, YAML_HEADER
 
+@command
 def init(project_name, aws_account_id, aws_ecr_region, framework, base_image,
           run_command, development_command, test_command, port, target_port,
             with_memcached, with_redis, with_mongo, with_postgres, with_rabbitmq):
