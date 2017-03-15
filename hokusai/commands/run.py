@@ -67,26 +67,22 @@ def run(context, command, tag, with_config, with_secrets, env):
   image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
 
   overrides = {
-    "apiVersion": "batch/v1",
+    "apiVersion": "v1",
     "spec": {
-      "template": {
-        "spec": {
-          "containers": [
-            {
-              "args": command.split(' '),
-              "name": job_name,
-              "image": image_name,
-              "imagePullPolicy": "Always",
-              "env": environment
-            }
-          ]
+      "containers": [
+        {
+          "args": command.split(' '),
+          "name": job_name,
+          "image": image_name,
+          "imagePullPolicy": "Always",
+          "env": environment
         }
-      }
+      ]
     }
   }
 
   try:
-    return call(verbose("kubectl run %s --attach --image=%s --overrides='%s' --restart=OnFailure --rm" %
+    return call(verbose("kubectl run %s --attach --image=%s --overrides='%s' --restart=Never --rm" %
                     (job_name, image_name, json.dumps(overrides))), shell=True)
   except CalledProcessError, e:
     print_red("Running command failed with error %s" % e.output)
