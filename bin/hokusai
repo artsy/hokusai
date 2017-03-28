@@ -185,29 +185,17 @@ def promote(from_context, context, verbose):
 
 @cli.command()
 @click.argument('context', type=click.STRING)
-@click.option('--shell', type=click.STRING, default='bash', help='The shell to run (defaults to bash)')
-@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
-@click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def console(context, shell, tag, env, verbose):
-  """
-  Launch a new container and attach a shell in the kubectl {CONTEXT}
-  """
-  set_output(verbose)
-  hokusai.console(context, shell, tag, env)
-
-@cli.command()
-@click.argument('context', type=click.STRING)
 @click.argument('command', type=click.STRING)
+@click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(context, command, tag, env, verbose):
+def run(context, command, tty, tag, env, verbose):
   """
   Launch a new container and run a command in the kubectl {CONTEXT}
   """
   set_output(verbose)
-  hokusai.run(context, command, tag, env)
+  hokusai.run(context, command, tty, tag, env)
 
 if __name__ == '__main__':
   cli(obj={})

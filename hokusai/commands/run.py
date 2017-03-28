@@ -6,10 +6,10 @@ import yaml
 
 from hokusai.command import command
 from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, shout, returncode, k8s_uuid, select_context
+from hokusai.common import shout, returncode, k8s_uuid, select_context
 
 @command
-def run(context, command, tag, env):
+def run(context, command, tty, tag, env):
   config = HokusaiConfig().check()
 
   select_context(context)
@@ -33,19 +33,40 @@ def run(context, command, tag, env):
   job_name = "%s-run-%s" % (config.project_name, job_id)
   image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
 
-  overrides = {
-    "apiVersion": "v1",
-    "spec": {
-      "containers": [
-        {
-          "args": command.split(' '),
-          "name": job_name,
-          "image": image_name,
-          "imagePullPolicy": "Always",
-          "env": environment
-        }
-      ]
+  if tty:
+    overrides = {
+      "apiVersion": "v1",
+      "spec": {
+        "containers": [
+          {
+            "args": command.split(' '),
+            "name": job_name,
+            "image": image_name,
+            "imagePullPolicy": "Always",
+            "env": environment,
+            "stdin": True,
+            "stdinOnce": True,
+            "tty": True
+          }
+        ]
+      }
     }
-  }
-  return returncode("kubectl run %s --attach --image=%s --overrides='%s' --restart=Never --rm" %
-                  (job_name, image_name, json.dumps(overrides)))
+    shout("kubectl run %s -t -i --image=%s --restart=Never --overrides='%s' --rm" %
+               (job_name, image_name, json.dumps(overrides)), print_output=True)
+  else:
+    overrides = {
+      "apiVersion": "v1",
+      "spec": {
+        "containers": [
+          {
+            "args": command.split(' '),
+            "name": job_name,
+            "image": image_name,
+            "imagePullPolicy": "Always",
+            "env": environment
+          }
+        ]
+      }
+    }
+    return returncode("kubectl run %s --attach --image=%s --overrides='%s' --restart=Never --rm" %
+                    (job_name, image_name, json.dumps(overrides)))
