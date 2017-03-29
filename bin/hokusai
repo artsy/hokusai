@@ -173,5 +173,18 @@ def run(context, command, tty, tag, env, verbose):
   set_output(verbose)
   hokusai.run(context, command, tty, tag, env)
 
+@cli.command()
+@click.argument('context', type=click.STRING)
+@click.option('-t', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
+@click.option('-n', '--nlines', type=click.STRING, help='Num lines to follow')
+@click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def logs(context, timestamps, nlines, follow, verbose):
+  """
+  Get container logs from the selected {CONTEXT}
+  """
+  set_output(verbose)
+  hokusai.logs(context, timestamps, nlines, follow)
+
 if __name__ == '__main__':
   cli(obj={})

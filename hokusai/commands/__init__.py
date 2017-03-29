@@ -2,6 +2,7 @@ from hokusai.commands.check import check
 from hokusai.commands.deploy import deploy
 from hokusai.commands.development import development
 from hokusai.commands.install import install
+from hokusai.commands.logs import logs
 from hokusai.commands.promote import promote
 from hokusai.commands.push import push
 from hokusai.commands.run import run
