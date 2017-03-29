@@ -82,12 +82,12 @@ def push(tag, verbose):
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def images(verbose):
+def tags(verbose):
   """
   Show image tags in the project repo
   """
   set_output(verbose)
-  hokusai.images()
+  hokusai.tags()
 
 @cli.command()
 @click.argument('action', type=click.STRING)

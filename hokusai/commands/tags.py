@@ -7,7 +7,7 @@ from hokusai.config import HokusaiConfig
 from hokusai.common import print_green, shout
 
 @command
-def images():
+def tags():
   config = HokusaiConfig().check()
   client = boto3.client('ecr')
 

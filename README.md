@@ -65,7 +65,7 @@ Required options:
 ### Working with Images
 
 * `hokusai push` - Build and push and image to the AWS ECR project repo.
-* `hokusai images` - List all image tags in the AWS ECR project repo.
+* `hokusai tags` - List all image tags in the AWS ECR project repo.
 
 ### Working with Kubernetes
 Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `install` commands provide basic setup for this:
