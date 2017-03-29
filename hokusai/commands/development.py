@@ -18,8 +18,7 @@ def development(skip_build):
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
-  if skip_build:
-    opts = ''
-  else:
-    opts = '--build'
-  shout("docker-compose -f %s up %s" % (docker_compose_yml, opts), print_output=True)
+  opts = ''
+  if not skip_build:
+    opts += ' --build'
+  shout("docker-compose -f %s up%s" % (docker_compose_yml, opts), print_output=True)
