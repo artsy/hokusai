@@ -37,12 +37,12 @@ def install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_buc
 @click.option('--with-mongodb', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
 @click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
 @click.option('--with-rabbitmq', type=click.BOOL, is_flag=True, help='Include a RabbitMQ service')
-def init(project_name, aws_account_id, aws_ecr_region, framework, port,
+def setup(project_name, aws_account_id, aws_ecr_region, framework, port,
           with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
   """
-  Configure Hokusai for the current project
+  Set up Hokusai for the current project
   """
-  hokusai.init(project_name, aws_account_id, aws_ecr_region, framework, port,
+  hokusai.setup(project_name, aws_account_id, aws_ecr_region, framework, port,
                 with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq)
 
 @cli.command()

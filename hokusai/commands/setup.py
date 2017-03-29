@@ -13,7 +13,7 @@ from hokusai.config import HokusaiConfig
 from hokusai.common import print_green, build_service, build_deployment, YAML_HEADER
 
 @command
-def init(project_name, aws_account_id, aws_ecr_region, framework, port,
+def setup(project_name, aws_account_id, aws_ecr_region, framework, port,
           with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
