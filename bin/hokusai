@@ -87,15 +87,6 @@ def build(verbose):
   hokusai.build()
 
 @cli.command()
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def pull(verbose):
-  """
-  Pull all images and tags from the ECR
-  """
-  set_output(verbose)
-  hokusai.pull()
-
-@cli.command()
 @click.argument('tag', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def push(tag, verbose):
