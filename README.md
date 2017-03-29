@@ -46,14 +46,13 @@ Required options:
   - `--s3-bucket`: The S3 bucket containing your org's kubectl config file
   - `--s3-key`: The S3 key of your org's kubectl config file
 
-### Initializing a project
+### Setting up an existing project
 
-* `hokusai init` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
+* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
   - `--framework`: Either "rack" or "nodejs".
-  - `--base-image`: The base docker image for the project `Dockerfile` - i.e. "ruby:2.2" or "ruby:2.2-alpine" - see [Docker Hub](https://hub.docker.com/) for valid base images.
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
 
@@ -65,10 +64,8 @@ Required options:
 
 ### Working with Images
 
-* `hokusai build` - Build the latest docker image for the project.
-* `hokusai pull` - Pull images for your project from your AWS ECR repo.
-* `hokusai push` - Push a locally built image to your AWS ECR repo.
-* `hokusai images` - List all project images in your local docker registry.
+* `hokusai push` - Build and push and image to the AWS ECR project repo.
+* `hokusai images` - List all image tags in the AWS ECR project repo.
 
 ### Working with Kubernetes
 Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `install` commands provide basic setup for this:
@@ -99,5 +96,4 @@ hokusai install --s3-bucket <bucket name> --s3-key <file key>
 
 ### Running a console
 
-* `hokusai console` - Launch a container and attach a shell session.
 * `hokusai run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).

@@ -71,20 +71,11 @@ def test(verbose):
   hokusai.test()
 
 @cli.command()
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def build(verbose):
-  """
-  Build the latest docker image for the project
-  """
-  set_output(verbose)
-  hokusai.build()
-
-@cli.command()
 @click.argument('tag', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def push(tag, verbose):
   """
-  Push a docker image to ECR with the given tag
+  Build the project and push the image to the project repo with the given tag
   """
   set_output(verbose)
   hokusai.push(tag)
@@ -93,7 +84,7 @@ def push(tag, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def images(verbose):
   """
-  Show images and tags
+  Show image tags in the project repo
   """
   set_output(verbose)
   hokusai.images()
@@ -105,7 +96,7 @@ def images(verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def secrets(action, context, secret, verbose):
   """
-  Actions:\n
+  Actions [get|set|unset]:\n
   get - print secrets in the kubectl {CONTEXT}\n
   set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'\n
   unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'
@@ -127,7 +118,7 @@ def secrets(action, context, secret, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stack(action, context, verbose):
   """
-  Actions:\n
+  Actions [up|down|status]:\n
   up - Create / Update the stack in the kubectl {CONTEXT}\n
   down - Delete the stack in the kubectl {CONTEXT}\n
   status - Print the stack status in the kubectl {CONTEXT}

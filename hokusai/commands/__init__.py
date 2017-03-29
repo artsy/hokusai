@@ -1,4 +1,3 @@
-from hokusai.commands.build import build
 from hokusai.commands.check import check
 from hokusai.commands.deploy import deploy
 from hokusai.commands.development import development
