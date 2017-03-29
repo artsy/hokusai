@@ -53,13 +53,14 @@ def check():
   hokusai.check()
 
 @cli.command()
+@click.option('--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def dev(verbose):
+def dev(skip_build, verbose):
   """
   Boot the development stack
   """
   set_output(verbose)
-  hokusai.development()
+  hokusai.development(skip_build)
 
 @cli.command()
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')

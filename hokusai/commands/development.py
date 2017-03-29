@@ -6,7 +6,7 @@ from hokusai.config import HokusaiConfig
 from hokusai.common import print_red, EXIT_SIGNALS, shout
 
 @command
-def development():
+def development(skip_build):
   HokusaiConfig().check()
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
@@ -18,4 +18,8 @@ def development():
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
-  shout("docker-compose -f %s up --build" % docker_compose_yml, print_output=True)
+  if skip_build:
+    opts = ''
+  else:
+    opts = '--build'
+  shout("docker-compose -f %s up %s" % (docker_compose_yml, opts), print_output=True)
