@@ -3,12 +3,11 @@ from operator import itemgetter
 import boto3
 
 from hokusai.command import command
-from hokusai.config import HokusaiConfig
+from hokusai.config import config
 from hokusai.common import print_green, shout
 
 @command
 def tags():
-  config = HokusaiConfig().check()
   client = boto3.client('ecr')
 
   images = []

@@ -9,7 +9,7 @@ from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
 from hokusai.command import command
-from hokusai.config import HokusaiConfig
+from hokusai.config import config
 from hokusai.common import print_green, build_service, build_deployment, YAML_HEADER
 
 @command
@@ -18,7 +18,7 @@ def setup(project_name, aws_account_id, aws_ecr_region, framework, port,
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
-  config = HokusaiConfig().create(project_name.lower().replace('_', '-'), aws_account_id, aws_ecr_region)
+  config.create(project_name.lower().replace('_', '-'), aws_account_id, aws_ecr_region)
 
   if framework == 'rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")

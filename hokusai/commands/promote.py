@@ -5,7 +5,7 @@ from hokusai.deployment import Deployment
 @command
 def promote(from_context, context):
   deploy_from = Deployment(from_context)
-  tag = deploy_from.get_current_tag()
+  tag = deploy_from.current_tag
   if tag is None:
     return -1
 

@@ -8,28 +8,23 @@ from tempfile import NamedTemporaryFile
 import yaml
 
 from hokusai.command import command
-from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green, shout, select_context, CalledProcessError
+from hokusai.config import config
+from hokusai.common import print_red, print_green, shout, CalledProcessError
+from hokusai.kubectl import Kubectl
 
 @command
 def get_secrets(context):
-  config = HokusaiConfig().check()
-
-  select_context(context)
-
-  existing_secrets = shout("kubectl get secret %s-secrets -o yaml" % config.project_name)
+  kctl = Kubectl(context)
+  existing_secrets = shout(kctl.command("get secret %s-secrets -o yaml" % config.project_name))
   secret_data = yaml.load(existing_secrets)['data']
   for k, v in secret_data.iteritems():
     print("%s=%s" % (k, base64.b64decode(v)))
 
 @command
 def set_secrets(context, secrets):
-  config = HokusaiConfig().check()
-
-  select_context(context)
-
+  kctl = Kubectl(context)
   try:
-    existing_secrets = shout("kubectl get secret %s-secrets -o yaml" % config.project_name)
+    existing_secrets = shout(kctl.command("get secret %s-secrets -o yaml" % config.project_name))
     secret_data = yaml.load(existing_secrets)['data']
   except CalledProcessError, e:
     if 'secrets "%s-secrets" not found' % config.project_name in e.output:
@@ -60,17 +55,15 @@ def set_secrets(context, secrets):
   f.write(yaml.safe_dump(secret_yaml, default_flow_style=False))
   f.close()
   try:
-    shout("kubectl apply -f %s" % f.name)
+    shout(kctl.command("apply -f %s" % f.name))
   finally:
     os.unlink(f.name)
 
 @command
 def unset_secrets(context, secrets):
-  config = HokusaiConfig().check()
+  kctl = Kubectl(context)
 
-  select_context(context)
-
-  existing_secrets = shout("kubectl get secret %s-secrets -o yaml" % config.project_name)
+  existing_secrets = shout(kctl.command("get secret %s-secrets -o yaml" % config.project_name))
   secret_data = yaml.load(existing_secrets)['data']
   for secret in secrets:
     try:
@@ -94,6 +87,6 @@ def unset_secrets(context, secrets):
   f.close()
 
   try:
-    shout("kubectl apply -f %s" % f.name)
+    shout(kctl.command("apply -f %s" % f.name))
   finally:
     os.unlink(f.name)

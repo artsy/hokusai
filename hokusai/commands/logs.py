@@ -3,16 +3,16 @@ import multiprocessing
 import signal
 
 from hokusai.command import command
-from hokusai.config import HokusaiConfig
-from hokusai.common import shout, EXIT_SIGNALS, select_context, kubernetes_object, CalledProcessError
+from hokusai.config import config
+from hokusai.common import shout
+from hokusai.kubectl import Kubectl
 
-def get_logs(pod_name, opts):
-  shout("kubectl logs %s%s" % (pod_name, opts), print_output=True)
+def get_logs(kctl, pod_name, opts):
+  shout(kctl.command("logs %s%s" % (pod_name, opts)), print_output=True)
 
 @command
 def logs(context, timestamps, nlines, follow):
-  config = HokusaiConfig().check()
-  select_context(context)
+  kctl = Kubectl(context)
 
   opts = ''
   if timestamps:
@@ -22,7 +22,7 @@ def logs(context, timestamps, nlines, follow):
   if follow:
     opts += ' --follow'
 
-  pods = kubernetes_object('pod', selector="app=%s" % config.project_name)['items']
+  pods = kctl.get_object('pod', selector="app=%s" % config.project_name)['items']
 
   if follow:
     # Get logs from each Pod async
@@ -34,7 +34,7 @@ def logs(context, timestamps, nlines, follow):
     signal.signal(signal.SIGINT, original_sigint_handler)
 
     for pod in pods:
-      pool.apply_async(get_logs, (pod['metadata']['name'], opts))
+      pool.apply_async(get_logs, (kctl, pod['metadata']['name'], opts))
 
     try:
       while True:
@@ -43,5 +43,6 @@ def logs(context, timestamps, nlines, follow):
       pool.terminate()
 
   else:
+    # Get logs from each pod sync
     for pod in pods:
-      get_logs(pod['metadata']['name'], opts)
+      get_logs(kctl, pod['metadata']['name'], opts)

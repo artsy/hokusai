@@ -67,3 +67,5 @@ class HokusaiConfig(object):
   @property
   def aws_ecr_registry(self):
     return "%s.dkr.ecr.%s.amazonaws.com/%s" % (self.aws_account_id, self.aws_ecr_region, self.project_name)
+
+config = HokusaiConfig()

@@ -119,16 +119,15 @@ def secrets(action, context, secret, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stack(action, context, verbose):
   """
-  Actions [up|down|status]:\n
-  up - Create / Update the stack in the kubectl {CONTEXT}\n
-  down - Delete the stack in the kubectl {CONTEXT}\n
-  status - Print the stack status in the kubectl {CONTEXT}
+  Actions: [create|update|delete|status]
   """
   set_output(verbose)
-  if action == 'up':
-    hokusai.stack_up(context)
-  elif action == 'down':
-    hokusai.stack_down(context)
+  if action == 'create':
+    hokusai.stack_create(context)
+  elif action == 'update':
+    hokusai.stack_update(context)
+  elif action == 'delete':
+    hokusai.stack_delete(context)
   elif action == 'status':
     hokusai.stack_status(context)
   else:

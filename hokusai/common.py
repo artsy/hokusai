@@ -46,16 +46,6 @@ def shout(command, print_output=False):
   else:
     return check_output(verbose(command), stderr=STDOUT, shell=True)
 
-def select_context(context):
-  shout("kubectl config use-context %s" % context)
-
-def kubernetes_object(obj, selector=None):
-  if selector is not None:
-    cmd = "kubectl get %s --selector %s -o json" % (obj, selector)
-  else:
-    cmd = "kubectl get %s -o json" % obj
-  return json.loads(shout(cmd))
-
 def k8s_uuid():
   uuid = []
   for i in range(0,5):
