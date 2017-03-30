@@ -20,7 +20,7 @@ def logs(context, timestamps, nlines, follow):
   pods = kctl.get_object('pod', selector="app=%s" % config.project_name)['items']
 
   if follow:
-    processes = [Popen(kctl.command("logs %s%s" % (pod['metadata']['name'], opts)), shell=True) for pod in pods]
+    processes = [Popen(kctl.command("logs %s %s%s" % (pod['metadata']['name'], config.project_name, opts)), shell=True) for pod in pods]
     try:
       for p in processes:
         p.wait()
@@ -29,4 +29,4 @@ def logs(context, timestamps, nlines, follow):
         p.terminate()
   else:
     for pod in pods:
-      shout(kctl.command("logs %s%s" % (pod['metadata']['name'], opts)), print_output=True)
+      shout(kctl.command("logs %s %s%s" % (pod['metadata']['name'], config.project_name, opts)), print_output=True)
