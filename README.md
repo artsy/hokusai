@@ -97,3 +97,14 @@ hokusai install --s3-bucket <bucket name> --s3-key <file key>
 ### Running a console
 
 * `hokusai run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
+
+
+## Development
+
+Install development packages: `pip install -r requirements.txt`
+
+## Testing
+
+`python -m unittest discover test`
+
+Use the `DEBUG=1` flag for boto logging
