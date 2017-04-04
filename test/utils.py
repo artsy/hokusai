@@ -19,7 +19,7 @@ def captured_output():
   finally:
     sys.stdout, sys.stderr = old_out, old_err
 
-def mocked_subprocess(func=None, retval='mocked!'):
+def mocked_subprocess(func=None, retval='mocked!', retcode=0):
 	def _decorate(function):
 		@wraps(function)
 		def wrapper(*args, **kwargs):
@@ -27,9 +27,9 @@ def mocked_subprocess(func=None, retval='mocked!'):
 		  _subprocess_check_call = common.check_call
 		  _subprocess_check_output = common.check_output
 		  try:
-		    common.call = mock.create_autospec(common.call, return_value=retval, return_code=0)
-		    common.check_call = mock.create_autospec(common.check_call, return_value=retval, return_code=0)
-		    common.check_output = mock.create_autospec(common.check_output, return_value=retval, return_code=0)
+		    common.call = mock.create_autospec(common.call, return_value=retcode)
+		    common.check_call = mock.create_autospec(common.check_call, return_value=retcode)
+		    common.check_output = mock.create_autospec(common.check_output, return_value=retval)
 		    return function(*args, **kwargs)
 		  finally:
 		    common.call = _subprocess_call

@@ -60,7 +60,7 @@ class TestCommon(HokusaiTestCase):
     set_output(False)
     self.assertEqual(shout('whoami'), 'hokusai')
 
-  @mocked_subprocess(retval=0)
+  @mocked_subprocess
   def test_returncode(self):
     set_output(False)
     self.assertEqual(returncode('whoami'), 0)
