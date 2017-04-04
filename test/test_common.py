@@ -1,9 +1,10 @@
 import string
 
 from test import HokusaiTestCase
-from test.utils import captured_output, mocked_subprocess
+from test.utils import captured_output
 
 import httpretty
+from mock import patch
 
 from hokusai.common import print_green, print_red, set_output, verbose, k8s_uuid, returncode, shout, get_ecr_login
 
@@ -55,15 +56,23 @@ class TestCommon(HokusaiTestCase):
     for char in list(k8s_uuid()):
       self.assertIn(char, string.lowercase)
 
-  @mocked_subprocess(retval='hokusai')
-  def test_shout(self):
-    set_output(False)
-    self.assertEqual(shout('whoami'), 'hokusai')
+  @patch('hokusai.common.check_output', return_value='hokusai')
+  def test_shout(self, mocked_check_output):
+    with captured_output() as (out, err):
+      self.assertEqual(shout('whoami'), 'hokusai')
+      mocked_check_output.assert_called_once_with('whoami', shell=True, stderr=-2)
 
-  @mocked_subprocess
-  def test_returncode(self):
-    set_output(False)
-    self.assertEqual(returncode('whoami'), 0)
+  @patch('hokusai.common.check_call', return_value=0)
+  def test_shout_returncode(self, mocked_check_call):
+    with captured_output() as (out, err):
+      self.assertEqual(shout('whoami', print_output=True), 0)
+      mocked_check_call.assert_called_once_with('whoami', shell=True, stderr=-2)
+
+  @patch('hokusai.common.call', return_value=0)
+  def test_returncode(self, mocked_call):
+    with captured_output() as (out, err):
+      self.assertEqual(returncode('whoami'), 0)
+      mocked_call.assert_called_once_with('whoami', shell=True, stderr=-2)
 
   @httpretty.activate
   def test_get_ecr_login(self):
