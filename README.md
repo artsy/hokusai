@@ -25,7 +25,7 @@ Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on y
 
 Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
-Now run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
+Run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
 
 To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
 
@@ -36,7 +36,7 @@ hokusai --help
 hokusai {command} --help
 ```
 
-You can add `-v` (Verbose) to any command which will show you details of the commands Hokusai will run.
+You can add `-v` (Verbose) to most commands which will show you details of the individual commands Hokusai will run.
 
 ### Installing Dependencies
 
@@ -48,11 +48,11 @@ Required options:
 
 ### Setting up an existing project
 
-* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
+* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yml files alongside it, and adds a Dockerfile to the current directory.
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
-  - `--framework`: Either "rack" or "nodejs".
+  - `--framework`: "rack", "nodejs", or "elixir".
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
 
@@ -77,11 +77,21 @@ Recommended approach is to upload your `kubectl` config to S3 and use following 
 hokusai install --s3-bucket <bucket name> --s3-key <file key>
 ```
 
+The following commands refer to a Kubernetes context.  By convention, Hokusai looks for both a `staging` and a `production` context available to `kubectl` (usually in `~/.kube/config`).
+
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory, which Hokusai then matches to its respective context.  These files define what Hokusai calls "Stacks".
+
+Similarly, Hokusai creates "Secrets" within a given context by managing a Kubernetes secret object named `{project-name}-secrets`.  Hokusai is not limited to these two contexts, and you can add other contexts as well as other yml files to support them.
+
+Run `hokusai check` to check that `staging` and `production` contexts are available to `kubectl`.
+
 ### Working with Secrets
 
 * `hokusai secrets get` - Prints secrets stored on the Kubernetes server
-* `hokusai secrets set` - Sets secrets on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes Secret object `{project}-secrets`
+* `hokusai secrets set` - Sets secrets on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes Secret object `{project_name}-secrets`
 * `hokusai secrets unset` - Removes secrets stored on the Kubernetes server
+
+Note: Secrets will be automatically injected into containers created by the `hokusai run` command but must be explicity referenced in the stack container environment via `secretKeyRef`.
 
 ### Working with Stacks
 
@@ -98,7 +108,6 @@ hokusai install --s3-bucket <bucket name> --s3-key <file key>
 ### Running a console
 
 * `hokusai run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
-
 
 ## Development
 
