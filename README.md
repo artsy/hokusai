@@ -85,9 +85,10 @@ hokusai install --s3-bucket <bucket name> --s3-key <file key>
 
 ### Working with Stacks
 
-* `hokusai stack up` - Launch a stack for a given Kubernetes context.
-* `hokusai stack down` - Delete a stack defined for a given Kubernetes context.
-* `hokusai stack status` - Print the stack status.
+* `hokusai stack create` - Create a stack in the given Kubernetes context.
+* `hokusai stack update` - Update a stack in the given Kubernetes context.
+* `hokusai stack delete` - Delete a stack in the given Kubernetes context.
+* `hokusai stack status` - Print the stack status in the given Kubernetes context.
 
 ### Deployment
 
