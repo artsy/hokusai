@@ -45,28 +45,28 @@ def stack_destroy(context):
 @command
 def stack_status(context):
   deployment = Deployment(context)
-  deployment_state = deployment.state
-  if deployment_state is None:
-    return -1
-  deployment_data = {
-    'replicas': deployment_state['spec']['replicas'],
-    'tag': deployment.current_tag
-  }
+  deployment_data = []
+  for item in deployment.cache:
+    deployment_data.append({
+      'name': item['metadata']['name'],
+      'replicas': item['spec']['replicas'],
+      'tag': deployment.current_tag
+    })
 
   service = Service(context)
-  service_state = service.state
-  if service_state is None:
-    return -1
-  service_data = {
-    'clusterIP': service_state['spec']['clusterIP'],
-    'ports': service_state['spec']['ports'],
-    'status': service_state['status']
-    }
+  service_data = []
+  for item in service.cache:
+    service_data.append({
+      'target': item['spec']['selector']['app'],
+      'clusterIP': item['spec']['clusterIP'],
+      'ports': item['spec']['ports'],
+      'status': item['status']
+    })
 
-  print_green("Deployment %s" % config.project_name)
+  print_green("Deployments")
   print_green('-----------------------------------------------------------')
   print(yaml.safe_dump(deployment_data, default_flow_style=False))
 
-  print_green("Service %s" % config.project_name)
+  print_green("Services")
   print_green('-----------------------------------------------------------')
   print(yaml.safe_dump(service_data, default_flow_style=False))

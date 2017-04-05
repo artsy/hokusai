@@ -13,7 +13,8 @@ class HokusaiConfig(object):
     config = {
       'project-name': project_name,
       'aws-account-id': aws_account_id,
-      'aws-ecr-region': aws_ecr_region
+      'aws-ecr-region': aws_ecr_region,
+      'deployments': [project_name]
     }
 
     with open(HOKUSAI_CONFIG_FILE, 'w') as f:
@@ -67,5 +68,12 @@ class HokusaiConfig(object):
   @property
   def aws_ecr_registry(self):
     return "%s.dkr.ecr.%s.amazonaws.com/%s" % (self.aws_account_id, self.aws_ecr_region, self.project_name)
+
+  @property
+  def deployments(self):
+    _deployments = self.get('deployments')
+    if _deployments is None:
+      return [self.get('project-name')]
+    return _deployments
 
 config = HokusaiConfig()

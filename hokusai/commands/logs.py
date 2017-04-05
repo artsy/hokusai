@@ -17,7 +17,7 @@ def logs(context, timestamps, nlines, follow):
   if follow:
     opts += ' --follow'
 
-  pods = kctl.get_object('pod', selector="app=%s" % config.project_name)['items']
+  pods = kctl.get_object('pod', selector="app=%s" % config.project_name)
   pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)
 
   if follow:

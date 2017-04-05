@@ -9,7 +9,7 @@ class Deployment(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
-    self.cache = self.kctl.get_object('deployment', selector="app=%s" % config.project_name)
+    self.cache = [i for l in [self.kctl.get_object('deployment', selector="app=%s" % d) for d in config.deployments] for i in l]
 
   def update(self, tag):
     print_green("Deploying %s to %s" % (tag, self.context))
@@ -30,48 +30,41 @@ class Deployment(object):
       print_green("Updated tag %s:%s -> %s:%s"
                   % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
 
-    if len(self.cache['items']) != 1:
-      print_red("Multiple deployments found for %s" % config.project_name)
-      return None
-
-    deployment = self.cache['items'][0]
-    containers = deployment['spec']['template']['spec']['containers']
-    container_names = [container['name'] for container in containers]
-    deployment_targets = [{"name": name, "image": "%s:%s" % (config.aws_ecr_registry, tag)} for name in container_names]
-    patch = {
-      "spec": {
-        "template": {
-          "metadata": {
-            "labels": {"deploymentTimestamp": datetime.datetime.utcnow().strftime("%s%f")}
-          },
-          "spec": {
-            "containers": deployment_targets
+    deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
+    for deployment in self.cache:
+      containers = deployment['spec']['template']['spec']['containers']
+      container_names = [container['name'] for container in containers]
+      deployment_targets = [{"name": name, "image": "%s:%s" % (config.aws_ecr_registry, tag)} for name in container_names]
+      patch = {
+        "spec": {
+          "template": {
+            "metadata": {
+              "labels": {"deploymentTimestamp": deployment_timestamp}
+            },
+            "spec": {
+              "containers": deployment_targets
+            }
           }
         }
       }
-    }
-    shout(self.kctl.command("patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))))
+      shout(self.kctl.command("patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))))
 
   @property
   def state(self):
-    if len(self.cache['items']) != 1:
-      print_red("Multiple deployments found for %s" % config.project_name)
-      return None
-    return self.cache['items'][0]
+    return self.cache
 
   @property
   def current_tag(self):
-    deployment = self.state
-    if deployment is None:
+    images = []
+    for deployment in self.cache:
+      containers = deployment['spec']['template']['spec']['containers']
+      container_names = [container['name'] for container in containers]
+      container_images = [container['image'] for container in containers]
+      if not all(x == container_images[0] for x in container_images):
+        print_red("Deployment's containers do not reference the same image tag")
+        return None
+      images.append(containers[0]['image'])
+    if not all(y == images[0] for y in images):
+      print_red("Deployments do not reference the same image tag")
       return None
-
-    containers = deployment['spec']['template']['spec']['containers']
-    container_names = [container['name'] for container in containers]
-    container_images = [container['image'] for container in containers]
-
-    if not all(x == container_images[0] for x in container_images):
-      print_red("Deployment's containers do not reference the same image tag")
-      return None
-
-    base_image = containers[0]['image']
-    return base_image.rsplit(':', 1)[1]
+    return images[0].rsplit(':', 1)[1]

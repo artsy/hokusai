@@ -14,4 +14,7 @@ class Kubectl(object):
       cmd = self.command("get %s --selector %s -o json" % (obj, selector))
     else:
       cmd = self.command("get %s -o json" % obj)
-    return json.loads(shout(cmd))
+    try:
+      return json.loads(shout(cmd))['items']
+    except ValueError:
+      return []
