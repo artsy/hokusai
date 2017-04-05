@@ -1,6 +1,8 @@
 import os
 
 from hokusai.command import command
+from hokusai.config import config
+from hokusai.ecr import ecr
 from hokusai.common import print_red, print_green, shout, CalledProcessError
 
 @command
@@ -12,6 +14,8 @@ def check():
 
   def check_err(check_item):
     print_red(u'\u2718 ' + check_item + ' not found')
+
+  config.check()
 
   try:
     shout('docker --version')
@@ -34,12 +38,6 @@ def check():
     check_err('kubectl')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.environ.get('HOME'), '.kube', 'config')):
-    check_ok('~/.kube/config')
-  else:
-    check_err('~/.kube/config')
-    return_code += 1
-
   if os.environ.get('AWS_ACCESS_KEY_ID') is not None:
     check_ok('AWS_ACCESS_KEY_ID')
   else:
@@ -50,20 +48,20 @@ def check():
   else:
     check_err('AWS_SECRET_ACCESS_KEY')
 
-  if os.environ.get('AWS_REGION') is not None:
-    check_ok('AWS_REGION')
+  if os.environ.get('AWS_DEFAULT_REGION') is not None:
+    check_ok('AWS_DEFAULT_REGION')
   else:
-    check_err('AWS_REGION')
+    check_err('AWS_DEFAULT_REGION')
 
   if os.environ.get('AWS_ACCOUNT_ID') is not None:
     check_ok('AWS_ACCOUNT_ID')
   else:
     check_err('AWS_ACCOUNT_ID')
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/config.yml')):
-    check_ok('hokusai/config.yml')
+  if ecr.project_repository_exists():
+    check_ok("ECR repo '%s'" % config.project_name)
   else:
-    check_err('hokusai/config.yml')
+    check_err("ECR repo '%s'" % config.project_name)
     return_code += 1
 
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):

@@ -29,7 +29,7 @@ def install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_buc
 @cli.command()
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID')
-@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_REGION', help='Your AWS ECR region (default: $AWS_REGION or \'us-east-1\')')
+@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_DEFAULT_REGION or \'us-east-1\')')
 @click.option('--framework', type=click.Choice(['rack', 'nodejs', 'elixir']), required=True, help='The project framework')
 @click.option('--port', type=click.INT, default=80, help='The port of the service')
 @click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')

@@ -41,7 +41,6 @@ class HokusaiConfig(object):
 
   def set(self, key, value):
     self.check()
-
     config_file = open(HOKUSAI_CONFIG_FILE, 'r')
     config_data = config_file.read()
     config_file.close()

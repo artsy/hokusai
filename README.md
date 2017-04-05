@@ -23,7 +23,7 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on your PATH.
 
-Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
+Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
 Run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
 
@@ -48,7 +48,7 @@ Required options:
 
 ### Setting up an existing project
 
-* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yml files alongside it, and adds a Dockerfile to the current directory.
+* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yml files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
