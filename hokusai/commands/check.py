@@ -3,6 +3,7 @@ import os
 from hokusai.command import command
 from hokusai.config import config
 from hokusai.ecr import ecr
+from hokusai.kubectl import Kubectl
 from hokusai.common import print_red, print_green, shout, CalledProcessError
 
 @command
@@ -42,26 +43,30 @@ def check():
     check_ok('AWS_ACCESS_KEY_ID')
   else:
     check_err('AWS_ACCESS_KEY_ID')
+    return_code += 1
 
   if os.environ.get('AWS_SECRET_ACCESS_KEY') is not None:
     check_ok('AWS_SECRET_ACCESS_KEY')
   else:
     check_err('AWS_SECRET_ACCESS_KEY')
+    return_code += 1
 
   if os.environ.get('AWS_DEFAULT_REGION') is not None:
     check_ok('AWS_DEFAULT_REGION')
   else:
     check_err('AWS_DEFAULT_REGION')
+    return_code += 1
 
   if os.environ.get('AWS_ACCOUNT_ID') is not None:
     check_ok('AWS_ACCOUNT_ID')
   else:
     check_err('AWS_ACCOUNT_ID')
+    return_code += 1
 
   if ecr.project_repository_exists():
-    check_ok("ECR repo '%s'" % config.project_name)
+    check_ok("ECR repository '%s'" % config.project_name)
   else:
-    check_err("ECR repo '%s'" % config.project_name)
+    check_err("ECR repository '%s'" % config.project_name)
     return_code += 1
 
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):
@@ -82,16 +87,17 @@ def check():
     check_err('hokusai/test.yml')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/staging.yml')):
-    check_ok('hokusai/staging.yml')
-  else:
-    check_err('hokusai/staging.yml')
-    return_code += 1
+  for context in ['staging', 'production']:
+    if context in Kubectl('staging').contexts():
+      check_ok("kubectl context '%s'" % context)
+    else:
+      check_err("kubectl context '%s'" % context)
+      return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/production.yml')):
-    check_ok('hokusai/production.yml')
-  else:
-    check_err('hokusai/production.yml')
-    return_code += 1
+    if os.path.isfile(os.path.join(os.getcwd(), "hokusai/%s.yml" % context)):
+      check_ok("hokusai/%s.yml" % context)
+    else:
+      check_err("hokusai/%s.yml" % context)
+      return_code += 1
 
   return return_code

@@ -1,5 +1,7 @@
 import json
 
+import yaml
+
 from hokusai.common import shout
 
 class Kubectl(object):
@@ -18,3 +20,6 @@ class Kubectl(object):
       return json.loads(shout(cmd))['items']
     except ValueError:
       return []
+
+  def contexts(self):
+    return [context['name'] for context in yaml.load(shout('kubectl config view'))['contexts']]
