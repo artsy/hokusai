@@ -2,11 +2,16 @@ from hokusai.command import command
 from hokusai.secret import Secret
 
 @command
-def get_secrets(context):
+def get_secrets(context, secrets):
   secret = Secret(context)
   secret.load()
-  for k, v in secret.all():
-    print("%s=%s" % (k, v))
+  if len(secrets) == 0:
+    for k, v in secret.all():
+      print("%s=%s" % (k, v))
+  else:
+    for k, v in secret.all():
+      if k in secrets:
+        print("%s=%s" % (k, v))
 
 @command
 def set_secrets(context, secrets):

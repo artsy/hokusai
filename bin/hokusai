@@ -111,7 +111,7 @@ def secrets(action, secret, context, verbose):
   unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'"""
   set_output(verbose)
   if action == 'get':
-    hokusai.get_secrets(context)
+    hokusai.get_secrets(context, secret)
   elif action == 'set':
     hokusai.set_secrets(context, secret)
   elif action == 'unset':
