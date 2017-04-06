@@ -10,7 +10,7 @@ env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
 from hokusai.command import command
 from hokusai.config import config
-from hokusai.ecr import ecr
+from hokusai.ecr import ECR
 from hokusai.common import print_green, print_red, build_service, build_deployment, YAML_HEADER
 
 @command
@@ -200,6 +200,7 @@ def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
 
   print_green("Config created in ./hokusai")
 
+  ecr = ECR()
   if ecr.project_repository_exists():
     print_green("ECR repository %s found. Skipping creation." % config.project_name)
     return 0

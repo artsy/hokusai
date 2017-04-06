@@ -27,5 +27,3 @@ class ECR(object):
     except BotoCoreError:
       return False
     return True
-
-ecr = ECR()

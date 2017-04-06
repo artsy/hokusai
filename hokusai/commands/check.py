@@ -2,7 +2,7 @@ import os
 
 from hokusai.command import command
 from hokusai.config import config
-from hokusai.ecr import ecr
+from hokusai.ecr import ECR
 from hokusai.kubectl import Kubectl
 from hokusai.common import print_red, print_green, shout, CalledProcessError
 
@@ -63,6 +63,7 @@ def check():
     check_err('AWS_ACCOUNT_ID')
     return_code += 1
 
+  ecr = ECR()
   if ecr.project_repository_exists():
     check_ok("ECR repository '%s'" % config.project_name)
   else:
