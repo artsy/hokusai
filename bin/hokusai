@@ -8,11 +8,16 @@ import click
 import hokusai
 from hokusai.common import print_red, set_output
 
+CONTEXT_SETTINGS = {
+  'max_content_width': 120,
+  'help_option_names': ['-h', '--help']
+}
+
 @click.group()
 def cli():
     pass
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--kubectl-version', type=click.STRING, default='1.5.2')
 @click.option('--platform', type=click.STRING, default='darwin')
 @click.option('--install-to', type=click.STRING, default='/usr/local/bin')
@@ -26,7 +31,7 @@ def deps(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket
   """
   hokusai.dependencies(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID')
 @click.option('--framework', type=click.Choice(['rack', 'nodejs', 'elixir']), required=True, help='The project framework')
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
@@ -45,14 +50,14 @@ def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
   hokusai.setup(aws_account_id, framework, project_name, aws_ecr_region, port,
                 with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 def check():
   """
   Check hokusai dependencies and configuration
   """
   hokusai.check()
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def dev(skip_build, verbose):
@@ -62,17 +67,16 @@ def dev(skip_build, verbose):
   set_output(verbose)
   hokusai.development(skip_build)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def test(verbose):
-  """
-  Boot the test stack and run the test suite\n
-  Return the exit code of the container with the name 'project-name' in hokusai/config.yml
-  """
+  """Boot the test stack and run the test suite
+
+  Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
   set_output(verbose)
   hokusai.test()
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def push(tag, verbose):
@@ -82,7 +86,7 @@ def push(tag, verbose):
   set_output(verbose)
   hokusai.push(tag)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def tags(verbose):
   """
@@ -91,18 +95,19 @@ def tags(verbose):
   set_output(verbose)
   hokusai.tags()
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
 @click.argument('secret', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def secrets(action, context, secret, verbose):
-  """
-  Actions: [get|set|unset]\n
-  get - print secrets in the kubectl {CONTEXT}\n
-  set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'\n
-  unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'
-  """
+  """Actions: [get|set|unset]
+
+  get - print secrets in the kubectl {CONTEXT}
+
+  set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'
+
+  unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'"""
   set_output(verbose)
   if action == 'get':
     hokusai.get_secrets(context)
@@ -114,18 +119,20 @@ def secrets(action, context, secret, verbose):
     print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
 @click.argument('context', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stack(action, context, verbose):
-  """
-  Actions: [create|update|delete|status]\n
-  create - create the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml\n
-  update - update the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml\n
-  delete - delete the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml\n
-  status - print the stack status in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml
-  """
+  """  Actions: [create|update|delete|status]
+
+  create - create the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml
+
+  update - update the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml
+
+  delete - delete the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml
+
+  status - print the stack status in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml"""
   set_output(verbose)
   if action == 'create':
     hokusai.stack_create(context)
@@ -139,7 +146,7 @@ def stack(action, context, verbose):
     print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('context', type=click.STRING)
 @click.argument('tag', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -151,7 +158,7 @@ def deploy(context, tag, verbose):
   set_output(verbose)
   hokusai.deploy(context, tag)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('from-context', type=click.STRING)
 @click.argument('context', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -163,7 +170,7 @@ def promote(from_context, context, verbose):
   set_output(verbose)
   hokusai.promote(from_context, context)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('context', type=click.STRING)
 @click.argument('command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
@@ -177,7 +184,7 @@ def run(context, command, tty, tag, env, verbose):
   set_output(verbose)
   hokusai.run(context, command, tty, tag, env)
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('context', type=click.STRING)
 @click.option('-t', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-n', '--nlines', type=click.STRING, help='Num lines to follow')
