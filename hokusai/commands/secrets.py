@@ -23,14 +23,8 @@ def get_secrets(context):
 @command
 def set_secrets(context, secrets):
   kctl = Kubectl(context)
-  try:
-    existing_secrets = shout(kctl.command("get secret %s-secrets -o yaml" % config.project_name))
-    secret_data = yaml.load(existing_secrets)['data']
-  except CalledProcessError, e:
-    if 'secrets "%s-secrets" not found' % config.project_name in e.output:
-      secret_data = {}
-    else:
-      raise
+  existing_secrets = shout(kctl.command("get secret %s-secrets -o yaml" % config.project_name))
+  secret_data = yaml.load(existing_secrets)['data']
 
   for secret in secrets:
     if '=' not in secret:
