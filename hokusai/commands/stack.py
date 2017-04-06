@@ -40,7 +40,7 @@ def stack_delete(context):
 
   kctl = Kubectl(context)
   shout(kctl.command("delete -f %s" % kubernetes_yml))
-  print_green("Stack %s deleted" % kubernetes_yml)
+  print_green("Stack %s deleted" % context)
 
 @command
 def stack_status(context):
@@ -62,7 +62,7 @@ def stack_status(context):
       'ports': item['spec']['ports'],
       'status': item['status']
     })
-
+  print('')
   print_green("Deployments")
   print_green('-----------------------------------------------------------')
   print(yaml.safe_dump(deployment_data, default_flow_style=False))

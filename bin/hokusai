@@ -97,10 +97,10 @@ def tags(verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
-@click.argument('context', type=click.STRING)
 @click.argument('secret', type=click.STRING, nargs=-1)
+@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def secrets(action, context, secret, verbose):
+def secrets(action, secret, context, verbose):
   """Actions: [get|set|unset]
 
   get - print secrets in the kubectl {CONTEXT}
@@ -121,7 +121,7 @@ def secrets(action, context, secret, verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
-@click.argument('context', type=click.STRING)
+@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stack(action, context, verbose):
   """  Actions: [create|update|delete|status]
@@ -147,10 +147,10 @@ def stack(action, context, verbose):
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('context', type=click.STRING)
 @click.argument('tag', type=click.STRING)
+@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(context, tag, verbose):
+def deploy(tag, context, verbose):
   """
   Deploy an image tag to the kubectl {CONTEXT}
   and update the tag named {CONTEXT} to reference that tag
@@ -159,8 +159,8 @@ def deploy(context, tag, verbose):
   hokusai.deploy(context, tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('from-context', type=click.STRING)
-@click.argument('context', type=click.STRING)
+@click.option('--from-context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to promote from')
+@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def promote(from_context, context, verbose):
   """
@@ -171,13 +171,13 @@ def promote(from_context, context, verbose):
   hokusai.promote(from_context, context)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('context', type=click.STRING)
 @click.argument('command', type=click.STRING)
+@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to the value of context)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(context, command, tty, tag, env, verbose):
+def run(command, context, tty, tag, env, verbose):
   """
   Launch a new container and run a command in the kubectl {CONTEXT}
   """
@@ -185,7 +185,7 @@ def run(context, command, tty, tag, env, verbose):
   hokusai.run(context, command, tty, tag, env)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('context', type=click.STRING)
+@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
 @click.option('-t', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-n', '--nlines', type=click.STRING, help='Num lines to follow')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')

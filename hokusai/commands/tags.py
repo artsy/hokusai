@@ -21,6 +21,7 @@ def tags():
                                   nextToken=res['nextToken'])
     images += res['imageDetails']
 
+  print('')
   print_green('Image Pushed At           | Image Tags')
   print_green('-----------------------------------------------------------')
   for image in sorted(images, key=itemgetter('imagePushedAt'), reverse=True):
