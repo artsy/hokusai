@@ -31,7 +31,7 @@ def stack_update(context):
   print_green("Stack %s updated" % context)
 
 @command
-def stack_destroy(context):
+def stack_delete(context):
 
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
