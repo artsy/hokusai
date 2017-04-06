@@ -25,7 +25,7 @@ Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on y
 
 Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
-Run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
+Run `hokusai deps` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
 
 To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
 
@@ -40,7 +40,7 @@ You can add `-v` (Verbose) to most commands which will show you details of the i
 
 ### Installing Dependencies
 
-* `hokusai install` - installs and configures kubectl
+* `hokusai deps` - installs and configures kubectl
 
 Required options:
   - `--s3-bucket`: The S3 bucket containing your org's kubectl config file
@@ -68,13 +68,13 @@ Required options:
 * `hokusai tags` - List all image tags in the AWS ECR project repo.
 
 ### Working with Kubernetes
-Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `install` commands provide basic setup for this:
+Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `deps` commands provide basic setup for this:
 ```bash
-hokusai install --help
+hokusai deps --help
 ```
 Recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
 ```bash
-hokusai install --s3-bucket <bucket name> --s3-key <file key>
+hokusai deps --s3-bucket <bucket name> --s3-key <file key>
 ```
 
 The following commands refer to a Kubernetes context.  By convention, Hokusai looks for both a `staging` and a `production` context available to `kubectl` (usually in `~/.kube/config`).

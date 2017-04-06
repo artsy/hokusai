@@ -20,11 +20,11 @@ def cli():
 @click.option('--s3-bucket', type=click.STRING, required=True, help="The S3 bucket name containing your org's kubectl config file")
 @click.option('--s3-key', type=click.STRING, required=True, help="The S3 key of your org's kubectl config file")
 @click.option('--s3-bucket-region', type=click.STRING, default='us-east-1', help="The S3 bucket region")
-def install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region):
+def deps(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region):
   """
   Install and configure kubectl
   """
-  hokusai.install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region)
+  hokusai.dependencies(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region)
 
 @cli.command()
 @click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID')
