@@ -1,7 +1,6 @@
 import os
 
 from collections import OrderedDict
-from tempfile import NamedTemporaryFile
 
 import yaml
 
@@ -11,6 +10,7 @@ from hokusai.common import print_red, print_green, shout
 from hokusai.deployment import Deployment
 from hokusai.service import Service
 from hokusai.kubectl import Kubectl
+from hokusai.secret import Secret
 
 @command
 def stack_create(context):
@@ -19,24 +19,8 @@ def stack_create(context):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
-  kctl = Kubectl(context)
-  secret_yaml = OrderedDict([
-    ('apiVersion', 'v1'),
-    ('kind', 'Secret'),
-    ('metadata', {
-      'labels': {'app': config.project_name},
-      'name': "%s-secrets" % config.project_name
-    }),
-    ('type', 'Opaque'),
-    ('data', {})
-  ])
-  f = NamedTemporaryFile(delete=False)
-  f.write(yaml.safe_dump(secret_yaml, default_flow_style=False))
-  f.close()
-  try:
-    shout(kctl.command("create -f %s" % f.name))
-  finally:
-    os.unlink(f.name)
+  secret = Secret(context)
+  secret.create()
   print_green("Created secret %s-secrets" % config.project_name)
 
   shout(kctl.command("create -f %s" % kubernetes_yml))
@@ -60,8 +44,8 @@ def stack_delete(context):
     print_red("Yaml file %s does not exist for given context." % kubernetes_yml)
     return -1
 
-  kctl = Kubectl(context)
-  shout(kctl.command("delete secret %s-secrets" % config.project_name))
+  secret = Secret(context)
+  secret.destroy()
   print_green("Deleted secret %s-secrets" % config.project_name)
 
   shout(kctl.command("delete -f %s" % kubernetes_yml))
