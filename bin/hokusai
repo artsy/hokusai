@@ -9,6 +9,7 @@ import hokusai
 from hokusai.common import print_red, set_output
 
 CONTEXT_SETTINGS = {
+  'terminal_width': 120,
   'max_content_width': 120,
   'help_option_names': ['-h', '--help']
 }
@@ -159,13 +160,13 @@ def deploy(tag, context, verbose):
   hokusai.deploy(context, tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--from-context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to promote from')
-@click.option('--context', type=click.Choice(['staging', 'production']), required=True, help='The kubectl context to target')
+@click.option('--from', 'from_context', type=click.Choice(['staging', 'production']), default='staging', help='The kubectl context to promote from (default: staging)')
+@click.option('--to', 'context', type=click.Choice(['staging', 'production']), default='production', help='The kubectl context to promote (default: production)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def promote(from_context, context, verbose):
   """
-  Update the deployment on {CONTEXT} with the image tag currently deployed on {FROM_CONTEXT}
-  and update the tag named {CONTEXT} to reference that tag
+  Update the deployment on the {TO} context with the image tag currently deployed on {FROM} context
+  and update the tag named {TO} to reference the same image tag
   """
   set_output(verbose)
   hokusai.promote(from_context, context)
