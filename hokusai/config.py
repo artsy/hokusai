@@ -1,6 +1,8 @@
 import os
 import sys
 
+from collections import OrderedDict
+
 import yaml
 
 from hokusai.common import print_red, HOKUSAI_CONFIG_FILE, YAML_HEADER
@@ -10,12 +12,12 @@ class HokusaiConfigError(Exception):
 
 class HokusaiConfig(object):
   def create(self, project_name, aws_account_id, aws_ecr_region):
-    config = {
-      'project-name': project_name,
-      'aws-account-id': aws_account_id,
-      'aws-ecr-region': aws_ecr_region,
-      'deployments': [project_name]
-    }
+    config = OrderedDict([
+      ('aws-account-id', aws_account_id),
+      ('aws-ecr-region', aws_ecr_region),
+      ('project-name', project_name),
+      ('deployments', [project_name])
+    ])
 
     with open(HOKUSAI_CONFIG_FILE, 'w') as f:
       payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
@@ -38,19 +40,6 @@ class HokusaiConfig(object):
       return config[key]
     except KeyError:
       return None
-
-  def set(self, key, value):
-    self.check()
-    config_file = open(HOKUSAI_CONFIG_FILE, 'r')
-    config_data = config_file.read()
-    config_file.close()
-    config = yaml.safe_load(config_data)
-
-    config[key] = value
-    with open(HOKUSAI_CONFIG_FILE, 'w') as f:
-      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
-      f.write(payload)
-    return key, value
 
   @property
   def project_name(self):
