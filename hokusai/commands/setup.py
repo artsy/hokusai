@@ -14,7 +14,7 @@ from hokusai.ecr import ecr
 from hokusai.common import print_green, print_red, build_service, build_deployment, YAML_HEADER
 
 @command
-def setup(project_name, aws_account_id, aws_ecr_region, framework, port,
+def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
           with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))

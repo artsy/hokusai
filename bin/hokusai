@@ -27,22 +27,22 @@ def install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_buc
   hokusai.install(kubectl_version, platform, install_to, install_kubeconfig_to, s3_bucket, s3_key, s3_bucket_region)
 
 @cli.command()
-@click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID')
-@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_DEFAULT_REGION or \'us-east-1\')')
 @click.option('--framework', type=click.Choice(['rack', 'nodejs', 'elixir']), required=True, help='The project framework')
-@click.option('--port', type=click.INT, default=80, help='The port of the service')
+@click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
+@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_REGION or \'us-east-1\')')
+@click.option('--port', type=click.INT, default=80, help='The port of the service (default: 80)')
 @click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')
 @click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
 @click.option('--with-mongodb', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
 @click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
 @click.option('--with-rabbitmq', type=click.BOOL, is_flag=True, help='Include a RabbitMQ service')
-def setup(project_name, aws_account_id, aws_ecr_region, framework, port,
+def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
           with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
   """
   Set up Hokusai for the current project
   """
-  hokusai.setup(project_name, aws_account_id, aws_ecr_region, framework, port,
+  hokusai.setup(aws_account_id, framework, project_name, aws_ecr_region, port,
                 with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq)
 
 @cli.command()
@@ -66,7 +66,8 @@ def dev(skip_build, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def test(verbose):
   """
-  Boot the test stack and run the test suite
+  Boot the test stack and run the test suite\n
+  Return the exit code of the container with the name 'project-name' in hokusai/config.yml
   """
   set_output(verbose)
   hokusai.test()

@@ -105,9 +105,13 @@ Note: Secrets will be automatically injected into containers created by the `hok
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
 * `hokusai promote` - Update the Kubernetes deployment in a given context to match the deployment in another context
 
-### Running a console
+### Running a command
 
 * `hokusai run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
+
+### Retrieving container logs
+
+* `hokusai logs` - Print the logs from your application containers
 
 ## Development
 
