@@ -98,7 +98,7 @@ def tags(verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def secrets(action, context, secret, verbose):
   """
-  Actions [get|set|unset]:\n
+  Actions: [get|set|unset]\n
   get - print secrets in the kubectl {CONTEXT}\n
   set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'\n
   unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'
@@ -120,7 +120,11 @@ def secrets(action, context, secret, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stack(action, context, verbose):
   """
-  Actions: [create|update|delete|status]
+  Actions: [create|update|delete|status]\n
+  create - create the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml\n
+  update - update the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml\n
+  delete - delete the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml\n
+  status - print the stack status in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml
   """
   set_output(verbose)
   if action == 'create':
