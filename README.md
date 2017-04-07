@@ -29,6 +29,8 @@ Run `hokusai deps` to install Hokusai's dependencies.  You'll need to provide th
 
 To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
 
+To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
+
 ## Use
 
 ```
