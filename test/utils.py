@@ -3,12 +3,6 @@ import sys
 from contextlib import contextmanager
 from StringIO import StringIO
 
-from functools import wraps
-
-import mock
-
-from hokusai import common
-
 @contextmanager
 def captured_output():
   new_out, new_err = StringIO(), StringIO()

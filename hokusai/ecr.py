@@ -1,3 +1,5 @@
+import base64
+
 import boto3
 from botocore.exceptions import BotoCoreError
 
@@ -27,3 +29,10 @@ class ECR(object):
     except BotoCoreError:
       return False
     return True
+
+  def get_login(self):
+    res = self.client.get_authorization_token(registryIds=[str(config.aws_account_id)])['authorizationData'][0]
+    token = base64.b64decode(res['authorizationToken'])
+    username = token.split(':')[0]
+    password = token.split(':')[1]
+    return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])

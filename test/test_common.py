@@ -1,21 +1,16 @@
 import string
 
-from test import HokusaiTestCase
-from test.utils import captured_output
-
-import httpretty
+import yaml
 from mock import patch
 
-import yaml
+from test import HokusaiUnitTestCase
+from test.utils import captured_output
 
-from hokusai.common import print_green, print_red, set_output, verbose, returncode, shout, k8s_uuid, get_ecr_login, build_deployment, build_service
+from hokusai.common import print_green, print_red, set_output, verbose, returncode, shout, k8s_uuid, build_deployment, build_service
 
 TEST_MESSAGE = 'Ohai!'
 
-httpretty.enable()
-httpretty.HTTPretty.allow_net_connect = False
-
-class TestCommon(HokusaiTestCase):
+class TestCommon(HokusaiUnitTestCase):
   def test_print_green(self):
     with captured_output() as (out, err):
       print_green(TEST_MESSAGE)
@@ -75,13 +70,6 @@ class TestCommon(HokusaiTestCase):
     with captured_output() as (out, err):
       self.assertEqual(returncode('whoami'), 0)
       mocked_call.assert_called_once_with('whoami', shell=True, stderr=-2)
-
-  @httpretty.activate
-  def test_get_ecr_login(self):
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
-                           body='{"authorizationData":[{"authorizationToken":"QVdTOjc2VzhZRVVGSERTQUU5OERGREhTRlNERklVSFNEQUpLR0tTQURGR0tERg==","expiresAt":1E9,"proxyEndpoint":"https://12345.dkr.ecr.us-east-1.amazonaws.com"}]}',
-                           content_type="application/x-amz-json-1.1")
-    self.assertEqual(get_ecr_login('12345'), 'docker login -u AWS -p 76W8YEUFHDSAE98DFDHSFSDFIUHSDAJKGKSADFGKDF -e none https://12345.dkr.ecr.us-east-1.amazonaws.com')
 
   def test_build_deployment(self):
     basic_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80'))

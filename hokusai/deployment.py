@@ -3,7 +3,8 @@ import json
 
 from hokusai.config import config
 from hokusai.kubectl import Kubectl
-from hokusai.common import print_red, print_green, shout, get_ecr_login
+from hokusai.ecr import ECR
+from hokusai.common import print_red, print_green, shout
 
 class Deployment(object):
   def __init__(self, context):
@@ -15,7 +16,7 @@ class Deployment(object):
     print_green("Deploying %s to %s" % (tag, self.context))
 
     if self.context != tag:
-      shout(get_ecr_login(config.aws_account_id))
+      shout(ECR().get_login())
 
       shout("docker pull %s:%s" % (config.aws_ecr_registry, tag))
 

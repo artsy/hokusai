@@ -1,9 +1,7 @@
-import os
 import signal
 import string
 import random
 import json
-import base64
 
 from collections import OrderedDict
 
@@ -13,8 +11,6 @@ import yaml
 import boto3
 
 from termcolor import cprint
-
-HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
 
 EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
 
@@ -50,14 +46,6 @@ def k8s_uuid():
   for i in range(0,5):
     uuid.append(random.choice(string.lowercase))
   return ''.join(uuid)
-
-def get_ecr_login(aws_account_id):
-  client = boto3.client('ecr')
-  res = client.get_authorization_token(registryIds=[str(aws_account_id)])['authorizationData'][0]
-  token = base64.b64decode(res['authorizationToken'])
-  username = token.split(':')[0]
-  password = token.split(':')[1]
-  return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])
 
 def build_deployment(name, image, target_port, environment=None, always_pull=False):
   container = {

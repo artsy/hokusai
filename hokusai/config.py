@@ -5,7 +5,9 @@ from collections import OrderedDict
 
 import yaml
 
-from hokusai.common import print_red, HOKUSAI_CONFIG_FILE, YAML_HEADER
+from hokusai.common import print_red, YAML_HEADER
+
+HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
 
 class HokusaiConfigError(Exception):
   pass
