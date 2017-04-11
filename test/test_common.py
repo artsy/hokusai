@@ -6,7 +6,9 @@ from test.utils import captured_output
 import httpretty
 from mock import patch
 
-from hokusai.common import print_green, print_red, set_output, verbose, k8s_uuid, returncode, shout, get_ecr_login
+import yaml
+
+from hokusai.common import print_green, print_red, set_output, verbose, returncode, shout, k8s_uuid, get_ecr_login, build_deployment, build_service
 
 TEST_MESSAGE = 'Ohai!'
 
@@ -80,3 +82,31 @@ class TestCommon(HokusaiTestCase):
                            body='{"authorizationData":[{"authorizationToken":"QVdTOjc2VzhZRVVGSERTQUU5OERGREhTRlNERklVSFNEQUpLR0tTQURGR0tERg==","expiresAt":1E9,"proxyEndpoint":"https://12345.dkr.ecr.us-east-1.amazonaws.com"}]}',
                            content_type="application/x-amz-json-1.1")
     self.assertEqual(get_ecr_login('12345'), 'docker login -u AWS -p 76W8YEUFHDSAE98DFDHSFSDFIUHSDAJKGKSADFGKDF -e none https://12345.dkr.ecr.us-east-1.amazonaws.com')
+
+  def test_build_deployment(self):
+    basic_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80'))
+    self.assertEqual(basic_deployment['kind'], 'Deployment')
+    self.assertEqual(basic_deployment['apiVersion'], 'extensions/v1beta1')
+    self.assertEqual(basic_deployment['metadata'], {'name': 'foo'})
+    self.assertEqual(basic_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo', 'ports': [{'containerPort': '80'}]}])
+    self.assertEqual(basic_deployment['spec']['template']['metadata'], {'labels': {'app': 'foo'}, 'namespace': 'default', 'name': 'foo'})
+    self.assertEqual(basic_deployment['spec']['replicas'], 1)
+
+    environmental_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80', environment={'FOO': 'BAR'}))
+    self.assertEqual(environmental_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo', 'env': {'FOO': 'BAR'}, 'ports': [{'containerPort': '80'}]}])
+
+    always_pulling_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80', always_pull=True))
+    self.assertEqual(always_pulling_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'imagePullPolicy': 'Always', 'ports': [{'containerPort': '80'}], 'name': 'foo'}])
+
+  def test_build_service(self):
+    basic_service = yaml.load(build_service('foo', '80'))
+    self.assertEqual(basic_service['kind'], 'Service')
+    self.assertEqual(basic_service['apiVersion'], 'v1')
+    self.assertEqual(basic_service['metadata'], {'labels': {'app': 'foo'}, 'namespace': 'default', 'name': 'foo'})
+    self.assertEqual(basic_service['spec'], {'type': 'ClusterIP', 'ports': [{'protocol': 'TCP', 'targetPort': '80', 'port': '80'}], 'selector': {'app': 'foo'}})
+
+    alternate_port_service = yaml.load(build_service('foo', '80', target_port='8080'))
+    self.assertEqual(alternate_port_service['spec'], {'type': 'ClusterIP', 'ports': [{'protocol': 'TCP', 'targetPort': '8080', 'port': '80'}], 'selector': {'app': 'foo'}})
+
+    external_service = yaml.load(build_service('foo', '80', internal=False))
+    self.assertEqual(external_service['spec'], {'type': 'LoadBalancer', 'sessionAffinity': 'None', 'ports': [{'protocol': 'TCP', 'targetPort': '80', 'port': '80'}], 'selector': {'app': 'foo'}})
