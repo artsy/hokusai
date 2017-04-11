@@ -117,10 +117,30 @@ Note: Secrets will be automatically injected into containers created by the `hok
 
 ## Development
 
-Install development packages: `pip install -r requirements.txt`
+- Install development packages: `pip install -r requirements.txt`
+
+Hokusai can be run directly with `python bin/hokusai`
+
+- Install [minikube](https://github.com/kubernetes/minikube)
+
+To install and configure minikube on Darwin using the xhyve driver:
+
+```
+brew install docker-machine-driver-xhyve
+sudo chown root:wheel /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+sudo chmod u+s /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.18.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+minikube config set vm-driver xhyve
+```
+
+Test the installation by running `minikube start` then `minikube status`.  This should show `minikubeVM: Running` as well as `localkube: Running`.
+
+Note: To access minikube's docker daemon directly. run `eval $(minikube docker-env)`.  `docker` commands should now  reference the docker daemon running on the minikube VM.  `docker ps` should show Kubernetes service component containers kube-dns and kubernetes-dashboard`
 
 ## Testing
 
-`python -m unittest discover test`
+Integration tests require minikube installed and configured as above.  It will start a cluster before running integration tests and delete it afterwards.
+
+Test can be run with `python -m unittest discover test`
 
 Use the `DEBUG=1` flag for boto logging
