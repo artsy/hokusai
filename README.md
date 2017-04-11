@@ -141,6 +141,8 @@ Note: To access minikube's docker daemon directly. run `eval $(minikube docker-e
 
 Integration tests require minikube installed and configured as above.  It will start a cluster before running integration tests and delete it afterwards.
 
-Test can be run with `python -m unittest discover test`
+All tests can be run with `python -m unittest discover test`
+
+Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
 Use the `DEBUG=1` flag for boto logging
