@@ -6,7 +6,6 @@ import sys
 import click
 
 import hokusai
-from hokusai.common import print_red, set_output
 
 CONTEXT_SETTINGS = {
   'terminal_width': 120,
@@ -65,7 +64,7 @@ def dev(skip_build, verbose):
   """
   Boot the development stack
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.development(skip_build)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -74,7 +73,7 @@ def test(verbose):
   """Boot the test stack and run the test suite
 
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.test()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -84,7 +83,7 @@ def push(tag, verbose):
   """
   Build the project and push the image to the project repo with the given tag
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.push(tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -93,7 +92,7 @@ def tags(verbose):
   """
   Show image tags in the project repo
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.tags()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -109,7 +108,7 @@ def secrets(action, secret, context, verbose):
   set - set {SECRET} in the kubectl {CONTEXT} - each {SECRET} must be in of form 'KEY=VALUE'
 
   unset - Unset {SECRET} from the kubectl {CONTEXT} - each {SECRET} must be of the form 'KEY'"""
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   if action == 'get':
     hokusai.get_secrets(context, secret)
   elif action == 'set':
@@ -117,7 +116,7 @@ def secrets(action, secret, context, verbose):
   elif action == 'unset':
     hokusai.unset_secrets(context, secret)
   else:
-    print_red("Error: Invalid action %s" % action)
+    hokusai.common.print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -134,7 +133,7 @@ def stack(action, context, verbose):
   delete - delete the stack in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml
 
   status - print the stack status in the kubectl {CONTEXT} defined in ./hokusai/{CONTEXT}.yml"""
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   if action == 'create':
     hokusai.stack_create(context)
   elif action == 'update':
@@ -144,7 +143,7 @@ def stack(action, context, verbose):
   elif action == 'status':
     hokusai.stack_status(context)
   else:
-    print_red("Error: Invalid action %s" % action)
+    hokusai.common.print_red("Error: Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -156,7 +155,7 @@ def deploy(tag, context, verbose):
   Deploy an image tag to the kubectl {CONTEXT}
   and update the tag named {CONTEXT} to reference that tag
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.deploy(context, tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -168,7 +167,7 @@ def promote(from_context, context, verbose):
   Update the deployment on the {TO} context with the image tag currently deployed on {FROM} context
   and update the tag named {TO} to reference the same image tag
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.promote(from_context, context)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -182,7 +181,7 @@ def run(command, context, tty, tag, env, verbose):
   """
   Launch a new container and run a command in the kubectl {CONTEXT}
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.run(context, command, tty, tag, env)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -195,7 +194,7 @@ def logs(context, timestamps, nlines, follow, verbose):
   """
   Get container logs from the selected {CONTEXT}
   """
-  set_output(verbose)
+  hokusai.common.set_output(verbose)
   hokusai.logs(context, timestamps, nlines, follow)
 
 if __name__ == '__main__':
