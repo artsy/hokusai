@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from hokusai.common import shout
+from hokusai.common import shout, set_output
 from hokusai import config
 
 config.HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'test', 'fixtures', 'config.yml')
@@ -19,8 +19,14 @@ class HokusaiUnitTestCase(HokusaiTestCase):
 class HokusaiIntegrationTestCase(HokusaiTestCase):
   @classmethod
   def setUpClass(cls):
-    shout('minikube start', print_output=True)
+    set_output(False)
+    if os.environ.get('DEBUG') is '1':
+      print('Starting minikube...')
+    shout('minikube start', print_output=os.environ.get('DEBUG') is '1')
 
   @classmethod
   def tearDownClass(cls):
-    shout('minikube destroy', print_output=True)
+    set_output(False)
+    if os.environ.get('DEBUG') is '1':
+      print('Deleting minikube...')
+    shout('minikube delete', print_output=os.environ.get('DEBUG') is '1')
