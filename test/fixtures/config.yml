@@ -1,4 +1,4 @@
 ---
-aws-account-id: '12345'
+aws-account-id: '123456789012'
 aws-ecr-region: us-east-1
 project-name: foo
