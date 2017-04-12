@@ -2,13 +2,13 @@ import os
 
 import httpretty
 
-from test import HokusaiUnitTestCase
+from test import HokusaiIntegrationTestCase
 from hokusai.ecr import ECR
 
 httpretty.enable()
 httpretty.HTTPretty.allow_net_connect = False
 
-class TestECR(HokusaiUnitTestCase):
+class TestECR(HokusaiIntegrationTestCase):
   def setUp(self):
     self.ecr = ECR()
 

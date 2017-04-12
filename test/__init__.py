@@ -17,16 +17,4 @@ class HokusaiUnitTestCase(HokusaiTestCase):
   pass
 
 class HokusaiIntegrationTestCase(HokusaiTestCase):
-  @classmethod
-  def setUpClass(cls):
-    set_output(False)
-    if os.environ.get('DEBUG') is '1':
-      print('Starting minikube...')
-    shout('minikube start', print_output=os.environ.get('DEBUG') is '1')
-
-  @classmethod
-  def tearDownClass(cls):
-    set_output(False)
-    if os.environ.get('DEBUG') is '1':
-      print('Deleting minikube...')
-    shout('minikube delete', print_output=os.environ.get('DEBUG') is '1')
+  pass
