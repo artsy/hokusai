@@ -121,17 +121,31 @@ Note: Secrets will be automatically injected into containers created by the `hok
 
 Hokusai can be run directly with `python bin/hokusai`
 
-- Install [minikube](https://github.com/kubernetes/minikube)
+[Minikube](https://github.com/kubernetes/minikube)
 
-To install and configure minikube on Darwin using the xhyve driver:
+- [Install](https://github.com/kubernetes/minikube/releases) and [Configure](https://github.com/kubernetes/minikube/blob/master/DRIVERS.md) minikube
 
-```
-brew install docker-machine-driver-xhyve
-sudo chown root:wheel /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
-sudo chmod u+s /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.18.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
-minikube config set vm-driver xhyve
-```
+  - On Darwin with the xhyve driver:
+
+    ```
+    brew install docker-machine-driver-xhyve
+    sudo chown root:wheel /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+    sudo chmod u+s /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.18.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+    minikube config set vm-driver xhyve
+    ```
+
+- On Debian/Ubuntu with the kvm driver:
+  ```
+  export DEBIAN_FRONTEND=noninteractive
+  sudo curl -L https://github.com/dhiltgen/docker-machine-kvm/releases/download/v0.7.0/docker-machine-driver-kvm -o /usr/local/bin/docker-machine-driver-kvm
+  sudo chmod +x /usr/local/bin/docker-machine-driver-kvm
+  sudo apt-get -y install libvirt-bin qemu-kvm
+  sudo usermod -a -G libvirtd $(whoami)
+  newgrp libvirtd
+  curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.18.0/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+  minikube config set vm-driver kvm
+  ```
 
 Test the installation by running `minikube start` then `minikube status`.  This should show `minikubeVM: Running` as well as `localkube: Running`.
 
@@ -139,10 +153,14 @@ Note: To access minikube's docker daemon directly. run `eval $(minikube docker-e
 
 ## Testing
 
-Integration tests require minikube installed and configured as above.  It will start a cluster before running integration tests and delete it afterwards.
+All tests can be run with `python -m unittest discover test`.
 
-All tests can be run with `python -m unittest discover test`
+System tests require `kubectl` installed and configured and minikube running locally (`minikube start`).
+
+Only run unit tests: `python -m unittest discover test.unit`
+Only run integration tests: `python -m unittest discover test.integration`
+Only run system tests: `python -m unittest discover test.system`
 
 Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
-Use the `DEBUG=1` flag for boto logging
+Set the `DEBUG=1` environemnt variable for boto logging
