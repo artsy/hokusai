@@ -23,7 +23,8 @@ def stack_create(context):
   secret.create()
   print_green("Created secret %s-secrets" % config.project_name)
 
-  shout(kctl.command("create -f %s" % kubernetes_yml))
+  kctl = Kubectl(context)
+  shout(kctl.command("apply -f %s" % kubernetes_yml))
   print_green("Created stack %s" % context)
 
 @command
@@ -48,6 +49,7 @@ def stack_delete(context):
   secret.destroy()
   print_green("Deleted secret %s-secrets" % config.project_name)
 
+  kctl = Kubectl(context)
   shout(kctl.command("delete -f %s" % kubernetes_yml))
   print_green("Deleted stack %s" % context)
 
