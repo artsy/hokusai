@@ -54,7 +54,7 @@ Required options:
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
-  - `--framework`: "rack", "nodejs", or "elixir".
+  - `--project-type`: "ruby-rack", "ruby-rails", "nodejs", "elixir", or "python-wsgi.
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
 

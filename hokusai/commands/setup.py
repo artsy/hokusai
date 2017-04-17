@@ -14,14 +14,14 @@ from hokusai.ecr import ECR
 from hokusai.common import print_green, print_red, build_service, build_deployment, YAML_HEADER
 
 @command
-def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
           with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
   config.create(project_name.lower().replace('_', '-'), aws_account_id, aws_ecr_region)
 
-  if framework == 'rack':
+  if project_type == 'ruby-rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
     base_image = 'ruby:latest'
     run_command = 'bundle exec rackup'
@@ -34,7 +34,20 @@ def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
       'production': [{'name': 'RACK_ENV', 'value': 'production'}]
     }
 
-  elif framework == 'nodejs':
+  elif project_type == 'ruby-rails':
+    dockerfile = env.get_template("Dockerfile-ruby.j2")
+    base_image = 'ruby:latest'
+    run_command = 'bundle exec rails server'
+    development_command = 'bundle exec rails server'
+    test_command = 'bundle exec rake'
+    runtime_environment = {
+      'development': ["RAILS_ENV=development"],
+      'test': ["RAILS_ENV=test"],
+      'staging': [{'name': 'RAILS_ENV', 'value': 'staging'}],
+      'production': [{'name': 'RAILS_ENV', 'value': 'production'}]
+    }
+
+  elif project_type == 'nodejs':
     dockerfile = env.get_template("Dockerfile-node.j2")
     base_image = 'node:latest'
     run_command = 'node index.js'
@@ -47,7 +60,7 @@ def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
       'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
-  elif framework == 'elixir':
+  elif project_type == 'elixir':
     dockerfile = env.get_template("Dockerfile-elixir.j2")
     base_image = 'elixir:latest'
     run_command = 'mix run --no-halt'
@@ -58,6 +71,19 @@ def setup(aws_account_id, framework, project_name, aws_ecr_region, port,
       'test': ["MIX_ENV=test"],
       'staging': [{'name': 'MIX_ENV', 'value': 'prod'}],
       'production': [{'name': 'MIX_ENV', 'value': 'prod'}]
+    }
+
+  elif project_type == 'python-wsgi':
+    dockerfile = env.get_template("Dockerfile-python.j2")
+    base_image = 'python:latest'
+    run_command = "gunicorn -b 0.0.0.0:%s app" % port
+    development_command = "python -m werkzeug.serving -b 0.0.0.0:%s %s" % (port, project_name)
+    test_command = 'python -m unittest discover .'
+    runtime_environment = {
+      'development': ["PYTHON_ENV=development"],
+      'test': ["PYTHON_ENV=test"],
+      'staging': [{'name': 'PYTHON_ENV', 'value': 'staging'}],
+      'production': [{'name': 'PYTHON_ENV', 'value': 'production'}]
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
