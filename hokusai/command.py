@@ -7,7 +7,11 @@ def command(func):
   @wraps(func)
   def wrapper(*args, **kwargs):
     try:
-      retval = func(*args, **kwargs)
+      result = func(*args, **kwargs)
+      if result is None:
+        sys.exit(0)
+      else:
+        sys.exit(result)
     except SystemExit:
       raise
     except KeyboardInterrupt:
@@ -20,8 +24,4 @@ def command(func):
       if hasattr(e, 'message'):
         print_red("ERROR: %s" % e.message)
       sys.exit(-1)
-    if retval is None:
-      sys.exit(0)
-    else:
-      sys.exit(retval)
   return wrapper

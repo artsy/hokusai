@@ -155,11 +155,10 @@ Note: To access minikube's docker daemon directly. run `eval $(minikube docker-e
 
 All tests can be run with `python -m unittest discover test`.
 
-System tests require `kubectl` installed and configured and minikube running locally (`minikube start`).
+Integration tests require `kubectl` installed and configured and minikube running locally (`minikube start`).
 
 Only run unit tests: `python -m unittest discover test.unit`
 Only run integration tests: `python -m unittest discover test.integration`
-Only run system tests: `python -m unittest discover test.system`
 
 Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
