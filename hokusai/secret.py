@@ -44,7 +44,11 @@ class Secret(object):
 
   def load(self):
     payload = shout(self.kctl.command("get secret %s-secrets -o yaml" % config.project_name))
-    self.struct['data'] = yaml.load(payload)['data']
+    struct = yaml.load(payload)
+    if 'data' in struct:
+      self.struct['data'] = struct['data']
+    else:
+      self.struct['data'] = {}
 
   def save(self):
     f = self._to_file()
