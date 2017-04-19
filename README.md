@@ -50,7 +50,7 @@ Required options:
 
 ### Setting up an existing project
 
-* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yml files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
+* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
@@ -79,13 +79,7 @@ Recommended approach is to upload your `kubectl` config to S3 and use following 
 hokusai deps --s3-bucket <bucket name> --s3-key <file key>
 ```
 
-The following commands refer to a Kubernetes context.  By convention, Hokusai looks for both a `staging` and a `production` context available to `kubectl` (usually in `~/.kube/config`).
-
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory, which Hokusai then matches to its respective context.  These files define what Hokusai calls "Stacks".
-
-Similarly, Hokusai creates "Secrets" within a given context by managing a Kubernetes secret object named `{project-name}-secrets`.  Hokusai is not limited to these two contexts, and you can add other contexts as well as other yml files to support them.
-
-Run `hokusai check` to check that `staging` and `production` contexts are available to `kubectl`.
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `secrets`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
 
 ### Working with Secrets
 
@@ -97,15 +91,15 @@ Note: Secrets will be automatically injected into containers created by the `hok
 
 ### Working with Stacks
 
-* `hokusai stack create` - Create a stack in the given Kubernetes context.
-* `hokusai stack update` - Update a stack in the given Kubernetes context.
-* `hokusai stack delete` - Delete a stack in the given Kubernetes context.
-* `hokusai stack status` - Print the stack status in the given Kubernetes context.
+* `hokusai stack create` - Create a stack.
+* `hokusai stack update` - Update a stack.
+* `hokusai stack delete` - Delete a stack.
+* `hokusai stack status` - Print the stack status.
 
 ### Deployment
 
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
-* `hokusai promote` - Update the Kubernetes deployment in a given context to match the deployment in another context
+* `hokusai promote` - Update the Kubernetes deployment on production to match the deployment on staging.
 
 ### Running a command
 
