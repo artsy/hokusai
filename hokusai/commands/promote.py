@@ -3,12 +3,12 @@ from hokusai.common import print_green
 from hokusai.deployment import Deployment
 
 @command
-def promote(from_context, context):
-  deploy_from = Deployment(from_context)
+def promote():
+  deploy_from = Deployment('staging')
   tag = deploy_from.current_tag
   if tag is None:
     return -1
 
-  deploy_to = Deployment(context)
+  deploy_to = Deployment('production')
   deploy_to.update(tag)
-  print_green("Promoted %s to %s from %s" % (context, tag, from_context))
+  print_green("Promoted staging to production from %s" % tag)
