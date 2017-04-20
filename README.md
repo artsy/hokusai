@@ -17,6 +17,8 @@ If you use homebrew, install Docker for Mac with: `brew tap caskroom/cask && bre
 
 2) [Docker Compose](https://docs.docker.com/compose/)
 
+3) [Git](https://git-scm.com/)
+
 If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `(sudo) pip install docker-compose`.
 
 ## Setup
@@ -66,7 +68,7 @@ Required options:
 
 ### Working with Images
 
-* `hokusai push` - Build and push and image to the AWS ECR project repo.
+* `hokusai push` - Build and push an image to the AWS ECR project repo, by default tagged as the output of `git rev-parse HEAD`.
 * `hokusai images` - List image metadata in the AWS ECR project repo.
 
 ### Working with Kubernetes
