@@ -96,12 +96,12 @@ def push(tag, verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def tags(verbose):
+def images(verbose):
   """
-  Show image tags in the project repo
+  List image metadata in the project repo
   """
   hokusai.common.set_output(verbose)
-  hokusai.tags()
+  hokusai.images()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
@@ -112,19 +112,27 @@ def tags(verbose):
 def secrets(action, secret, staging, production, verbose):
   """Actions: [get|set|unset]
 
+  create - create the secret Kubernetes object for project
+
   get - print secrets
 
   set - set secrets - each {SECRET} must be in of form 'KEY=VALUE'
 
-  unset - Unset secrets - each {SECRET} must be of the form 'KEY'"""
+  unset - unset secrets - each {SECRET} must be of the form 'KEY'
+
+  delete - delete the secret Kubernetes object for the project"""
   hokusai.common.set_output(verbose)
   context = select_context(staging, production)
-  if action == 'get':
+  if action == 'create':
+    hokusai.create_secrets(context)
+  elif action == 'get':
     hokusai.get_secrets(context, secret)
   elif action == 'set':
     hokusai.set_secrets(context, secret)
   elif action == 'unset':
     hokusai.unset_secrets(context, secret)
+  elif action == 'delete':
+    hokusai.delete_secrets(context)
   else:
     hokusai.common.print_red("Invalid action %s" % action)
     sys.exit(-1)
@@ -137,13 +145,13 @@ def secrets(action, secret, staging, production, verbose):
 def stack(action, staging, production, verbose):
   """  Actions: [create|update|delete|status]
 
-  create - create the stack defined in ./hokusai/{staging/production}.yml
+  create - create the Kubernetes stack defined in ./hokusai/{staging/production}.yml
 
-  update - update the stack defined in ./hokusai/{staging/production}.yml
+  update - update the Kubernetes stack defined in ./hokusai/{staging/production}.yml
 
-  delete - delete the stack defined in ./hokusai/{staging/production}.yml
+  delete - delete the Kubernetes stack defined in ./hokusai/{staging/production}.yml
 
-  status - print the stack status defined in ./hokusai/{staging/production}.yml"""
+  status - print the Kubernetes stack status defined in ./hokusai/{staging/production}.yml"""
   hokusai.common.set_output(verbose)
   context = select_context(staging, production)
   if action == 'create':

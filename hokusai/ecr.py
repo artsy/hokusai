@@ -36,3 +36,23 @@ class ECR(object):
     username = token.split(':')[0]
     password = token.split(':')[1]
     return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])
+
+  def get_images(self):
+    images = []
+    res = self.client.describe_images(registryId=config.aws_account_id,
+                                  repositoryName=config.project_name)
+    images += res['imageDetails']
+    while 'nextToken' in res:
+      res = self.client.describe_images(registryId=config.aws_account_id,
+                                    repositoryName=config.project_name,
+                                    nextToken=res['nextToken'])
+      images += res['imageDetails']
+    return images
+
+  def tag_exists(self, tag):
+    for image in self.get_images():
+      if 'imageTags' not in image.keys():
+        continue
+      if tag in image['imageTags']:
+        return True
+    return False

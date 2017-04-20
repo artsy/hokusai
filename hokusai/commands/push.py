@@ -10,7 +10,19 @@ def push(tag):
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
   shout("docker-compose -f %s -p build build" % docker_compose_yml, print_output=True)
   build = "build_%s:latest" % config.project_name
-  shout(ECR().get_login())
+
+  ecr = ECR()
+  if not ecr.project_repository_exists():
+    print_red("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
+    return -1
+
+  shout(ecr.get_login())
+
   shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag))
   shout("docker push %s:%s" % (config.aws_ecr_registry, tag))
   print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, tag))
+
+  shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, 'latest'))
+  shout("docker push %s:%s" % (config.aws_ecr_registry, 'latest'))
+  print_green("Updated tag %s:%s -> %s:%s" %
+      (config.aws_ecr_registry, tag, config.aws_ecr_registry, 'latest'))

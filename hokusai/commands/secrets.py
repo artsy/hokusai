@@ -1,5 +1,19 @@
+from hokusai.config import config
 from hokusai.command import command
 from hokusai.secret import Secret
+from hokusai.common import print_green
+
+@command
+def create_secrets(context):
+  secret = Secret(context)
+  secret.create()
+  print_green("Created secret %s-secrets" % config.project_name)
+
+@command
+def delete_secrets(context):
+  secret = Secret(context)
+  secret.destroy()
+  print_green("Deleted secret %s-secrets" % config.project_name)
 
 @command
 def get_secrets(context, secrets):
