@@ -8,7 +8,7 @@ setup(name='hokusai',
       author_email='isac@artsymail.com',
       license='MIT',
       packages=['hokusai'],
-      package_data={'hokusai': ['templates/*', 'commands/*']},
+      package_data={'hokusai': ['templates/*', 'lib/*', 'services/*', 'commands/*']},
       install_requires=[
           'click==6.6',
           'MarkupSafe==0.23',

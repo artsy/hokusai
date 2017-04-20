@@ -3,7 +3,7 @@ import os
 import httpretty
 
 from test import HokusaiIntegrationTestCase
-from hokusai.ecr import ECR
+from hokusai.services.ecr import ECR
 
 httpretty.enable()
 httpretty.HTTPretty.allow_net_connect = False

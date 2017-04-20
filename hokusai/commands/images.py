@@ -1,9 +1,9 @@
 from operator import itemgetter
 
-from hokusai.command import command
-from hokusai.ecr import ECR
-from hokusai.config import config
-from hokusai.common import print_green, shout
+from hokusai.lib.command import command
+from hokusai.services.ecr import ECR
+from hokusai.lib.config import config
+from hokusai.lib.common import print_green, shout
 
 @command
 def images():

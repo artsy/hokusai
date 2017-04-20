@@ -1,9 +1,9 @@
 from subprocess import Popen
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.common import shout
-from hokusai.kubectl import Kubectl
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.lib.common import shout
+from hokusai.services.kubectl import Kubectl
 
 @command
 def logs(context, timestamps, nlines, follow):

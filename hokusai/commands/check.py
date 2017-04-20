@@ -1,10 +1,10 @@
 import os
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.ecr import ECR
-from hokusai.kubectl import Kubectl
-from hokusai.common import print_red, print_green, shout, CalledProcessError
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.services.ecr import ECR
+from hokusai.services.kubectl import Kubectl
+from hokusai.lib.common import print_red, print_green, shout, CalledProcessError
 
 @command
 def check():

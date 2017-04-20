@@ -1,7 +1,7 @@
 import sys
 from functools import wraps
 
-from hokusai.common import print_red, CalledProcessError
+from hokusai.lib.common import print_red, CalledProcessError
 
 def command(func):
   @wraps(func)

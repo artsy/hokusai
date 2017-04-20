@@ -4,10 +4,10 @@ import json
 
 import yaml
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.common import shout, returncode, k8s_uuid
-from hokusai.kubectl import Kubectl
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.lib.common import shout, returncode, k8s_uuid
+from hokusai.services.kubectl import Kubectl
 
 @command
 def run(context, command, tty, tag, env):

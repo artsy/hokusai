@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from hokusai.common import shout, set_output
-from hokusai import config
+from hokusai.lib.common import shout, set_output
+from hokusai.lib import config
 
 config.HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'test', 'fixtures', 'config.yml')
 

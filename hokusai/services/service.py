@@ -1,5 +1,5 @@
-from hokusai.config import config
-from hokusai.kubectl import Kubectl
+from hokusai.lib.config import config
+from hokusai.services.kubectl import Kubectl
 
 class Service(object):
   def __init__(self, context):

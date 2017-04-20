@@ -1,9 +1,9 @@
 import os
 import signal
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.common import print_red, print_green, shout, EXIT_SIGNALS, CalledProcessError
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.lib.common import print_red, print_green, shout, EXIT_SIGNALS, CalledProcessError
 
 @command
 def test():

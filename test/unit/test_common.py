@@ -6,7 +6,7 @@ from mock import patch
 from test import HokusaiUnitTestCase
 from test.utils import captured_output
 
-from hokusai.common import print_green, print_red, set_output, verbose, returncode, shout, k8s_uuid, build_deployment, build_service
+from hokusai.lib.common import print_green, print_red, set_output, verbose, returncode, shout, k8s_uuid, build_deployment, build_service
 
 TEST_MESSAGE = 'Ohai!'
 
@@ -22,12 +22,12 @@ class TestCommon(HokusaiUnitTestCase):
       self.assertEqual(out.getvalue().strip(), "\x1b[31m%s\x1b[0m" % TEST_MESSAGE)
 
   def test_default_output(self):
-    from hokusai.common import VERBOSE
+    from hokusai.lib.common import VERBOSE
     self.assertEqual(VERBOSE, False)
 
   def test_set_output(self):
     set_output(True)
-    from hokusai.common import VERBOSE
+    from hokusai.lib.common import VERBOSE
     self.assertEqual(VERBOSE, True)
 
   def test_verbose_returns_input(self):
@@ -53,19 +53,19 @@ class TestCommon(HokusaiUnitTestCase):
     for char in list(k8s_uuid()):
       self.assertIn(char, string.lowercase)
 
-  @patch('hokusai.common.check_output', return_value='hokusai')
+  @patch('hokusai.lib.common.check_output', return_value='hokusai')
   def test_shout(self, mocked_check_output):
     with captured_output() as (out, err):
       self.assertEqual(shout('whoami'), 'hokusai')
       mocked_check_output.assert_called_once_with('whoami', shell=True, stderr=-2)
 
-  @patch('hokusai.common.check_call', return_value=0)
+  @patch('hokusai.lib.common.check_call', return_value=0)
   def test_shout_returncode(self, mocked_check_call):
     with captured_output() as (out, err):
       self.assertEqual(shout('whoami', print_output=True), 0)
       mocked_check_call.assert_called_once_with('whoami', shell=True, stderr=-2)
 
-  @patch('hokusai.common.call', return_value=0)
+  @patch('hokusai.lib.common.call', return_value=0)
   def test_returncode(self, mocked_call):
     with captured_output() as (out, err):
       self.assertEqual(returncode('whoami'), 0)

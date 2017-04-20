@@ -8,10 +8,10 @@ import yaml
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.ecr import ECR
-from hokusai.common import print_green, print_red, build_service, build_deployment, YAML_HEADER
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.services.ecr import ECR
+from hokusai.lib.common import print_green, print_red, build_service, build_deployment, YAML_HEADER
 
 @command
 def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,

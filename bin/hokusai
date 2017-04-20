@@ -18,7 +18,7 @@ def select_context(staging, production):
     return 'staging'
   if production and staging is None:
     return 'production'
-  hokusai.common.print_red("Invoke with either --staging OR --production")
+  hokusai.lib.common.print_red("Invoke with either --staging OR --production")
   sys.exit(-1)
 
 @click.group()
@@ -72,7 +72,7 @@ def dev(skip_build, verbose):
   """
   Boot the development stack
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   hokusai.development(skip_build)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -81,7 +81,7 @@ def test(verbose):
   """Boot the test stack and run the test suite
 
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   hokusai.test()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -91,7 +91,7 @@ def push(tag, verbose):
   """
   Build the project and push the image to the project repo with the given tag
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   hokusai.push(tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -100,7 +100,7 @@ def images(verbose):
   """
   List image metadata in the project repo
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   hokusai.images()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -121,7 +121,7 @@ def secrets(action, secret, staging, production, verbose):
   unset - unset secrets - each {SECRET} must be of the form 'KEY'
 
   delete - delete the secret Kubernetes object for the project"""
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   if action == 'create':
     hokusai.create_secrets(context)
@@ -134,7 +134,7 @@ def secrets(action, secret, staging, production, verbose):
   elif action == 'delete':
     hokusai.delete_secrets(context)
   else:
-    hokusai.common.print_red("Invalid action %s" % action)
+    hokusai.lib.common.print_red("Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -152,7 +152,7 @@ def stack(action, staging, production, verbose):
   delete - delete the Kubernetes stack defined in ./hokusai/{staging/production}.yml
 
   status - print the Kubernetes stack status defined in ./hokusai/{staging/production}.yml"""
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   if action == 'create':
     hokusai.stack_create(context)
@@ -163,7 +163,7 @@ def stack(action, staging, production, verbose):
   elif action == 'status':
     hokusai.stack_status(context)
   else:
-    hokusai.common.print_red("Invalid action %s" % action)
+    hokusai.lib.common.print_red("Invalid action %s" % action)
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -175,7 +175,7 @@ def deploy(tag, staging, production, verbose):
   """
   Deploy an image tag and update the tag (staging/production) to reference the same image
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   hokusai.deploy(context, tag)
 
@@ -186,7 +186,7 @@ def promote(verbose):
   Update the deployment on production with the image tag currently deployed on staging
   and update the production tag to reference the same image
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   hokusai.promote()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -201,7 +201,7 @@ def run(command, staging, production, tty, tag, env, verbose):
   """
   Launch a new container and run a command
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   hokusai.run(context, command, tty, tag, env)
 
@@ -216,7 +216,7 @@ def logs(staging, production, timestamps, nlines, follow, verbose):
   """
   Get container logs
   """
-  hokusai.common.set_output(verbose)
+  hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   hokusai.logs(context, timestamps, nlines, follow)
 

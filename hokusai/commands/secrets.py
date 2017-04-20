@@ -1,7 +1,7 @@
-from hokusai.config import config
-from hokusai.command import command
-from hokusai.secret import Secret
-from hokusai.common import print_green
+from hokusai.lib.config import config
+from hokusai.lib.command import command
+from hokusai.services.secret import Secret
+from hokusai.lib.common import print_green
 
 @command
 def create_secrets(context):

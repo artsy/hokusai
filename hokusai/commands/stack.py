@@ -4,13 +4,13 @@ from collections import OrderedDict
 
 import yaml
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.common import print_red, print_green, shout
-from hokusai.ecr import ECR
-from hokusai.deployment import Deployment
-from hokusai.service import Service
-from hokusai.kubectl import Kubectl
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.lib.common import print_red, print_green, shout
+from hokusai.services.ecr import ECR
+from hokusai.services.deployment import Deployment
+from hokusai.services.service import Service
+from hokusai.services.kubectl import Kubectl
 
 @command
 def stack_create(context):

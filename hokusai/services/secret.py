@@ -7,9 +7,9 @@ from tempfile import NamedTemporaryFile
 
 import yaml
 
-from hokusai.config import config
-from hokusai.common import print_red, print_green, shout
-from hokusai.kubectl import Kubectl
+from hokusai.lib.config import config
+from hokusai.lib.common import print_red, print_green, shout
+from hokusai.services.kubectl import Kubectl
 
 class Secret(object):
   def __init__(self, context):

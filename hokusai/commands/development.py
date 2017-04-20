@@ -1,9 +1,9 @@
 import os
 import signal
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.common import print_red, EXIT_SIGNALS, shout
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.lib.common import print_red, EXIT_SIGNALS, shout
 
 @command
 def development(skip_build):

@@ -1,6 +1,6 @@
 import os
 
-from hokusai import config
+from hokusai.lib import config
 
 from test import HokusaiUnitTestCase
 

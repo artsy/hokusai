@@ -1,9 +1,9 @@
 import os
 
-from hokusai.command import command
-from hokusai.config import config
-from hokusai.ecr import ECR
-from hokusai.common import print_red, print_green, shout
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.services.ecr import ECR
+from hokusai.lib.common import print_red, print_green, shout
 
 @command
 def push(tags):

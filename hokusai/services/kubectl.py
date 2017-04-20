@@ -2,7 +2,7 @@ import json
 
 import yaml
 
-from hokusai.common import shout
+from hokusai.lib.common import shout
 
 class Kubectl(object):
   def __init__(self, context):

@@ -6,8 +6,8 @@ from distutils.dir_util import mkpath
 
 import boto3
 
-from hokusai.command import command
-from hokusai.common import print_red, print_green
+from hokusai.lib.command import command
+from hokusai.lib.common import print_red, print_green
 
 @command
 def dependencies(kubectl_version, platform, install_to, install_config_to, bucket_name, key_name, bucket_region):

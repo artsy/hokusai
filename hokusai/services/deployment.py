@@ -1,10 +1,10 @@
 import datetime
 import json
 
-from hokusai.config import config
-from hokusai.kubectl import Kubectl
-from hokusai.ecr import ECR
-from hokusai.common import print_red, print_green, shout
+from hokusai.lib.config import config
+from hokusai.services.kubectl import Kubectl
+from hokusai.services.ecr import ECR
+from hokusai.lib.common import print_red, print_green, shout
 
 class Deployment(object):
   def __init__(self, context):
