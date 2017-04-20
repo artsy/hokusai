@@ -85,7 +85,7 @@ def test(verbose):
   hokusai.test()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-t', '--tag', type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')
+@click.option('-t', '--tag', multiple=True, type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def push(tag, verbose):
   """
