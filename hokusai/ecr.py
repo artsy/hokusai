@@ -25,8 +25,18 @@ class ECR(object):
 
   def create_project_repository(self):
     try:
-      self.client.create_repository(repositoryName=config.project_name)
+      repository = self.client.create_repository(repositoryName=config.project_name)['repository']
     except BotoCoreError:
+      return False
+    except KeyError:
+      return False
+    try:
+      assert 'createdAt' in repository
+      assert repository['registryId'] == config.aws_account_id
+      assert 'repositoryArn' in repository
+      assert repository['repositoryName'] == config.project_name
+      assert 'repositoryUri' in repository
+    except AssertionError:
       return False
     return True
 

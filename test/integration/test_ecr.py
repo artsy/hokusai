@@ -32,7 +32,7 @@ class TestECR(HokusaiIntegrationTestCase):
   @httpretty.activate
   def test_create_project_repository(self):
     httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-create-repository-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
     self.assertTrue(self.ecr.create_project_repository())
 
