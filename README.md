@@ -17,21 +17,21 @@ If you use homebrew, install Docker for Mac with: `brew tap caskroom/cask && bre
 
 2) [Docker Compose](https://docs.docker.com/compose/)
 
-If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `pip install docker-compose`.
+3) [Git](https://git-scm.com/)
 
-3) [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
-
-Install with: `pip install awscli`. Set the `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and `$AWS_REGION` environment variables. You should have permissions to evaluate the `aws ecr get-login` comamnd for your ECR region and push access to your ECR repositories.
+If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `(sudo) pip install docker-compose`.
 
 ## Setup
 
-Install Hokusai with `pip install .` and `hokusai` will be installed on your PATH.
+Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on your PATH.
 
-Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
+Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
-Now run `hokusai install` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
+Run `hokusai deps` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
 
-To upgrade to the latest changes in this repo, run `pip install --upgrade .`
+To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
+
+To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
 
 ## Use
 
@@ -40,24 +40,23 @@ hokusai --help
 hokusai {command} --help
 ```
 
-You can add `-v` (Verbose) to any command which will show you details of the commands Hokusai will run.
+You can add `-v` (Verbose) to most commands which will show you details of the individual commands Hokusai will run.
 
 ### Installing Dependencies
 
-* `hokusai install` - installs and configures kubectl
+* `hokusai deps` - installs and configures kubectl
 
 Required options:
   - `--s3-bucket`: The S3 bucket containing your org's kubectl config file
   - `--s3-key`: The S3 key of your org's kubectl config file
 
-### Initializing a project
+### Setting up an existing project
 
-* `hokusai init` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production yaml files alongside it, and adds a Dockerfile to the current directory.
+* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
-  - `--framework`: Either "rack" or "nodejs".
-  - `--base-image`: The base docker image for the project `Dockerfile` - i.e. "ruby:2.2" or "ruby:2.2-alpine" - see [Docker Hub](https://hub.docker.com/) for valid base images.
+  - `--project-type`: "ruby-rack", "ruby-rails", "nodejs", "elixir", or "python-wsgi.
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
 
@@ -69,44 +68,94 @@ Required options:
 
 ### Working with Images
 
-* `hokusai build` - Build the latest docker image for the project.
-* `hokusai pull` - Pull images for your project from your AWS ECR repo.
-* `hokusai push` - Push a locally built image to your AWS ECR repo.
-* `hokusai images` - List all project images in your local docker registry.
+* `hokusai push` - Build and push an image to the AWS ECR project repo, by default tagged as the output of `git rev-parse HEAD`.
+* `hokusai images` - List image metadata in the AWS ECR project repo.
 
 ### Working with Kubernetes
-Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `install` commands provide basic setup for this:
+Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `deps` commands provide basic setup for this:
 ```bash
-hokusai install --help
+hokusai deps --help
 ```
 Recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
 ```bash
-hokusai install --s3-bucket <bucket name> --s3-key <file key>
+hokusai deps --s3-bucket <bucket name> --s3-key <file key>
 ```
-### Working with ConfigMaps
 
-* `hokusai config pull` - Pulls config from the Kubernetes server and writes to the `hokusai` directory.
-* `hokusai config push` - Pushes config from the hokusai directory to the Kubernetes server. Config is created for the project as the Kubernetes ConfigMap object `{project}-config`
-
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `secrets`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
 
 ### Working with Secrets
 
 * `hokusai secrets get` - Prints secrets stored on the Kubernetes server
-* `hokusai secrets set` - Sets secrets on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes Secret object `{project}-secrets`
+* `hokusai secrets set` - Sets secrets on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes Secret object `{project_name}-secrets`
 * `hokusai secrets unset` - Removes secrets stored on the Kubernetes server
+
+Note: Secrets will be automatically injected into containers created by the `hokusai run` command but must be explicity referenced in the stack container environment via `secretKeyRef`.
 
 ### Working with Stacks
 
-* `hokusai stack up` - Launch a stack for a given Kubernetes context.
-* `hokusai stack down` - Delete a stack defined for a given Kubernetes context.
+* `hokusai stack create` - Create a stack.
+* `hokusai stack update` - Update a stack.
+* `hokusai stack delete` - Delete a stack.
 * `hokusai stack status` - Print the stack status.
 
 ### Deployment
 
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
-* `hokusai promote` - Update the Kubernetes deployment in a given context to match the deployment in another context
+* `hokusai promote` - Update the Kubernetes deployment on production to match the deployment on staging.
 
-### Running a console
+### Running a command
 
-* `hokusai console` - Launch a container and attach a shell session.
 * `hokusai run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
+
+### Retrieving container logs
+
+* `hokusai logs` - Print the logs from your application containers
+
+## Development
+
+- Install development packages: `pip install -r requirements.txt`
+
+Hokusai can be run directly with `python bin/hokusai`
+
+[Minikube](https://github.com/kubernetes/minikube)
+
+- [Install](https://github.com/kubernetes/minikube/releases) and [Configure](https://github.com/kubernetes/minikube/blob/master/DRIVERS.md) minikube
+
+  - On Darwin with the xhyve driver:
+
+    ```
+    brew install docker-machine-driver-xhyve
+    sudo chown root:wheel /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+    sudo chmod u+s /usr/local/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.18.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+    minikube config set vm-driver xhyve
+    ```
+
+- On Debian/Ubuntu with the kvm driver:
+  ```
+  export DEBIAN_FRONTEND=noninteractive
+  sudo curl -L https://github.com/dhiltgen/docker-machine-kvm/releases/download/v0.7.0/docker-machine-driver-kvm -o /usr/local/bin/docker-machine-driver-kvm
+  sudo chmod +x /usr/local/bin/docker-machine-driver-kvm
+  sudo apt-get -y install libvirt-bin qemu-kvm
+  sudo usermod -a -G libvirtd $(whoami)
+  newgrp libvirtd
+  curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.18.0/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+  minikube config set vm-driver kvm
+  ```
+
+Test the installation by running `minikube start` then `minikube status`.  This should show `minikubeVM: Running` as well as `localkube: Running`.
+
+Note: To access minikube's docker daemon directly. run `eval $(minikube docker-env)`.  `docker` commands should now  reference the docker daemon running on the minikube VM.  `docker ps` should show Kubernetes service component containers kube-dns and kubernetes-dashboard`
+
+## Testing
+
+All tests can be run with `python -m unittest discover test`.
+
+Integration tests require `kubectl` installed and configured and minikube running locally (`minikube start`).
+
+Only run unit tests: `python -m unittest discover test.unit`
+Only run integration tests: `python -m unittest discover test.integration`
+
+Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
+
+Set the `DEBUG=1` environemnt variable for boto logging

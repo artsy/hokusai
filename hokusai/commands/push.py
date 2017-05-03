@@ -1,26 +1,31 @@
-from subprocess import check_output, check_call, CalledProcessError
+import os
 
-from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, print_green
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.services.ecr import ECR
+from hokusai.lib.common import print_red, print_green, shout
 
-def push(tag, test_build):
-  config = HokusaiConfig().check()
+@command
+def push(tags):
+  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
+  shout("docker-compose -f %s -p build build" % docker_compose_yml, print_output=True)
+  build = "build_%s:latest" % config.project_name
 
-  try:
-    login_command = check_output("aws ecr get-login --region %s" % config.aws_ecr_region, shell=True)
-    check_call(login_command, shell=True)
-
-    if test_build:
-      build = "ci_%s:latest" % config.project_name
-    else:
-      build = "build_%s:latest" % config.project_name
-
-    check_call("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag), shell=True)
-    check_call("docker push %s:%s" % (config.aws_ecr_registry, tag), shell=True)
-    print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, tag))
-
-  except CalledProcessError:
-    print_red('Push failed')
+  ecr = ECR()
+  if not ecr.project_repository_exists():
+    print_red("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
     return -1
 
-  return 0
+  if len(tags) is 0:
+    tags = [shout('git rev-parse HEAD').strip()]
+
+  shout(ecr.get_login())
+
+  for tag in tags:
+    shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag))
+    shout("docker push %s:%s" % (config.aws_ecr_registry, tag))
+    print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, tag))
+
+  shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, 'latest'))
+  shout("docker push %s:%s" % (config.aws_ecr_registry, 'latest'))
+  print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, 'latest'))

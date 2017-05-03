@@ -1,0 +1,25 @@
+{
+  "repositories": [
+    {
+      "createdAt": 1000000000,
+      "registryId": "123456789012",
+      "repositoryArn": "arn:aws:ecr:us-east-1:123456789012:repository/foo",
+      "repositoryName": "foo",
+      "repositoryUri": "123456789012.dkr.ecr.us-east-1.amazonaws.com/foo"
+    },
+    {
+      "createdAt": 1000000000,
+      "registryId": "123456789012",
+      "repositoryArn": "arn:aws:ecr:us-east-1:123456789012:repository/bar",
+      "repositoryName": "bar",
+      "repositoryUri": "123456789012.dkr.ecr.us-east-1.amazonaws.com/bar"
+    },
+    {
+      "createdAt": 1000000000,
+      "registryId": "123456789012",
+      "repositoryArn": "arn:aws:ecr:us-east-1:123456789012:repository/baz",
+      "repositoryName": "baz",
+      "repositoryUri": "123456789012.dkr.ecr.us-east-1.amazonaws.com/baz"
+    }
+  ]
+}

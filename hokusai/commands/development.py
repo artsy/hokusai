@@ -1,22 +1,23 @@
 import os
 import signal
 
-from subprocess import call
+from hokusai.lib.command import command
+from hokusai.lib.config import config
+from hokusai.lib.common import print_red, EXIT_SIGNALS, shout
 
-from hokusai.config import HokusaiConfig
-from hokusai.common import print_red, EXIT_SIGNALS, verbose
-
-def development():
-  HokusaiConfig().check()
+@command
+def development(skip_build):
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
     print_red("Yaml file %s does not exist." % docker_compose_yml)
     return -1
 
   def cleanup(*args):
-    return 0
-
+    pass
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
-  call(verbose("docker-compose -f %s up --build" % docker_compose_yml), shell=True)
+  opts = ''
+  if not skip_build:
+    opts += ' --build'
+  shout("docker-compose -f %s up%s" % (docker_compose_yml, opts), print_output=True)

@@ -1,0 +1,29 @@
+FROM {{ base_image }}
+
+{%- if 'alpine' in base_image %}
+RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers
+{%- else %}
+RUN apt-get update -qq && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+{%- endif %}
+
+RUN pip install gunicorn
+
+# Set up working directory
+RUN mkdir /app
+
+# Set up requirements
+WORKDIR /tmp
+ADD requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+# Finally, add the rest of our app's code
+# (this is done at the end so that changes to our app's code
+# don't bust Docker's cache)
+ADD . /app
+WORKDIR /app
+
+ENV PORT {{ target_port }}
+EXPOSE {{ target_port }}
+
+CMD {{ command }}
+
