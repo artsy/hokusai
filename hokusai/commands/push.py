@@ -23,9 +23,9 @@ def push(tags):
 
   for tag in tags:
     shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag))
-    shout("docker push %s:%s" % (config.aws_ecr_registry, tag))
+    shout("docker push %s:%s" % (config.aws_ecr_registry, tag), print_output=True)
     print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, tag))
 
   shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, 'latest'))
-  shout("docker push %s:%s" % (config.aws_ecr_registry, 'latest'))
+  shout("docker push %s:%s" % (config.aws_ecr_registry, 'latest'), print_output=True)
   print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, 'latest'))
