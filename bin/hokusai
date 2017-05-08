@@ -26,7 +26,7 @@ def cli():
   pass
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--kubectl-version', type=click.STRING, default='1.5.2', help='The version of kubectl to install (default: 1.5.2)')
+@click.option('--kubectl-version', type=click.STRING, default='1.6.0', help='The version of kubectl to install (default: 1.6.0)')
 @click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS (default: darwin)')
 @click.option('--install-to', type=click.STRING, default='/usr/local/bin', help='Install kubectl to (default: /usr/local/bin)')
 @click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to (default: ~/.kube)')
