@@ -34,7 +34,7 @@ def cli():
 @click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to (default: ~/.kube)')
 def configure(kubectl_version, s3_bucket, s3_key, platform, install_to, install_config_to):
   """
-  Configure kubectl
+  Install and configure kubectl
   """
   hokusai.configure(kubectl_version, s3_bucket, s3_key, platform, install_to, install_config_to)
 
@@ -111,15 +111,15 @@ def images(verbose):
 def env(action, env_vars, staging, production, verbose):
   """Actions: [get|set|unset]
 
-  create - create the Kubernetes secret environment object for project
+  create - Create the Kubernetes secret object `{project_name}-environment`
 
-  get - print environment variables
+  get - Print environment variables stored on the Kubernetes server
 
-  set - set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'
+  set - Set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'
 
-  unset - unset environment variables - each of {ENV_VARS} must be of the form 'KEY'
+  unset - Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'
 
-  delete - delete the Kubernetes secret environment object for the project"""
+  delete - Delete the Kubernetes secret object `{project_name}-environment`"""
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   if action == 'create':
