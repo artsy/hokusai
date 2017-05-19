@@ -118,7 +118,7 @@ def images(verbose):
 def env(action, env_vars, staging, production, verbose):
   """Actions: [get|set|unset]
 
-  create - Create the Kubernetes secret object `{project_name}-environment`
+  create - Create the Kubernetes configmap object `{project_name}-environment`
 
   get - Print environment variables stored on the Kubernetes server
 
@@ -126,7 +126,7 @@ def env(action, env_vars, staging, production, verbose):
 
   unset - Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'
 
-  delete - Delete the Kubernetes secret object `{project_name}-environment`"""
+  delete - Delete the Kubernetes configmap object `{project_name}-environment`"""
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   if action == 'create':

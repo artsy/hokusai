@@ -85,11 +85,11 @@ When running `hokusai setup` `staging.yml` and `production.yml` are created in t
 
 ### Working with Environment Variables
 
-* `hokusai env create` - Create the Kubernetes secret object `{project_name}-environment`
+* `hokusai env create` - Create the Kubernetes configmap object `{project_name}-environment`
 * `hokusai env get` - Print envrionment variables stored on the Kubernetes server
-* `hokusai env set` - Set envrionment variables on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes secret object `{project_name}-environment`
+* `hokusai env set` - Set envrionment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
 * `hokusai env unset` - Remove envrionment variables stored on the Kubernetes server
-* `hokusai env delete` - Delete the Kubernetes secret object `{project_name}-environment`
+* `hokusai env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
 Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicity referenced in the stack container yaml definition using `envFrom`.
 
