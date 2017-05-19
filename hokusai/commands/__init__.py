@@ -11,3 +11,4 @@ from hokusai.commands.run import run
 from hokusai.commands.setup import setup
 from hokusai.commands.stack import stack_create, stack_update, stack_delete, stack_status
 from hokusai.commands.test import test
+from hokusai.commands.version import version

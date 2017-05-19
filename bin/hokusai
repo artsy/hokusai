@@ -26,6 +26,13 @@ def cli():
   pass
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+def version():
+  """
+  Print Hokusai's version
+  """
+  hokusai.version()
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--kubectl-version', type=click.STRING, required=True, help='The version of kubectl to install')
 @click.option('--s3-bucket', type=click.STRING, required=True, help="The S3 bucket name containing your org's kubectl config file")
 @click.option('--s3-key', type=click.STRING, required=True, help="The S3 key of your org's kubectl config file")
@@ -60,7 +67,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
 @cli.command(context_settings=CONTEXT_SETTINGS)
 def check():
   """
-  Check hokusai dependencies and configuration
+  Check Hokusai dependencies and configuration
   """
   hokusai.check()
 
