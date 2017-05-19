@@ -1,5 +1,5 @@
 from hokusai.commands.check import check
-from hokusai.commands.dependencies import dependencies
+from hokusai.commands.configure import configure
 from hokusai.commands.deploy import deploy
 from hokusai.commands.development import development
 from hokusai.commands.images import images
