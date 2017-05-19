@@ -20,7 +20,7 @@ class Secret(object):
       ('kind', 'Secret'),
       ('metadata', {
         'labels': {'app': config.project_name},
-        'name': "%s-secrets" % config.project_name
+        'name': "%s-environment" % config.project_name
       }),
       ('type', 'Opaque'),
       ('data', {})
@@ -40,10 +40,10 @@ class Secret(object):
       os.unlink(f)
 
   def destroy(self):
-    shout(self.kctl.command("delete secret %s-secrets" % config.project_name))
+    shout(self.kctl.command("delete secret %s-environment" % config.project_name))
 
   def load(self):
-    payload = shout(self.kctl.command("get secret %s-secrets -o yaml" % config.project_name))
+    payload = shout(self.kctl.command("get secret %s-environment -o yaml" % config.project_name))
     struct = yaml.load(payload)
     if 'data' in struct:
       self.struct['data'] = struct['data']

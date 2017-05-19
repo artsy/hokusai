@@ -4,45 +4,45 @@ from hokusai.services.secret import Secret
 from hokusai.lib.common import print_green
 
 @command
-def create_secrets(context):
+def create_env(context):
   secret = Secret(context)
   secret.create()
-  print_green("Created secret %s-secrets" % config.project_name)
+  print_green("Created secret %s-environment" % config.project_name)
 
 @command
-def delete_secrets(context):
+def delete_env(context):
   secret = Secret(context)
   secret.destroy()
-  print_green("Deleted secret %s-secrets" % config.project_name)
+  print_green("Deleted secret %s-environment" % config.project_name)
 
 @command
-def get_secrets(context, secrets):
+def get_env(context, environment):
   secret = Secret(context)
   secret.load()
-  if len(secrets) == 0:
+  if len(environment) == 0:
     for k, v in secret.all():
       print("%s=%s" % (k, v))
   else:
     for k, v in secret.all():
-      if k in secrets:
+      if k in environment:
         print("%s=%s" % (k, v))
 
 @command
-def set_secrets(context, secrets):
+def set_env(context, environment):
   secret = Secret(context)
   secret.load()
-  for s in secrets:
+  for s in environment:
     if '=' not in s:
-      print_red("Error: secrets must be of the form 'KEY=VALUE'")
+      print_red("Error: environment vars must be of the form 'KEY=VALUE'")
       return -1
     split = s.split('=', 1)
     secret.update(split[0], split[1])
   secret.save()
 
 @command
-def unset_secrets(context, secrets):
+def unset_env(context, environment):
   secret = Secret(context)
   secret.load()
-  for s in secrets:
+  for s in environment:
     secret.delete(s)
   secret.save()

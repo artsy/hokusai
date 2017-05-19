@@ -1,4 +1,5 @@
 import os
+import urllib
 
 from distutils.dir_util import mkpath
 from collections import OrderedDict
@@ -169,7 +170,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
         }
         if compose_environment == 'development':
           services["%s-rabbitmq" % config.project_name]['ports'] = ["5672:5672","15672:15672"]
-        services[config.project_name]['environment'].append("RABBITMQ_URL=amqp://%s-rabbitmq/%s" % (config.project_name, compose_environment))
+        services[config.project_name]['environment'].append("RABBITMQ_URL=amqp://%s-rabbitmq/%s" % (config.project_name, urllib.quote_plus('/')))
         services[config.project_name]['depends_on'].append("%s-rabbitmq" % config.project_name)
 
       data = OrderedDict([
@@ -184,15 +185,15 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
       environment = runtime_environment[stack]
 
       if with_memcached:
-        environment.append({'name': 'MEMCACHED_SERVERS', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'MEMCACHED_SERVERS'}}})
+        environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.project_name})
       if with_redis:
-        environment.append({'name': 'REDIS_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'REDIS_URL'}}})
+        environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379" % config.project_name})
       if with_mongodb:
-        environment.append({'name': 'MONGO_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'MONGO_URL'}}})
+        environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017" % config.project_name})
       if with_postgres:
-        environment.append({'name': 'DATABASE_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'DATABASE_URL'}}})
+        environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/%s" % (config.project_name, stack)})
       if with_rabbitmq:
-        environment.append({'name': 'RABBITMQ_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'RABBITMQ_URL'}}})
+        environment.append({'name': 'RABBITMQ_URL', 'value': "amqp://%s-rabbitmq/%s" % (config.project_name, urllib.quote_plus('/'))})
 
       deployment_data = build_deployment(config.project_name,
                                           "%s:%s" % (config.aws_ecr_registry, stack),

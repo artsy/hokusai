@@ -52,7 +52,7 @@ def build_deployment(name, image, target_port, environment=None, always_pull=Fal
     'name': name,
     'image': image,
     'ports': [{'containerPort': target_port}],
-    'envFrom': [{'secretRef': {'name': "%s-secrets" % name}}]
+    'envFrom': [{'secretRef': {'name': "%s-environment" % name}}]
   }
 
   if environment is not None:

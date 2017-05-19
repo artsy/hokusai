@@ -104,34 +104,34 @@ def images(verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
-@click.argument('secret', type=click.STRING, nargs=-1)
+@click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def secrets(action, secret, staging, production, verbose):
+def env(action, env_vars, staging, production, verbose):
   """Actions: [get|set|unset]
 
-  create - create the secret Kubernetes object for project
+  create - create the Kubernetes secret environment object for project
 
-  get - print secrets
+  get - print environment variables
 
-  set - set secrets - each {SECRET} must be in of form 'KEY=VALUE'
+  set - set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'
 
-  unset - unset secrets - each {SECRET} must be of the form 'KEY'
+  unset - unset environment variables - each of {ENV_VARS} must be of the form 'KEY'
 
-  delete - delete the secret Kubernetes object for the project"""
+  delete - delete the Kubernetes secret environment object for the project"""
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   if action == 'create':
-    hokusai.create_secrets(context)
+    hokusai.create_env(context)
   elif action == 'get':
-    hokusai.get_secrets(context, secret)
+    hokusai.get_env(context, env_vars)
   elif action == 'set':
-    hokusai.set_secrets(context, secret)
+    hokusai.set_env(context, env_vars)
   elif action == 'unset':
-    hokusai.unset_secrets(context, secret)
+    hokusai.unset_env(context, env_vars)
   elif action == 'delete':
-    hokusai.delete_secrets(context)
+    hokusai.delete_env(context)
   else:
     hokusai.lib.common.print_red("Invalid action %s" % action)
     sys.exit(-1)

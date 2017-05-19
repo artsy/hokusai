@@ -36,7 +36,7 @@ def run(context, command, tty, tag, env):
             "name": name,
             "image": image_name,
             "imagePullPolicy": "Always",
-            'envFrom': [{'secretRef': {'name': "%s-secrets" % config.project_name}}],
+            'envFrom': [{'secretRef': {'name': "%s-environment" % config.project_name}}],
             "stdin": True,
             "stdinOnce": True,
             "tty": True
@@ -56,7 +56,7 @@ def run(context, command, tty, tag, env):
             "name": name,
             "image": image_name,
             "imagePullPolicy": "Always",
-            'envFrom': [{'secretRef': {'name': "%s-secrets" % config.project_name}}]
+            'envFrom': [{'secretRef': {'name': "%s-environment" % config.project_name}}]
           }
         ]
       }
