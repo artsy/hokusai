@@ -18,18 +18,12 @@ def run(context, command, tty, tag, env):
   else:
     image_tag = context
 
-  environment = map(lambda x: {"name": x.split('=')[0], "value": x.split('=')[1]}, env)
-  existing_secrets = shout(kctl.command("get secret %s-secrets -o yaml" % config.project_name))
-  secret_data = yaml.load(existing_secrets)['data']
-  for k, v in secret_data.iteritems():
-    environment.append({"name": k, "value": base64.b64decode(v)})
-
   if os.environ.get('USER') is not None:
-    job_id = "%s-%s" % (os.environ.get('USER'), k8s_uuid())
+    uuid = "%s-%s" % (os.environ.get('USER'), k8s_uuid())
   else:
-    job_id = k8s_uuid()
+    uuid = k8s_uuid()
 
-  job_name = "%s-run-%s" % (config.project_name, job_id)
+  name = "%s-run-%s" % (config.project_name, uuid)
   image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
 
   if tty:
@@ -39,10 +33,10 @@ def run(context, command, tty, tag, env):
         "containers": [
           {
             "args": command.split(' '),
-            "name": job_name,
+            "name": name,
             "image": image_name,
             "imagePullPolicy": "Always",
-            "env": environment,
+            'envFrom': [{'secretRef': {'name': "%s-secrets" % config.project_name}}],
             "stdin": True,
             "stdinOnce": True,
             "tty": True
@@ -51,7 +45,7 @@ def run(context, command, tty, tag, env):
       }
     }
     shout(kctl.command("run %s -t -i --image=%s --restart=Never --overrides='%s' --rm" %
-                   (job_name, image_name, json.dumps(overrides))), print_output=True)
+                   (name, image_name, json.dumps(overrides))), print_output=True)
   else:
     overrides = {
       "apiVersion": "v1",
@@ -59,13 +53,13 @@ def run(context, command, tty, tag, env):
         "containers": [
           {
             "args": command.split(' '),
-            "name": job_name,
+            "name": name,
             "image": image_name,
             "imagePullPolicy": "Always",
-            "env": environment
+            'envFrom': [{'secretRef': {'name': "%s-secrets" % config.project_name}}]
           }
         ]
       }
     }
     return returncode(kctl.command("run %s --attach --image=%s --overrides='%s' --restart=Never --rm" %
-                                      (job_name, image_name, json.dumps(overrides))))
+                                      (name, image_name, json.dumps(overrides))))
