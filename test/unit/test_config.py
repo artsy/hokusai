@@ -32,6 +32,5 @@ class TestConfig(HokusaiUnitTestCase):
       self.assertEqual(self.config.aws_account_id, '123456789012')
       self.assertEqual(self.config.aws_ecr_region, 'us-east-1')
       self.assertEqual(self.config.aws_ecr_registry, '123456789012.dkr.ecr.us-east-1.amazonaws.com/foo')
-      self.assertEqual(self.config.deployments, ['foo'])
     finally:
       os.remove(TMP_CONFIG_FILE)

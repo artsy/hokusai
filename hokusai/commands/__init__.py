@@ -7,6 +7,7 @@ from hokusai.commands.images import images
 from hokusai.commands.logs import logs
 from hokusai.commands.promote import promote
 from hokusai.commands.push import push
+from hokusai.commands.refresh import refresh
 from hokusai.commands.run import run
 from hokusai.commands.setup import setup
 from hokusai.commands.stack import stack_create, stack_update, stack_delete, stack_status

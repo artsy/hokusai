@@ -179,17 +179,29 @@ def stack(action, staging, production, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(tag, staging, production, verbose):
   """
-  Deploy an image tag and update the tag (staging/production) to reference the same image
+  Update the project's deployment(s) to reference a named image tag and update the tag (staging/production) to reference the same image
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
   hokusai.deploy(context, tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
+@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def promote(verbose):
+def refresh(staging, production, verbose):
   """
-  Update the deployment on production with the image tag currently deployed on staging
+  Refresh the project's deployment(s)
+  """
+  hokusai.lib.common.set_output(verbose)
+  context = select_context(staging, production)
+  hokusai.refresh(context)
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def promote(staging, production, verbose):
+  """
+  Update the project's deployment(s) on production with the image tag currently deployed on staging
   and update the production tag to reference the same image
   """
   hokusai.lib.common.set_output(verbose)

@@ -10,10 +10,10 @@ class Deployment(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
-    self.cache = [i for l in [self.kctl.get_object('deployment', selector="app=%s" % d) for d in config.deployments] for i in l]
+    self.cache = self.kctl.get_object('deployment', selector="project=%s" % config.project_name)
 
   def update(self, tag):
-    print_green("Deploying %s to %s" % (tag, self.context))
+    print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
       shout(ECR().get_login())
@@ -48,11 +48,23 @@ class Deployment(object):
           }
         }
       }
-      shout(self.kctl.command("patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))))
+      print_green("Updating %s..." % deployment['metadata']['name'])
+      shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
-  @property
-  def state(self):
-    return self.cache
+  def refresh(self):
+    deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
+    for deployment in self.cache:
+      patch = {
+        "spec": {
+          "template": {
+            "metadata": {
+              "labels": {"deploymentTimestamp": deployment_timestamp}
+            }
+          }
+        }
+      }
+      print_green("Refreshing %s..." % deployment['metadata']['name'])
+      shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
   @property
   def current_tag(self):

@@ -70,7 +70,8 @@ def build_deployment(name, image, target_port, environment=None, always_pull=Fal
       'template': {
         'metadata': {
           'labels': {
-            'app': name
+            'app': name,
+            'project': name
             },
             'name': name,
             'namespace': 'default'

@@ -17,11 +17,15 @@ def logs(context, timestamps, nlines, follow):
   if follow:
     opts += ' --follow'
 
-  pods = kctl.get_object('pod', selector="app=%s" % config.project_name)
+  pods = kctl.get_object('pod', selector="project=%s" % config.project_name)
   pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)
+  containers = []
+  for pod in pods:
+    for container in pod['spec']['containers']:
+      containers.append({'pod': pod['metadata']['name'], 'name': container['name']})
 
   if follow:
-    processes = [Popen(kctl.command("logs %s %s%s" % (pod['metadata']['name'], config.project_name, opts)), shell=True) for pod in pods]
+    processes = [Popen(kctl.command("logs %s %s%s" % (container['pod'], container['name'], opts)), shell=True) for container in containers]
     try:
       for p in processes:
         p.wait()
@@ -29,5 +33,5 @@ def logs(context, timestamps, nlines, follow):
       for p in processes:
         p.terminate()
   else:
-    for pod in pods:
-      shout(kctl.command("logs %s %s%s" % (pod['metadata']['name'], config.project_name, opts)), print_output=True)
+    for container in containers:
+      shout(kctl.command("logs %s %s%s" % (container['pod'], container['name'], opts)), print_output=True)

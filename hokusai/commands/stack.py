@@ -67,17 +67,18 @@ def stack_status(context):
   for item in deployment.cache:
     deployment_data.append(OrderedDict([
       ('name', item['metadata']['name']),
+      ('labels', item['spec']['template']['metadata']['labels']),
       ('desiredReplicas', item['spec']['replicas']),
       ('availableReplicas', item['status']['availableReplicas'] if 'availableReplicas' in item['status'] else 0),
       ('unavailableReplicas', item['status']['unavailableReplicas'] if 'unavailableReplicas' in item['status'] else 0),
-      ('tag', deployment.current_tag)
+      ('containers', [{'name': container['name'], 'tag': container['image'].rsplit(':', 1)[1]} for container in item['spec']['template']['spec']['containers']])
     ]))
 
   service = Service(context)
   service_data = []
   for item in service.cache:
     service_data.append(OrderedDict([
-      ('target', item['spec']['selector']['app']),
+      ('selector', item['spec']['selector']),
       ('clusterIP', item['spec']['clusterIP']),
       ('ports', item['spec']['ports']),
       ('status', item['status'])
