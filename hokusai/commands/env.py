@@ -1,7 +1,7 @@
 from hokusai.lib.config import config
 from hokusai.lib.command import command
 from hokusai.services.configmap import ConfigMap
-from hokusai.lib.common import print_green
+from hokusai.lib.common import print_red, print_green
 
 @command
 def create_env(context):
