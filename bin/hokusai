@@ -199,7 +199,7 @@ def refresh(staging, production, verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def promote(staging, production, verbose):
+def promote(verbose):
   """
   Update the project's deployment(s) on production with the image tag currently deployed on staging
   and update the production tag to reference the same image
