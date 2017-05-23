@@ -29,9 +29,7 @@ def stack_create(context):
     return -1
 
   if not ecr.tag_exists(context):
-    shout("docker pull %s:%s" % (config.aws_ecr_registry, 'latest'))
-    shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, 'latest', config.aws_ecr_registry, context))
-    shout("docker push %s:%s" % (config.aws_ecr_registry, context))
+    ecr.retag('latest', context)
     print_green("Updated tag 'latest' -> %s" % context)
 
   kctl = Kubectl(context)

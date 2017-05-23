@@ -66,3 +66,22 @@ class ECR(object):
       if tag in image['imageTags']:
         return True
     return False
+
+  def retag(self, tag, new_tag):
+    res = self.client.batch_get_image(
+      registryId=config.aws_account_id,
+      repositoryName=config.project_name,
+      imageIds=[{'imageTag': tag}]
+    )
+
+    if len(res['failures']) and not len(res['images']):
+      raise ValueError("Failed to retrieve image manifest for tag %s" % tag)
+
+    image = res['images'][0]
+
+    self.client.put_image(
+        registryId=config.aws_account_id,
+        repositoryName=config.project_name,
+        imageManifest=image['imageManifest'],
+        imageTag=new_tag
+    )

@@ -22,20 +22,14 @@ class Deployment(object):
     print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
-      shout(ECR().get_login())
+      ecr = ECR()
 
-      shout("docker pull %s:%s" % (config.aws_ecr_registry, tag))
-
-      shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, self.context))
-      shout("docker push %s:%s" % (config.aws_ecr_registry, self.context))
-      print_green("Updated tag %s:%s -> %s:%s" %
-                  (config.aws_ecr_registry, tag, config.aws_ecr_registry, self.context))
+      ecr.retag(tag, self.context)
+      print_green("Updated tag %s -> %s" % (tag, self.context))
 
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
-      shout("docker push %s:%s" % (config.aws_ecr_registry, deployment_tag))
-      print_green("Updated tag %s:%s -> %s:%s"
-                  % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
+      ecr.retag(tag, deployment_tag)
+      print_green("Updated tag %s -> %s" % (tag, deployment_tag))
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
