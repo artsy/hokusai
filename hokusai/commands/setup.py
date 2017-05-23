@@ -166,7 +166,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
 
       if with_rabbitmq:
         services["%s-rabbitmq" % config.project_name] = {
-          'image': 'rabbitmq:3.6-management'
+          'image': 'rabbitmq:3.6-management-alpine'
         }
         if compose_environment == 'development':
           services["%s-rabbitmq" % config.project_name]['ports'] = ["5672:5672","15672:15672"]
@@ -204,24 +204,24 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
       stack_yaml = deployment_data + service_data
 
       if with_memcached:
-        stack_yaml += build_deployment("%s-memcached" % config.project_name, 'memcached', 11211)
-        stack_yaml += build_service("%s-memcached" % config.project_name, 11211)
+        stack_yaml += build_deployment("%s-memcached" % config.project_name, 'memcached:1.4', 11211, layer='database', component='memcached')
+        stack_yaml += build_service("%s-memcached" % config.project_name, 11211, layer='database', component='memcached')
 
       if with_redis:
-        stack_yaml += build_deployment("%s-redis" % config.project_name, 'redis:3.2-alpine', 6379)
-        stack_yaml += build_service("%s-redis" % config.project_name, 6379)
+        stack_yaml += build_deployment("%s-redis" % config.project_name, 'redis:3.2-alpine', 6379, layer='database', component='redis')
+        stack_yaml += build_service("%s-redis" % config.project_name, 6379, layer='database', component='redis')
 
       if with_mongodb:
-        stack_yaml += build_deployment("%s-mongodb" % config.project_name, 'mongodb:3.0', 27017)
-        stack_yaml += build_service("%s-mongodb" % config.project_name, 27017)
+        stack_yaml += build_deployment("%s-mongodb" % config.project_name, 'mongodb:3.0', 27017, layer='database', component='mongodb')
+        stack_yaml += build_service("%s-mongodb" % config.project_name, 27017, layer='database', component='mongodb')
 
       if with_postgres:
-        stack_yaml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432)
-        stack_yaml += build_service("%s-postgres" % config.project_name, 5432)
+        stack_yaml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432, layer='database', component='postgres')
+        stack_yaml += build_service("%s-postgres" % config.project_name, 5432, layer='database', component='postgres')
 
       if with_rabbitmq:
-        stack_yaml += build_deployment("%s-rabbitmq" % config.project_name, 'rabbitmq:3.6-management', 5672)
-        stack_yaml += build_service("%s-rabbitmq" % config.project_name, 5672)
+        stack_yaml += build_deployment("%s-rabbitmq" % config.project_name, 'rabbitmq:3.6-management-alpine', 5672, layer='messaging', component='rabbitmq')
+        stack_yaml += build_service("%s-rabbitmq" % config.project_name, 5672, layer='messaging', component='rabbitmq')
 
       f.write(stack_yaml)
 

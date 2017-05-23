@@ -10,7 +10,7 @@ class Deployment(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
-    self.cache = self.kctl.get_object('deployment', selector="project=%s" % config.project_name)
+    self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag):
     print_green("Deploying %s to %s..." % (tag, self.context))

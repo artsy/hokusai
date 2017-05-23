@@ -5,4 +5,4 @@ class Service(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
-    self.cache = self.kctl.get_object('service', selector="app=%s" % config.project_name)
+    self.cache = self.kctl.get_object('service', selector="app=%s,layer=application" % config.project_name)

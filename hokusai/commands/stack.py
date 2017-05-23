@@ -35,7 +35,7 @@ def stack_create(context):
     print_green("Updated tag 'latest' -> %s" % context)
 
   kctl = Kubectl(context)
-  shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+  shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
   print_green("Created stack %s" % context)
 
 @command
@@ -78,6 +78,7 @@ def stack_status(context):
   service_data = []
   for item in service.cache:
     service_data.append(OrderedDict([
+      ('name', item['metadata']['name']),
       ('selector', item['spec']['selector']),
       ('clusterIP', item['spec']['clusterIP']),
       ('ports', item['spec']['ports']),

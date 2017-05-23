@@ -47,7 +47,7 @@ def k8s_uuid():
     uuid.append(random.choice(string.lowercase))
   return ''.join(uuid)
 
-def build_deployment(name, image, target_port, environment=None, always_pull=False):
+def build_deployment(name, image, target_port, layer='application', component='web', environment=None, always_pull=False):
   container = {
     'name': name,
     'image': image,
@@ -71,7 +71,8 @@ def build_deployment(name, image, target_port, environment=None, always_pull=Fal
         'metadata': {
           'labels': {
             'app': name,
-            'project': name
+            'layer': layer,
+            'component': component
             },
             'name': name,
             'namespace': 'default'
@@ -85,13 +86,17 @@ def build_deployment(name, image, target_port, environment=None, always_pull=Fal
   ])
   return YAML_HEADER + yaml.safe_dump(deployment, default_flow_style=False)
 
-def build_service(name, port, target_port=None, internal=True):
+def build_service(name, port, layer='application', component='web', target_port=None, internal=True):
   if target_port is None:
     target_port = port
 
   spec = {
     'ports': [{'port': port, 'targetPort': target_port, 'protocol': 'TCP'}],
-    'selector': {'app': name}
+    'selector': {
+      'app': name,
+      'layer': layer,
+      'component': component
+    }
   }
 
   if internal:
@@ -104,7 +109,11 @@ def build_service(name, port, target_port=None, internal=True):
     ('apiVersion', 'v1'),
     ('kind', 'Service'),
     ('metadata', {
-      'labels': {'app': name},
+      'labels': {
+        'app': name,
+        'layer': layer,
+        'component': component
+      },
       'name': name,
       'namespace': 'default'
     }),
