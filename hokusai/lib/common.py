@@ -49,11 +49,13 @@ def k8s_uuid():
 
 def build_deployment(name, image, target_port, layer='application', component='web', environment=None, always_pull=False):
   container = {
-    'name': name,
+    'name': "%s-%s" % (name, component),
     'image': image,
-    'ports': [{'containerPort': target_port}],
-    'envFrom': [{'configMapRef': {'name': "%s-environment" % name}}]
+    'ports': [{'containerPort': target_port}]
   }
+
+  if layer == 'application':
+    container['envFrom'] = [{'configMapRef': {'name': "%s-environment" % name}}]
 
   if environment is not None:
     container['env'] = environment
@@ -64,7 +66,7 @@ def build_deployment(name, image, target_port, layer='application', component='w
   deployment = OrderedDict([
     ('apiVersion', 'extensions/v1beta1'),
     ('kind', 'Deployment'),
-    ('metadata', {'name': name}),
+    ('metadata', {'name': "%s-%s" % (name, component)}),
     ('spec', {
       'replicas': 1,
       'template': {
@@ -74,7 +76,7 @@ def build_deployment(name, image, target_port, layer='application', component='w
             'layer': layer,
             'component': component
             },
-            'name': name,
+            'name': "%s-%s" % (name, component),
             'namespace': 'default'
           },
           'spec': {
@@ -114,7 +116,7 @@ def build_service(name, port, layer='application', component='web', target_port=
         'layer': layer,
         'component': component
       },
-      'name': name,
+      'name': "%s-%s" % (name, component),
       'namespace': 'default'
     }),
     ('spec', spec)

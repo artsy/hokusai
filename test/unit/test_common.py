@@ -75,22 +75,22 @@ class TestCommon(HokusaiUnitTestCase):
     basic_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80'))
     self.assertEqual(basic_deployment['kind'], 'Deployment')
     self.assertEqual(basic_deployment['apiVersion'], 'extensions/v1beta1')
-    self.assertEqual(basic_deployment['metadata'], {'name': 'foo'})
-    self.assertEqual(basic_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo', 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}]}])
-    self.assertEqual(basic_deployment['spec']['template']['metadata'], {'labels': {'app': 'foo', 'layer': 'application', 'component': 'web'}, 'namespace': 'default', 'name': 'foo'})
+    self.assertEqual(basic_deployment['metadata'], {'name': 'foo-web'})
+    self.assertEqual(basic_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo-web', 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}]}])
+    self.assertEqual(basic_deployment['spec']['template']['metadata'], {'labels': {'app': 'foo', 'layer': 'application', 'component': 'web'}, 'namespace': 'default', 'name': 'foo-web'})
     self.assertEqual(basic_deployment['spec']['replicas'], 1)
 
     environmental_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80', environment={'FOO': 'BAR'}))
-    self.assertEqual(environmental_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo', 'env': {'FOO': 'BAR'}, 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}]}])
+    self.assertEqual(environmental_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo-web', 'env': {'FOO': 'BAR'}, 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}]}])
 
     always_pulling_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80', always_pull=True))
-    self.assertEqual(always_pulling_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'imagePullPolicy': 'Always', 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}], 'name': 'foo'}])
+    self.assertEqual(always_pulling_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'imagePullPolicy': 'Always', 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}], 'name': 'foo-web'}])
 
   def test_build_service(self):
     basic_service = yaml.load(build_service('foo', '80'))
     self.assertEqual(basic_service['kind'], 'Service')
     self.assertEqual(basic_service['apiVersion'], 'v1')
-    self.assertEqual(basic_service['metadata'], {'labels': {'app': 'foo', 'layer': 'application', 'component': 'web'}, 'namespace': 'default', 'name': 'foo'})
+    self.assertEqual(basic_service['metadata'], {'labels': {'app': 'foo', 'layer': 'application', 'component': 'web'}, 'namespace': 'default', 'name': 'foo-web'})
     self.assertEqual(basic_service['spec'], {'type': 'ClusterIP', 'ports': [{'protocol': 'TCP', 'targetPort': '80', 'port': '80'}], 'selector': {'app': 'foo', 'layer': 'application', 'component': 'web'}})
 
     alternate_port_service = yaml.load(build_service('foo', '80', target_port='8080'))
