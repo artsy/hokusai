@@ -104,6 +104,7 @@ Note: Environment variables will be automatically injected into containers creat
 
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
 * `hokusai promote` - Update the Kubernetes deployment on production to match the deployment on staging.
+* `hokusai refresh` - Refresh the project's deployment(s)
 
 ### Running a command
 
