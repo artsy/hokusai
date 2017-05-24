@@ -1,4 +1,5 @@
 import os
+import urllib
 
 from distutils.dir_util import mkpath
 from collections import OrderedDict
@@ -165,11 +166,11 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
 
       if with_rabbitmq:
         services["%s-rabbitmq" % config.project_name] = {
-          'image': 'rabbitmq:3.6-management'
+          'image': 'rabbitmq:3.6-management-alpine'
         }
         if compose_environment == 'development':
           services["%s-rabbitmq" % config.project_name]['ports'] = ["5672:5672","15672:15672"]
-        services[config.project_name]['environment'].append("RABBITMQ_URL=amqp://%s-rabbitmq/%s" % (config.project_name, compose_environment))
+        services[config.project_name]['environment'].append("RABBITMQ_URL=amqp://%s-rabbitmq/%s" % (config.project_name, urllib.quote_plus('/')))
         services[config.project_name]['depends_on'].append("%s-rabbitmq" % config.project_name)
 
       data = OrderedDict([
@@ -184,15 +185,15 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
       environment = runtime_environment[stack]
 
       if with_memcached:
-        environment.append({'name': 'MEMCACHED_SERVERS', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'MEMCACHED_SERVERS'}}})
+        environment.append({'name': 'MEMCACHED_SERVERS', 'value': "%s-memcached:11211" % config.project_name})
       if with_redis:
-        environment.append({'name': 'REDIS_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'REDIS_URL'}}})
+        environment.append({'name': 'REDIS_URL', 'value': "redis://%s-redis:6379" % config.project_name})
       if with_mongodb:
-        environment.append({'name': 'MONGO_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'MONGO_URL'}}})
+        environment.append({'name': 'MONGO_URL', 'value': "mongodb://%s-mongodb:27017" % config.project_name})
       if with_postgres:
-        environment.append({'name': 'DATABASE_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'DATABASE_URL'}}})
+        environment.append({'name': 'DATABASE_URL', 'value': "postgresql://%s-postgres/%s" % (config.project_name, stack)})
       if with_rabbitmq:
-        environment.append({'name': 'RABBITMQ_URL', 'valueFrom': {'secretKeyRef': { 'name': "%s-secrets" % config.project_name, 'key': 'RABBITMQ_URL'}}})
+        environment.append({'name': 'RABBITMQ_URL', 'value': "amqp://%s-rabbitmq/%s" % (config.project_name, urllib.quote_plus('/'))})
 
       deployment_data = build_deployment(config.project_name,
                                           "%s:%s" % (config.aws_ecr_registry, stack),
@@ -203,24 +204,24 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
       stack_yaml = deployment_data + service_data
 
       if with_memcached:
-        stack_yaml += build_deployment("%s-memcached" % config.project_name, 'memcached', 11211)
-        stack_yaml += build_service("%s-memcached" % config.project_name, 11211)
+        stack_yaml += build_deployment(config.project_name, 'memcached:1.4', 11211, layer='database', component='memcached')
+        stack_yaml += build_service(config.project_name, 11211, layer='database', component='memcached')
 
       if with_redis:
-        stack_yaml += build_deployment("%s-redis" % config.project_name, 'redis:3.2-alpine', 6379)
-        stack_yaml += build_service("%s-redis" % config.project_name, 6379)
+        stack_yaml += build_deployment(config.project_name, 'redis:3.2-alpine', 6379, layer='database', component='redis')
+        stack_yaml += build_service(config.project_name, 6379, layer='database', component='redis')
 
       if with_mongodb:
-        stack_yaml += build_deployment("%s-mongodb" % config.project_name, 'mongodb:3.0', 27017)
-        stack_yaml += build_service("%s-mongodb" % config.project_name, 27017)
+        stack_yaml += build_deployment(config.project_name, 'mongodb:3.0', 27017, layer='database', component='mongodb')
+        stack_yaml += build_service(config.project_name, 27017, layer='database', component='mongodb')
 
       if with_postgres:
-        stack_yaml += build_deployment("%s-postgres" % config.project_name, 'postgres:9.4', 5432)
-        stack_yaml += build_service("%s-postgres" % config.project_name, 5432)
+        stack_yaml += build_deployment(config.project_name, 'postgres:9.4', 5432, layer='database', component='postgres')
+        stack_yaml += build_service(config.project_name, 5432, layer='database', component='postgres')
 
       if with_rabbitmq:
-        stack_yaml += build_deployment("%s-rabbitmq" % config.project_name, 'rabbitmq:3.6-management', 5672)
-        stack_yaml += build_service("%s-rabbitmq" % config.project_name, 5672)
+        stack_yaml += build_deployment(config.project_name, 'rabbitmq:3.6-management-alpine', 5672, layer='messaging', component='rabbitmq')
+        stack_yaml += build_service(config.project_name, 5672, layer='messaging', component='rabbitmq')
 
       f.write(stack_yaml)
 

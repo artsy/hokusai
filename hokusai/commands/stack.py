@@ -8,8 +8,6 @@ from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.lib.common import print_red, print_green, shout
 from hokusai.services.ecr import ECR
-from hokusai.services.deployment import Deployment
-from hokusai.services.service import Service
 from hokusai.services.kubectl import Kubectl
 
 @command
@@ -29,13 +27,11 @@ def stack_create(context):
     return -1
 
   if not ecr.tag_exists(context):
-    shout("docker pull %s:%s" % (config.aws_ecr_registry, 'latest'))
-    shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, 'latest', config.aws_ecr_registry, context))
-    shout("docker push %s:%s" % (config.aws_ecr_registry, context))
+    ecr.retag('latest', context)
     print_green("Updated tag 'latest' -> %s" % context)
 
   kctl = Kubectl(context)
-  shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+  shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
   print_green("Created stack %s" % context)
 
 @command
@@ -62,33 +58,16 @@ def stack_delete(context):
 
 @command
 def stack_status(context):
-  deployment = Deployment(context)
-  deployment_data = []
-  for item in deployment.cache:
-    deployment_data.append(OrderedDict([
-      ('name', item['metadata']['name']),
-      ('desiredReplicas', item['spec']['replicas']),
-      ('availableReplicas', item['status']['availableReplicas'] if 'availableReplicas' in item['status'] else 0),
-      ('unavailableReplicas', item['status']['unavailableReplicas'] if 'unavailableReplicas' in item['status'] else 0),
-      ('tag', deployment.current_tag)
-    ]))
-
-  service = Service(context)
-  service_data = []
-  for item in service.cache:
-    service_data.append(OrderedDict([
-      ('target', item['spec']['selector']['app']),
-      ('clusterIP', item['spec']['clusterIP']),
-      ('ports', item['spec']['ports']),
-      ('status', item['status'])
-    ]))
-  print('')
-  print_green("Stack %s status" % context)
+  kctl = Kubectl(context)
   print('')
   print_green("Deployments")
   print_green('-----------------------------------------------------------')
-  print(yaml.safe_dump(deployment_data, default_flow_style=False))
-
+  shout(kctl.command("get deployments --selector app=%s -o wide" % config.project_name), print_output=True)
+  print('')
   print_green("Services")
   print_green('-----------------------------------------------------------')
-  print(yaml.safe_dump(service_data, default_flow_style=False))
+  shout(kctl.command("get services --selector app=%s -o wide" % config.project_name), print_output=True)
+  print('')
+  print_green("Pods")
+  print_green('-----------------------------------------------------------')
+  shout(kctl.command("get pods --selector app=%s -o wide" % config.project_name), print_output=True)

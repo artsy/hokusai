@@ -10,26 +10,20 @@ class Deployment(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
-    self.cache = [i for l in [self.kctl.get_object('deployment', selector="app=%s" % d) for d in config.deployments] for i in l]
+    self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag):
-    print_green("Deploying %s to %s" % (tag, self.context))
+    print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
-      shout(ECR().get_login())
+      ecr = ECR()
 
-      shout("docker pull %s:%s" % (config.aws_ecr_registry, tag))
-
-      shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, self.context))
-      shout("docker push %s:%s" % (config.aws_ecr_registry, self.context))
-      print_green("Updated tag %s:%s -> %s:%s" %
-                  (config.aws_ecr_registry, tag, config.aws_ecr_registry, self.context))
+      ecr.retag(tag, self.context)
+      print_green("Updated tag %s -> %s" % (tag, self.context))
 
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      shout("docker tag %s:%s %s:%s" % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
-      shout("docker push %s:%s" % (config.aws_ecr_registry, deployment_tag))
-      print_green("Updated tag %s:%s -> %s:%s"
-                  % (config.aws_ecr_registry, tag, config.aws_ecr_registry, deployment_tag))
+      ecr.retag(tag, deployment_tag)
+      print_green("Updated tag %s -> %s" % (tag, deployment_tag))
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
@@ -48,11 +42,23 @@ class Deployment(object):
           }
         }
       }
-      shout(self.kctl.command("patch deployment %s -p '%s'" % (config.project_name, json.dumps(patch))))
+      print_green("Updating %s..." % deployment['metadata']['name'])
+      shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
-  @property
-  def state(self):
-    return self.cache
+  def refresh(self):
+    deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
+    for deployment in self.cache:
+      patch = {
+        "spec": {
+          "template": {
+            "metadata": {
+              "labels": {"deploymentTimestamp": deployment_timestamp}
+            }
+          }
+        }
+      }
+      print_green("Refreshing %s..." % deployment['metadata']['name'])
+      shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
   @property
   def current_tag(self):

@@ -10,7 +10,7 @@ from hokusai.lib.command import command
 from hokusai.lib.common import print_red, print_green
 
 @command
-def dependencies(kubectl_version, platform, install_to, install_config_to, bucket_name, key_name, bucket_region):
+def configure(kubectl_version, bucket_name, key_name, platform, install_to, install_config_to):
   print_green("Downloading and installing kubectl...")
   urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
   os.chmod(os.path.join('/tmp', 'kubectl'), 0755)

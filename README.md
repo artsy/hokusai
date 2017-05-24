@@ -27,7 +27,7 @@ Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on y
 
 Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
-Run `hokusai deps` to install Hokusai's dependencies.  You'll need to provide the S3 bucket name and key of your org's kubectl config file.
+Run `hokusai configure` to install and configure kubectl.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file.
 
 To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
 
@@ -44,7 +44,7 @@ You can add `-v` (Verbose) to most commands which will show you details of the i
 
 ### Installing Dependencies
 
-* `hokusai deps` - installs and configures kubectl
+* `hokusai configure` - installs and configures kubectl
 
 Required options:
   - `--s3-bucket`: The S3 bucket containing your org's kubectl config file
@@ -72,24 +72,26 @@ Required options:
 * `hokusai images` - List image metadata in the AWS ECR project repo.
 
 ### Working with Kubernetes
-Hokusai uses `kubectl` to connect to Kubernetes. You first need to make sure `kubectl` is installed and you have proper config setup for connecting to your Kubernetes. Hokusai `deps` commands provide basic setup for this:
+Hokusai uses `kubectl` to connect to Kubernetes. Hokusai `configure` provides basic setup for installing and configuring kubectl:
 ```bash
-hokusai deps --help
+hokusai configure --help
 ```
 Recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
 ```bash
-hokusai deps --s3-bucket <bucket name> --s3-key <file key>
+hokusai configure --kubectl-version --s3-bucket <bucket name> --s3-key <file key>
 ```
 
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `secrets`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
 
-### Working with Secrets
+### Working with Environment Variables
 
-* `hokusai secrets get` - Prints secrets stored on the Kubernetes server
-* `hokusai secrets set` - Sets secrets on the Kubernetes server. Secrets are stored for the project as key-value pairs in the Kubernetes Secret object `{project_name}-secrets`
-* `hokusai secrets unset` - Removes secrets stored on the Kubernetes server
+* `hokusai env create` - Create the Kubernetes configmap object `{project_name}-environment`
+* `hokusai env get` - Print envrionment variables stored on the Kubernetes server
+* `hokusai env set` - Set envrionment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
+* `hokusai env unset` - Remove envrionment variables stored on the Kubernetes server
+* `hokusai env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
-Note: Secrets will be automatically injected into containers created by the `hokusai run` command but must be explicity referenced in the stack container environment via `secretKeyRef`.
+Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicity referenced in the stack container yaml definition using `envFrom`.
 
 ### Working with Stacks
 
@@ -102,6 +104,7 @@ Note: Secrets will be automatically injected into containers created by the `hok
 
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
 * `hokusai promote` - Update the Kubernetes deployment on production to match the deployment on staging.
+* `hokusai refresh` - Refresh the project's deployment(s)
 
 ### Running a command
 
