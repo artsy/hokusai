@@ -60,7 +60,7 @@ def stack_delete(context):
 
 @command
 def stack_status(context):
-  deployment = Deployment(context, application_only=False)
+  deployment = Deployment(context)
   deployment_data = []
   for item in deployment.cache:
     deployment_data.append(OrderedDict([
@@ -69,10 +69,10 @@ def stack_status(context):
       ('desiredReplicas', item['spec']['replicas']),
       ('availableReplicas', item['status']['availableReplicas'] if 'availableReplicas' in item['status'] else 0),
       ('unavailableReplicas', item['status']['unavailableReplicas'] if 'unavailableReplicas' in item['status'] else 0),
-      ('containers', [{'name': container['name'], 'image': container['image']} for container in item['spec']['template']['spec']['containers']])
+      ('containers', [{'name': container['name'], 'tag': container['image'].rsplit(':', 1)[1]} for container in item['spec']['template']['spec']['containers']])
     ]))
 
-  service = Service(context, application_only=False)
+  service = Service(context)
   service_data = []
   for item in service.cache:
     service_data.append(OrderedDict([

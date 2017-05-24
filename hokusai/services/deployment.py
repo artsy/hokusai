@@ -7,16 +7,10 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_red, print_green, shout
 
 class Deployment(object):
-  def __init__(self, context, application_only=True):
+  def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
-
-    if application_only:
-      selector = "app=%s,layer=application" % config.project_name
-    else:
-      selector = "app=%s" % config.project_name
-
-    self.cache = self.kctl.get_object('deployment', selector=selector)
+    self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag):
     print_green("Deploying %s to %s..." % (tag, self.context))
