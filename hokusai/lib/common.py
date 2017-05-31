@@ -69,6 +69,13 @@ def build_deployment(name, image, target_port, layer='application', component='w
     ('metadata', {'name': "%s-%s" % (name, component)}),
     ('spec', {
       'replicas': 1,
+      'strategy': {
+        'rollingUpdate': {
+          'maxSurge': 1,
+          'maxUnavailable': 0
+        },
+        'type': 'RollingUpdate'
+      },
       'template': {
         'metadata': {
           'labels': {
