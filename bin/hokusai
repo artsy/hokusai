@@ -204,15 +204,14 @@ def stack(action, staging, production, verbose):
 @click.argument('tag', type=click.STRING)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
-@click.option('--skip-tags', type=click.BOOL, is_flag=True, help='Skip creating deploy tags')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(tag, staging, production, skip_tags, verbose):
+def deploy(tag, staging, production, verbose):
   """
   Update the project's deployment(s) to reference a named image tag and update the tag (staging/production) to reference the same image
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
-  hokusai.deploy(context, tag, skip_tags)
+  hokusai.deploy(context, tag)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')

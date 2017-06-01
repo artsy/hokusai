@@ -12,15 +12,14 @@ class Deployment(object):
     self.kctl = Kubectl(self.context)
     self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, skip_tags):
+  def update(self, tag):
     print_green("Deploying %s to %s..." % (tag, self.context))
 
-    if skip_tags is None:
+    if self.context != tag:
       ecr = ECR()
 
-      if self.context != tag:
-        ecr.retag(tag, self.context)
-        print_green("Updated tag %s -> %s" % (tag, self.context))
+      ecr.retag(tag, self.context)
+      print_green("Updated tag %s -> %s" % (tag, self.context))
 
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
       ecr.retag(tag, deployment_tag)
