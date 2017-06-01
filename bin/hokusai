@@ -72,14 +72,42 @@ def check():
   hokusai.check()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
+@click.argument('action', type=click.STRING)
+@click.option('-s', '--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
+@click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow stack output when running 'start' or 'logs'")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def dev(skip_build, verbose):
-  """
-  Boot the development stack
-  """
+def dev(action, skip_build, follow, verbose):
+  """Manage the development stack
+
+  Actions: [start|stop||status|logs|shell|clean]
+
+  start - Start the development stack defined in ./hokusai/development.yml
+
+  stop - Stop the development stack defined in ./hokusai/development.yml
+
+  status - Print the status of the development stack
+
+  logs - Print logs from the development stack
+
+  shell - Attach a shell session to the stack's primary project container
+
+  clean - Stop and remove all containers in the stack"""
   hokusai.lib.common.set_output(verbose)
-  hokusai.development(skip_build)
+  if action == 'start':
+    hokusai.dev_start(skip_build, follow)
+  elif action == 'stop':
+    hokusai.dev_stop()
+  elif action == 'status':
+    hokusai.dev_status()
+  elif action == 'logs':
+    hokusai.dev_logs(follow)
+  elif action == 'shell':
+    hokusai.dev_shell()
+  elif action == 'clean':
+    hokusai.dev_clean()
+  else:
+    hokusai.lib.common.print_red("Invalid action %s" % action)
+    sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')

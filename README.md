@@ -62,8 +62,16 @@ Required options:
 
 ### Development
 
-* `hokusai dev` - Boot a development stack as defined in `hokusai/development.yml`.
-* `hokusai test` - Boot a testing stack as defined in `hokusai/test.yml` and exits with the return code of the test command.
+* `hokusai dev start` - Start the development stack defined in `hokusai/development.yml`.
+* `hokusai dev stop` - Stop the development stack defined in ./hokusai/development.yml.
+* `hokusai dev status` - Print the status of the development stack.
+* `hokusai dev logs` - Print logs from the development stack.
+* `hokusai dev shell` - Attach a shell session to the stack's primary project container.
+* `hokusai dev clean` - Stop and remove all containers in the stack.
+
+### Testing
+
+* `hokusai test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
 
 
 ### Working with Images
