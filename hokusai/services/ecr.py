@@ -1,7 +1,7 @@
 import base64
 
 import boto3
-from botocore.exceptions import BotoCoreError
+from botocore.exceptions import BotoCoreError, ClientError
 
 from hokusai.lib.config import config
 
@@ -79,9 +79,13 @@ class ECR(object):
 
     image = res['images'][0]
 
-    self.client.put_image(
-        registryId=config.aws_account_id,
-        repositoryName=config.project_name,
-        imageManifest=image['imageManifest'],
-        imageTag=new_tag
-    )
+    try:
+      self.client.put_image(
+          registryId=config.aws_account_id,
+          repositoryName=config.project_name,
+          imageManifest=image['imageManifest'],
+          imageTag=new_tag
+      )
+    except ClientError as e:
+      if e.response['Error']['Code'] != 'ImageAlreadyExistsException':
+        raise
