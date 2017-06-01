@@ -226,6 +226,18 @@ def refresh(staging, production, verbose):
   hokusai.refresh(context)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
+@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def history(staging, production, verbose):
+  """
+  Print the project's deployment(s) history
+  """
+  hokusai.lib.common.set_output(verbose)
+  context = select_context(staging, production)
+  hokusai.history(context)
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def promote(verbose):
   """

@@ -60,6 +60,15 @@ class Deployment(object):
       print_green("Refreshing %s..." % deployment['metadata']['name'])
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
+  def history(self, deployment_name):
+    replicasets = self.kctl.get_object('replicaset', selector="app=%s,layer=application" % config.project_name)
+    replicasets = filter(lambda rs: rs['metadata']['ownerReferences'][0]['name'] == deployment_name, replicasets)
+    return sorted(replicasets, key=lambda rs: int(rs['metadata']['annotations']['deployment.kubernetes.io/revision']))
+
+  @property
+  def names(self):
+    return [deployment['metadata']['name'] for deployment in self.cache]
+
   @property
   def current_tag(self):
     images = []
