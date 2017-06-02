@@ -62,8 +62,16 @@ Required options:
 
 ### Development
 
-* `hokusai dev` - Boot a development stack as defined in `hokusai/development.yml`.
-* `hokusai test` - Boot a testing stack as defined in `hokusai/test.yml` and exits with the return code of the test command.
+* `hokusai dev start` - Start the development stack defined in `hokusai/development.yml`.
+* `hokusai dev stop` - Stop the development stack defined in ./hokusai/development.yml.
+* `hokusai dev status` - Print the status of the development stack.
+* `hokusai dev logs` - Print logs from the development stack.
+* `hokusai dev shell` - Attach a shell session to the stack's primary project container.
+* `hokusai dev clean` - Stop and remove all containers in the stack.
+
+### Testing
+
+* `hokusai test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
 
 
 ### Working with Images
@@ -105,6 +113,7 @@ Note: Environment variables will be automatically injected into containers creat
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
 * `hokusai promote` - Update the Kubernetes deployment on production to match the deployment on staging.
 * `hokusai refresh` - Refresh the project's deployment(s)
+* `hokusai history` - Print the project's deployment(s) history
 
 ### Running a command
 

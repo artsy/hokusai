@@ -119,6 +119,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
       if compose_environment == 'development':
         services[config.project_name]['command'] = development_command
         services[config.project_name]['ports'] = ["%s:%s" % (port, port)]
+        services[config.project_name]['volumes'] = ['../:/app']
       if compose_environment == 'test':
         services[config.project_name]['command'] = test_command
 
