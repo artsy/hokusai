@@ -56,14 +56,14 @@ Required options:
 
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
-  - `--project-type`: "ruby-rack", "ruby-rails", "nodejs", "elixir", or "python-wsgi.
+  - `--project-type`: `ruby-rack`, `ruby-rails`, `nodejs`, `elixir`, or `python-wsgi`.
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
 
 ### Development
 
 * `hokusai dev start` - Start the development stack defined in `hokusai/development.yml`.
-* `hokusai dev stop` - Stop the development stack defined in ./hokusai/development.yml.
+* `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
 * `hokusai dev status` - Print the status of the development stack.
 * `hokusai dev logs` - Print logs from the development stack.
 * `hokusai dev shell` - Attach a shell session to the stack's primary project container.
@@ -77,7 +77,7 @@ Required options:
 ### Working with Images
 
 * `hokusai push` - Build and push an image to the AWS ECR project repo, by default tagged as the output of `git rev-parse HEAD`.
-* `hokusai images` - List image metadata in the AWS ECR project repo.
+* `hokusai images` - Print image builds and tags in the AWS ECR project repo.
 
 ### Working with Kubernetes
 Hokusai uses `kubectl` to connect to Kubernetes. Hokusai `configure` provides basic setup for installing and configuring kubectl:
@@ -89,7 +89,7 @@ Recommended approach is to upload your `kubectl` config to S3 and use following 
 hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
 ```
 
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
 
 ### Working with Environment Variables
 

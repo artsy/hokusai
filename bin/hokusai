@@ -132,7 +132,7 @@ def push(tag, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def images(verbose):
   """
-  List image metadata in the project repo
+  Print image builds and tags in the project repo
   """
   hokusai.lib.common.set_output(verbose)
   hokusai.images()
