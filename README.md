@@ -23,13 +23,13 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 ## Setup
 
-Install Hokusai with `(sudo) pip install .` and `hokusai` will be installed on your PATH.
+Install Hokusai with `(sudo) pip install hokusai` and `hokusai` will be installed on your PATH.
 
 Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
 Run `hokusai configure` to install and configure kubectl.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file.
 
-To upgrade to the latest changes in this repo, run `(sudo) pip install --upgrade .`
+Development: to build from this repo, clone it and then run `(sudo) pip install --upgrade .`
 
 To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
 
@@ -86,7 +86,7 @@ hokusai configure --help
 ```
 Recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
 ```bash
-hokusai configure --kubectl-version --s3-bucket <bucket name> --s3-key <file key>
+hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
 ```
 
 When running `hokusai setup` `staging.yml` and `production.yml` are created in the hokusai project directory. These files define what Hokusai calls "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
