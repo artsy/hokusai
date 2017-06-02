@@ -23,7 +23,7 @@ def run(context, command, tty, tag, env):
   else:
     uuid = k8s_uuid()
 
-  name = "%s-run-%s" % (config.project_name, uuid)
+  name = "%s-hokusai-run-%s" % (config.project_name, uuid)
   image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
 
   if tty:
