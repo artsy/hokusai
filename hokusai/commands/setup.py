@@ -196,9 +196,14 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
       if with_rabbitmq:
         environment.append({'name': 'RABBITMQ_URL', 'value': "amqp://%s-rabbitmq/%s" % (config.project_name, urllib.quote_plus('/'))})
 
+      if stack == 'production':
+        replicas = 2
+      else:
+        replicas = 1
+
       deployment_data = build_deployment(config.project_name,
                                           "%s:%s" % (config.aws_ecr_registry, stack),
-                                          port, environment=environment, always_pull=True)
+                                          port, environment=environment, always_pull=True, replicas=replicas)
 
       service_data = build_service(config.project_name, port, target_port=port, internal=False)
 

@@ -79,6 +79,10 @@ class TestCommon(HokusaiUnitTestCase):
     self.assertEqual(basic_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo-web', 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}]}])
     self.assertEqual(basic_deployment['spec']['template']['metadata'], {'labels': {'app': 'foo', 'layer': 'application', 'component': 'web'}, 'namespace': 'default', 'name': 'foo-web'})
     self.assertEqual(basic_deployment['spec']['replicas'], 1)
+    self.assertEqual(basic_deployment['spec']['strategy'], {'rollingUpdate': { 'maxSurge': 1, 'maxUnavailable': 0 }, 'type': 'RollingUpdate'})
+
+    replicated_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80', replicas=2))
+    self.assertEqual(replicated_deployment['spec']['replicas'], 2)
 
     environmental_deployment = yaml.load(build_deployment('foo', 'nginx:latest', '80', environment={'FOO': 'BAR'}))
     self.assertEqual(environmental_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'name': 'foo-web', 'env': {'FOO': 'BAR'}, 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}]}])
