@@ -202,16 +202,17 @@ def stack(action, staging, production, verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)
+@click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(tag, staging, production, verbose):
+def deploy(tag, migration, staging, production, verbose):
   """
   Update the project's deployment(s) to reference a named image tag and update the tag (staging/production) to reference the same image
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
-  hokusai.deploy(context, tag)
+  hokusai.deploy(context, tag, migration)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
@@ -238,6 +239,7 @@ def history(staging, production, verbose):
   hokusai.history(context)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def promote(verbose):
   """
@@ -245,7 +247,7 @@ def promote(verbose):
   and update the production tag to reference the same image
   """
   hokusai.lib.common.set_output(verbose)
-  hokusai.promote()
+  hokusai.promote(migration)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command', type=click.STRING)

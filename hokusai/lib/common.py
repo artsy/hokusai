@@ -47,7 +47,7 @@ def k8s_uuid():
     uuid.append(random.choice(string.lowercase))
   return ''.join(uuid)
 
-def build_deployment(name, image, target_port, layer='application', component='web', environment=None, always_pull=False):
+def build_deployment(name, image, target_port, layer='application', component='web', environment=None, always_pull=False, replicas=1):
   container = {
     'name': "%s-%s" % (name, component),
     'image': image,
@@ -68,7 +68,7 @@ def build_deployment(name, image, target_port, layer='application', component='w
     ('kind', 'Deployment'),
     ('metadata', {'name': "%s-%s" % (name, component)}),
     ('spec', {
-      'replicas': 1,
+      'replicas': replicas,
       'strategy': {
         'rollingUpdate': {
           'maxSurge': 1,
