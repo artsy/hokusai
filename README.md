@@ -58,11 +58,11 @@ Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
   - `--project-type`: `ruby-rack`, `ruby-rails`, `nodejs`, `elixir`, or `python-wsgi`.
 
-* `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project
+* `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project.
 
 ### Development
 
-* `hokusai dev start` - Start the development stack defined in `hokusai/development.yml`.
+* `hokusai dev start` - Start the development stack defined in `./hokusai/development.yml`.
 * `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
 * `hokusai dev status` - Print the status of the development stack.
 * `hokusai dev logs` - Print logs from the development stack.
