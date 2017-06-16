@@ -1,13 +1,11 @@
 HOKUSAI
 -------
 
-Artsy Docker Development Toolkit
-
 <a href="https://en.wikipedia.org/wiki/Hokusai"><img height="300" src="hokusai.jpg"></a>
 
 ## About
 
-Hokusai works with [Kubernetes](https://kubernetes.io/) and [Docker](https://www.docker.com/) to manage a container driven workflow, from development to testing and deployment.
+Hokusai wraps [kubectl](https://kubernetes.io/), [docker](https://www.docker.com/), [docker-compose](https://docs.docker.com/compose/) as well as [git](https://git-scm.com/) with a CLI presenting a CI workflow.
 
 ## Requirements
 
@@ -19,17 +17,17 @@ If you use homebrew, install Docker for Mac with: `brew tap caskroom/cask && bre
 
 3) [Git](https://git-scm.com/)
 
+Git is not necessarily required, but recommended in order to tag container images with the SHA1 of the git commit when it is built.  If you use homebrew, install git with `brew install git`.
+
 If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `(sudo) pip install docker-compose`.
 
 ## Setup
 
-Install Hokusai with `(sudo) pip install hokusai` and `hokusai` will be installed on your PATH.
+Install Hokusai with `(sudo) pip install hokusai` and `hokusai` will be installed on your `PATH`.
 
 Ensure the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` are set in your shell.
 
 Run `hokusai configure` to install and configure kubectl.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file.
-
-Development: to build from this repo, clone it and then run `(sudo) pip install --upgrade .`
 
 To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
 
@@ -127,7 +125,7 @@ Note: Environment variables will be automatically injected into containers creat
 
 - Install development packages: `pip install -r requirements.txt`
 
-Hokusai can be run directly with `python bin/hokusai`
+- To install the package from this repo, clone it and then run `(sudo) pip install --upgrade .`  Alternatively, Hokusai can be invoked directly in this repo with `python bin/hokusai`
 
 [Minikube](https://github.com/kubernetes/minikube)
 
@@ -163,11 +161,11 @@ Note: To access minikube's docker daemon directly. run `eval $(minikube docker-e
 
 All tests can be run with `python -m unittest discover test`.
 
-Integration tests require `kubectl` installed and configured and minikube running locally (`minikube start`).
+Some integration tests require `kubectl` installed and configured and minikube running locally (`minikube start`).
 
 Only run unit tests: `python -m unittest discover test.unit`
 Only run integration tests: `python -m unittest discover test.integration`
 
 Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
-Set the `DEBUG=1` environemnt variable for boto logging
+Set the `DEBUG=1` environemnt variable to print boto logging
