@@ -241,7 +241,7 @@ def history(staging, production, verbose):
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def promote(verbose):
+def promote(migration, verbose):
   """
   Update the project's deployment(s) on production with the image tag currently deployed on staging
   and update the production tag to reference the same image
