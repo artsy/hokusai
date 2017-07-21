@@ -33,10 +33,17 @@ def check():
     return_code += 1
 
   try:
-    shout('kubectl')
+    shout('kubectl version')
     check_ok('kubectl')
   except CalledProcessError:
     check_err('kubectl')
+    return_code += 1
+
+  try:
+    shout('git version')
+    check_ok('git')
+  except CalledProcessError:
+    check_err('git')
     return_code += 1
 
   if os.environ.get('AWS_ACCESS_KEY_ID') is not None:
