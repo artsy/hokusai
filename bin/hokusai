@@ -51,18 +51,11 @@ def configure(kubectl_version, s3_bucket, s3_key, platform, install_to, install_
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_REGION or \'us-east-1\')')
 @click.option('--port', type=click.INT, default=80, help='The port of the service (default: 80)')
-@click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')
-@click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
-@click.option('--with-mongodb', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
-@click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
-@click.option('--with-rabbitmq', type=click.BOOL, is_flag=True, help='Include a RabbitMQ service')
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
-          with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
   """
   Set up Hokusai for the current project
   """
-  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
-                with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq)
+  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 def check():
