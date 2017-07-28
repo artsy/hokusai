@@ -6,9 +6,13 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_red, print_green, shout
 
 @command
-def push(tag, force):
+def push(tag, force, overwrite):
   if force is None and shout('git status --porcelain'):
     print_red("Working directory is not clean.  Aborting.")
+    return -1
+
+  if force is None and shout('git status --porcelain --ignored'):
+    print_red("Working directory contains ignored files and/or directories.  Aborting.")
     return -1
 
   ecr = ECR()
@@ -20,7 +24,7 @@ def push(tag, force):
   if tag is None:
     tag = shout('git rev-parse HEAD').strip()
 
-  if force is None and ecr.tag_exists(tag):
+  if overwrite is None and ecr.tag_exists(tag):
     print_red("Tag %s already exists in remote repository.  Aborting." % tag)
     return -1
 
