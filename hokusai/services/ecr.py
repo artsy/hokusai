@@ -45,7 +45,7 @@ class ECR(object):
     token = base64.b64decode(res['authorizationToken'])
     username = token.split(':')[0]
     password = token.split(':')[1]
-    return "docker login -u %s -p %s -e none %s" % (username, password, res['proxyEndpoint'])
+    return "docker login -u %s -p %s %s" % (username, password, res['proxyEndpoint'])
 
   def get_images(self):
     images = []
