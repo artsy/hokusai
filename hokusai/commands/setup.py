@@ -30,12 +30,11 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
     runtime_environment = {
       'development': ["RACK_ENV=development"],
       'test': ["RACK_ENV=test"],
-      'staging': [{'name': 'RACK_ENV', 'value': 'staging'}],
       'production': [{'name': 'RACK_ENV', 'value': 'production'}]
     }
 
   elif project_type == 'ruby-rails':
-    dockerfile = env.get_template("Dockerfile-ruby.j2")
+    dockerfile = env.get_template("Dockerfile-rails.j2")
     base_image = 'ruby:latest'
     run_command = 'bundle exec rails server'
     development_command = 'bundle exec rails server'
@@ -43,8 +42,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
     runtime_environment = {
       'development': ["RAILS_ENV=development"],
       'test': ["RAILS_ENV=test"],
-      'staging': [{'name': 'RAILS_ENV', 'value': 'staging'}],
-      'production': [{'name': 'RAILS_ENV', 'value': 'production'}]
+      'production': [{'name': 'RAILS_ENV', 'value': 'production'},
+                      {'name': 'RAILS_SERVE_STATIC_FILES', 'value': 'true'},
+                      {'name': 'RAILS_LOG_TO_STDOUT', 'value': 'true'}]
     }
 
   elif project_type == 'nodejs':
@@ -56,7 +56,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
     runtime_environment = {
       'development': ["NODE_ENV=development"],
       'test': ["NODE_ENV=test"],
-      'staging': [{'name': 'NODE_ENV', 'value': 'staging'}],
       'production': [{'name': 'NODE_ENV', 'value': 'production'}]
     }
 
@@ -69,7 +68,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
     runtime_environment = {
       'development': ["MIX_ENV=dev"],
       'test': ["MIX_ENV=test"],
-      'staging': [{'name': 'MIX_ENV', 'value': 'prod'}],
       'production': [{'name': 'MIX_ENV', 'value': 'prod'}]
     }
 
@@ -80,10 +78,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
     development_command = "python -m werkzeug.serving -b 0.0.0.0:%s %s" % (port, project_name)
     test_command = 'python -m unittest discover .'
     runtime_environment = {
-      'development': ["PYTHON_ENV=development"],
-      'test': ["PYTHON_ENV=test"],
-      'staging': [{'name': 'PYTHON_ENV', 'value': 'staging'}],
-      'production': [{'name': 'PYTHON_ENV', 'value': 'production'}]
+      'development': ["CONFIG_FILE=config/development.py"],
+      'test': ["CONFIG_FILE=config/test.py"],
+      'production': [{'name': 'CONFIG_FILE', 'value': 'config/production.py'}]
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
@@ -134,8 +131,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
 
   for stack in ['staging', 'production']:
     with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % stack), 'w') as f:
-      environment = runtime_environment[stack]
-
       if stack == 'production':
         replicas = 2
       else:
@@ -143,7 +138,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
 
       deployment_data = build_deployment(config.project_name,
                                           "%s:%s" % (config.aws_ecr_registry, stack),
-                                          port, environment=environment, always_pull=True, replicas=replicas)
+                                          port, environment=runtime_environment['production'], always_pull=True, replicas=replicas)
 
       service_data = build_service(config.project_name, port, target_port=port, internal=False)
 

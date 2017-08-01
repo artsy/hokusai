@@ -1,5 +1,6 @@
 FROM {{ base_image }}
 
+# Install packages
 {%- if 'alpine' in base_image %}
 RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers
 {%- else %}

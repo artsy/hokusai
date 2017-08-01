@@ -4,24 +4,30 @@ FROM {{ base_image }}
 {%- if 'alpine' in base_image %}
 RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers
 {%- else %}
-RUN apt-get update -qq && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get update -qq && apt-get install -y nodejs && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 {%- endif %}
+
+RUN gem install bundler
+
+# throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
 
 # Set up working directory
 RUN mkdir /app
 
-# Set up node modules
+# Set up gems
 WORKDIR /tmp
-ADD package.json package.json
-ADD npm-shrinkwrap.json npm-shrinkwrap.json
-RUN npm install --production
-RUN cp -a /tmp/node_modules /app/
+ADD Gemfile Gemfile
+ADD Gemfile.lock Gemfile.lock
+RUN bundle install -j4
 
 # Finally, add the rest of our app's code
 # (this is done at the end so that changes to our app's code
 # don't bust Docker's cache)
 ADD . /app
 WORKDIR /app
+
+RUN bundle exec rake assets:precompile
 
 ENV PORT {{ target_port }}
 EXPOSE {{ target_port }}
