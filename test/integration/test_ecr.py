@@ -41,7 +41,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-authorization-response.json')).read(),
                            content_type="application/x-amz-json-1.1")
-    self.assertEqual(self.ecr.get_login(), 'docker login -u AWS -p 76W8YEUFHDSAE98DFDHSFSDFIUHSDAJKGKSADFGKDF -e none https://123456789012.dkr.ecr.us-east-1.amazonaws.com')
+    self.assertEqual(self.ecr.get_login(), 'docker login -u AWS -p 76W8YEUFHDSAE98DFDHSFSDFIUHSDAJKGKSADFGKDF https://123456789012.dkr.ecr.us-east-1.amazonaws.com')
 
   @httpretty.activate
   def test_get_images(self):
