@@ -118,7 +118,7 @@ def test(verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def push(tag, force, overwrite, verbose):
   """
-  Build push an image to the project repo tagged as the git SHA1 of HEAD
+  Build and push an image to the project's remote repo tagged as the git SHA1 of HEAD
   """
   hokusai.lib.common.set_output(verbose)
   hokusai.push(tag, force, overwrite)
@@ -127,7 +127,7 @@ def push(tag, force, overwrite, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def images(verbose):
   """
-  Print image builds and tags in the project repo
+  Print images and tags in the project's remote repo
   """
   hokusai.lib.common.set_output(verbose)
   hokusai.images()
