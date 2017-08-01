@@ -245,6 +245,16 @@ def promote(migration, verbose):
   hokusai.promote(migration)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def diff(verbose):
+  """
+  Print a git diff between the tag currently deployed on production
+  and the tag currently deployed on staging
+  """
+  hokusai.lib.common.set_output(verbose)
+  hokusai.diff()
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command', type=click.STRING)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')

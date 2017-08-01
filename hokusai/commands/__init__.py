@@ -2,6 +2,7 @@ from hokusai.commands.check import check
 from hokusai.commands.configure import configure
 from hokusai.commands.deploy import deploy
 from hokusai.commands.development import dev_start, dev_stop, dev_status, dev_logs, dev_shell, dev_clean
+from hokusai.commands.diff import diff
 from hokusai.commands.env import create_env, delete_env, get_env, set_env, unset_env
 from hokusai.commands.history import history
 from hokusai.commands.images import images
