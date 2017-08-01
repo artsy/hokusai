@@ -110,6 +110,7 @@ Note: Environment variables will be automatically injected into containers creat
 * `hokusai promote` - Update the Kubernetes deployment on production to match the deployment on staging.
 * `hokusai refresh` - Refresh the project's deployment(s)
 * `hokusai history` - Print the project's deployment(s) history
+* `hokusai diff` - Print a git diff between the tags deployed on production vs staging
 
 ### Running a command
 
