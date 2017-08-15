@@ -48,7 +48,7 @@ class HokusaiConfig(object):
 
   @property
   def aws_account_id(self):
-    return self.get('aws-account-id')
+    return str(self.get('aws-account-id'))
 
   @property
   def aws_ecr_region(self):

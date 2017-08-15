@@ -1,9 +1,12 @@
+import re
 import base64
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 from hokusai.lib.config import config
+
+SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
 
 class ECR(object):
   def __init__(self):
@@ -47,6 +50,12 @@ class ECR(object):
     password = token.split(':')[1]
     return "docker login -u %s -p %s %s" % (username, password, res['proxyEndpoint'])
 
+  def get_image_by_tag(self, tag):
+    res = self.client.describe_images(registryId=config.aws_account_id,
+                                      repositoryName=config.project_name,
+                                      imageIds=[{'imageTag': tag}])
+    return res['imageDetails'][0]
+
   def get_images(self):
     images = []
     res = self.client.describe_images(registryId=config.aws_account_id,
@@ -66,6 +75,13 @@ class ECR(object):
       if tag in image['imageTags']:
         return True
     return False
+
+  def find_git_sha1_image_tag(self, tag):
+    image = self.get_image_by_tag(tag)
+    for t in image['imageTags']:
+      if SHA1_REGEX.match(t) is not None:
+        return t
+    return None
 
   def retag(self, tag, new_tag):
     res = self.client.batch_get_image(

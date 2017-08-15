@@ -51,18 +51,11 @@ def configure(kubectl_version, s3_bucket, s3_key, platform, install_to, install_
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_REGION or \'us-east-1\')')
 @click.option('--port', type=click.INT, default=80, help='The port of the service (default: 80)')
-@click.option('--with-memcached', type=click.BOOL, is_flag=True, help='Include a Memcached service')
-@click.option('--with-redis', type=click.BOOL, is_flag=True, help='Include a Redis service')
-@click.option('--with-mongodb', type=click.BOOL, is_flag=True, help='Include a MongoDB service')
-@click.option('--with-postgres', type=click.BOOL, is_flag=True, help='Include a Postgres service')
-@click.option('--with-rabbitmq', type=click.BOOL, is_flag=True, help='Include a RabbitMQ service')
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
-          with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq):
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
   """
   Set up Hokusai for the current project
   """
-  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port,
-                with_memcached, with_redis, with_mongodb, with_postgres, with_rabbitmq)
+  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 def check():
@@ -119,20 +112,22 @@ def test(verbose):
   hokusai.test()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-t', '--tag', multiple=True, type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')
+@click.option('--tag', type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')
+@click.option('--force', type=click.BOOL, is_flag=True, help='Push even if working directory is not clean')
+@click.option('--overwrite', type=click.BOOL, is_flag=True, help='Push even if the tag already exists')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def push(tag, verbose):
+def push(tag, force, overwrite, verbose):
   """
-  Build the project and push the image to the project repo with the given tag
+  Build and push an image to the project's remote repo tagged as the git SHA1 of HEAD
   """
   hokusai.lib.common.set_output(verbose)
-  hokusai.push(tag)
+  hokusai.push(tag, force, overwrite)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def images(verbose):
   """
-  Print image builds and tags in the project repo
+  Print images and tags in the project's remote repo
   """
   hokusai.lib.common.set_output(verbose)
   hokusai.images()
@@ -220,7 +215,7 @@ def deploy(tag, migration, staging, production, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def refresh(staging, production, verbose):
   """
-  Refresh the project's deployment(s)
+  Refresh the project's deployment(s) by terminating the currently running pods
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
@@ -232,7 +227,8 @@ def refresh(staging, production, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def history(staging, production, verbose):
   """
-  Print the project's deployment(s) history
+  Print the project's deployment history in terms of revision number,
+  creation time, container name and image tag
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
@@ -248,6 +244,16 @@ def promote(migration, verbose):
   """
   hokusai.lib.common.set_output(verbose)
   hokusai.promote(migration)
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def diff(verbose):
+  """
+  Print a git diff between the tag currently deployed on production
+  and the tag currently deployed on staging
+  """
+  hokusai.lib.common.set_output(verbose)
+  hokusai.diff()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command', type=click.STRING)
