@@ -215,7 +215,7 @@ def deploy(tag, migration, staging, production, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def refresh(staging, production, verbose):
   """
-  Refresh the project's deployment(s)
+  Refresh the project's deployment(s) by terminating the currently running pods
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)
@@ -227,7 +227,8 @@ def refresh(staging, production, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def history(staging, production, verbose):
   """
-  Print the project's deployment(s) history
+  Print the project's deployment history in terms of revision number,
+  creation time, container name and image tag
   """
   hokusai.lib.common.set_output(verbose)
   context = select_context(staging, production)

@@ -7,7 +7,7 @@ Hokusai is a Docker + Kubernetes CLI for application developers.
 
 Hokusai "dockerizes" applications and manages their lifecycle throughout development, testing, and release cycles.
 
-Hokusai wraps calls [kubectl](https://kubernetes.io/), [docker](https://www.docker.com/), [docker-compose](https://docs.docker.com/compose/) and [git](https://git-scm.com/) with a CLI, and defines a CI workflow.
+Hokusai wraps calls to [kubectl](https://kubernetes.io/), [docker](https://www.docker.com/), [docker-compose](https://docs.docker.com/compose/) and [git](https://git-scm.com/) with a CLI, and defines a CI workflow.
 
 Hokusai currently only supports Kubernetes deployments on AWS, configured to pull from ECS container repositories (ECR), although other providers may be added in the future.
 
@@ -39,19 +39,19 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 2) Set the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` in your shell / `~/.bash_profile`.
 
-3) Run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>`.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file. (System administrators, see [Administrating Hokusai](./docs/Administrating Hokusai.md) for instructions on preparing AWS, Kubernetes, and publishing a kubectl config file.)
+3) Run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>`.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file. (System administrators, see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS, Kubernetes, and publishing a kubectl config file.)
 
 To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
 
 
 ## Getting Started
 
-See [Getting Started.md](./docs/Getting Started.md) to start using Hokusai your project.
+See [Getting Started.md](./docs/Getting_Started.md) to start using Hokusai your project.
 
 
 ## Command Reference
 
-A full command reference can be found in [Command Reference.md](./docs/Command Reference.md).
+A full command reference can be found in [Command Reference.md](./docs/Command_Reference.md).
 
 
 ## Developing Hokusai

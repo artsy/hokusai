@@ -1,4 +1,4 @@
-## Administrating Hokusai
+## Administering Hokusai
 
 Operationally, Hokusai requires:
 - One or more Kubernetes deployments

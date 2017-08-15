@@ -13,17 +13,17 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
   Note: If you set the environment variable `AWS_ACCOUNT_ID` in your shell, you can omit the `--aws-account-id` option.
 
   `hokusai setup` will create:
-    - A `Dockerfile` in your project root
-    - A configuration folder `./hokusai`.  This folder contains:
-      `./hokusai/config.yml` - contains Hokusai project configuration
-      `./hokusai/common.yml` - a Docker Compose YAML file imported by `development.yml` and `test.yml`
-      `./hokusai/development.yml`- a Docker Compose YAML file for the development environment
-      `./hokusai/test.yml` - a Docker Compose YAML file for the test environment
-      `./hokusai/staging.yml` - a Kubernetes YAML file for the staging environment
-      `./hokusai/production.yml` - a Kubernetes YAML file for the production environment
-    - An ECR repository for your project
+  - A `Dockerfile` in your project root
+  - A configuration folder `./hokusai`.  This folder contains:
+      * `./hokusai/config.yml` - contains Hokusai project configuration
+      * `./hokusai/common.yml` - a Docker Compose YAML file imported by `development.yml` and `test.yml`
+      * `./hokusai/development.yml`- a Docker Compose YAML file for the development environment
+      * `./hokusai/test.yml` - a Docker Compose YAML file for the test environment
+      * `./hokusai/staging.yml` - a Kubernetes YAML file for the staging environment
+      * `./hokusai/production.yml` - a Kubernetes YAML file for the production environment
+  - An ECR repository for your project
 
-    The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.
+  The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.
 
 2) Check that Hokusai is correctly configured for your project
 
@@ -61,13 +61,11 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
   The command will also tag the image as `latest`.  This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes stack.
 
   The command aborts if any of the following conditions is met:
-  - The working directory is not clean (you have uncommit changes)
+  - The working directory is not clean (you have uncommited changes)
   - The working directory contains any files specified in your `.gitignore` file
   - The ECR project repository already contains the specified tag
 
   The reason for these conditional checks is that when building, Docker will copy your _entire_ working directory into the container image, which can produce unexpected results when building images locally, destined for production environments!  The reason Hokusai aborts if it detects the working directory is unclean, or any ignored files or directories are present, is because it attempts to prevent any local configuration leaking into container images.
-
-  You can skip these conditional checks by supplying the `--force` flag.  Be careful of using `--force` when you have uncommited changes or ignored files in your working directory, especially when supplying `--force` without also supplying the `--tag` option.
 
   Once an image is pushed, you can list the images and tags in the ECR project repository with: `hokusai images`.
 
