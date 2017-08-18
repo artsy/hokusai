@@ -72,11 +72,13 @@ def check():
 def dev(action, skip_build, follow, verbose):
   """Manage the development stack
 
-  Actions: [start|stop||status|logs|shell|clean]
+  Actions: [start|stop|build|status|logs|shell|clean]
 
   start - Start the development stack defined in ./hokusai/development.yml
 
   stop - Stop the development stack defined in ./hokusai/development.yml
+
+  build - Build the docker image defined in ./hokusai/common.yml
 
   status - Print the status of the development stack
 
@@ -90,6 +92,8 @@ def dev(action, skip_build, follow, verbose):
     hokusai.dev_start(skip_build, follow)
   elif action == 'stop':
     hokusai.dev_stop()
+  elif action == 'build':
+    hokusai.dev_build()
   elif action == 'status':
     hokusai.dev_status()
   elif action == 'logs':

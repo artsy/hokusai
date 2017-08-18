@@ -30,6 +30,7 @@ Required options:
 
 * `hokusai dev start` - Start the development stack defined in `./hokusai/development.yml`.
 * `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
+* `hokusai dev build` - Build the docker image defined in ./hokusai/common.yml.
 * `hokusai dev status` - Print the status of the development stack.
 * `hokusai dev logs` - Print logs from the development stack.
 * `hokusai dev shell` - Attach a shell session to the stack's primary project container.

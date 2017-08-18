@@ -31,6 +31,14 @@ def dev_stop():
   shout("docker-compose -f %s stop" % docker_compose_yml, print_output=True)
 
 @command
+def dev_build():
+  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
+  if not os.path.isfile(docker_compose_yml):
+    print_red("Yaml file %s does not exist." % docker_compose_yml)
+    return -1
+  shout("docker-compose -f %s build" % docker_compose_yml, print_output=True)
+
+@command
 def dev_status():
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
