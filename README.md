@@ -76,7 +76,7 @@ Only run integration tests: `python -m unittest discover test.integration`
 
 Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
-Set the `DEBUG=1` environemnt variable to print boto logging
+Set the `DEBUG=1` environment variable to print boto logging
 
 ## The Name
 
