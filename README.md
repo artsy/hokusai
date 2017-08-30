@@ -77,3 +77,7 @@ Only run integration tests: `python -m unittest discover test.integration`
 Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
 Set the `DEBUG=1` environemnt variable to print boto logging
+
+## The Name
+
+The project is named for the great Japanese artist [Katsushika Hokusai](https://www.artsy.net/article/artsy-editorial-7-things-hokusai-creator-great-wave) (1760-1849).
