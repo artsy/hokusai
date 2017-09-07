@@ -246,14 +246,15 @@ def promote(migration, verbose):
   hokusai.promote(migration)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--pr-only', type=click.BOOL, is_flag=True, help='Show only PR merge commits')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def diff(verbose):
+def diff(pr_only, verbose):
   """
   Print a git diff between the tag currently deployed on production
   and the tag currently deployed on staging
   """
   hokusai.lib.common.set_output(verbose)
-  hokusai.diff()
+  hokusai.diff(pr_only)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command', type=click.STRING)

@@ -4,7 +4,7 @@ from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
 
 @command
-def diff():
+def diff(pr_only=False):
   ecr = ECR()
 
   staging_deployment = Deployment('staging')
@@ -28,4 +28,7 @@ def diff():
       return -1
 
   print_green("Comparing %s to %s" % (production_tag, staging_tag))
-  shout("git diff %s %s" % (production_tag, staging_tag), print_output=True)
+  if pr_only:
+    shout("git log --merges --right-only %s..%s" % (production_tag, staging_tag), print_output=True)
+  else:
+    shout("git diff %s %s" % (production_tag, staging_tag), print_output=True)
