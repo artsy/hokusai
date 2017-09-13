@@ -61,7 +61,7 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
   The command will also tag the image as `latest`.  This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes stack.
 
   The command aborts if any of the following conditions is met:
-  - The working directory is not clean (you have uncommited changes)
+  - The working directory is not clean (you have uncommitted changes)
   - The working directory contains any files specified in your `.gitignore` file
   - The ECR project repository already contains the specified tag
 
