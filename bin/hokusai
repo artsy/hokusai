@@ -72,11 +72,13 @@ def check():
 def dev(action, skip_build, follow, verbose):
   """Manage the development stack
 
-  Actions: [start|stop||status|logs|shell|clean]
+  Actions: [start|stop|build|status|logs|shell|clean]
 
   start - Start the development stack defined in ./hokusai/development.yml
 
   stop - Stop the development stack defined in ./hokusai/development.yml
+
+  build - Build the docker image defined in ./hokusai/common.yml
 
   status - Print the status of the development stack
 
@@ -85,11 +87,13 @@ def dev(action, skip_build, follow, verbose):
   shell - Attach a shell session to the stack's primary project container
 
   clean - Stop and remove all containers in the stack"""
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   if action == 'start':
     hokusai.dev_start(skip_build, follow)
   elif action == 'stop':
     hokusai.dev_stop()
+  elif action == 'build':
+    hokusai.dev_build()
   elif action == 'status':
     hokusai.dev_status()
   elif action == 'logs':
@@ -108,7 +112,7 @@ def test(verbose):
   """Boot the test stack and run the test suite
 
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   hokusai.test()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -120,7 +124,7 @@ def push(tag, force, overwrite, verbose):
   """
   Build and push an image to the project's remote repo tagged as the git SHA1 of HEAD
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   hokusai.push(tag, force, overwrite)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -129,7 +133,7 @@ def images(verbose):
   """
   Print images and tags in the project's remote repo
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   hokusai.images()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -150,7 +154,7 @@ def env(action, env_vars, staging, production, verbose):
   unset - Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'
 
   delete - Delete the Kubernetes configmap object `{project_name}-environment`"""
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   if action == 'create':
     hokusai.create_env(context)
@@ -181,7 +185,7 @@ def stack(action, staging, production, verbose):
   delete - delete the Kubernetes stack defined in ./hokusai/{staging/production}.yml
 
   status - print the Kubernetes stack status defined in ./hokusai/{staging/production}.yml"""
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   if action == 'create':
     hokusai.stack_create(context)
@@ -205,7 +209,7 @@ def deploy(tag, migration, staging, production, verbose):
   """
   Update the project's deployment(s) to reference a named image tag and update the tag (staging/production) to reference the same image
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.deploy(context, tag, migration)
 
@@ -217,7 +221,7 @@ def refresh(staging, production, verbose):
   """
   Refresh the project's deployment(s) by terminating the currently running pods
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.refresh(context)
 
@@ -230,7 +234,7 @@ def history(staging, production, verbose):
   Print the project's deployment history in terms of revision number,
   creation time, container name and image tag
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.history(context)
 
@@ -242,7 +246,7 @@ def promote(migration, verbose):
   Update the project's deployment(s) on production with the image tag currently deployed on staging
   and update the production tag to reference the same image
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   hokusai.promote(migration)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -252,7 +256,7 @@ def diff(verbose):
   Print a git diff between the tag currently deployed on production
   and the tag currently deployed on staging
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   hokusai.diff()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
@@ -267,7 +271,7 @@ def run(command, staging, production, tty, tag, env, verbose):
   """
   Launch a new container and run a command
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.run(context, command, tty, tag, env)
 
@@ -282,7 +286,7 @@ def logs(staging, production, timestamps, nlines, follow, verbose):
   """
   Get container logs
   """
-  hokusai.lib.common.set_output(verbose)
+  hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.logs(context, timestamps, nlines, follow)
 

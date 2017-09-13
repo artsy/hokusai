@@ -24,9 +24,13 @@ def print_green(msg):
 def print_red(msg):
   cprint(msg, 'red')
 
-def set_output(v):
+def set_verbosity(v):
   global VERBOSE
   VERBOSE = v
+
+def get_verbosity():
+  global VERBOSE
+  return VERBOSE
 
 def verbose(msg):
   if VERBOSE: cprint("==> hokusai exec `%s`" % msg, 'yellow')

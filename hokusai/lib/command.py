@@ -1,7 +1,8 @@
 import sys
+import traceback
 from functools import wraps
 
-from hokusai.lib.common import print_red, CalledProcessError
+from hokusai.lib.common import print_red, CalledProcessError, get_verbosity
 
 def command(func):
   @wraps(func)
@@ -17,11 +18,15 @@ def command(func):
     except KeyboardInterrupt:
       raise
     except CalledProcessError, e:
-      if e.output is not None:
-        print_red("ERROR: %s" % e.output)
+      if get_verbosity():
+        print_red(traceback.format_exc(e))
+      else:
+        print_red("ERROR: %s" % str(e))
       sys.exit(-1)
     except Exception, e:
-      if hasattr(e, 'message'):
-        print_red("ERROR: %s" % e.message)
+      if get_verbosity():
+        print_red(traceback.format_exc(e))
+      else:
+        print_red("ERROR: %s" % str(e))
       sys.exit(-1)
   return wrapper

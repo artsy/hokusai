@@ -61,7 +61,7 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
   The command will also tag the image as `latest`.  This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes stack.
 
   The command aborts if any of the following conditions is met:
-  - The working directory is not clean (you have uncommited changes)
+  - The working directory is not clean (you have uncommitted changes)
   - The working directory contains any files specified in your `.gitignore` file
   - The ECR project repository already contains the specified tag
 
@@ -72,7 +72,7 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
 6) Create the Kubernetes staging environment
   ```bash
   hokusai env create --staging
-  hokusai env set RAILS_ENV=staging --staging
+  hokusai env set FOO=bar --staging
   ```
 
 7) Create the Kubernetes staging stack with `hokusai stack create --staging`
@@ -83,16 +83,12 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
 
 8) Create the Kubernetes production environment
 
-  Run the same command as above, but this time targeting the Kubernetes production environment:
-
   ```bash
   hokusai env create --production
-  hokusai env set RAILS_ENV=production --production
+  hokusai env set FOO=baz --production
   ```
 
 9) Create the Kubernetes production stack
-
-  Run the same command as above, but this time targeting the Kubernetes production environment:
 
   ```bash
   hokusai stack create --production

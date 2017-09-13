@@ -14,12 +14,10 @@ def dev_start(skip_build, follow):
   opts = ''
   if not skip_build:
     opts += ' --build'
+  if not follow:
+    opts += ' -d'
 
-  if follow:
-    shout("docker-compose -f %s up%s" % (docker_compose_yml, opts), print_output=True)
-  else:
-    shout("docker-compose -f %s create%s" % (docker_compose_yml, opts), print_output=True)
-    shout("docker-compose -f %s start" % docker_compose_yml, print_output=True)
+  shout("docker-compose -f %s up%s" % (docker_compose_yml, opts), print_output=True)
 
 @command
 def dev_stop():
@@ -29,6 +27,14 @@ def dev_stop():
     return -1
 
   shout("docker-compose -f %s stop" % docker_compose_yml, print_output=True)
+
+@command
+def dev_build():
+  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
+  if not os.path.isfile(docker_compose_yml):
+    print_red("Yaml file %s does not exist." % docker_compose_yml)
+    return -1
+  shout("docker-compose -f %s build" % docker_compose_yml, print_output=True)
 
 @command
 def dev_status():
