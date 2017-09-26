@@ -26,9 +26,10 @@ Required options:
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project.
 
-### Using Hokusai for local development
+### Working locally
 
 * `hokusai dev <start|stop|status|logs|shell|clean>`
+
   - `hokusai dev start` - Start the development stack defined in `./hokusai/development.yml`.
   - `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
   - `hokusai dev status` - Print the status of the development stack.
@@ -36,27 +37,33 @@ Required options:
   - `hokusai dev shell` - Attach a shell session to the stack's primary project container.
   - `hokusai dev clean` - Stop and remove all containers in the stack.
 
-### Using Hokusai with CI
+### Working with CI
+
 * `hokusai build` - Build the docker image defined in ./hokusai/common.yml.
 * `hokusai test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
 * `hokusai push` - Build and push an image to the AWS ECR project repo.
 * `hokusai images` - Print image builds and tags in the AWS ECR project repo.
 
 ### Working with Kubernetes
+
 Hokusai uses `kubectl` to connect to Kubernetes. Hokusai `configure` provides basic setup for installing and configuring kubectl:
+
 ```bash
 hokusai configure --help
 ```
-Recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
+
+The recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
+
 ```bash
 hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
 ```
 
 When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define what Hokusai refers to as "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
 
-### Working with Environment Variables
+### Working with environment variables
 
 * `hokusai env <create|get|set|unset|delete>`
+
   - `hokusai env create` - Create the Kubernetes configmap object `{project_name}-environment`
   - `hokusai env get` - Print environment variables stored on the Kubernetes server
   - `hokusai env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
@@ -65,15 +72,16 @@ When running `hokusai setup` `staging.yml` and `production.yml` are created in t
 
 Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicitly referenced in the stack container yaml definition using `envFrom`.
 
-### Working with Stacks
+### Working with stacks
 
 * `hokusai stack <create|update|delete|status>`
+
   - `hokusai stack create` - Create a stack.
   - `hokusai stack update` - Update a stack.
   - `hokusai stack delete` - Delete a stack.
   - `hokusai stack status` - Print the stack status.
 
-### Working with Deployments
+### Working with deployments
 
 * `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
 * `hokusai promote` - Update the Kubernetes deployment on production to match the deployment running on staging.
