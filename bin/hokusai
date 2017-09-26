@@ -65,6 +65,13 @@ def check():
   hokusai.check()
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+def build():
+  """
+  Build the Docker image defined in ./hokusai/common.yml
+  """
+  hokusai.build()
+
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
 @click.option('-s', '--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow stack output when running 'start' or 'logs'")
@@ -72,13 +79,11 @@ def check():
 def dev(action, skip_build, follow, verbose):
   """Manage the development stack
 
-  Actions: [start|stop|build|status|logs|shell|clean]
+  Actions: <start|stop|status|logs|shell|clean>
 
   start - Start the development stack defined in ./hokusai/development.yml
 
   stop - Stop the development stack defined in ./hokusai/development.yml
-
-  build - Build the docker image defined in ./hokusai/common.yml
 
   status - Print the status of the development stack
 
@@ -92,8 +97,6 @@ def dev(action, skip_build, follow, verbose):
     hokusai.dev_start(skip_build, follow)
   elif action == 'stop':
     hokusai.dev_stop()
-  elif action == 'build':
-    hokusai.dev_build()
   elif action == 'status':
     hokusai.dev_status()
   elif action == 'logs':
@@ -107,13 +110,14 @@ def dev(action, skip_build, follow, verbose):
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-s', '--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def test(verbose):
+def test(skip_build, verbose):
   """Boot the test stack and run the test suite
 
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
   hokusai.lib.common.set_verbosity(verbose)
-  hokusai.test()
+  hokusai.test(skip_build)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--tag', type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')
@@ -143,7 +147,7 @@ def images(verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def env(action, env_vars, staging, production, verbose):
-  """Actions: [get|set|unset]
+  """Actions: <create|get|set|unset|delete>
 
   create - Create the Kubernetes configmap object `{project_name}-environment`
 
@@ -176,7 +180,7 @@ def env(action, env_vars, staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stack(action, staging, production, verbose):
-  """  Actions: [create|update|delete|status]
+  """  Actions: <create|update|delete|status>
 
   create - create the Kubernetes stack defined in ./hokusai/{staging/production}.yml
 

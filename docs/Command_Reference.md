@@ -28,20 +28,17 @@ Required options:
 
 ### Using Hokusai for local development
 
-* `hokusai dev start` - Start the development stack defined in `./hokusai/development.yml`.
-* `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
-* `hokusai dev build` - Build the docker image defined in ./hokusai/common.yml.
-* `hokusai dev status` - Print the status of the development stack.
-* `hokusai dev logs` - Print logs from the development stack.
-* `hokusai dev shell` - Attach a shell session to the stack's primary project container.
-* `hokusai dev clean` - Stop and remove all containers in the stack.
+* `hokusai dev <start|stop|status|logs|shell|clean>`
+  - `hokusai dev start` - Start the development stack defined in `./hokusai/development.yml`.
+  - `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
+  - `hokusai dev status` - Print the status of the development stack.
+  - `hokusai dev logs` - Print logs from the development stack.
+  - `hokusai dev shell` - Attach a shell session to the stack's primary project container.
+  - `hokusai dev clean` - Stop and remove all containers in the stack.
 
-### Using Hokusai for testing / CI
-
+### Using Hokusai with CI
+* `hokusai build` - Build the docker image defined in ./hokusai/common.yml.
 * `hokusai test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
-
-### Working with Images
-
 * `hokusai push` - Build and push an image to the AWS ECR project repo.
 * `hokusai images` - Print image builds and tags in the AWS ECR project repo.
 
@@ -59,20 +56,22 @@ When running `hokusai setup` `staging.yml` and `production.yml` are created in t
 
 ### Working with Environment Variables
 
-* `hokusai env create` - Create the Kubernetes configmap object `{project_name}-environment`
-* `hokusai env get` - Print environment variables stored on the Kubernetes server
-* `hokusai env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
-* `hokusai env unset` - Remove environment variables stored on the Kubernetes server
-* `hokusai env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
+* `hokusai env <create|get|set|unset|delete>`
+  - `hokusai env create` - Create the Kubernetes configmap object `{project_name}-environment`
+  - `hokusai env get` - Print environment variables stored on the Kubernetes server
+  - `hokusai env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
+  - `hokusai env unset` - Remove environment variables stored on the Kubernetes server
+  - `hokusai env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
 Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicitly referenced in the stack container yaml definition using `envFrom`.
 
 ### Working with Stacks
 
-* `hokusai stack create` - Create a stack.
-* `hokusai stack update` - Update a stack.
-* `hokusai stack delete` - Delete a stack.
-* `hokusai stack status` - Print the stack status.
+* `hokusai stack <create|update|delete|status>`
+  - `hokusai stack create` - Create a stack.
+  - `hokusai stack update` - Update a stack.
+  - `hokusai stack delete` - Delete a stack.
+  - `hokusai stack status` - Print the stack status.
 
 ### Working with Deployments
 
