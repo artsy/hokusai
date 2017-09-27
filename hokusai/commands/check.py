@@ -58,18 +58,6 @@ def check():
     check_err('AWS_SECRET_ACCESS_KEY')
     return_code += 1
 
-  if os.environ.get('AWS_DEFAULT_REGION') is not None:
-    check_ok('AWS_DEFAULT_REGION')
-  else:
-    check_err('AWS_DEFAULT_REGION')
-    return_code += 1
-
-  if os.environ.get('AWS_ACCOUNT_ID') is not None:
-    check_ok('AWS_ACCOUNT_ID')
-  else:
-    check_err('AWS_ACCOUNT_ID')
-    return_code += 1
-
   ecr = ECR()
   if ecr.project_repository_exists():
     check_ok("ECR repository '%s'" % config.project_name)
