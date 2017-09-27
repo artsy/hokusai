@@ -76,8 +76,9 @@ def build():
 @click.option('-b', '--build', type=click.BOOL, is_flag=True, help="Force rebuild the docker image before running - only applies to 'start'")
 @click.option('-d', '--detach', type=click.BOOL, is_flag=True, help="Run containers in the background - only applies to 'start'")
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow output - only applies to 'logs'")
+@click.option('-t', '--tail', type=click.BOOL, is_flag=True, help="Same as '--follow'")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def dev(action, build, detach, follow, verbose):
+def dev(action, build, detach, follow, tail, verbose):
   """Manage the development stack
 
   Actions: <start|stop|status|logs|shell|clean>
@@ -101,7 +102,7 @@ def dev(action, build, detach, follow, verbose):
   elif action == 'status':
     hokusai.dev_status()
   elif action == 'logs':
-    hokusai.dev_logs(follow)
+    hokusai.dev_logs(follow or tail)
   elif action == 'shell':
     hokusai.dev_shell()
   elif action == 'clean':
@@ -286,14 +287,15 @@ def run(command, staging, production, tty, tag, env, verbose):
 @click.option('-t', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-n', '--nlines', type=click.STRING, help='Num lines to follow')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
+@click.option('-t', '--tail', type=click.BOOL, is_flag=True, help="Same as '--follow'")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def logs(staging, production, timestamps, nlines, follow, verbose):
+def logs(staging, production, timestamps, nlines, follow, tail, verbose):
   """
   Get container logs
   """
   hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.logs(context, timestamps, nlines, follow)
+  hokusai.logs(context, timestamps, nlines, follow or tail)
 
 if __name__ == '__main__':
   cli(obj={})
