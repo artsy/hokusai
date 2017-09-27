@@ -73,10 +73,11 @@ def build():
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('action', type=click.STRING)
-@click.option('-s', '--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
-@click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow stack output when running 'start' or 'logs'")
+@click.option('-b', '--build', type=click.BOOL, is_flag=True, help="Force rebuild the docker image before running - only applies to 'start'")
+@click.option('-d', '--detach', type=click.BOOL, is_flag=True, help="Run containers in the background - only applies to 'start'")
+@click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow output - only applies to 'logs'")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def dev(action, skip_build, follow, verbose):
+def dev(action, build, detach, follow, verbose):
   """Manage the development stack
 
   Actions: <start|stop|status|logs|shell|clean>
@@ -94,7 +95,7 @@ def dev(action, skip_build, follow, verbose):
   clean - Stop and remove all containers in the stack"""
   hokusai.lib.common.set_verbosity(verbose)
   if action == 'start':
-    hokusai.dev_start(skip_build, follow)
+    hokusai.dev_start(build, detach)
   elif action == 'stop':
     hokusai.dev_stop()
   elif action == 'status':
@@ -110,14 +111,14 @@ def dev(action, skip_build, follow, verbose):
     sys.exit(-1)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-s', '--skip-build', type=click.BOOL, is_flag=True, help='Do not build the project while launching the stack')
+@click.option('-b', '--build', type=click.BOOL, is_flag=True, help='Force rebuild the docker image before running the test suite')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def test(skip_build, verbose):
+def test(build, verbose):
   """Boot the test stack and run the test suite
 
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
   hokusai.lib.common.set_verbosity(verbose)
-  hokusai.test(skip_build)
+  hokusai.test(build)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--tag', type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')

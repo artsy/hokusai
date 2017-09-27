@@ -6,7 +6,7 @@ from hokusai.lib.config import config
 from hokusai.lib.common import print_red, print_green, shout, EXIT_SIGNALS, CalledProcessError
 
 @command
-def test(skip_build):
+def test(build):
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/test.yml')
   if not os.path.isfile(docker_compose_yml):
     print_red("Yaml file %s does not exist." % docker_compose_yml)
@@ -19,7 +19,7 @@ def test(skip_build):
     signal.signal(sig, cleanup)
 
   opts = ' --abort-on-container-exit'
-  if not skip_build:
+  if build:
     opts += ' --build'
 
   shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
