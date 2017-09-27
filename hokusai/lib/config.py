@@ -58,4 +58,12 @@ class HokusaiConfig(object):
   def aws_ecr_registry(self):
     return "%s.dkr.ecr.%s.amazonaws.com/%s" % (self.aws_account_id, self.aws_ecr_region, self.project_name)
 
+  @property
+  def before_deploy(self):
+    return self.get('before-deploy')
+
+  @property
+  def after_deploy(self):
+    return self.get('after-deploy')
+
 config = HokusaiConfig()
