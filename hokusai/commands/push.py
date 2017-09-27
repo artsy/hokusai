@@ -30,7 +30,7 @@ def push(tag, force, overwrite):
 
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
   shout("docker-compose -f %s -p hokusai build" % docker_compose_yml, print_output=True)
-  build = "build_%s:latest" % config.project_name
+  build = "hokusai_%s:latest" % config.project_name
 
   shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag))
   shout("docker push %s:%s" % (config.aws_ecr_registry, tag), print_output=True)
