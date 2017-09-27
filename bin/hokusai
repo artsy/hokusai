@@ -28,7 +28,7 @@ def cli():
 @cli.command(context_settings=CONTEXT_SETTINGS)
 def version():
   """
-  Print Hokusai's version
+  Print Hokusai's version and exit
   """
   hokusai.version()
 
@@ -206,17 +206,19 @@ def stack(action, staging, production, verbose):
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
+@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(tag, migration, staging, production, verbose):
+def deploy(tag, migration, constraint, staging, production, verbose):
   """
-  Update the project's deployment(s)  on a given stack to reference the given image tag
-  and update the tag(staging/production) to reference the same image
+  Update the project's deployment(s) on a given stack to reference
+  the given image tag and update the tag(staging/production)
+  to reference the same image
   """
   hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.deploy(context, tag, migration)
+  hokusai.deploy(context, tag, migration, constraint)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
@@ -245,14 +247,16 @@ def history(staging, production, verbose):
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
+@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def promote(migration, verbose):
+def promote(migration, constraint, verbose):
   """
-  Update the project's deployment(s) on production with the image tag currently deployed on staging
-  and update the production tag to reference the same image
+  Update the project's deployment(s) on production with the image tag
+  currently deployed on staging and update the production tag
+  to reference the same image
   """
   hokusai.lib.common.set_verbosity(verbose)
-  hokusai.promote(migration)
+  hokusai.promote(migration, constraint)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -271,14 +275,15 @@ def diff(verbose):
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to either staging or production)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
+@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(command, staging, production, tty, tag, env, verbose):
+def run(command, staging, production, tty, tag, env, constraint, verbose):
   """
   Launch a new container and run a command on a given stack
   """
   hokusai.lib.common.set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.run(context, command, tty, tag, env)
+  hokusai.run(context, command, tty, tag, env, constraint)
 
 @cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
