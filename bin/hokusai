@@ -8,8 +8,8 @@ import click
 import hokusai
 
 CONTEXT_SETTINGS = {
-  'terminal_width': 120,
-  'max_content_width': 120,
+  'terminal_width': 10000,
+  'max_content_width': 10000,
   'help_option_names': ['-h', '--help']
 }
 
