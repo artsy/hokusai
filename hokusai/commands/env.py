@@ -19,7 +19,7 @@ def delete_env(context):
 def get_env(context, environment):
   configmap = ConfigMap(context)
   configmap.load()
-  if len(environment) == 0:
+  if environment:
     for k, v in configmap.all():
       print("%s=%s" % (k, v))
   else:

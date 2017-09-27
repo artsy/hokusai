@@ -90,7 +90,7 @@ class ECR(object):
       imageIds=[{'imageTag': tag}]
     )
 
-    if len(res['failures']) and not len(res['images']):
+    if res['failures'] and not res['images']:
       raise ValueError("Failed to retrieve image manifest for tag %s" % tag)
 
     image = res['images'][0]
