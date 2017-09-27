@@ -11,7 +11,7 @@ setup(name='hokusai',
       packages=['hokusai'],
       package_data={'hokusai': ['VERSION.txt', 'templates/*', 'lib/*', 'services/*', 'commands/*']},
       install_requires=[
-          'click==6.6',
+          'click==6.7',
           'MarkupSafe==0.23',
           'Jinja2==2.8',
           'PyYAML==3.12',
