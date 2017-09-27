@@ -6,6 +6,7 @@ from hokusai.services.command_runner import CommandRunner
 @command
 def deploy(context, tag, migration):
   if migration is not None:
+    print_green("Running migration '%s' on %s..." % (migration, context))
     retval = CommandRunner(context).run(tag, migration)
     if retval != 0:
       print_red("Migration failed with return code %s" % retval)
