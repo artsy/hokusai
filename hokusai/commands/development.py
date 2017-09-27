@@ -3,7 +3,7 @@ import signal
 
 from hokusai.lib.command import command
 from hokusai.lib.config import config
-from hokusai.lib.common import print_red, shout, EXIT_SIGNALS
+from hokusai.lib.common import print_red, print_green, shout, EXIT_SIGNALS
 
 @command
 def dev_start(build, detach):
@@ -23,7 +23,13 @@ def dev_start(build, detach):
   if detach:
     opts += ' -d'
 
+  if not detach:
+    print_green("Starting development stack... Press Ctrl+C to stop.")
+
   shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
+
+  if detach:
+    print_green("Run `hokousai dev stop` to shut down, or `hokusai dev logs --follow` to tail output.")
 
 @command
 def dev_stop():

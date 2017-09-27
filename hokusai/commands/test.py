@@ -22,6 +22,7 @@ def test(build):
   if build:
     opts += ' --build'
 
+  print_green("Starting test stack... Press Ctrl+C to stop.")
   shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
 
   try:
