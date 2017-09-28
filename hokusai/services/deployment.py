@@ -1,15 +1,11 @@
-import os
 import datetime
 import json
-from subprocess import Popen, STDOUT
 
 from hokusai.lib.config import config
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_red, print_green, shout
+from hokusai.lib.common import print_red, print_green, shout, shout_concurrent
 from hokusai.services.command_runner import CommandRunner
-
-FNULL = open(os.devnull, 'w')
 
 class Deployment(object):
   def __init__(self, context):
@@ -59,21 +55,11 @@ class Deployment(object):
 
     print_green("Waiting for rollout to finish...")
 
-    # Concurrent
-    processes = [Popen(self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']), shell=True, stdout=FNULL, stderr=STDOUT) for deployment in self.cache]
-    success = []
-    try:
-      for p in processes:
-        success.append(p.wait())
-    except KeyboardInterrupt:
-      for p in processes:
-        p.terminate()
-      return -1
-
-    for retval in success:
-      if retval != 0:
-        print_red("Deployment failed!")
-        return retval
+    rollout_commands = [kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
+    retval = shout_concurrent(rollout_commands)
+    if retval is not None:
+      print_red("Deployment failed!")
+      return retval
 
     if config.after_deploy is not None:
       print_green("Running after-deploy hook '%s' on %s..." % (config.after_deploy, self.context))

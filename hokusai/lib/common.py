@@ -1,3 +1,4 @@
+import os
 import signal
 import string
 import random
@@ -5,7 +6,7 @@ import json
 
 from collections import OrderedDict
 
-from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
+from subprocess import call, check_call, check_output, CalledProcessError, Popen, STDOUT
 
 import yaml
 import boto3
@@ -44,6 +45,25 @@ def shout(command, print_output=False):
     return check_call(verbose(command), stderr=STDOUT, shell=True)
   else:
     return check_output(verbose(command), stderr=STDOUT, shell=True)
+
+def shout_concurrent(commands, print_output=False):
+  if print_output:
+    processes = [Popen(command, shell=True) for command in commands]
+  else:
+    processes = [Popen(command, shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
+
+  retvals = []
+  try:
+    for p in processes:
+      retvals.append(p.wait())
+  except KeyboardInterrupt:
+    for p in processes:
+      p.terminate()
+      return -1
+
+  for retval in retvals:
+    if retval:
+      return retval
 
 def k8s_uuid():
   uuid = []
