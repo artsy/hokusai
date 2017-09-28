@@ -1,10 +1,15 @@
+import os
 import datetime
 import json
+from subprocess import Popen, STDOUT
 
 from hokusai.lib.config import config
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_red, print_green, shout
+from hokusai.services.command_runner import CommandRunner
+
+FNULL = open(os.devnull, 'w')
 
 class Deployment(object):
   def __init__(self, context):
@@ -12,7 +17,7 @@ class Deployment(object):
     self.kctl = Kubectl(self.context)
     self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag):
+  def update(self, tag, constraint):
     print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
@@ -24,6 +29,13 @@ class Deployment(object):
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
       ecr.retag(tag, deployment_tag)
       print_green("Updated tag %s -> %s" % (tag, deployment_tag))
+
+    if config.before_deploy is not None:
+      print_green("Running before-deploy hook '%s' on %s..." % (config.before_deploy, self.context))
+      retval = CommandRunner(self.context).run(tag, config.before_deploy, constraint=constraint)
+      if retval != 0:
+        print_red("Deploy hook failed with return code %s" % retval)
+        return retval
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
@@ -42,8 +54,33 @@ class Deployment(object):
           }
         }
       }
-      print_green("Updating %s..." % deployment['metadata']['name'])
+      print_green("Patching deployment %s..." % deployment['metadata']['name'])
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
+
+    print_green("Waiting for rollout to finish...")
+
+    # Concurrent
+    processes = [Popen(self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']), shell=True, stdout=FNULL, stderr=STDOUT) for deployment in self.cache]
+    success = []
+    try:
+      for p in processes:
+        success.append(p.wait())
+    except KeyboardInterrupt:
+      for p in processes:
+        p.terminate()
+      return -1
+
+    for retval in success:
+      if retval != 0:
+        print_red("Deployment failed!")
+        return retval
+
+    if config.after_deploy is not None:
+      print_green("Running after-deploy hook '%s' on %s..." % (config.after_deploy, self.context))
+      retval = CommandRunner(self.context).run(tag, config.after_deploy, constraint=constraint)
+      if retval != 0:
+        print_red("Deploy hook failed with return code %s" % retval)
+        return retval
 
   def refresh(self):
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
