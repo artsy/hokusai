@@ -24,14 +24,17 @@ def logs(context, timestamps, nlines, follow):
     for container in pod['spec']['containers']:
       containers.append({'pod': pod['metadata']['name'], 'name': container['name']})
 
-  if follow:
-    processes = [Popen(kctl.command("logs %s %s%s" % (container['pod'], container['name'], opts)), shell=True) for container in containers]
-    try:
-      for p in processes:
-        p.wait()
-    except KeyboardInterrupt:
-      for p in processes:
-        p.terminate()
-  else:
-    for container in containers:
-      shout(kctl.command("logs %s %s%s" % (container['pod'], container['name'], opts)), print_output=True)
+  # Concurrent
+  processes = [Popen(kctl.command("logs %s %s%s" % (container['pod'], container['name'], opts)), shell=True) for container in containers]
+  success = []
+  try:
+    for p in processes:
+      success.append(p.wait())
+  except KeyboardInterrupt:
+    for p in processes:
+      p.terminate()
+      return -1
+
+  for retval in success:
+    if retval != 0:
+      return retval
