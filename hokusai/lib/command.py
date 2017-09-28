@@ -17,13 +17,7 @@ def command(func):
       raise
     except KeyboardInterrupt:
       raise
-    except CalledProcessError, e:
-      if get_verbosity():
-        print_red(traceback.format_exc(e))
-      else:
-        print_red("ERROR: %s" % str(e))
-      sys.exit(-1)
-    except Exception, e:
+    except (CalledProcessError, Exception) as e:
       if get_verbosity():
         print_red(traceback.format_exc(e))
       else:

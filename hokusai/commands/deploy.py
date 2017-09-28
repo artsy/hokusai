@@ -8,7 +8,7 @@ def deploy(context, tag, migration, constraint):
   if migration is not None:
     print_green("Running migration '%s' on %s..." % (migration, context))
     retval = CommandRunner(context).run(tag, migration, constraint=constraint)
-    if retval != 0:
+    if retval:
       print_red("Migration failed with return code %s" % retval)
       return retval
 

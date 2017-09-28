@@ -14,7 +14,7 @@ def promote(migration, constraint):
   if migration is not None:
     print_green("Running migration '%s' on production..." % migration)
     retval = CommandRunner('production').run(tag, migration, constraint=constraint)
-    if retval != 0:
+    if retval:
       print_red("Migration failed with return code %s" % retval)
       return retval
 

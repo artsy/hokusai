@@ -33,7 +33,7 @@ class Deployment(object):
     if config.before_deploy is not None:
       print_green("Running before-deploy hook '%s' on %s..." % (config.before_deploy, self.context))
       retval = CommandRunner(self.context).run(tag, config.before_deploy, constraint=constraint)
-      if retval != 0:
+      if retval:
         print_red("Deploy hook failed with return code %s" % retval)
         return retval
 
@@ -78,7 +78,7 @@ class Deployment(object):
     if config.after_deploy is not None:
       print_green("Running after-deploy hook '%s' on %s..." % (config.after_deploy, self.context))
       retval = CommandRunner(self.context).run(tag, config.after_deploy, constraint=constraint)
-      if retval != 0:
+      if retval:
         print_red("Deploy hook failed with return code %s" % retval)
         return retval
 

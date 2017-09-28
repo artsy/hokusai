@@ -33,7 +33,7 @@ def test(build):
     shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml)
     return -1
 
-  if test_exit_code != 0:
+  if test_exit_code:
     print_red('Tests Failed - Exit Code: %s\n' % test_exit_code)
   else:
     print_green("Tests Passed")
