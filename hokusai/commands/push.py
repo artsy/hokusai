@@ -3,30 +3,27 @@ import os
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_red, print_green, shout
+from hokusai.lib.common import print_green, shout
+from hokusai.lib.exceptions import HokusaiError
 
 @command
 def push(tag, force, overwrite):
   if force is None and shout('git status --porcelain'):
-    print_red("Working directory is not clean.  Aborting.")
-    return -1
+    raise HokusaiError("Working directory is not clean.  Aborting.")
 
   if force is None and shout('git status --porcelain --ignored'):
-    print_red("Working directory contains ignored files and/or directories.  Aborting.")
-    return -1
+    raise HokusaiError("Working directory contains ignored files and/or directories.  Aborting.")
 
   ecr = ECR()
   if not ecr.project_repository_exists():
-    print_red("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
-    return -1
+    raise HokusaiError("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
   shout(ecr.get_login())
   if tag is None:
     tag = shout('git rev-parse HEAD').strip()
 
   if overwrite is None and ecr.tag_exists(tag):
-    print_red("Tag %s already exists in remote repository.  Aborting." % tag)
-    return -1
+    raise HokusaiError("Tag %s already exists in remote repository.  Aborting." % tag)
 
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
   shout("docker-compose -f %s -p hokusai build" % docker_compose_yml, print_output=True)

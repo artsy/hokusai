@@ -3,18 +3,19 @@ import signal
 
 from hokusai.lib.command import command
 from hokusai.lib.config import config
-from hokusai.lib.common import print_red, print_green, shout, EXIT_SIGNALS, CalledProcessError
+from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
+from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 @command
 def test(build):
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/test.yml')
   if not os.path.isfile(docker_compose_yml):
-    print_red("Yaml file %s does not exist." % docker_compose_yml)
-    return -1
+    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
   def cleanup(*args):
     shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml)
     shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml)
+
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
@@ -23,22 +24,17 @@ def test(build):
     opts += ' --build'
 
   print_green("Starting test stack... Press Ctrl+C to stop.")
-  shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
-
   try:
-    test_exit_code = int(shout("docker wait hokusai_%s_1" % config.project_name))
+    shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
+    return_code = int(shout("docker wait hokusai_%s_1" % config.project_name))
   except CalledProcessError:
-    print_red('Docker wait failed.')
-    shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml)
-    shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml)
-    return -1
+    cleanup()
+    raise HokusaiError('Tests Failed')
 
-  if test_exit_code:
-    print_red('Tests Failed - Exit Code: %s\n' % test_exit_code)
+  if return_code:
+    raise HokusaiError('Tests Failed - Exit Code: %s\n' % return_code, return_code=return_code)
   else:
     print_green("Tests Passed")
 
-  shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml)
-  shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml)
-
-  return test_exit_code
+  cleanup()
+  return return_code

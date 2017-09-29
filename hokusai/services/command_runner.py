@@ -4,6 +4,7 @@ import json
 from hokusai.lib.config import config
 from hokusai.lib.common import shout, returncode, k8s_uuid
 from hokusai.services.kubectl import Kubectl
+from hokusai.lib.exceptions import HokusaiError
 
 class CommandRunner(object):
   def __init__(self, context):
@@ -37,8 +38,7 @@ class CommandRunner(object):
       container['env'] = []
       for s in env:
         if '=' not in s:
-          print_red("Error: environment variables must be of the form 'KEY=VALUE'")
-          return -1
+          raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
         split = s.split('=', 1)
         container['env'].append({'name': split[0], 'value': split[1]})
 
@@ -47,8 +47,7 @@ class CommandRunner(object):
       spec['nodeSelector'] = {}
       for label in constraint:
         if '=' not in label:
-          print_red("Error: Node selectors must of the form 'key=value'")
-          return -1
+          raise HokusaiError("Error: Node selectors must of the form 'key=value'")
         split = label.split('=', 1)
         spec['nodeSelector'][split[0]] = split[1]
 

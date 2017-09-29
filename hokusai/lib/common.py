@@ -6,12 +6,14 @@ import json
 
 from collections import OrderedDict
 
-from subprocess import call, check_call, check_output, CalledProcessError, Popen, STDOUT
+from subprocess import call, check_call, check_output, Popen, STDOUT
 
 import yaml
 import boto3
 
 from termcolor import cprint
+
+from hokusai.lib.exceptions import CalledProcessError
 
 EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
 
@@ -52,18 +54,18 @@ def shout_concurrent(commands, print_output=False):
   else:
     processes = [Popen(command, shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
 
-  retvals = []
+  return_codes = []
   try:
     for p in processes:
-      retvals.append(p.wait())
+      return_codes.append(p.wait())
   except KeyboardInterrupt:
     for p in processes:
       p.terminate()
       return -1
 
-  for retval in retvals:
-    if retval:
-      return retval
+  for return_code in return_codes:
+    if return_code:
+      return return_code
 
 def k8s_uuid():
   uuid = []

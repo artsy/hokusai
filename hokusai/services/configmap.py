@@ -7,8 +7,9 @@ from tempfile import NamedTemporaryFile
 import yaml
 
 from hokusai.lib.config import config
-from hokusai.lib.common import print_red, print_green, shout
+from hokusai.lib.common import print_green, shout
 from hokusai.services.kubectl import Kubectl
+from hokusai.lib.exceptions import HokusaiError
 
 class ConfigMap(object):
   def __init__(self, context):
@@ -66,4 +67,4 @@ class ConfigMap(object):
     try:
       del self.struct['data'][key]
     except KeyError:
-      print_red("Cannot unset '%s' as it does not exist" % key)
+      raise HokusaiError("Cannot unset '%s' as it does not exist" % key)

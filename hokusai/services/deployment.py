@@ -4,8 +4,9 @@ import json
 from hokusai.lib.config import config
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_red, print_green, shout, shout_concurrent
+from hokusai.lib.common import print_green, shout, shout_concurrent
 from hokusai.services.command_runner import CommandRunner
+from hokusai.lib.exceptions import HokusaiError
 
 class Deployment(object):
   def __init__(self, context):
@@ -28,10 +29,9 @@ class Deployment(object):
 
     if config.before_deploy is not None:
       print_green("Running before-deploy hook '%s' on %s..." % (config.before_deploy, self.context))
-      retval = CommandRunner(self.context).run(tag, config.before_deploy, constraint=constraint)
-      if retval:
-        print_red("Deploy hook failed with return code %s" % retval)
-        return retval
+      return_code = CommandRunner(self.context).run(tag, config.before_deploy, constraint=constraint)
+      if return_code:
+        raise HokusaiError("Deploy hook failed with return code %s" % return_code, return_code=return_code)
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
@@ -56,17 +56,15 @@ class Deployment(object):
     print_green("Waiting for rollout to finish...")
 
     rollout_commands = [kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
-    retval = shout_concurrent(rollout_commands)
-    if retval is not None:
-      print_red("Deployment failed!")
-      return retval
+    return_code = shout_concurrent(rollout_commands)
+    if return_code:
+      raise HokusaiError("Deployment failed!", return_code=return_code)
 
     if config.after_deploy is not None:
       print_green("Running after-deploy hook '%s' on %s..." % (config.after_deploy, self.context))
-      retval = CommandRunner(self.context).run(tag, config.after_deploy, constraint=constraint)
-      if retval:
-        print_red("Deploy hook failed with return code %s" % retval)
-        return retval
+      return_code = CommandRunner(self.context).run(tag, config.after_deploy, constraint=constraint)
+      if return_code:
+        raise HokusaiError("Deploy hook failed with return code %s" % return_code, return_code=return_code)
 
   def refresh(self):
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
@@ -95,15 +93,18 @@ class Deployment(object):
   @property
   def current_tag(self):
     images = []
+
     for deployment in self.cache:
       containers = deployment['spec']['template']['spec']['containers']
       container_names = [container['name'] for container in containers]
       container_images = [container['image'] for container in containers]
+
       if not all(x == container_images[0] for x in container_images):
-        print_red("Deployment's containers do not reference the same image tag")
-        return None
+        raise HokusaiError("Deployment's containers do not reference the same image tag", return_code=return_code)
+
       images.append(containers[0]['image'])
+
     if not all(y == images[0] for y in images):
-      print_red("Deployments do not reference the same image tag")
-      return None
+      raise HokusaiError("Deployments do not reference the same image tag", return_code=return_code)
+
     return images[0].rsplit(':', 1)[1]

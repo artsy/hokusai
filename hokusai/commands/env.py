@@ -1,7 +1,8 @@
 from hokusai.lib.config import config
 from hokusai.lib.command import command
 from hokusai.services.configmap import ConfigMap
-from hokusai.lib.common import print_red, print_green
+from hokusai.lib.common import print_green
+from hokusai.lib.exceptions import HokusaiError
 
 @command
 def create_env(context):
@@ -33,8 +34,7 @@ def set_env(context, environment):
   configmap.load()
   for s in environment:
     if '=' not in s:
-      print_red("Error: environment variables must be of the form 'KEY=VALUE'")
-      return -1
+      raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
     split = s.split('=', 1)
     configmap.update(split[0], split[1])
   configmap.save()
