@@ -27,11 +27,11 @@ class Deployment(object):
       ecr.retag(tag, deployment_tag)
       print_green("Updated tag %s -> %s" % (tag, deployment_tag))
 
-    if config.before_deploy is not None:
-      print_green("Running before-deploy hook '%s' on %s..." % (config.before_deploy, self.context))
-      return_code = CommandRunner(self.context).run(tag, config.before_deploy, constraint=constraint)
+    if config.pre_deploy is not None:
+      print_green("Running pre-deploy hook '%s' on %s..." % (config.pre_deploy, self.context))
+      return_code = CommandRunner(self.context).run(tag, config.pre_deploy, constraint=constraint)
       if return_code:
-        raise HokusaiError("Deploy hook failed with return code %s" % return_code, return_code=return_code)
+        raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
@@ -60,11 +60,11 @@ class Deployment(object):
     if return_code:
       raise HokusaiError("Deployment failed!", return_code=return_code)
 
-    if config.after_deploy is not None:
-      print_green("Running after-deploy hook '%s' on %s..." % (config.after_deploy, self.context))
-      return_code = CommandRunner(self.context).run(tag, config.after_deploy, constraint=constraint)
+    if config.post_deploy is not None:
+      print_green("Running post-deploy hook '%s' on %s..." % (config.post_deploy, self.context))
+      return_code = CommandRunner(self.context).run(tag, config.post_deploy, constraint=constraint)
       if return_code:
-        raise HokusaiError("Deploy hook failed with return code %s" % return_code, return_code=return_code)
+        raise HokusaiError("Post-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
   def refresh(self):
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")

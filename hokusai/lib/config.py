@@ -59,11 +59,11 @@ class HokusaiConfig(object):
     return "%s.dkr.ecr.%s.amazonaws.com/%s" % (self.aws_account_id, self.aws_ecr_region, self.project_name)
 
   @property
-  def before_deploy(self):
-    return self.get('before-deploy')
+  def pre_deploy(self):
+    return self.get('pre-deploy')
 
   @property
-  def after_deploy(self):
-    return self.get('after-deploy')
+  def post_deploy(self):
+    return self.get('post-deploy')
 
 config = HokusaiConfig()
