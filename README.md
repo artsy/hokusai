@@ -37,7 +37,7 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 1) Install Hokusai via pip with `(sudo) pip install hokusai` and `hokusai` will be installed on your `PATH`.
 
-Note: If installing via pip fails due to pip trying to upgrade your system Python packages, try running `(sudo) pip install hokusai --ignore-installed`.
+Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `(sudo) pip install hokusai --ignore-installed`.
 
 2) Set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and optionally, `$AWS_DEFAULT_REGION` and `$AWS_ACCOUNT_ID` in your shell / `~/.bash_profile`.
 
