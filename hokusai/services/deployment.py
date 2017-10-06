@@ -53,9 +53,9 @@ class Deployment(object):
       print_green("Patching deployment %s..." % deployment['metadata']['name'])
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
-    print_green("Waiting for rollout to finish...")
+    print_green("Waiting for rollout to complete...")
 
-    rollout_commands = [kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
+    rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
     return_code = shout_concurrent(rollout_commands)
     if return_code:
       raise HokusaiError("Deployment failed!", return_code=return_code)
@@ -80,6 +80,13 @@ class Deployment(object):
       }
       print_green("Refreshing %s..." % deployment['metadata']['name'])
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
+
+    print_green("Waiting for refresh to complete...")
+
+    rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
+    return_code = shout_concurrent(rollout_commands)
+    if return_code:
+      raise HokusaiError("Refresh failed!", return_code=return_code)
 
   def history(self, deployment_name):
     replicasets = self.kctl.get_object('replicaset', selector="app=%s,layer=application" % config.project_name)
