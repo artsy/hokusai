@@ -1,4 +1,5 @@
 import os
+import sys
 import signal
 import string
 import random
@@ -14,6 +15,12 @@ import boto3
 from termcolor import cprint
 
 from hokusai.lib.exceptions import CalledProcessError
+
+CONTEXT_SETTINGS = {
+  'terminal_width': 10000,
+  'max_content_width': 10000,
+  'help_option_names': ['-h', '--help']
+}
 
 EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
 
@@ -38,6 +45,14 @@ def get_verbosity():
 def verbose(msg):
   if VERBOSE: cprint("==> hokusai exec `%s`" % msg, 'yellow')
   return msg
+
+def select_context(staging, production):
+  if staging and production is None:
+    return 'staging'
+  if production and staging is None:
+    return 'production'
+  print_red("Invoke with either --staging OR --production")
+  sys.exit(1)
 
 def returncode(command):
   return call(verbose(command), stderr=STDOUT, shell=True)
