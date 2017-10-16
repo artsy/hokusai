@@ -24,7 +24,6 @@ remote:
 
 
 - Git tagging
-- Diff command updates - part of promote
 - Replace hacky kubectl commands with json loaders / formatting options
 - Use paging in output formatters where appropriate
 - Configurable tagging scheme

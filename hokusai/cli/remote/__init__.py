@@ -2,13 +2,58 @@ import click
 
 import hokusai
 
-from hokusai.cli.base import cli
+from hokusai.cli.base import base
 from hokusai.lib.common import set_verbosity, select_context, CONTEXT_SETTINGS
 
-@cli.group()
+@base.group()
 def remote(context_settings=CONTEXT_SETTINGS):
   """Interact with remote Kubernetes and ECR resources"""
   pass
+
+
+@remote.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
+@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def create(staging, production, verbose):
+  """Create the Kubernetes stack defined in ./hokusai/{staging/production}.yml"""
+  set_verbosity(verbose)
+  context = select_context(staging, production)
+  hokusai.stack_create(context)
+
+
+@remote.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
+@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def delete(staging, production, verbose):
+  """Delete the Kubernetes stack defined in ./hokusai/{staging/production}.yml"""
+  set_verbosity(verbose)
+  context = select_context(staging, production)
+  hokusai.stack_delete(context)
+
+
+@remote.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
+@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def update(staging, production, verbose):
+  """Update the Kubernetes stack defined in ./hokusai/{staging/production}.yml"""
+  set_verbosity(verbose)
+  context = select_context(staging, production)
+  hokusai.stack_update(context)
+
+
+@remote.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
+@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def status(staging, production, verbose):
+  """Print the Kubernetes stack status defined in ./hokusai/{staging/production}.yml"""
+  set_verbosity(verbose)
+  context = select_context(staging, production)
+  hokusai.stack_status(context)
+
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -32,6 +77,7 @@ def deploy(tag, migration, constraint, staging, production, verbose):
   context = select_context(staging, production)
   hokusai.deploy(context, tag, migration, constraint)
 
+
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
@@ -41,6 +87,7 @@ def refresh(staging, production, verbose):
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.refresh(context)
+
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
@@ -53,6 +100,7 @@ def history(staging, production, verbose):
   context = select_context(staging, production)
   hokusai.history(context)
 
+
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
@@ -64,6 +112,7 @@ def promote(migration, constraint, verbose):
   set_verbosity(verbose)
   hokusai.promote(migration, constraint)
 
+
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def gitdiff(verbose):
@@ -72,6 +121,7 @@ def gitdiff(verbose):
   set_verbosity(verbose)
   hokusai.gitdiff()
 
+
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def gitlog(verbose):
@@ -79,6 +129,7 @@ def gitlog(verbose):
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
   hokusai.gitlog()
+
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command', type=click.STRING)
@@ -94,6 +145,7 @@ def run(command, staging, production, tty, tag, env, constraint, verbose):
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.run(context, command, tty, tag, env, constraint)
+
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')

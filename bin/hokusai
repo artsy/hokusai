@@ -3,4 +3,4 @@
 from hokusai.cli import *
 
 if __name__ == '__main__':
-  cli(obj={})
+  base(obj={})
