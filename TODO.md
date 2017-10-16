@@ -2,15 +2,13 @@
 
 ## Updates
 
-- local shell -> run to mirror remote
-- tail / follow
-
 - Rollback command
 	- deployment update
 	- deployment rollback
 	- deployment history
 	- deployment refresh
 - Git tagging
+
 - Replace hacky kubectl commands with json loaders / formatting options
 - Use paging in output formatters where appropriate
 - Configurable tagging scheme

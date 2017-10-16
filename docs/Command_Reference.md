@@ -26,27 +26,30 @@ Required options:
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project.
 
-### Working locally
+### Hokusai local
 
-* `hokusai dev <start|stop|status|logs|shell|clean>`
+* `hokusai local` - Interact with your local project and Docker engine
 
-  - `hokusai dev start` - Start the development stack defined in `./hokusai/development.yml`.
-  - `hokusai dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
-  - `hokusai dev status` - Print the status of the development stack.
-  - `hokusai dev logs` - Print logs from the development stack.
-  - `hokusai dev shell` - Attach a shell session to the stack's primary project container.
-  - `hokusai dev clean` - Stop and remove all containers in the stack.
+* `hokusai local dev`
 
-### Working with CI
+  - `hokusai local dev start` - Start the development stack defined in `./hokusai/development.yml`.
+  - `hokusai local dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
+  - `hokusai local dev status` - Print the status of the development stack.
+  - `hokusai local dev logs` - Print logs from the development stack.
+  - `hokusai local dev run` - Run a command in the development stack's container with the name 'project-name' in hokusai/config.yml.
+  - `hokusai local dev clean` - Stop and remove all containers in the stack.
 
-* `hokusai build` - Build the docker image defined in ./hokusai/common.yml.
-* `hokusai test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
-* `hokusai push` - Build and push an image to the AWS ECR project repo.
-* `hokusai images` - Print image builds and tags in the AWS ECR project repo.
+* `hokusai local build` - Build the docker image defined in ./hokusai/common.yml.
+* `hokusai local test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
+* `hokusai local push` - Build and push an image to the AWS ECR project repo.
 
-### Working with Kubernetes
+### Hokusai remote
 
-Hokusai uses `kubectl` to connect to Kubernetes. Hokusai `configure` provides basic setup for installing and configuring kubectl:
+Hokusai uses `kubectl` to connect to Kubernetes and the [boto3](https://github.com/boto/boto3) library to interact with AWS ECR.
+
+Make sure you have set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and optionally, `$AWS_DEFAULT_REGION` and `$AWS_ACCOUNT_ID` in your shell / `~/.bash_profile`.
+
+`hokusai configure` provides basic setup for installing and configuring kubectl:
 
 ```bash
 hokusai configure --help
@@ -58,42 +61,40 @@ The recommended approach is to upload your `kubectl` config to S3 and use follow
 hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
 ```
 
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define what Hokusai refers to as "stacks", and Hokusai is opinionated about a workflow between a staging and production Kubernetes context.  Hokusai commands such as `stack`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define remote environments, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.  Hokusai remote commands such as `create`, `update`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
 
-### Working with environment variables
+* `hokusai remote create` - Create a remote environment.
+* `hokusai remote update` - Update a remote environment.
+* `hokusai remote delete` - Delete a remote environment.
+* `hokusai remote status` - Print the remote environment status.
+* `hokusai remote images` - Print image builds and tags in the AWS ECR project repo.
+* `hokusai remote history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given remote environment.
 
-* `hokusai env <create|get|set|unset|delete>`
+#### Working with environment variables
 
-  - `hokusai env create` - Create the Kubernetes configmap object `{project_name}-environment`
-  - `hokusai env get` - Print environment variables stored on the Kubernetes server
-  - `hokusai env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
-  - `hokusai env unset` - Remove environment variables stored on the Kubernetes server
-  - `hokusai env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
+* `hokusai remote env` - Interact with the Kubernetes environment for the application
+
+  - `hokusai remote env create` - Create the Kubernetes configmap object `{project_name}-environment`
+  - `hokusai remote env get` - Print environment variables stored on the Kubernetes server
+  - `hokusai remote env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
+  - `hokusai remote env unset` - Remove environment variables stored on the Kubernetes server
+  - `hokusai remote env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
 Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicitly referenced in the stack container yaml definition using `envFrom`.
 
-### Working with stacks
+#### Working with deployments
 
-* `hokusai stack <create|update|delete|status>`
+* `hokusai remote deploy` - Update the Kubernetes deployment to a given image tag.
+* `hokusai remote promote` - Update the Kubernetes deployment on production to match the deployment running on staging.
+* `hokusai remote refresh` - Refresh the project's deployment(s).
+* `hokusai remote history` - Print the project's deployment(s) history.
+* `hokusai remote gitdiff` - Print a git diff between the tags deployed on production vs staging.
+* `hokusai remote gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
 
-  - `hokusai stack create` - Create a stack.
-  - `hokusai stack update` - Update a stack.
-  - `hokusai stack delete` - Delete a stack.
-  - `hokusai stack status` - Print the stack status.
+#### Running a command
 
-### Working with deployments
+* `hokusai remote run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
 
-* `hokusai deploy` - Update the Kubernetes deployment to a given image tag.
-* `hokusai promote` - Update the Kubernetes deployment on production to match the deployment running on staging.
-* `hokusai refresh` - Refresh the project's deployment(s).
-* `hokusai history` - Print the project's deployment(s) history.
-* `hokusai gitdiff` - Print a git diff between the tags deployed on production vs staging.
-* `hokusai gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
+#### Retrieving container logs
 
-### Running a command
-
-* `hokusai run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
-
-### Retrieving container logs
-
-* `hokusai logs` - Print the logs from your application containers
+* `hokusai remote logs` - Print the logs from your application containers
