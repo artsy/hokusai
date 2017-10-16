@@ -48,7 +48,7 @@ def dev_status():
   shout("docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
 
 @command
-def dev_logs(follow):
+def dev_logs(follow, tail):
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
@@ -56,6 +56,8 @@ def dev_logs(follow):
   opts = ''
   if follow:
     opts += ' --follow'
+  if tail:
+    opts += " --tail=%i" % tail
 
   shout("docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
 

@@ -151,12 +151,11 @@ def run(command, staging, production, tty, tag, env, constraint, verbose):
 @click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-t', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
-@click.option('-n', '--nlines', type=click.STRING, help='Num lines to follow')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
-@click.option('-t', '--tail', type=click.BOOL, is_flag=True, help="Same as '--follow'")
+@click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def logs(staging, production, timestamps, nlines, follow, tail, verbose):
+def logs(staging, production, timestamps, follow, tail, verbose):
   """Get container logs on a given stack"""
   set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.logs(context, timestamps, nlines, follow or tail)
+  hokusai.logs(context, timestamps, follow, tail)

@@ -81,11 +81,11 @@ def status(verbose):
 @local.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow output")
-@click.option('-t', '--tail', type=click.BOOL, is_flag=True, help="Same as '--follow'")
+@click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
 def logs(follow, tail, verbose):
   """Print logs from the development stack defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_logs(follow or tail)
+  hokusai.dev_logs(follow, tail)
 
 
 @local.command(context_settings=CONTEXT_SETTINGS)

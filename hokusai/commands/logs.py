@@ -4,16 +4,16 @@ from hokusai.lib.common import shout, shout_concurrent
 from hokusai.services.kubectl import Kubectl
 
 @command
-def logs(context, timestamps, nlines, follow):
+def logs(context, timestamps, follow, tail):
   kctl = Kubectl(context)
 
   opts = ''
   if timestamps:
     opts += ' --timestamps'
-  if nlines:
-    opts += " --tail=%s" % nlines
   if follow:
     opts += ' --follow'
+  if tail:
+    opts += " --tail=%s" % tail
 
   pods = kctl.get_object('pod', selector="app=%s,layer=application" % config.project_name)
   pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)
