@@ -14,17 +14,6 @@ def local(context_settings=CONTEXT_SETTINGS):
 
 
 @local.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID)')
-@click.option('--project-type', type=click.Choice(['ruby-rack', 'ruby-rails', 'nodejs', 'elixir', 'python-wsgi']), required=True, help='The type of project')
-@click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
-@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_DEFAULT_REGION or \'us-east-1\')')
-@click.option('--port', type=click.INT, default=80, help='The port of the service (default: 80)')
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
-  """Set up Hokusai for the current project"""
-  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port)
-
-
-@local.command(context_settings=CONTEXT_SETTINGS)
 def build():
   """Build the Docker image defined in ./hokusai/common.yml"""
   hokusai.build()
