@@ -2,27 +2,14 @@
 
 ## Updates
 
-Merge commands:
-
-local:
-	build
-	dev
-	test
-
-remote:
-	stack
-	env
-	deployment
-	promote
-	run
+- local shell -> run to mirror remote
+- tail / follow
 
 - Rollback command
 	- deployment update
 	- deployment rollback
 	- deployment history
 	- deployment refresh
-
-
 - Git tagging
 - Replace hacky kubectl commands with json loaders / formatting options
 - Use paging in output formatters where appropriate

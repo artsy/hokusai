@@ -89,11 +89,12 @@ def logs(follow, tail, verbose):
 
 
 @local.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('command')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def shell(verbose):
-  """Attach a shell session to the development stack's container with the name 'project-name' in hokusai/config.yml"""
+def run(command, verbose):
+  """Run a command in the development stack's container with the name 'project-name' in hokusai/config.yml"""
   set_verbosity(verbose)
-  hokusai.dev_shell()
+  hokusai.dev_run(command)
 
 
 @local.command(context_settings=CONTEXT_SETTINGS)
