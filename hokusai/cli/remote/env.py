@@ -6,7 +6,7 @@ from hokusai.lib.common import set_verbosity, select_context, CONTEXT_SETTINGS
 
 @remote.group()
 def env(context_settings=CONTEXT_SETTINGS):
-  """Interact with the Kubernetes environment for the application"""
+  """Interact with the runtime environment for the application"""
   pass
 
 

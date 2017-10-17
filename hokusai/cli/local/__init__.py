@@ -1,5 +1,3 @@
-import os
-
 import click
 
 import hokusai
@@ -28,14 +26,3 @@ def test(build, verbose):
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
   set_verbosity(verbose)
   hokusai.test(build)
-
-
-@local.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--tag', type=click.STRING, help='The tag to push (default: the value of `git rev-parse HEAD`)')
-@click.option('--force', type=click.BOOL, is_flag=True, help='Push even if working directory is not clean')
-@click.option('--overwrite', type=click.BOOL, is_flag=True, help='Push even if the tag already exists')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def push(tag, force, overwrite, verbose):
-  """Build and push an image to the project's remote repo tagged as the git SHA1 of HEAD"""
-  set_verbosity(verbose)
-  hokusai.push(tag, force, overwrite)

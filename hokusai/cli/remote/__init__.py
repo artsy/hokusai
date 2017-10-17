@@ -7,7 +7,7 @@ from hokusai.lib.common import set_verbosity, select_context, CONTEXT_SETTINGS
 
 @base.group()
 def remote(context_settings=CONTEXT_SETTINGS):
-  """Interact with remote Kubernetes and ECR resources"""
+  """Interact with remote Kubernetes resources"""
   pass
 
 
@@ -54,13 +54,6 @@ def status(staging, production, verbose):
   context = select_context(staging, production)
   hokusai.environment_status(context)
 
-
-@remote.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def images(verbose):
-  """Print images and tags in the project's remote repo"""
-  set_verbosity(verbose)
-  hokusai.images()
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)
