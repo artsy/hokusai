@@ -2,9 +2,9 @@
 
 Hokusai aims to provide a smooth CI workflow on a per-project basis.  As such, it is designed to be configured and run from a shell within a project's git repo.
 
-We will assume you have already installed Hokusai and run `hokusai configure`, as detailed in [Setup](#Setup).
+We will assume you have already installed Hokusai and run `hokusai configure`, as detailed in [Setup](../README.md#Setup).
 
-1) Set up Hokusai for a Rails project
+1) Setup Hokusai for a Rails project
 
 ```bash
 cd ./path/to/my/rails/project/git/repo
@@ -24,7 +24,7 @@ Note: If you set the environment variable `AWS_ACCOUNT_ID` in your shell, you ca
   * `./hokusai/production.yml` - a Kubernetes YAML file for the production environment
 - An ECR repository for your project
 
-The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.
+The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
 
 2) Check that Hokusai is correctly configured for your project
 
@@ -46,7 +46,7 @@ To shut down the environment's running containers, run `hokusai local dev stop`
 
 Container filesystems will be preserved between environment starts and stops, unless you run `hokusai local dev clean`, in which case the container filesystems will be deleted.
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your development environment's configuration.
 
 
 4) Run the test suite in the test environment
@@ -77,7 +77,7 @@ hokusai remote env create --staging
 hokusai remote env set FOO=bar --staging
 ```
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your staging environment's configuration.
 
 
 7) Create the Kubernetes staging environment with `hokusai remote create --staging`
@@ -93,7 +93,7 @@ hokusai remote env create --production
 hokusai remote env set FOO=baz --production
 ```
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your production environment's configuration.
 
 9) Create the Kubernetes production environment
 
