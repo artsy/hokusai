@@ -2,43 +2,32 @@
 
 ## Updates
 
-- Rollback command
-	- deployment update
-	- deployment rollback
-	- deployment history
-	- deployment refresh
+- deployment subcommand (update / rollback / history / refresh)
 - Git tagging
-
+- Configurable tagging scheme?
 - Replace hacky kubectl commands with json loaders / formatting options
 - Use paging in output formatters where appropriate
-- Configurable tagging scheme
-
-- Projects to use CircleCI 2.0
-- Clean up tagging in repo / old beta releases
+- Clean up tagging in git repo / pip beta releases
 
 ## Documentation
 
-- Configuration
-- Changelog
 - Artsy's config and on CI integration (example)
 - Deployment / Tagging schema explanation / diagram
-- docstrings?
 - WORKFLOW: commit -> build -> unit tests -> merge ->  integration tests -> push -> deploy -> acceptance tests -> promote
 
 ## Tests
 
-- refactor error handling
-- refactor long methods / closures
+- refactor long methods
 - cli
 - libs
 - services (fixtures)
 - Docker / Docker-Compose integrations
-- integrations against kubernetes context
+- Integrations against kubernetes context
 - CI (Circle?) Build matrix against Docker / Docker-Compose / Kubernetes versions
 - linting & Pep8 check
 
 ## Rollout
 
 - Prepare v1 release
-- Lunch & learn / engineering demo
+- Engineering demo
 - Write blog post (with Ashkan)

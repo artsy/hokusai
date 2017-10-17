@@ -73,11 +73,17 @@ Required options:
 
 * `hokusai remote` - Interact with remote Kubernetes resources.
 
-* `hokusai remote create` - Create a remote environment.
-* `hokusai remote update` - Update a remote environment.
-* `hokusai remote delete` - Delete a remote environment.
-* `hokusai remote status` - Print the remote environment status.
-* `hokusai remote history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given remote environment.
+* `hokusai remote create` - Create the Kubernetes remote resources defined in ./hokusai/{staging/production}.yml.
+* `hokusai remote update` - Update the Kubernetes remote resources defined in ./hokusai/{staging/production}.yml.
+* `hokusai remote delete` - Delete the Kubernetes remote resources defined in ./hokusai/{staging/production}.yml.
+* `hokusai remote status` - Print the Kubernetes remote resources status defined in ./hokusai/{staging/production}.yml.
+
+* `hokusai remote deployment` - Interact with the project's' remote Kubernetes deployment(s)
+
+  - `hokusai remote deployment update` - Update the project's deployment(s) for a given remote environment to reference the given image tag and update the tag (staging/production) to reference the same image.
+  - `hokusai remote deployment history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given remote environment.
+  - `hokusai remote deployment refresh` - Refresh the project's deployment(s) by recreating the currently running containers.
+  - `hokusai remote deployment promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
 
 * `hokusai remote env` - Interact with the runtime environment for the application
 
@@ -87,10 +93,6 @@ Required options:
   - `hokusai remote env unset` - Remove environment variables stored on the Kubernetes server
   - `hokusai remote env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
-* `hokusai remote deploy` - Update the Kubernetes deployment to a given image tag.
-* `hokusai remote promote` - Update the Kubernetes deployment on production to match the deployment running on staging.
-* `hokusai remote refresh` - Refresh the project's deployment(s).
-* `hokusai remote history` - Print the project's deployment(s) history.
 * `hokusai remote gitdiff` - Print a git diff between the tags deployed on production vs staging.
 * `hokusai remote gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
 * `hokusai remote run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
