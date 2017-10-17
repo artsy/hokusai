@@ -23,7 +23,7 @@ def test(build):
   if build:
     opts += ' --build'
 
-  print_green("Starting test stack... Press Ctrl+C to stop.")
+  print_green("Starting test environment... Press Ctrl+C to stop.")
   try:
     shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
     return_code = int(shout("docker wait hokusai_%s_1" % config.project_name))

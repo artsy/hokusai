@@ -32,15 +32,15 @@ Required options:
 
 * `hokusai local dev`
 
-  - `hokusai local dev start` - Start the development stack defined in `./hokusai/development.yml`.
-  - `hokusai local dev stop` - Stop the development stack defined in `./hokusai/development.yml`.
-  - `hokusai local dev status` - Print the status of the development stack.
-  - `hokusai local dev logs` - Print logs from the development stack.
-  - `hokusai local dev run` - Run a command in the development stack's container with the name 'project-name' in hokusai/config.yml.
-  - `hokusai local dev clean` - Stop and remove all containers in the stack.
+  - `hokusai local dev start` - Start the development environment defined in `./hokusai/development.yml`.
+  - `hokusai local dev stop` - Stop the development environment defined in `./hokusai/development.yml`.
+  - `hokusai local dev status` - Print the status of the development environment.
+  - `hokusai local dev logs` - Print logs from the development environment.
+  - `hokusai local dev run` - Run a command in the development environment's container with the name 'project-name' in hokusai/config.yml.
+  - `hokusai local dev clean` - Stop and remove all containers in the environment.
 
 * `hokusai local build` - Build the docker image defined in ./hokusai/common.yml.
-* `hokusai local test` - Start the testing stack defined `hokusai/test.yml` and exit with the return code of the test command.
+* `hokusai local test` - Start the testing environment defined `hokusai/test.yml` and exit with the return code of the test command.
 * `hokusai local push` - Build and push an image to the AWS ECR project repo.
 
 ### Hokusai remote
@@ -61,7 +61,7 @@ The recommended approach is to upload your `kubectl` config to S3 and use follow
 hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
 ```
 
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define remote environments, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.  Hokusai remote commands such as `create`, `update`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective stack YAML file and interacts with the respective Kubernetes context.
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define remote environments, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.  Hokusai remote commands such as `create`, `update`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective environment YAML file and interacts with the respective Kubernetes context.
 
 * `hokusai remote create` - Create a remote environment.
 * `hokusai remote update` - Update a remote environment.
@@ -80,7 +80,7 @@ When running `hokusai setup` `staging.yml` and `production.yml` are created in t
   - `hokusai remote env unset` - Remove environment variables stored on the Kubernetes server
   - `hokusai remote env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
-Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicitly referenced in the stack container yaml definition using `envFrom`.
+Note: Environment variables will be automatically injected into containers created by the `hokusai run` command but must be explicitly referenced in the environment container yaml definition using `envFrom`.
 
 #### Working with deployments
 

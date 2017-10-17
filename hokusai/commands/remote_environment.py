@@ -12,7 +12,7 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def stack_create(context):
+def environment_create(context):
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
@@ -30,30 +30,30 @@ def stack_create(context):
 
   kctl = Kubectl(context)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
-  print_green("Created stack %s" % context)
+  print_green("Created remote environment %s" % context)
 
 @command
-def stack_update(context):
+def environment_update(context):
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
 
   kctl = Kubectl(context)
   shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
-  print_green("Updated stack %s" % context)
+  print_green("Updated remote environment %s" % context)
 
 @command
-def stack_delete(context):
+def environment_delete(context):
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
 
   kctl = Kubectl(context)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)
-  print_green("Deleted stack %s" % context)
+  print_green("Deleted remote environment %s" % context)
 
 @command
-def stack_status(context):
+def environment_status(context):
   kctl = Kubectl(context)
   print('')
   print_green("Deployments")

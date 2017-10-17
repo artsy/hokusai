@@ -24,7 +24,7 @@ def dev_start(build, detach):
     opts += ' -d'
 
   if not detach:
-    print_green("Starting development stack... Press Ctrl+C to stop.")
+    print_green("Starting development environment... Press Ctrl+C to stop.")
 
   shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
 

@@ -30,11 +30,11 @@ The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting 
 
 `hokusai check` will run a series of tests and warn you if it finds anything improperly configured.
 
-3) Run the development stack
+3) Run the development environment
 
-`hokusai local dev start` will build a Docker image, then start a Docker Compose stack defined by `./hokusai/development.yml`
+`hokusai local dev start` will build a Docker image, then start a Docker Compose environment defined by `./hokusai/development.yml`
 
-If this command throws no errors, try interacting with the running stack with:
+If this command throws no errors, try interacting with the running environment with:
 
 ```bash
 hokusai local dev status
@@ -42,24 +42,24 @@ hokusai local dev logs
 hokusai local dev shell
 ```
 
-To shut down the stack's running containers, run `hokusai local dev stop`
+To shut down the environment's running containers, run `hokusai local dev stop`
 
-Container filesystems will be preserved between stack starts and stops, unless you run `hokusai local dev clean`, in which case the container filesystems will be deleted.
+Container filesystems will be preserved between environment starts and stops, unless you run `hokusai local dev clean`, in which case the container filesystems will be deleted.
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test stack's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
 
 
-4) Run the test suite in the test stack
+4) Run the test suite in the test environment
 
-`hokusai local test` will build a Docker image, start a Docker Compose stack defined by `./hokusai/test.yml`, run the defined test command in the main (project-name) container to completion, and return its exit code.
+`hokusai local test` will build a Docker image, start a Docker Compose environment defined by `./hokusai/test.yml`, run the defined test command in the main (project-name) container to completion, and return its exit code.
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test stack's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
 
 5) Build and push an image to ECR
 
 `hokusai local push` will build and push an image to ECR.  By default, it tags the image as the SHA1 of the HEAD of your current git branch (by calling `git rev-parse HEAD`).  You can override this behavior with the `--tag` option, although this is not recommended as creating builds matched to the SHA1 of Git tags gives you a clean view of your ECR project repository and deployment history.
 
-The command will also tag the image as `latest`.  This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes stack.
+The command will also tag the image as `latest`.  This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes environment.
 
 The command aborts if any of the following conditions is met:
 - The working directory is not clean (you have uncommitted changes)
@@ -70,32 +70,32 @@ The reason for these conditional checks is that when building, Docker will copy 
 
 Once an image is pushed, you can list the images and tags in the ECR project repository with: `hokusai remote images`.
 
-6) Create the Kubernetes staging environment and stack configuration
+6) Create the Kubernetes staging environment and environment configuration
 
 ```bash
 hokusai remote env create --staging
 hokusai remote env set FOO=bar --staging
 ```
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test stack's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
 
 
-7) Create the Kubernetes staging stack with `hokusai remote create --staging`
+7) Create the Kubernetes staging environment with `hokusai remote create --staging`
 
 `hokusai remote status --staging` should eventually (once Kubernetes creates a load balancer for your project), output the ELB's DNS record.
 
 Get logs by running `hokusai remote logs --staging` and see deployment history with `hokusai remote history --staging`
 
-8) Create the Kubernetes production environment and stack configuration
+8) Create the Kubernetes production environment and environment configuration
 
 ```bash
 hokusai remote env create --production
 hokusai remote env set FOO=baz --production
 ```
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test stack's configuration.
+See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
 
-9) Create the Kubernetes production stack
+9) Create the Kubernetes production environment
 
 ```bash
 hokusai remote create --production
@@ -104,7 +104,7 @@ hokusai remote logs --production
 hokusai remote history --production
 ```
 
-10) Deploy changes to the Kubernetes staging stack
+10) Deploy changes to the Kubernetes staging environment
 
 Create a new commit and push it to the remote repo with `hokusai local push` as before.
 

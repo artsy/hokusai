@@ -16,10 +16,10 @@ def remote(context_settings=CONTEXT_SETTINGS):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(staging, production, verbose):
-  """Create the Kubernetes stack defined in ./hokusai/{staging/production}.yml"""
+  """Create the Kubernetes environment defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.stack_create(context)
+  hokusai.environment_create(context)
 
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
@@ -27,10 +27,10 @@ def create(staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def delete(staging, production, verbose):
-  """Delete the Kubernetes stack defined in ./hokusai/{staging/production}.yml"""
+  """Delete the Kubernetes environment defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.stack_delete(context)
+  hokusai.environment_delete(context)
 
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
@@ -38,10 +38,10 @@ def delete(staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def update(staging, production, verbose):
-  """Update the Kubernetes stack defined in ./hokusai/{staging/production}.yml"""
+  """Update the Kubernetes environment defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.stack_update(context)
+  hokusai.environment_update(context)
 
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
@@ -49,10 +49,10 @@ def update(staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def status(staging, production, verbose):
-  """Print the Kubernetes stack status defined in ./hokusai/{staging/production}.yml"""
+  """Print the Kubernetes environment status defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
-  hokusai.stack_status(context)
+  hokusai.environment_status(context)
 
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
@@ -70,7 +70,7 @@ def images(verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(tag, migration, constraint, staging, production, verbose):
-  """Update the project's deployment(s) on a given stack to reference
+  """Update the project's deployment(s) on a given environment to reference
   the given image tag and update the tag(staging/production)
   to reference the same image"""
   set_verbosity(verbose)
@@ -95,7 +95,7 @@ def refresh(staging, production, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def history(staging, production, verbose):
   """Print the project's deployment history in terms of revision number,
-  creation time, container name and image tag for a given stack"""
+  creation time, container name and image tag for a given environment"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.history(context)
@@ -141,7 +141,7 @@ def gitlog(verbose):
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def run(command, staging, production, tty, tag, env, constraint, verbose):
-  """Launch a new container and run a command on a given stack"""
+  """Launch a new container and run a command in a given environment"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.run(context, command, tty, tag, env, constraint)
@@ -155,7 +155,7 @@ def run(command, staging, production, tty, tag, env, constraint, verbose):
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def logs(staging, production, timestamps, follow, tail, verbose):
-  """Get container logs on a given stack"""
+  """Get container logs for a given environment"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.logs(context, timestamps, follow, tail)

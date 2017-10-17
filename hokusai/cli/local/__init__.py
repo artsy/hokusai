@@ -23,7 +23,7 @@ def build():
 @click.option('-b', '--build', type=click.BOOL, is_flag=True, help='Force rebuild the docker image before running the test suite')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def test(build, verbose):
-  """Boot the test stack defined in ./hokusai/test.yml and run the test suite
+  """Boot the test environment defined in ./hokusai/test.yml and run the test suite
 
   Return the exit code of the container with the name 'project-name' in hokusai/config.yml"""
   set_verbosity(verbose)

@@ -14,6 +14,6 @@ from hokusai.commands.push import push
 from hokusai.commands.refresh import refresh
 from hokusai.commands.run import run
 from hokusai.commands.setup import setup
-from hokusai.commands.stack import stack_create, stack_update, stack_delete, stack_status
+from hokusai.commands.remote_environment import environment_create, environment_update, environment_delete, environment_status
 from hokusai.commands.test import test
 from hokusai.commands.version import version
