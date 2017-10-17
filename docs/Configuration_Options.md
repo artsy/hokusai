@@ -4,21 +4,19 @@
 
 `hokusai configure`
 
-## Per-project configuration
+## Project configuration
 
-- Global `./hokusai/config.yml`
+`./hokusai/config.yml` contains project-specific configuration options.  It accepts the following keys:
 
-- Accepted keys and their meanings
+`./hokusai/common.yml`
 
-- Common (env vars, build args, etc)
+`./hokusai/development.yml`
 
-	- Dev
+`./hokusai/test.yml`
 
-	- Test
+`./hokusai/staging.yml`
 
-	- Staging
-
-	- Production
+`./hokusai/production.yml`
 
 ## Docker Compose configuration
 

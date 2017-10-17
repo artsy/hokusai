@@ -16,7 +16,7 @@ def remote(context_settings=CONTEXT_SETTINGS):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(staging, production, verbose):
-  """Create the Kubernetes environment defined in ./hokusai/{staging/production}.yml"""
+  """Create the Kubernetes remote resources defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.environment_create(context)
@@ -27,7 +27,7 @@ def create(staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def delete(staging, production, verbose):
-  """Delete the Kubernetes environment defined in ./hokusai/{staging/production}.yml"""
+  """Delete the Kubernetes remote resources defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.environment_delete(context)
@@ -38,7 +38,7 @@ def delete(staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def update(staging, production, verbose):
-  """Update the Kubernetes environment defined in ./hokusai/{staging/production}.yml"""
+  """Update the Kubernetes remote resources defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.environment_update(context)
@@ -49,61 +49,10 @@ def update(staging, production, verbose):
 @click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def status(staging, production, verbose):
-  """Print the Kubernetes environment status defined in ./hokusai/{staging/production}.yml"""
+  """Print the Kubernetes remote resources status defined in ./hokusai/{staging/production}.yml"""
   set_verbosity(verbose)
   context = select_context(staging, production)
   hokusai.environment_status(context)
-
-
-@remote.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('tag', type=click.STRING)
-@click.option('--migration', type=click.STRING, help='Run a migration before deploying')
-@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
-@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
-@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(tag, migration, constraint, staging, production, verbose):
-  """Update the project's deployment(s) on a given environment to reference
-  the given image tag and update the tag(staging/production)
-  to reference the same image"""
-  set_verbosity(verbose)
-  context = select_context(staging, production)
-  hokusai.deploy(context, tag, migration, constraint)
-
-
-@remote.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
-@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def refresh(staging, production, verbose):
-  """Refresh the project's deployment(s) by terminating the currently running pods"""
-  set_verbosity(verbose)
-  context = select_context(staging, production)
-  hokusai.refresh(context)
-
-
-@remote.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--staging', type=click.BOOL, is_flag=True, help='Target staging')
-@click.option('--production', type=click.BOOL, is_flag=True, help='Target production')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def history(staging, production, verbose):
-  """Print the project's deployment history in terms of revision number,
-  creation time, container name and image tag for a given environment"""
-  set_verbosity(verbose)
-  context = select_context(staging, production)
-  hokusai.history(context)
-
-
-@remote.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--migration', type=click.STRING, help='Run a migration before deploying')
-@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def promote(migration, constraint, verbose):
-  """Update the project's deployment(s) on production with the image tag
-  currently deployed on staging and update the production tag
-  to reference the same image"""
-  set_verbosity(verbose)
-  hokusai.promote(migration, constraint)
 
 
 @remote.command(context_settings=CONTEXT_SETTINGS)
