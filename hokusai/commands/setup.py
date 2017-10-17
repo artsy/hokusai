@@ -16,7 +16,7 @@ from hokusai.lib.common import print_green, build_service, build_deployment, YAM
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
@@ -141,7 +141,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
                                           "%s:%s" % (config.aws_ecr_registry, remote_environment),
                                           port, environment=runtime_environment['production'], always_pull=True, replicas=replicas)
 
-      service_data = build_service(config.project_name, port, target_port=port, internal=False)
+      service_data = build_service(config.project_name, port, target_port=port, internal=internal)
 
       remote_environment_yaml = deployment_data + service_data
 

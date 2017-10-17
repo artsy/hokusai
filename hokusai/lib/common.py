@@ -136,7 +136,7 @@ def build_deployment(name, image, target_port, layer='application', component='w
   ])
   return YAML_HEADER + yaml.safe_dump(deployment, default_flow_style=False)
 
-def build_service(name, port, layer='application', component='web', target_port=None, internal=True):
+def build_service(name, port, layer='application', component='web', target_port=None, internal=False):
   if target_port is None:
     target_port = port
 
