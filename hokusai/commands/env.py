@@ -22,11 +22,11 @@ def get_env(context, environment):
   configmap.load()
   if environment:
     for k, v in configmap.all():
-      print("%s=%s" % (k, v))
-  else:
-    for k, v in configmap.all():
       if k in environment:
         print("%s=%s" % (k, v))
+  else:
+    for k, v in configmap.all():
+      print("%s=%s" % (k, v))
 
 @command
 def set_env(context, environment):
