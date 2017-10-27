@@ -2,12 +2,13 @@ import click
 
 import hokusai
 
-from hokusai.cli.local import local
-from hokusai.lib.common import set_verbosity, select_context, CONTEXT_SETTINGS
+from hokusai.cli.base import base
+from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
-@local.group()
+@base.group()
 def dev(context_settings=CONTEXT_SETTINGS):
-  """Interact with docker-compose targeting the development environment defined in ./hokusai/development.yml"""
+  """Interact with docker-compose development environment
+  defined by ./hokusai/development.yml"""
   pass
 
 

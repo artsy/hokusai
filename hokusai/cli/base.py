@@ -3,7 +3,7 @@ import os
 import click
 
 import hokusai
-from hokusai.lib.common import CONTEXT_SETTINGS
+from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @click.group()
 def base(context_settings=CONTEXT_SETTINGS):
@@ -33,6 +33,23 @@ def configure(kubectl_version, s3_bucket, s3_key, platform, install_to, install_
 def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
   """Set up Hokusai for the current project"""
   hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal)
+
+
+@base.command(context_settings=CONTEXT_SETTINGS)
+def build():
+  """Build the Docker image defined in ./hokusai/common.yml"""
+  hokusai.build()
+
+
+@base.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-b', '--build', type=click.BOOL, is_flag=True, help='Force rebuild the docker image before running the test suite')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def test(build, verbose):
+  """Boot the docker-compose test environment defined by `./hokusai/test.yml` and run the test suite
+
+  Return the exit code of the container with the name 'project-name' in `hokusai/config.yml`"""
+  set_verbosity(verbose)
+  hokusai.test(build)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

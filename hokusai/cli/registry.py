@@ -7,7 +7,7 @@ from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @base.group()
 def registry(context_settings=CONTEXT_SETTINGS):
-  """Interact with the project registry"""
+  """Interact with the project registry defined by `./hokusai/config.yml`"""
   pass
 
 
