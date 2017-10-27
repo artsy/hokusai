@@ -16,12 +16,12 @@ Note: If you set the environment variable `AWS_ACCOUNT_ID` in your shell, you ca
 `hokusai setup` will create:
 - A `Dockerfile` in your project root
 - A configuration folder `./hokusai`.  This folder contains:
-  * `./hokusai/config.yml` - Hokusai project configuration
-  * `./hokusai/common.yml` - a Docker Compose YAML file imported by `development.yml` and `test.yml`
-  * `./hokusai/development.yml`- a Docker Compose YAML file for the development environment
-  * `./hokusai/test.yml` - a Docker Compose YAML file for the test environment
-  * `./hokusai/staging.yml` - a Kubernetes YAML file for the staging environment
-  * `./hokusai/production.yml` - a Kubernetes YAML file for the production environment
+  * `config.yml` - Hokusai project configuration
+  * `common.yml` - a Docker Compose YAML file imported by `development.yml` and `test.yml`
+  * `development.yml`- a Docker Compose YAML file for the development environment
+  * `test.yml` - a Docker Compose YAML file for the test environment
+  * `staging.yml` - a Kubernetes YAML file for the staging environment
+  * `production.yml` - a Kubernetes YAML file for the production environment
 - An ECR repository for your project
 
 The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
