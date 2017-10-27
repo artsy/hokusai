@@ -46,13 +46,6 @@ def verbose(msg):
   if VERBOSE: cprint("==> hokusai exec `%s`" % msg, 'yellow')
   return msg
 
-def select_context(staging, production):
-  if staging and production is None:
-    return 'staging'
-  if production and staging is None:
-    return 'production'
-  print_red("Invoke with either --staging OR --production")
-  sys.exit(1)
 
 def returncode(command):
   return call(verbose(command), stderr=STDOUT, shell=True)
@@ -65,9 +58,9 @@ def shout(command, print_output=False):
 
 def shout_concurrent(commands, print_output=False):
   if print_output:
-    processes = [Popen(command, shell=True) for command in commands]
+    processes = [Popen(verbose(command), shell=True) for command in commands]
   else:
-    processes = [Popen(command, shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
+    processes = [Popen(verbose(command), shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
 
   return_codes = []
   try:
