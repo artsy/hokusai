@@ -12,10 +12,11 @@ env = Environment(loader=PackageLoader('hokusai', 'templates'))
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, print_red, build_service, build_deployment, YAML_HEADER
+from hokusai.lib.common import print_green, build_service, build_deployment, YAML_HEADER
+from hokusai.lib.exceptions import HokusaiError
 
 @command
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
@@ -129,22 +130,22 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
       payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
       f.write(payload)
 
-  for stack in ['staging', 'production']:
-    with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % stack), 'w') as f:
-      if stack == 'production':
+  for remote_environment in ['staging', 'production']:
+    with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % remote_environment), 'w') as f:
+      if remote_environment == 'production':
         replicas = 2
       else:
         replicas = 1
 
       deployment_data = build_deployment(config.project_name,
-                                          "%s:%s" % (config.aws_ecr_registry, stack),
+                                          "%s:%s" % (config.aws_ecr_registry, remote_environment),
                                           port, environment=runtime_environment['production'], always_pull=True, replicas=replicas)
 
-      service_data = build_service(config.project_name, port, target_port=port, internal=False)
+      service_data = build_service(config.project_name, port, target_port=port, internal=internal)
 
-      stack_yaml = deployment_data + service_data
+      remote_environment_yaml = deployment_data + service_data
 
-      f.write(stack_yaml)
+      f.write(remote_environment_yaml)
 
   print_green("Config created in ./hokusai")
 
@@ -157,5 +158,4 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port):
     print_green("Created ECR repository %s" % config.project_name)
     return 0
   else:
-    print_red("Could not create ECR repository %s - check your credentials." % config.project_name)
-    return 1
+    raise HokusaiError("Could not create ECR repository %s - check your credentials." % config.project_name)

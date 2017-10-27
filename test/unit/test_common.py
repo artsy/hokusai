@@ -91,13 +91,13 @@ class TestCommon(HokusaiUnitTestCase):
     self.assertEqual(always_pulling_deployment['spec']['template']['spec']['containers'], [{'image': 'nginx:latest', 'imagePullPolicy': 'Always', 'envFrom': [{'configMapRef': {'name': 'foo-environment'}}], 'ports': [{'containerPort': '80'}], 'name': 'foo-web'}])
 
   def test_build_service(self):
-    basic_service = yaml.load(build_service('foo', '80'))
+    basic_service = yaml.load(build_service('foo', '80', internal=True))
     self.assertEqual(basic_service['kind'], 'Service')
     self.assertEqual(basic_service['apiVersion'], 'v1')
     self.assertEqual(basic_service['metadata'], {'labels': {'app': 'foo', 'layer': 'application', 'component': 'web'}, 'namespace': 'default', 'name': 'foo-web'})
     self.assertEqual(basic_service['spec'], {'type': 'ClusterIP', 'ports': [{'protocol': 'TCP', 'targetPort': '80', 'port': '80'}], 'selector': {'app': 'foo', 'layer': 'application', 'component': 'web'}})
 
-    alternate_port_service = yaml.load(build_service('foo', '80', target_port='8080'))
+    alternate_port_service = yaml.load(build_service('foo', '80', target_port='8080', internal=True))
     self.assertEqual(alternate_port_service['spec'], {'type': 'ClusterIP', 'ports': [{'protocol': 'TCP', 'targetPort': '8080', 'port': '80'}], 'selector': {'app': 'foo', 'layer': 'application', 'component': 'web'}})
 
     external_service = yaml.load(build_service('foo', '80', internal=False))

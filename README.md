@@ -37,9 +37,9 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 1) Install Hokusai via pip with `(sudo) pip install hokusai` and `hokusai` will be installed on your `PATH`.
 
-Note: If installing via pip fails due to pip trying to upgrade your system Python packages, try running `(sudo) pip install hokusai --ignore-installed`.
+Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `(sudo) pip install hokusai --ignore-installed`.
 
-2) Set the environment variables `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY`, `$AWS_DEFAULT_REGION` and optionally, `$AWS_ACCOUNT_ID` in your shell / `~/.bash_profile`.
+2) Set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and optionally, `$AWS_DEFAULT_REGION` and `$AWS_ACCOUNT_ID` in your shell / `~/.bash_profile`.
 
 3) Run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>`.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file. (System administrators, see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS, Kubernetes, and publishing a kubectl config file.)
 

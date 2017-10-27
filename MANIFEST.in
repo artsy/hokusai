@@ -1,4 +1,8 @@
 include VERSION.txt
+include hokusai/cli/*
+include hokusai/cli/local/*
+include hokusai/cli/remote/*
+include hokusai/commands/*
 include hokusai/lib/*
 include hokusai/services/*
-include hokusai/commands/*
+include hokusai/templates/*

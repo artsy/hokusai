@@ -4,7 +4,8 @@ from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
-from hokusai.lib.common import print_red, print_green, shout, CalledProcessError
+from hokusai.lib.common import print_red, print_green, shout
+from hokusai.lib.exceptions import CalledProcessError
 
 @command
 def check():
@@ -47,27 +48,15 @@ def check():
     return_code += 1
 
   if os.environ.get('AWS_ACCESS_KEY_ID') is not None:
-    check_ok('AWS_ACCESS_KEY_ID')
+    check_ok('$AWS_ACCESS_KEY_ID')
   else:
-    check_err('AWS_ACCESS_KEY_ID')
+    check_err('$AWS_ACCESS_KEY_ID')
     return_code += 1
 
   if os.environ.get('AWS_SECRET_ACCESS_KEY') is not None:
-    check_ok('AWS_SECRET_ACCESS_KEY')
+    check_ok('$AWS_SECRET_ACCESS_KEY')
   else:
-    check_err('AWS_SECRET_ACCESS_KEY')
-    return_code += 1
-
-  if os.environ.get('AWS_DEFAULT_REGION') is not None:
-    check_ok('AWS_DEFAULT_REGION')
-  else:
-    check_err('AWS_DEFAULT_REGION')
-    return_code += 1
-
-  if os.environ.get('AWS_ACCOUNT_ID') is not None:
-    check_ok('AWS_ACCOUNT_ID')
-  else:
-    check_err('AWS_ACCOUNT_ID')
+    check_err('$AWS_SECRET_ACCESS_KEY')
     return_code += 1
 
   ecr = ECR()
@@ -78,21 +67,21 @@ def check():
     return_code += 1
 
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):
-    check_ok('hokusai/common.yml')
+    check_ok('./hokusai/common.yml')
   else:
-    check_err('hokusai/common.yml')
+    check_err('./hokusai/common.yml')
     return_code += 1
 
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/development.yml')):
-    check_ok('hokusai/development.yml')
+    check_ok('./hokusai/development.yml')
   else:
-    check_err('hokusai/development.yml')
+    check_err('./hokusai/development.yml')
     return_code += 1
 
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/test.yml')):
-    check_ok('hokusai/test.yml')
+    check_ok('./hokusai/test.yml')
   else:
-    check_err('hokusai/test.yml')
+    check_err('./hokusai/test.yml')
     return_code += 1
 
   for context in ['staging', 'production']:
@@ -103,9 +92,9 @@ def check():
       return_code += 1
 
     if os.path.isfile(os.path.join(os.getcwd(), "hokusai/%s.yml" % context)):
-      check_ok("hokusai/%s.yml" % context)
+      check_ok("./hokusai/%s.yml" % context)
     else:
-      check_err("hokusai/%s.yml" % context)
+      check_err("./hokusai/%s.yml" % context)
       return_code += 1
 
   return return_code

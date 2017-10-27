@@ -13,12 +13,12 @@ def foo_command(foo):
     raise ValueError('Bad command')
 
 class TestCommand(HokusaiUnitTestCase):
-  @patch('hokusai.lib.command.sys.exit', retval=True)
-  def test_command_exits_with_retval(self, mocked_sys_exit):
+  @patch('hokusai.lib.command.sys.exit', return_code=True)
+  def test_command_exits_with_return_code(self, mocked_sys_exit):
     foo_command('Ohai!')
     mocked_sys_exit.assert_called_once_with(0)
 
-  @patch('hokusai.lib.command.sys.exit', retval=True)
+  @patch('hokusai.lib.command.sys.exit', return_code=True)
   def test_command_catches_exceptions(self, mocked_sys_exit):
     with captured_output() as (out, err):
       foo_command(False)
