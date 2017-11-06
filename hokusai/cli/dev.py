@@ -13,7 +13,7 @@ def dev(context_settings=CONTEXT_SETTINGS):
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-b', '--build', type=click.BOOL, is_flag=True, help="Force rebuild the docker image before running")
+@click.option('--build/--no-build', default=True, help='Force a build of the :latest image before starting (default: true)')
 @click.option('-d', '--detach', type=click.BOOL, is_flag=True, help="Run containers in the background")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def start(build, detach, verbose):

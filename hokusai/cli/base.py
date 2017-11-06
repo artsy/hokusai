@@ -43,7 +43,7 @@ def build():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-b', '--build', type=click.BOOL, is_flag=True, help='Force rebuild the docker image before running the test suite')
+@click.option('--build/--no-build', default=True, help='Force a build of the :latest image before running the test suite (default: true)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def test(build, verbose):
   """Boot the docker-compose test environment defined by `./hokusai/test.yml` and run the test suite

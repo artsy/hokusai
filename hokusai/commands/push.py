@@ -7,7 +7,7 @@ from hokusai.lib.common import print_green, shout
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def push(tag, force, overwrite):
+def push(tag, build, force, overwrite):
   if force is None and shout('git status --porcelain'):
     raise HokusaiError("Working directory is not clean.  Aborting.")
 
@@ -25,14 +25,16 @@ def push(tag, force, overwrite):
   if overwrite is None and ecr.tag_exists(tag):
     raise HokusaiError("Tag %s already exists in remote repository.  Aborting." % tag)
 
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
-  shout("docker-compose -f %s -p hokusai build" % docker_compose_yml, print_output=True)
-  build = "hokusai_%s:latest" % config.project_name
+  if build:
+    docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
+    shout("docker-compose -f %s -p hokusai build" % docker_compose_yml, print_output=True)
 
-  shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, tag))
+  build_tag = "hokusai_%s:latest" % config.project_name
+
+  shout("docker tag %s %s:%s" % (build_tag, config.aws_ecr_registry, tag))
   shout("docker push %s:%s" % (config.aws_ecr_registry, tag), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, tag))
+  print_green("Pushed %s to %s:%s" % (build_tag, config.aws_ecr_registry, tag))
 
-  shout("docker tag %s %s:%s" % (build, config.aws_ecr_registry, 'latest'))
+  shout("docker tag %s %s:%s" % (build_tag, config.aws_ecr_registry, 'latest'))
   shout("docker push %s:%s" % (config.aws_ecr_registry, 'latest'), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build, config.aws_ecr_registry, 'latest'))
+  print_green("Pushed %s to %s:%s" % (build_tag, config.aws_ecr_registry, 'latest'))
