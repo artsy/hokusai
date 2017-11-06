@@ -87,6 +87,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=port))
 
+  with open(os.path.join(os.getcwd(), '.dockerignore'), 'w') as f:
+    f.write(env.get_template("dockerignore.j2").render(project_type=project_type))
+
   with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
     services = {
       config.project_name: {

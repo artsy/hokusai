@@ -1,0 +1,31 @@
+.git
+.gitignore
+
+README.md
+LICENSE
+VERSION
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+.env
+.env.*
+log
+tmp
+
+{%- if 'nodejs' in project_type %}
+node_modules
+{%- endif %}
+
+{%- if 'ruby' in project_type %}
+.rspec
+coverage/
+spec/tmp
+{%- endif %}
+
+{%- if 'rails' in project_type %}
+db/*.sqlite3
+db/*.sqlite3-journal
+public/system
+{%- endif %}
