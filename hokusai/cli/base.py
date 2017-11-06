@@ -28,7 +28,7 @@ def configure(kubectl_version, s3_bucket, s3_key, platform, install_to, install_
 @click.option('--project-type', type=click.Choice(['ruby-rack', 'ruby-rails', 'nodejs', 'elixir', 'python-wsgi']), required=True, help='The type of project')
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_DEFAULT_REGION or \'us-east-1\')')
-@click.option('--port', type=click.INT, default=80, help='The port of the service (default: 80)')
+@click.option('--port', type=click.INT, default=8080, help='The port of the service (default: 8080)')
 @click.option('--internal', type=click.BOOL, is_flag=True, help='Create an internal Kubernetes service definition')
 def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
   """Set up Hokusai for the current project"""
