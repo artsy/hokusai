@@ -62,12 +62,12 @@ def dev_logs(follow, tail):
   shout("docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
 
 @command
-def dev_run(command):
+def dev_run(command, service_name):
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
-  shout("docker-compose -f %s -p hokusai exec %s %s" % (docker_compose_yml, config.project_name, command), print_output=True)
+  shout("docker-compose -f %s -p hokusai run %s %s" % (docker_compose_yml, service_name, command), print_output=True)
 
 @command
 def dev_clean():

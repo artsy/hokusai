@@ -2,6 +2,8 @@ import click
 
 import hokusai
 
+from hokusai.lib.config import config
+
 from hokusai.cli.base import base
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
@@ -50,11 +52,12 @@ def logs(follow, tail, verbose):
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command')
+@click.option('--service-name', type=click.STRING, default=config.project_name, help="The service name to launch the container as (default: %s)" % config.project_name)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(command, verbose):
-  """Run a command in the development environment's container with the name 'project-name' in hokusai/config.yml"""
+def run(command, service_name, verbose):
+  """Run a command in a new container in the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_run(command)
+  hokusai.dev_run(command, service_name)
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
