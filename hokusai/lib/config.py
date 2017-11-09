@@ -6,11 +6,9 @@ from collections import OrderedDict
 import yaml
 
 from hokusai.lib.common import print_red, YAML_HEADER
+from hokusai.lib.exceptions import HokusaiError
 
 HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
-
-class HokusaiConfigError(Exception):
-  pass
 
 class HokusaiConfig(object):
   def create(self, project_name, aws_account_id, aws_ecr_region):
@@ -28,7 +26,7 @@ class HokusaiConfig(object):
 
   def check(self):
     if not os.path.isfile(HOKUSAI_CONFIG_FILE):
-      raise HokusaiConfigError("Hokusai is not configured for this project - run 'hokusai configure'")
+      raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
     return self
 
   def get(self, key):
