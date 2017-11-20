@@ -122,6 +122,6 @@ Required options:
 ### Working with the Staging -> Production pipeline
 
 * `hokusai pipeline` - Interact with the project's' staging -> production pipeline
-  - `hokusai gitdiff` - Print a git diff between the tags deployed on production vs staging.
-  - `hokusai gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
-  - `hokusai promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
+  - `hokusai pipeline gitdiff` - Print a git diff between the tags deployed on production vs staging.
+  - `hokusai pipeline gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
+  - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
