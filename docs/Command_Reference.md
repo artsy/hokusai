@@ -36,16 +36,15 @@ hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> 
 
 * `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define remote environments, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
-
-`hokusai remote` commands such as `create`, `update`, `env`, `deploy` and `logs` require invocation with either the `--staging` or `--production` flag, which references the respective environment YAML file and interacts with the respective Kubernetes context.
-
 Required options:
   - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
   - `--project-type`: `ruby-rack`, `ruby-rails`, `nodejs`, `elixir`, or `python-wsgi`.
 
-* `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project.
+When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define configuration for a staging / production Kubernetes context that you are assumed to have available, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
 
+Note: `hokusai staging` `hokusai production` subcommands such as `create`, `update`, `env`, `deploy` and `logs` reference the respective environment YAML file and interacts with the respective Kubernetes context.
+
+* `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project.
 
 ### Local development
 

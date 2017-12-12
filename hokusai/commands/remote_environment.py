@@ -30,7 +30,7 @@ def environment_create(context):
 
   kctl = Kubectl(context)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
-  print_green("Created remote environment %s" % context)
+  print_green("Created environment %s" % context)
 
 @command
 def environment_update(context):
@@ -40,7 +40,7 @@ def environment_update(context):
 
   kctl = Kubectl(context)
   shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
-  print_green("Updated remote environment %s" % context)
+  print_green("Updated environment %s" % context)
 
 @command
 def environment_delete(context):
@@ -50,7 +50,7 @@ def environment_delete(context):
 
   kctl = Kubectl(context)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)
-  print_green("Deleted remote environment %s" % context)
+  print_green("Deleted environment %s" % context)
 
 @command
 def environment_status(context):

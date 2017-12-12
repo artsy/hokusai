@@ -73,24 +73,24 @@ Once an image is pushed, you can list the images and tags in the project registr
 6) Create the Kubernetes staging environment and environment configuration
 
 ```bash
-hokusai remote env create --staging
-hokusai remote env set FOO=bar --staging
+hokusai staging env create
+hokusai staging env set FOO=bar
 ```
 
 See [Configuration Options](./Configuration_Options.md) if you want to modify your staging environment's configuration.
 
 
-7) Create the Kubernetes staging environment with `hokusai remote create --staging`
+7) Create the Kubernetes staging environment with `hokusai staging create`
 
-`hokusai remote status --staging` should eventually (once Kubernetes creates a load balancer for your project), output the ELB's DNS record.
+`hokusai staging status` should eventually (once Kubernetes creates a load balancer for your project), output the ELB's DNS record.
 
-Get logs by running `hokusai remote logs --staging` and see deployment history with `hokusai remote history --staging`
+Get logs by running `hokusai staging logs` and see deployment history with `hokusai staging history`
 
 8) Create the Kubernetes production environment and environment configuration
 
 ```bash
-hokusai remote env create --production
-hokusai remote env set FOO=baz --production
+hokusai production env create
+hokusai production env set FOO=baz
 ```
 
 See [Configuration Options](./Configuration_Options.md) if you want to modify your production environment's configuration.
@@ -98,20 +98,20 @@ See [Configuration Options](./Configuration_Options.md) if you want to modify yo
 9) Create the Kubernetes production environment
 
 ```bash
-hokusai remote create --production
-hokusai remote status --production
-hokusai remote logs --production
-hokusai remote history --production
+hokusai production create
+hokusai production status
+hokusai production logs
+hokusai production history
 ```
 
 10) Deploy changes to the Kubernetes staging environment
 
-Create a new commit and push it to the remote repo with `hokusai registry push` as before.
+Create a new commit and push it to the registry with `hokusai registry push` as before.
 
-Deploy the new commit to staging with `hokusai remote deploy {TAG} --staging` where TAG is the tag of the commit you just made.
+Deploy the new commit to staging with `hokusai production deploy {TAG}` where TAG is the tag of the commit you just made.
 
 11) Promote the tag deployed on staging to production
 
 ```bash
-hokusai remote promote
+hokusai pipeline promote
 ```

@@ -18,7 +18,7 @@ def registry(context_settings=CONTEXT_SETTINGS):
 @click.option('--overwrite', type=click.BOOL, is_flag=True, help='Push even if the tag already exists')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def push(tag, build, force, overwrite, verbose):
-  """Build and push an image to the project's remote repo tagged as the git SHA1 of HEAD"""
+  """Build and push an image to the project's registry tagged as the git SHA1 of HEAD"""
   set_verbosity(verbose)
   hokusai.push(tag, build, force, overwrite)
 
@@ -26,6 +26,6 @@ def push(tag, build, force, overwrite, verbose):
 @registry.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def images(verbose):
-  """Print images and tags in the project's remote repo"""
+  """Print images and tags in the project's registry"""
   set_verbosity(verbose)
   hokusai.images()
