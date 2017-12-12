@@ -23,7 +23,7 @@ def push(tag, build, force, overwrite):
     tag = shout('git rev-parse HEAD').strip()
 
   if overwrite is None and ecr.tag_exists(tag):
-    raise HokusaiError("Tag %s already exists in remote repository.  Aborting." % tag)
+    raise HokusaiError("Tag %s already exists in registry.  Aborting." % tag)
 
   if build:
     docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')

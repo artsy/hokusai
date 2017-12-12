@@ -27,9 +27,9 @@ When running `hokusai setup` the following files are created:
 
 * `./hokusai/test.yml` is the docker-compose Yaml file referenced when running `hokusai local test`. It should contain a definition for your project service (extending `./hokusai/common.yml`) as well as test environment variables and any dependent services.
 
-* `./hokusai/staging.yml` is the Kubernetes Yaml file referenced with running `hokusai remote` commands with the `--staging` flag. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
+* `./hokusai/staging.yml` is the Kubernetes Yaml file referenced with running `hokusai staging` subcommands. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
 
-* `./hokusai/production.yml` is the Kubernetes Yaml file referenced with running `hokusai remote` commands with the `--production` flag. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
+* `./hokusai/production.yml` is the Kubernetes Yaml file referenced with running `hokusai production` subcommands. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
 
 These files are meant to be modified on a per-project basis.  You can (and should) use them as a starting point and modify them to suit the needs of your application.  Hokusai remains agnostic about the content of these files, only passes them to `docker-compose` and `kubectl` as part of its workflow.  To see how exactly these files are being used by Hokusai, run commands with the `-v / --verbose` flag.
 
@@ -46,9 +46,9 @@ spec:
                     name: {{ project-name }}
 ```
 
-This instructs Kubernetes to use the `ConfigMap` object named `{project-name}` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai remote env` commands are designed to manage this environment.
+This instructs Kubernetes to use the `ConfigMap` object named `{project-name}` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.
 
-Note: When changing the project environment (i.e. after running `hokusai remote env set FOO=bar`) you need to run `hokusai remote deployment refresh` to re-create the project deployment's containers as Kubernetes will not propogate the new environment variables automatically.
+Note: When changing the project environment (i.e. after running `hokusai [staging|production] env set FOO=bar`) you need to run `hokusai [staging|production] deployment refresh` to re-create the project deployment's containers as Kubernetes will not propogate the new environment variables automatically.
 
 ### Kubernetes labels and selectors
 
@@ -81,7 +81,7 @@ spec:
   type: {{ ClusterIP if --internal option passed to hokusai setup, else LoadBalancer }}
 ```
 
-Additional Deployments and Services should preserve the label structure `app` / `layer` / `component` label structure.  Hokusai will only target deployments with the `app={project-name},layer=application` label selector when running `hokusai remote deployment` commands.
+Additional Deployments and Services should preserve the label structure `app` / `layer` / `component` label structure.  Hokusai will only target deployments with the `app={project-name},layer=application` label selector when running `hokusai [staging|production]` subcommands.
 
 For example, to add a worker `Deployment` to `./hokusai/staging.yml` or `./hokusai/production.yml` you would create it with the following labels:
 
@@ -109,4 +109,4 @@ spec:
         component: cache
 ```
 
-Hokusai would ignore this when `hokusai remote deployment` commands, but it would be included as part of your application's remote Kubernetes environment.
+Hokusai would ignore this when `hokusai [staging|production]` commands, but it would be included as part of your application's Kubernetes environment.
