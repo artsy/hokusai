@@ -19,7 +19,7 @@ def production(context_settings=CONTEXT_SETTINGS):
 def create(verbose):
   """Create the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.environment_create(KUBE_CONTEXT)
+  hokusai.k8s_create(KUBE_CONTEXT)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -27,7 +27,7 @@ def create(verbose):
 def delete(verbose):
   """Delete the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.environment_delete(KUBE_CONTEXT)
+  hokusai.k8s_delete(KUBE_CONTEXT)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -35,7 +35,7 @@ def delete(verbose):
 def update(verbose):
   """Update the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.environment_update(KUBE_CONTEXT)
+  hokusai.k8s_update(KUBE_CONTEXT)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -43,7 +43,7 @@ def update(verbose):
 def status(verbose):
   """Print the Kubernetes resources status defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.environment_status(KUBE_CONTEXT)
+  hokusai.k8s_status(KUBE_CONTEXT)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
