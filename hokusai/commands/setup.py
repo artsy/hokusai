@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 import yaml
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, PackageLoader, FileSystemLoader
 env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
 from hokusai.lib.command import command
@@ -17,8 +17,13 @@ from hokusai.lib.exceptions import HokusaiError
 
 @command
 def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
+  print("THIS IS THE CORRECT VERSION.")
+
+  # @TODO: This is a passed in thing
+  org_templates = Environment(loader=FileSystemLoader('/Users/stephenolsen/work/artsy/hokusai/org_templates'))
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
+  mkpath(os.path.join(os.getcwd(), 'hokusai-from-templates'))
 
   config.create(project_name.lower().replace('_', '-'), aws_account_id, aws_ecr_region)
 
@@ -31,7 +36,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     runtime_environment = {
       'development': ["RACK_ENV=development"],
       'test': ["RACK_ENV=test"],
-      'production': [{'name': 'RACK_ENV', 'value': 'production'}]
+      'production': {'RACK_ENV': 'production'}
     }
 
   elif project_type == 'ruby-rails':
@@ -43,9 +48,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     runtime_environment = {
       'development': ["RAILS_ENV=development"],
       'test': ["RAILS_ENV=test"],
-      'production': [{'name': 'RAILS_ENV', 'value': 'production'},
-                      {'name': 'RAILS_SERVE_STATIC_FILES', 'value': 'true'},
-                      {'name': 'RAILS_LOG_TO_STDOUT', 'value': 'true'}]
+      'production': {'RAILS_ENV': 'production',
+                     'RAILS_SERVE_STATIC_FILES': 'true',
+                     'RAILS_LOG_TO_STDOUT': 'true'}
     }
 
   elif project_type == 'nodejs':
@@ -57,7 +62,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     runtime_environment = {
       'development': ["NODE_ENV=development"],
       'test': ["NODE_ENV=test"],
-      'production': [{'name': 'NODE_ENV', 'value': 'production'}]
+      'production': {'NODE_ENV': 'production'}
     }
 
   elif project_type == 'elixir':
@@ -69,7 +74,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     runtime_environment = {
       'development': ["MIX_ENV=dev"],
       'test': ["MIX_ENV=test"],
-      'production': [{'name': 'MIX_ENV', 'value': 'prod'}]
+      'production': {'MIX_ENV': 'prod'}
     }
 
   elif project_type == 'python-wsgi':
@@ -81,12 +86,16 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     runtime_environment = {
       'development': ["CONFIG_FILE=config/development.py"],
       'test': ["CONFIG_FILE=config/test.py"],
-      'production': [{'name': 'CONFIG_FILE', 'value': 'config/production.py'}]
+      'production': {'CONFIG_FILE': 'config/production.py'}
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=port))
 
+  #@NOTE: Writing both the old data and the new templates so I can compare them. 
+
+  with open(os.path.join(os.getcwd(), 'hokusai-from-templates', "common.yml"), 'w') as f:
+    f.write(org_templates.get_template("common.yml.j2").render(project_name=config.project_name))
   with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
     services = {
       config.project_name: {
@@ -101,6 +110,20 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       ])
     payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
     f.write(payload)
+  
+  with open(os.path.join(os.getcwd(), 'hokusai-from-templates', "development.yml"), 'w') as f:
+    f.write(org_templates.get_template("development.yml.j2").render(
+      project_name=config.project_name,
+      development_command=development_command,
+      port=port,
+      environment=runtime_environment['development']
+    ))
+  with open(os.path.join(os.getcwd(), 'hokusai-from-templates', "test.yml"), 'w') as f:
+    f.write(org_templates.get_template("test.yml.j2").render(
+      project_name=config.project_name,
+      development_command=test_command,
+      environment=runtime_environment['test']
+    ))
 
   for compose_environment in ['development', 'test']:
     with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % compose_environment), 'w') as f:
@@ -129,6 +152,26 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       ])
       payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
       f.write(payload)
+
+  with open(os.path.join(os.getcwd(), 'hokusai-from-templates', "staging.yml"), 'w') as f:
+    f.write(org_templates.get_template("staging.yml.j2").render(
+      project_name=config.project_name,
+      component="web",
+      port=port,
+      layer="application",
+      environment=runtime_environment['production'],
+      image="%s:staging" % config.aws_ecr_registry
+    ))
+
+  with open(os.path.join(os.getcwd(), 'hokusai-from-templates', "production.yml"), 'w') as f:
+    f.write(org_templates.get_template("production.yml.j2").render(
+      project_name=config.project_name,
+      component="web",
+      port=port,
+      layer="application",
+      environment=runtime_environment['production'],
+      image="%s:production" % config.aws_ecr_registry
+    ))
 
   for remote_environment in ['staging', 'production']:
     with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % remote_environment), 'w') as f:

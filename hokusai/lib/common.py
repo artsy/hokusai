@@ -92,7 +92,7 @@ def build_deployment(name, image, target_port, layer='application', component='w
     container['envFrom'] = [{'configMapRef': {'name': "%s-environment" % name}}]
 
   if environment is not None:
-    container['env'] = environment
+    container['env'] = [{'name': k, 'value': v} for k,v in environment.items()]
 
   if always_pull:
     container['imagePullPolicy'] = 'Always'
