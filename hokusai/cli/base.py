@@ -31,9 +31,10 @@ def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install
 @click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_DEFAULT_REGION or \'us-east-1\')')
 @click.option('--port', type=click.INT, default=80, help='The port of the service (default: 80)')
 @click.option('--internal', type=click.BOOL, is_flag=True, help='Create an internal Kubernetes service definition')
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
+@click.option('--template-dir', type=click.STRING, default="", help='Directory of templates to use.')
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal, template_dir):
   """Set up Hokusai for the current project"""
-  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal)
+  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal, template_dir)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
