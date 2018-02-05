@@ -21,8 +21,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
   else:
     env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
-  print("THIS IS THE CORRECT VERSION STILL")
-
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
   config.create(project_name.lower().replace('_', '-'), aws_account_id, aws_ecr_region)
