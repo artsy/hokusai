@@ -6,17 +6,20 @@ from collections import OrderedDict
 
 import yaml
 
-from jinja2 import Environment, PackageLoader
-env = Environment(loader=PackageLoader('hokusai', 'templates'))
+from jinja2 import Environment, PackageLoader, FileSystemLoader
 
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, build_service, build_deployment, YAML_HEADER
+from hokusai.lib.common import print_green, YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal):
+def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal, template_dir):
+  if template_dir:
+    env = Environment(loader=FileSystemLoader(template_dir))
+  else:
+    env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
@@ -29,9 +32,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     development_command = 'bundle exec rackup'
     test_command = 'bundle exec rake'
     runtime_environment = {
-      'development': ["RACK_ENV=development"],
-      'test': ["RACK_ENV=test"],
-      'production': [{'name': 'RACK_ENV', 'value': 'production'}]
+      'development': {"RACK_ENV": "development"},
+      'test': {"RACK_ENV": "test"},
+      'production': {'RACK_ENV': 'production'}
     }
 
   elif project_type == 'ruby-rails':
@@ -41,11 +44,11 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     development_command = 'bundle exec rails server'
     test_command = 'bundle exec rake'
     runtime_environment = {
-      'development': ["RAILS_ENV=development"],
-      'test': ["RAILS_ENV=test"],
-      'production': [{'name': 'RAILS_ENV', 'value': 'production'},
-                      {'name': 'RAILS_SERVE_STATIC_FILES', 'value': 'true'},
-                      {'name': 'RAILS_LOG_TO_STDOUT', 'value': 'true'}]
+      'development': {"RAILS_ENV": "development"},
+      'test': {"RAILS_ENV": "test"},
+      'production': {'RAILS_ENV': 'production',
+                     'RAILS_SERVE_STATIC_FILES': 'true',
+                     'RAILS_LOG_TO_STDOUT': 'true'}
     }
 
   elif project_type == 'nodejs':
@@ -55,9 +58,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     development_command = 'node index.js'
     test_command = 'npm test'
     runtime_environment = {
-      'development': ["NODE_ENV=development"],
-      'test': ["NODE_ENV=test"],
-      'production': [{'name': 'NODE_ENV', 'value': 'production'}]
+      'development': {"NODE_ENV": "development"},
+      'test': {"NODE_ENV": "test"},
+      'production': {'NODE_ENV': 'production'}
     }
 
   elif project_type == 'elixir':
@@ -67,9 +70,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     development_command = 'mix run'
     test_command = 'mix test'
     runtime_environment = {
-      'development': ["MIX_ENV=dev"],
-      'test': ["MIX_ENV=test"],
-      'production': [{'name': 'MIX_ENV', 'value': 'prod'}]
+      'development': {"MIX_ENV": "dev"},
+      'test': {'MIX_ENV': 'test'},
+      'production': {'MIX_ENV': 'prod'}
     }
 
   elif project_type == 'python-wsgi':
@@ -79,9 +82,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     development_command = "python -m werkzeug.serving -b 0.0.0.0:%s %s" % (port, project_name)
     test_command = 'python -m unittest discover .'
     runtime_environment = {
-      'development': ["CONFIG_FILE=config/development.py"],
-      'test': ["CONFIG_FILE=config/test.py"],
-      'production': [{'name': 'CONFIG_FILE', 'value': 'config/production.py'}]
+      'development': {"CONFIG_FILE": "config/development.py"},
+      'test': {"CONFIG_FILE": "config/test.py"},
+      'production': {'CONFIG_FILE': 'config/production.py'}
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
@@ -91,64 +94,39 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     f.write(env.get_template("dockerignore.j2").render(project_type=project_type))
 
   with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
-    services = {
-      config.project_name: {
-        'build': {
-          'context': '../'
-        }
-      }
-    }
-    data = OrderedDict([
-        ('version', '2'),
-        ('services', services)
-      ])
-    payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
-    f.write(payload)
+    f.write(env.get_template("common.yml.j2").render(project_name=config.project_name))
 
-  for compose_environment in ['development', 'test']:
-    with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % compose_environment), 'w') as f:
-      services = {
-        config.project_name: {
-          'extends': {
-            'file': 'common.yml',
-            'service': config.project_name
-          }
-        }
-      }
-
-      if compose_environment == 'development':
-        services[config.project_name]['command'] = development_command
-        services[config.project_name]['ports'] = ["%s:%s" % (port, port)]
-        services[config.project_name]['volumes'] = ['../:/app']
-
-      if compose_environment == 'test':
-        services[config.project_name]['command'] = test_command
-
-      services[config.project_name]['environment'] = runtime_environment[compose_environment]
-
-      data = OrderedDict([
-        ('version', '2'),
-        ('services', services)
-      ])
-      payload = YAML_HEADER + yaml.safe_dump(data, default_flow_style=False)
-      f.write(payload)
-
-  for remote_environment in ['staging', 'production']:
-    with open(os.path.join(os.getcwd(), 'hokusai', "%s.yml" % remote_environment), 'w') as f:
-      if remote_environment == 'production':
-        replicas = 2
-      else:
-        replicas = 1
-
-      deployment_data = build_deployment(config.project_name,
-                                          "%s:%s" % (config.aws_ecr_registry, remote_environment),
-                                          port, environment=runtime_environment['production'], always_pull=True, replicas=replicas)
-
-      service_data = build_service(config.project_name, port, target_port=port, internal=internal)
-
-      remote_environment_yaml = deployment_data + service_data
-
-      f.write(remote_environment_yaml)
+  with open(os.path.join(os.getcwd(), 'hokusai', "development.yml"), 'w') as f:
+    f.write(env.get_template("development.yml.j2").render(
+      project_name=config.project_name,
+      development_command=development_command,
+      port=port,
+      environment=runtime_environment['development']
+    ))
+  with open(os.path.join(os.getcwd(), 'hokusai', "test.yml"), 'w') as f:
+    f.write(env.get_template("test.yml.j2").render(
+      project_name=config.project_name,
+      development_command=test_command,
+      environment=runtime_environment['test']
+    ))
+  with open(os.path.join(os.getcwd(), 'hokusai', "staging.yml"), 'w') as f:
+    f.write(env.get_template("staging.yml.j2").render(
+      project_name=config.project_name,
+      component="web",
+      port=port,
+      layer="application",
+      environment=runtime_environment['production'],
+      image="%s:staging" % config.aws_ecr_registry
+    ))
+  with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
+    f.write(env.get_template("production.yml.j2").render(
+      project_name=config.project_name,
+      component="web",
+      port=port,
+      layer="application",
+      environment=runtime_environment['production'],
+      image="%s:production" % config.aws_ecr_registry
+    ))
 
   print_green("Config created in ./hokusai")
 

@@ -1,0 +1,18 @@
+---
+version: '2'
+services:
+  {{ project_name }}:
+    command: {{ development_command }}
+    {%- if environment %}
+    environment:
+    {%- for k,v in environment.items() %}
+    - {{ k }}={{ v }}
+    {% endfor -%}
+    {% endif -%}
+    extends:
+      file: common.yml
+      service: {{ project_name }}
+    ports:
+      - {{ port }}:{{ port }}
+    volumes:
+      - ../:/app
