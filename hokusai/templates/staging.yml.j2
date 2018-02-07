@@ -56,5 +56,8 @@ spec:
     app: {{ project_name }}
     component: {{ component }}
     layer: {{ layer }}
-  sessionAffinity: None
+  {%- if internal -%}
+  type: ClusterIP
+  {%- else -%}
   type: LoadBalancer
+  {%- endif -%}

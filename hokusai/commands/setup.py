@@ -116,7 +116,8 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:staging" % config.aws_ecr_registry
+      image="%s:staging" % config.aws_ecr_registry,
+      internal=internal
     ))
   with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
     f.write(env.get_template("production.yml.j2").render(
@@ -125,7 +126,8 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:production" % config.aws_ecr_registry
+      image="%s:production" % config.aws_ecr_registry,
+      internal=internal
     ))
 
   print_green("Config created in ./hokusai")
