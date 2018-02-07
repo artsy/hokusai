@@ -4,6 +4,7 @@ import hokusai
 
 from hokusai.cli.base import base
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
+from hokusai.lib.config import config
 
 @base.group()
 def dev(context_settings=CONTEXT_SETTINGS):
@@ -13,7 +14,7 @@ def dev(context_settings=CONTEXT_SETTINGS):
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-b', '--build', type=click.BOOL, is_flag=True, help="Force rebuild the docker image before running")
+@click.option('--build/--no-build', default=True, help='Force a build of the :latest image before starting (default: true)')
 @click.option('-d', '--detach', type=click.BOOL, is_flag=True, help="Run containers in the background")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def start(build, detach, verbose):
@@ -50,11 +51,15 @@ def logs(follow, tail, verbose):
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command')
+@click.option('--service-name', type=click.STRING, help="The service name to launch the container as (default: the name 'project-name' in `hokusai/config.yml`)")
+@click.option('--stop', type=click.BOOL, is_flag=True, help='Stop all services after running the command')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(command, verbose):
-  """Run a command in the development environment's container with the name 'project-name' in hokusai/config.yml"""
+def run(command, service_name, stop, verbose):
+  """Run a command in a new container in the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_run(command)
+  if service_name is None:
+    service_name = config.project_name
+  hokusai.dev_run(command, service_name, stop)
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)

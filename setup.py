@@ -9,7 +9,7 @@ setup(name='hokusai',
       author_email='isac@artsymail.com',
       license='MIT',
       packages=['hokusai'],
-      package_data={'hokusai': ['VERSION.txt', 'cli/*', 'cli/local/*', 'cli/remote/*', 'commands/*', 'lib/*', 'services/*', 'templates/*']},
+      package_data={'hokusai': ['VERSION.txt', 'cli/*', 'commands/*', 'lib/*', 'services/*', 'templates/*']},
       install_requires=[
           'click==6.7',
           'MarkupSafe==1.0',

@@ -2,7 +2,7 @@ FROM {{ base_image }}
 
 # Install packages
 {%- if 'alpine' in base_image %}
-RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers
+RUN apk update && apk upgrade && apk add alpine-sdk && apk add linux-headers && apk add nodejs
 {%- else %}
 RUN apt-get update -qq && apt-get install -y nodejs && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 {%- endif %}
@@ -11,6 +11,13 @@ RUN gem install bundler
 
 # throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1
+
+# Set up deploy user
+{%- if 'alpine' in base_image %}
+RUN adduser -D -g '' deploy
+{%- else %}
+RUN adduser --disabled-password --gecos '' deploy
+{%- endif %}
 
 # Set up working directory
 RUN mkdir /app
@@ -26,6 +33,12 @@ RUN bundle install -j4
 # don't bust Docker's cache)
 ADD . /app
 WORKDIR /app
+RUN chown -R deploy:deploy /app
+
+# Switch to deploy user
+USER deploy
+ENV USER deploy
+ENV HOME /home/deploy
 
 RUN bundle exec rake assets:precompile
 

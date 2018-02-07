@@ -1,6 +1,7 @@
 import os
 
 from hokusai.lib import config
+from hokusai.lib.exceptions import HokusaiError
 
 from test import HokusaiUnitTestCase
 
@@ -20,7 +21,7 @@ class TestConfig(HokusaiUnitTestCase):
     self.config = config.config
 
   def test_requires_config(self):
-    with self.assertRaises(config.HokusaiConfigError):
+    with self.assertRaises(HokusaiError):
       self.config.check()
 
   def test_create(self):

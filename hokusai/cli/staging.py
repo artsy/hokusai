@@ -17,33 +17,33 @@ def staging(context_settings=CONTEXT_SETTINGS):
 @staging.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(verbose):
-  """Create the Kubernetes remote resources defined in ./hokusai/staging.yml"""
+  """Create the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.environment_create(KUBE_CONTEXT)
+  hokusai.k8s_create(KUBE_CONTEXT)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def delete(verbose):
-  """Delete the Kubernetes remote resources defined in ./hokusai/staging.yml"""
+  """Delete the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.environment_delete(KUBE_CONTEXT)
+  hokusai.k8s_delete(KUBE_CONTEXT)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def update(verbose):
-  """Update the Kubernetes remote resources defined in ./hokusai/staging.yml"""
+  """Update the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.environment_update(KUBE_CONTEXT)
+  hokusai.k8s_update(KUBE_CONTEXT)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def status(verbose):
-  """Print the Kubernetes remote resources status defined in ./hokusai/staging.yml"""
+  """Print the Kubernetes resources status defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.environment_status(KUBE_CONTEXT)
+  hokusai.k8s_status(KUBE_CONTEXT)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)

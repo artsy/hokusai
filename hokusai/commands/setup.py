@@ -89,8 +89,13 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
     f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=port))
+
+  with open(os.path.join(os.getcwd(), '.dockerignore'), 'w') as f:
+    f.write(env.get_template("dockerignore.j2").render(project_type=project_type))
+
   with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
     f.write(env.get_template("common.yml.j2").render(project_name=config.project_name))
+
   with open(os.path.join(os.getcwd(), 'hokusai', "development.yml"), 'w') as f:
     f.write(env.get_template("development.yml.j2").render(
       project_name=config.project_name,
@@ -111,7 +116,8 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:staging" % config.aws_ecr_registry
+      image="%s:staging" % config.aws_ecr_registry,
+      internal=internal
     ))
   with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
     f.write(env.get_template("production.yml.j2").render(
@@ -120,7 +126,8 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:production" % config.aws_ecr_registry
+      image="%s:production" % config.aws_ecr_registry,
+      internal=internal
     ))
 
   print_green("Config created in ./hokusai")
