@@ -1,3 +1,23 @@
+## v0.4.1
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.1/README.md)
+
+### Notable changes since v0.4.0
+
+* d7b50ce fixes to setup templates
+* 9a3273f default templates
+* 723c657 Convert all yml to come from templates, first pass hardcoded location.
+* 159b5da rename remote_environment to kubernetes / k8s
+* 58bb825 remove references to remote
+* ab759d8 Add --stop option to dev command to clean up services
+* 6e8b33e Fix config error
+* 388569e Template deploy user and service port default to 8080
+* 6c4f87a Change dev run command to use docker-compose run and launch a new container
+* d4c85cd Always Be Building (--build/--no-build flags)
+* 7149d1b Add .dockerignore to setup command
+* bcbfce8 allow local config file as an alternative to an s3 bucket/key
+
+
 ## v0.4.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.4.0/README.md)
