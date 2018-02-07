@@ -47,10 +47,6 @@ metadata:
     layer: {{ layer }}
   name: {{ project_name }}-{{ component }}
   namespace: default
-  {%- if internal -%}
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
-  {%- endif -%}
 spec:
   ports:
   - port: {{ port }}
@@ -60,8 +56,9 @@ spec:
     app: {{ project_name }}
     component: {{ component }}
     layer: {{ layer }}
-  {%- if internal -%}
+  {%- if internal %}
   type: ClusterIP
-  {%- else -%}
+  {%- else %}
   type: LoadBalancer
-  {%- endif -%}
+  {%- endif %}
+
