@@ -27,11 +27,9 @@ class TestConfig(HokusaiUnitTestCase):
   def test_create(self):
     self.assertFalse(os.path.isfile(TMP_CONFIG_FILE))
     try:
-      self.config.create('foo', '123456789012', 'us-east-1')
+      self.config.create('foo', 'bar')
       self.assertTrue(os.path.isfile(TMP_CONFIG_FILE))
       self.assertEqual(self.config.project_name, 'foo')
-      self.assertEqual(self.config.aws_account_id, '123456789012')
-      self.assertEqual(self.config.aws_ecr_region, 'us-east-1')
-      self.assertEqual(self.config.aws_ecr_registry, '123456789012.dkr.ecr.us-east-1.amazonaws.com/foo')
+      self.assertEqual(self.config.docker_repo, 'bar')
     finally:
       os.remove(TMP_CONFIG_FILE)

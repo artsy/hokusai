@@ -5,7 +5,7 @@ from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.common import print_red, print_green, shout
-from hokusai.lib.exceptions import CalledProcessError
+from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 @command
 def check():
@@ -18,6 +18,18 @@ def check():
     print_red(u'\u2718 ' + check_item + ' not found')
 
   config.check()
+
+  try:
+    config.project_name
+    check_ok('Config project-name')
+  except HokusaiError:
+    check_err('Config project-name')
+
+  try:
+    config.docker_repo
+    check_ok('Config docker-repo')
+  except HokusaiError:
+    check_err('Config docker-repo')
 
   try:
     shout('docker --version')
@@ -60,7 +72,7 @@ def check():
     return_code += 1
 
   ecr = ECR()
-  if ecr.project_repository_exists():
+  if ecr.project_repo_exists():
     check_ok("ECR repository '%s'" % config.project_name)
   else:
     check_err("ECR repository '%s'" % config.project_name)

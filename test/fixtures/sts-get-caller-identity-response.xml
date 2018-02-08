@@ -1,0 +1,10 @@
+<GetCallerIdentityResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <GetCallerIdentityResult>
+    <Arn>arn:aws:iam::123456789012:user/foo</Arn>
+    <UserId>JDNUFOGI87SN4HDIF09FT</UserId>
+    <Account>123456789012</Account>
+  </GetCallerIdentityResult>
+  <ResponseMetadata>
+    <RequestId>e9djcr1a-3c4e-11e8-b06f-9djfue3jdhe0</RequestId>
+  </ResponseMetadata>
+</GetCallerIdentityResponse>

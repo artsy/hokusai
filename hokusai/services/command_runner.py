@@ -18,7 +18,7 @@ class CommandRunner(object):
       uuid = k8s_uuid()
 
     name = "%s-hokusai-run-%s" % (config.project_name, uuid)
-    image_name = "%s:%s" % (config.aws_ecr_registry, image_tag)
+    image_name = "%s:%s" % (config.docker_repo, image_tag)
     container = {
       "args": cmd.split(' '),
       "name": name,

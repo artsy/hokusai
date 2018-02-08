@@ -18,7 +18,7 @@ def k8s_create(context):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
 
   ecr = ECR()
-  if not ecr.project_repository_exists():
+  if not ecr.project_repo_exists():
     raise HokusaiError("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
   if not ecr.tag_exists('latest'):

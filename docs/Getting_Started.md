@@ -8,10 +8,8 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
 
 ```bash
 cd ./path/to/my/rails/project/git/repo
-hokusai setup --aws-account-id 12345 --project-type ruby-rails
+hokusai setup --project-type ruby-rails
 ```
-
-Note: If you set the environment variable `AWS_ACCOUNT_ID` in your shell, you can omit the `--aws-account-id` option.
 
 `hokusai setup` will create:
 - A `Dockerfile` in your project root

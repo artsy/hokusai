@@ -37,7 +37,7 @@ class Deployment(object):
     for deployment in self.cache:
       containers = deployment['spec']['template']['spec']['containers']
       container_names = [container['name'] for container in containers]
-      deployment_targets = [{"name": name, "image": "%s:%s" % (config.aws_ecr_registry, tag)} for name in container_names]
+      deployment_targets = [{"name": name, "image": "%s:%s" % (config.docker_repo, tag)} for name in container_names]
       patch = {
         "spec": {
           "template": {
