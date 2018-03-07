@@ -69,54 +69,29 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
   - `hokusai registry push` - Build and push an image to the project registry.
   - `hokusai registry images` - Print image builds and tags in the project registry.
 
+### Working with remotely deployed Kubernetes environments
 
-### Working with the Kubernetes staging environment
+* `hokusai ENVIRONMENT`, where `ENVIRONMENT` is either `production` or `staging` - Interact with remote Kubernetes resources.
 
-* `hokusai staging` - Interact with staging Kubernetes resources.
+* `hokusai ENVIRONMENT create` - Create the Kubernetes resources defined in the environment config, either `./hokusai/staging.yml` or `./hokusai/production.yml`.
+* `hokusai ENVIRONMENT update` - Update the Kubernetes resources defined in the environment config.
+* `hokusai ENVIRONMENT delete` - Delete the Kubernetes resources defined in the environment config.
+* `hokusai ENVIRONMENT status` - Print the Kubernetes resources status defined in the environment config.
 
-* `hokusai staging create` - Create the Kubernetes resources defined in ./hokusai/staging.yml.
-* `hokusai staging update` - Update the Kubernetes resources defined in ./hokusai/staging.yml.
-* `hokusai staging delete` - Delete the Kubernetes resources defined in ./hokusai/staging.yml.
-* `hokusai staging status` - Print the Kubernetes resources status defined in ./hokusai/staging.yml.
+* `hokusai ENVIRONMENT deploy` - Update the project's deployment(s) for a given environment to reference the given image tag and update the tag (staging/production) to reference the same image.
+* `hokusai ENVIRONMENT history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given environment.
+* `hokusai ENVIRONMENT refresh` - Refresh the project's deployment(s) by recreating the currently running containers. 
 
-* `hokusai staging deploy` - Update the project's deployment(s) for a given staging environment to reference the given image tag and update the tag (staging/production) to reference the same image.
-* `hokusai staging history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given staging environment.
-* `hokusai staging refresh` - Refresh the project's deployment(s) by recreating the currently running containers. 
+* `hokusai ENVIRONMENT env` - Interact with the runtime environment for the application
+  - `hokusai ENVIRONMENT env create` - Create the Kubernetes configmap object `{project_name}-environment`
+  - `hokusai ENVIRONMENT env get` - Print environment variables stored on the Kubernetes server
+  - `hokusai ENVIRONMENT env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
+  - `hokusai ENVIRONMENT env unset` - Remove environment variables stored on the Kubernetes server
+  - `hokusai ENVIRONMENT env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
-* `hokusai staging env` - Interact with the runtime environment for the application
-  - `hokusai staging env create` - Create the Kubernetes configmap object `{project_name}-environment`
-  - `hokusai staging env get` - Print environment variables stored on the Kubernetes server
-  - `hokusai staging env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
-  - `hokusai staging env unset` - Remove environment variables stored on the Kubernetes server
-  - `hokusai staging env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
-
-* `hokusai staging run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
-* `hokusai staging logs` - Print the logs from your application containers
-
-
-### Working with the Kubernetes production environment
-
-* `hokusai production` - Interact with production Kubernetes resources.
-
-* `hokusai production create` - Create the Kubernetes resources defined in ./hokusai/production.yml.
-* `hokusai production update` - Update the Kubernetes resources defined in ./hokusai/production.yml.
-* `hokusai production delete` - Delete the Kubernetes resources defined in ./hokusai/production.yml.
-* `hokusai production status` - Print the Kubernetes resources status defined in ./hokusai/production.yml.
-
-* `hokusai production deploy` - Update the project's deployment(s) for a given production environment to reference the given image tag and update the tag (production/production) to reference the same image.
-* `hokusai production history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given production environment.
-* `hokusai production refresh` - Refresh the project's deployment(s) by recreating the currently running containers. 
-
-* `hokusai production env` - Interact with the runtime environment for the application
-  - `hokusai production env create` - Create the Kubernetes configmap object `{project_name}-environment`
-  - `hokusai production env get` - Print environment variables stored on the Kubernetes server
-  - `hokusai production env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
-  - `hokusai production env unset` - Remove environment variables stored on the Kubernetes server
-  - `hokusai production env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
-
-* `hokusai production run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc).
-* `hokusai production logs` - Print the logs from your application containers
-
+* `hokusai ENVIRONMENT run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc). Use single quotes around your command string if it contains whitespace.
+  - Use the flag `--tty` to attach your terminal, if your command is interactive. E.g. `hokusai production run --tty 'bundle exec rails c'`
+* `hokusai ENVIRONMENT logs` - Print the logs from your application containers
 
 ### Working with the Staging -> Production pipeline
 
