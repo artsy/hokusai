@@ -12,8 +12,10 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def k8s_create(context):
-  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
+def k8s_create(context, tag='latest', yaml_file_name=None):
+  if yaml_file_name is None:
+    yaml_file_name = context
+  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
 
@@ -21,11 +23,11 @@ def k8s_create(context):
   if not ecr.project_repository_exists():
     raise HokusaiError("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
-  if not ecr.tag_exists('latest'):
-    raise HokusaiError("Image tag 'latest' does not exist... did you run `hokusai push`?")
+  if not ecr.tag_exists(tag):
+    raise HokusaiError("Image tag %s does not exist... did you run `hokusai push`?" % tag)
 
   if not ecr.tag_exists(context):
-    ecr.retag('latest', context)
+    ecr.retag(tag, context)
     print_green("Updated tag 'latest' -> %s" % context)
 
   kctl = Kubectl(context)
