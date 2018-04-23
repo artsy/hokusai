@@ -1,10 +1,5 @@
 from collections import OrderedDict
 import click
-<<<<<<< HEAD
-=======
-
->>>>>>> 026377db6f5958ef9b6b7f30b7e89ad256609ceb
-from shutil import copyfile
 import yaml
 
 import hokusai
@@ -24,11 +19,20 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 @click.option('-sf', '--source-file', type=click.STRING, default='hokusai/staging.yml', help='Source deployment file')
 @click.option('-dn', '--destination-namespace', type=click.STRING, default=None, help='Target Namespace')
-def create(app_name, verbose, source_file, source_namespace, destination_namespace):
+def create(app_name, verbose, source_file, destination_namespace):
   set_verbosity(verbose)
   # copy staging yml file
   if destination_namespace is None: destination_namespace = app_name
   create_new_app_yaml(source_file, app_name, destination_namespace)
+
+@review_app.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('app_name', type=click.STRING)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def apply(app_name, verbose):
+  """Create the Kubernetes resources defined in ./hokusai/%s.yml""" % app_name
+  set_verbosity(verbose)
+  hokusai.k8s_create(KUBE_CONTEXT, app_name, app_name)
+
 
 def create_new_app_yaml(source_file, app_name, destination_namespace):
   with open(source_file, 'r') as stream:
