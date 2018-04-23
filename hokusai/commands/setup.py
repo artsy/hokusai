@@ -2,7 +2,6 @@ import os
 import urllib
 
 from distutils.dir_util import mkpath
-from collections import OrderedDict
 
 import yaml
 

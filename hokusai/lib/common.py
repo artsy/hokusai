@@ -5,7 +5,6 @@ import string
 import random
 import json
 
-from collections import OrderedDict
 
 from subprocess import call, check_call, check_output, Popen, STDOUT
 
