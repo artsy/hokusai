@@ -100,7 +100,7 @@ Hokusai provides a command for managing review apps. Review apps are useful for 
 In order to start a review app you will need to follow these steps:
 1) Create new review app
 ```shell
-hokusai review_app create <name> # we recommend using branch name or pr number as name
+hokusai review_app setup <name> # we recommend using branch name or pr number as name
 ```
 This command will create a new `<name>.yaml` under `hokusai/` folder.
 
@@ -113,7 +113,13 @@ hokusai registry push --tag <name>
 
 4) Create new deployment on k8s:
 ```shell
-hokusai review_app apply <name>
+hokusai review_app create <name>
+```
+
+5) Update review app:
+If you have made changes to your review app's yaml file, you need to update deployment for that do:
+```shell
+hokusai review_app update <name>
 ```
 
 ### Working with the Staging -> Production pipeline

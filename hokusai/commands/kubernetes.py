@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 
 
 import yaml
@@ -8,12 +9,12 @@ from hokusai.lib.config import config
 from hokusai.lib.common import print_green, shout
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
+from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
 
 @command
 def k8s_create(context, tag='latest', yaml_file_name=None):
-  if yaml_file_name is None:
-    yaml_file_name = context
+  if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
@@ -34,7 +35,8 @@ def k8s_create(context, tag='latest', yaml_file_name=None):
   print_green("Created Kubernetes environment %s" % context)
 
 @command
-def k8s_update(context):
+def k8s_update(context, yaml_file_name=None):
+  if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist for given context." % kubernetes_yml)
@@ -68,3 +70,12 @@ def k8s_status(context):
   print_green("Pods")
   print_green('-----------------------------------------------------------')
   shout(kctl.command("get pods --selector app=%s -o wide" % config.project_name), print_output=True)
+
+@command
+def k8s_copy_config(context, destination_namespace):
+  kctl = Kubectl(context)
+  configmap = ConfigMap(context)
+
+  configmap.load()
+  configmap.struct['metadata']['namespace'] = destination_namespace
+  configmap.save()
