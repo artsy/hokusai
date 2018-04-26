@@ -116,7 +116,12 @@ hokusai registry push --tag <name>
 hokusai review_app create <name>
 ```
 
-5) Update review app:
+5) Copy staging `configMap` to new namespace:
+```shell
+hokusai review_app copy_env <name>
+```
+
+6) Update review app:
 If you have made changes to your review app's yaml file, you need to update deployment for that do:
 ```shell
 hokusai review_app update <name>
