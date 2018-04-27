@@ -3,6 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: {{ project_name }}-{{ component }}
+  namespace: default
 spec:
   replicas: 1
   strategy:
@@ -17,7 +18,6 @@ spec:
         component: {{ component }}
         layer: {{ layer }}
       name: {{ project_name }}-{{ component }}
-      namespace: default
     spec:
       containers:
       - name: {{ project_name }}-{{ component }}

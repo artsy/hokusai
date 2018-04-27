@@ -5,7 +5,6 @@ import string
 import random
 import json
 
-from collections import OrderedDict
 
 from subprocess import call, check_call, check_output, Popen, STDOUT
 
@@ -80,3 +79,6 @@ def k8s_uuid():
   for i in range(0,5):
     uuid.append(random.choice(string.lowercase))
   return ''.join(uuid)
+
+def clean_string(str):
+  return str.lower().replace('_', '-')

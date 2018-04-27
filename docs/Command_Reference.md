@@ -60,7 +60,7 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 ### Testing and building images
 
 * `hokusai test` - Start the testing environment defined `hokusai/test.yml` and exit with the return code of the test command.
-* `hokusai build` - Build the docker image defined in ./hokusai/common.yml. 
+* `hokusai build` - Build the docker image defined in ./hokusai/common.yml.
 
 
 ### Managing images in the registry
@@ -93,6 +93,39 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
   - Use the flag `--tty` to attach your terminal, if your command is interactive. E.g. `hokusai production run --tty 'bundle exec rails c'` launches an interactive console for a Rails project.
   - The flag `--help` shows other flags that might be helpful.
 * `hokusai [staging|production] logs` - Print the logs from your application containers
+
+
+### Working with review apps
+Hokusai provides a command for managing review apps. Review apps are useful for testing feature branches that are not yet ready to be deployed to staging but we do want to test them on a staging-like environment.
+In order to start a review app you will need to follow these steps:
+1) Create new review app
+```shell
+hokusai review_app setup <name> # we recommend using branch name or pr number as name
+```
+This command will create a new `<name>.yaml` under `hokusai/` folder.
+
+2) Check newly created `<name>.yaml` file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps. Basically each review app will end up being in its own namespace to not collide with staging.
+
+3) Push an image with this review app tag:
+```shell
+hokusai registry push --tag <name>
+```
+
+4) Create new deployment on k8s:
+```shell
+hokusai review_app create <name>
+```
+
+5) Copy staging `configMap` to new namespace:
+```shell
+hokusai review_app copy_env <name>
+```
+
+6) Update review app:
+If you have made changes to your review app's yaml file, you need to update deployment for that do:
+```shell
+hokusai review_app update <name>
+```
 
 ### Working with the Staging -> Production pipeline
 
