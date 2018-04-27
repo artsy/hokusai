@@ -16,8 +16,8 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-@click.option('-sf', '--source-file', type=click.STRING, default='hokusai/staging.yml', help='Source deployment file')
-@click.option('-dn', '--destination-namespace', type=click.STRING, default=None, help='Target Namespace')
+@click.option('-sf', '--source-file', type=click.STRING, default='hokusai/staging.yml')
+@click.option('-dn', '--destination-namespace', type=click.STRING, default=None)
 def setup(app_name, verbose, source_file, destination_namespace):
   set_verbosity(verbose)
   # create app_name.yaml file based on source_file
@@ -29,7 +29,7 @@ def setup(app_name, verbose, source_file, destination_namespace):
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-@click.option('-dn', '--destination-namespace', type=click.STRING, default=None, help='Target Namespace')
+@click.option('-dn', '--destination-namespace', type=click.STRING, default=None)
 def create(app_name, verbose, destination_namespace):
   if destination_namespace is None: destination_namespace = app_name
   destination_namespace = clean_string(destination_namespace)
@@ -38,7 +38,7 @@ def create(app_name, verbose, destination_namespace):
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-@click.option('-dn', '--destination-namespace', type=click.STRING, default=None, help='Target Namespace')
+@click.option('-dn', '--destination-namespace', type=click.STRING, default=None)
 def env_copy(app_name, verbose, destination_namespace):
   if destination_namespace is None: destination_namespace = app_name
   destination_namespace = clean_string(destination_namespace)
