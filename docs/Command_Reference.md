@@ -127,6 +127,12 @@ If you have made changes to your review app's yaml file, you need to update depl
 hokusai review_app update <name>
 ```
 
+7) Delete review app:
+To delete the review app:
+```shell
+hokusai review_app delete <name>
+```
+
 ### Working with the Staging -> Production pipeline
 
 * `hokusai pipeline` - Interact with the project's' staging -> production pipeline
