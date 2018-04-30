@@ -1,3 +1,5 @@
+.dockerignore
+Dockerfile
 .git
 .gitignore
 
@@ -9,9 +11,11 @@ VERSION
 .AppleDouble
 .LSOverride
 
+env
 .env
 .env.*
 log
+*.log
 tmp
 
 {%- if 'nodejs' in project_type %}
@@ -28,4 +32,20 @@ spec/tmp
 db/*.sqlite3
 db/*.sqlite3-journal
 public/system
+{%- endif %}
+
+{%- if 'python' in project_type %}
+db/*.sqlite3
+db/*.sqlite3-journal
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+.tox
+.coverage
+.coverage.*
+.cache
+coverage.xml
 {%- endif %}

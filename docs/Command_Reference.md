@@ -18,7 +18,7 @@ Required options:
 
 Hokusai uses `kubectl` to connect to Kubernetes and the [boto3](https://github.com/boto/boto3) library to interact with AWS ECR.
 
-Make sure you have set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and optionally, `$AWS_DEFAULT_REGION` and `$AWS_ACCOUNT_ID` in your shell / `~/.bash_profile`.
+Make sure you have set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` in your shell / `~/.bash_profile`.
 
 `hokusai configure` provides basic setup for installing and configuring kubectl:
 
@@ -125,6 +125,12 @@ hokusai review_app copy_env <name>
 If you have made changes to your review app's yaml file, you need to update deployment for that do:
 ```shell
 hokusai review_app update <name>
+```
+
+7) Delete review app:
+To delete the review app:
+```shell
+hokusai review_app delete <name>
 ```
 
 ### Working with the Staging -> Production pipeline

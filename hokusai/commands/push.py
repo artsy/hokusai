@@ -15,8 +15,8 @@ def push(tag, build, force, overwrite):
     raise HokusaiError("Working directory contains ignored files and/or directories.  Aborting.")
 
   ecr = ECR()
-  if not ecr.project_repository_exists():
-    raise HokusaiError("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
+  if not ecr.project_repo_exists():
+    raise HokusaiError("ECR repo %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
   shout(ecr.get_login())
   if tag is None:
@@ -31,10 +31,10 @@ def push(tag, build, force, overwrite):
 
   build_tag = "hokusai_%s:latest" % config.project_name
 
-  shout("docker tag %s %s:%s" % (build_tag, config.aws_ecr_registry, tag))
-  shout("docker push %s:%s" % (config.aws_ecr_registry, tag), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build_tag, config.aws_ecr_registry, tag))
+  shout("docker tag %s %s:%s" % (build_tag, config.docker_repo, tag))
+  shout("docker push %s:%s" % (config.docker_repo, tag), print_output=True)
+  print_green("Pushed %s to %s:%s" % (build_tag, config.docker_repo, tag))
 
-  shout("docker tag %s %s:%s" % (build_tag, config.aws_ecr_registry, 'latest'))
-  shout("docker push %s:%s" % (config.aws_ecr_registry, 'latest'), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build_tag, config.aws_ecr_registry, 'latest'))
+  shout("docker tag %s %s:%s" % (build_tag, config.docker_repo, 'latest'))
+  shout("docker push %s:%s" % (config.docker_repo, 'latest'), print_output=True)
+  print_green("Pushed %s to %s:%s" % (build_tag, config.docker_repo, 'latest'))

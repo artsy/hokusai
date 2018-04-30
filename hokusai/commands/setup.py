@@ -14,7 +14,14 @@ from hokusai.lib.common import print_green, YAML_HEADER, clean_string
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal, template_dir):
+def setup(project_type, project_name, port, internal, template_dir):
+  ecr = ECR()
+  docker_repo, created = ecr.get_or_create_project_repo(project_name)
+  if created:
+    print_green("Created project repo %s" % docker_repo)
+  else:
+    print_green("Project repo %s already exists.  Skipping create." % docker_repo)
+
   if template_dir:
     env = Environment(loader=FileSystemLoader(template_dir))
   else:
@@ -22,7 +29,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
-  config.create(clean_string(project_name), aws_account_id, aws_ecr_region)
+  config.create(clean_string(project_name), docker_repo)
 
   if project_type == 'ruby-rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
@@ -35,7 +42,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       'test': {"RACK_ENV": "test"},
       'production': {'RACK_ENV': 'production'}
     }
-
   elif project_type == 'ruby-rails':
     dockerfile = env.get_template("Dockerfile-rails.j2")
     base_image = 'ruby:latest'
@@ -49,7 +55,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
                      'RAILS_SERVE_STATIC_FILES': 'true',
                      'RAILS_LOG_TO_STDOUT': 'true'}
     }
-
   elif project_type == 'nodejs':
     dockerfile = env.get_template("Dockerfile-node.j2")
     base_image = 'node:latest'
@@ -61,7 +66,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       'test': {"NODE_ENV": "test"},
       'production': {'NODE_ENV': 'production'}
     }
-
   elif project_type == 'elixir':
     dockerfile = env.get_template("Dockerfile-elixir.j2")
     base_image = 'elixir:latest'
@@ -73,7 +77,6 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       'test': {'MIX_ENV': 'test'},
       'production': {'MIX_ENV': 'prod'}
     }
-
   elif project_type == 'python-wsgi':
     dockerfile = env.get_template("Dockerfile-python.j2")
     base_image = 'python:latest'
@@ -87,14 +90,19 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
     }
 
   with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
-    f.write(dockerfile.render(base_image=base_image, command=run_command, target_port=port))
-
+    f.write(dockerfile.render(
+      base_image=base_image,
+      command=run_command,
+      target_port=port
+    ))
   with open(os.path.join(os.getcwd(), '.dockerignore'), 'w') as f:
-    f.write(env.get_template("dockerignore.j2").render(project_type=project_type))
-
+    f.write(env.get_template("dockerignore.j2").render(
+      project_type=project_type
+    ))
   with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
-    f.write(env.get_template("common.yml.j2").render(project_name=config.project_name))
-
+    f.write(env.get_template("common.yml.j2").render(
+      project_name=config.project_name
+    ))
   with open(os.path.join(os.getcwd(), 'hokusai', "development.yml"), 'w') as f:
     f.write(env.get_template("development.yml.j2").render(
       project_name=config.project_name,
@@ -115,7 +123,7 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:staging" % config.aws_ecr_registry,
+      image="%s:staging" % config.docker_repo,
       internal=internal
     ))
   with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
@@ -125,19 +133,9 @@ def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, inte
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:production" % config.aws_ecr_registry,
+      image="%s:production" % config.docker_repo,
       internal=internal
     ))
 
   print_green("Config created in ./hokusai")
 
-  ecr = ECR()
-  if ecr.project_repository_exists():
-    print_green("ECR repository %s found. Skipping creation." % config.project_name)
-    return 0
-
-  if ecr.create_project_repository():
-    print_green("Created ECR repository %s" % config.project_name)
-    return 0
-  else:
-    raise HokusaiError("Could not create ECR repository %s - check your credentials." % config.project_name)

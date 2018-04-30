@@ -25,16 +25,14 @@ def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--aws-account-id', type=click.STRING, required=True, envvar='AWS_ACCOUNT_ID', help='Your AWS account ID (default: $AWS_ACCOUNT_ID)')
 @click.option('--project-type', type=click.Choice(['ruby-rack', 'ruby-rails', 'nodejs', 'elixir', 'python-wsgi']), required=True, help='The type of project')
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
-@click.option('--aws-ecr-region', type=click.STRING, default='us-east-1', envvar='AWS_DEFAULT_REGION', help='Your AWS ECR region (default: $AWS_DEFAULT_REGION or \'us-east-1\')')
 @click.option('--port', type=click.INT, default=8080, help='The port of the service (default: 8080)')
 @click.option('--internal', type=click.BOOL, is_flag=True, help='Create an internal Kubernetes service definition')
 @click.option('--template-dir', type=click.STRING, default="", help='Directory of templates to use.')
-def setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal, template_dir):
+def setup(project_type, project_name, port, internal, template_dir):
   """Set up Hokusai for the current project"""
-  hokusai.setup(aws_account_id, project_type, project_name, aws_ecr_region, port, internal, template_dir)
+  hokusai.setup(project_type, project_name, port, internal, template_dir)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
@@ -45,13 +43,14 @@ def build():
 
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before running the test suite (default: true)')
+@click.option('--cleanup/--no-cleanup', default=False, help='Remove containers on exit / error (default: False)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def test(build, verbose):
+def test(build, cleanup, verbose):
   """Boot the docker-compose test environment defined by `./hokusai/test.yml` and run the test suite
 
   Return the exit code of the container with the name 'project-name' in `hokusai/config.yml`"""
   set_verbosity(verbose)
-  hokusai.test(build)
+  hokusai.test(build, cleanup)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

@@ -2,7 +2,7 @@
 
 ## Global configuration
 
-The environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` and optionally, `$AWS_DEFAULT_REGION` and `$AWS_ACCOUNT_ID` are referenced by Hokusai when running `setup` as well as `registry` commands.
+The environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` are referenced by Hokusai when running `setup` as well as `registry` commands.
 
 When running `hokusai configure` the following files are created:
 
@@ -15,9 +15,8 @@ When running `hokusai setup` the following files are created:
 
 * `./hokusai/config.yml` contains project-specific configuration options.  It accepts the following keys:
 
-    - `aws-account-id`: <string|int> (required) - Your AWS account id number. This should be 12 digits in length 
-    - `aws-ecr-region`: <string> (required) - Your AWS ECR region
-    - `project-name`: <string> (required) - The project / ECR registry name
+    - `project-name`: <string> (required) - The project name
+    - `docker-repo`: <string> (required) - The project's Docker repository URI
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook
 

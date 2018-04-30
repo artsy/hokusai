@@ -49,7 +49,7 @@ def status(verbose):
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
-@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to either production or production)')
+@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to "production")')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')

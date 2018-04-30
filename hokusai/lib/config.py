@@ -11,11 +11,10 @@ from hokusai.lib.exceptions import HokusaiError
 HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
 
 class HokusaiConfig(object):
-  def create(self, project_name, aws_account_id, aws_ecr_region):
+  def create(self, project_name, docker_repo):
     config = OrderedDict([
-      ('aws-account-id', aws_account_id),
-      ('aws-ecr-region', aws_ecr_region),
-      ('project-name', project_name)
+      ('project-name', project_name),
+      ('docker-repo', docker_repo)
     ])
 
     with open(HOKUSAI_CONFIG_FILE, 'w') as f:
@@ -42,19 +41,17 @@ class HokusaiConfig(object):
 
   @property
   def project_name(self):
-    return self.get('project-name')
+    project = self.get('project-name')
+    if project is None:
+      raise HokusaiError("Unconfigured 'project-name'! Plz check ./hokusai/config.yml")
+    return project
 
   @property
-  def aws_account_id(self):
-    return str(self.get('aws-account-id'))
-
-  @property
-  def aws_ecr_region(self):
-    return self.get('aws-ecr-region')
-
-  @property
-  def aws_ecr_registry(self):
-    return "%s.dkr.ecr.%s.amazonaws.com/%s" % (self.aws_account_id, self.aws_ecr_region, self.project_name)
+  def docker_repo(self):
+    repo = self.get('docker-repo')
+    if repo is None:
+      raise HokusaiError("Unconfigured 'docker-repo'! Plz check ./hokusai/config.yml")
+    return repo
 
   @property
   def pre_deploy(self):
