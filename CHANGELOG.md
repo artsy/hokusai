@@ -1,3 +1,15 @@
+## v0.4.2
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.2/README.md)
+
+### Notable changes since v0.4.1
+
+* hokusai test accepts cleanup/no-cleanup option
+* Add review_app command group
+* update dockerignore template for Python
+* remove aws-account-id and aws-ecr-region setup flags and config values and fetch from boto
+
+
 ## v0.4.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.4.1/README.md)
