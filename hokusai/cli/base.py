@@ -43,13 +43,14 @@ def build():
 
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before running the test suite (default: true)')
+@click.option('--cleanup/--no-cleanup', default=False, help='Remove containers on exit / error (default: False)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def test(build, verbose):
+def test(build, cleanup, verbose):
   """Boot the docker-compose test environment defined by `./hokusai/test.yml` and run the test suite
 
   Return the exit code of the container with the name 'project-name' in `hokusai/config.yml`"""
   set_verbosity(verbose)
-  hokusai.test(build)
+  hokusai.test(build, cleanup)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
