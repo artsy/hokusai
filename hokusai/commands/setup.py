@@ -2,7 +2,6 @@ import os
 import urllib
 
 from distutils.dir_util import mkpath
-from collections import OrderedDict
 
 import yaml
 
@@ -11,7 +10,7 @@ from jinja2 import Environment, PackageLoader, FileSystemLoader
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, YAML_HEADER
+from hokusai.lib.common import print_green, YAML_HEADER, clean_string
 from hokusai.lib.exceptions import HokusaiError
 
 @command
@@ -30,7 +29,7 @@ def setup(project_type, project_name, port, internal, template_dir):
 
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
 
-  config.create(project_name.lower().replace('_', '-'), docker_repo)
+  config.create(clean_string(project_name), docker_repo)
 
   if project_type == 'ruby-rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
