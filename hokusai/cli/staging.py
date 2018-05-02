@@ -99,6 +99,14 @@ def refresh(verbose):
   hokusai.refresh(KUBE_CONTEXT)
 
 
+@staging.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def restart(verbose):
+  """Alias for 'refresh'"""
+  set_verbosity(verbose)
+  hokusai.refresh(KUBE_CONTEXT)
+
+
 @staging.group()
 def env(context_settings=CONTEXT_SETTINGS):
   """Interact with the runtime environment for the application"""
