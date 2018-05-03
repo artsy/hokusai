@@ -37,7 +37,6 @@ hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> 
 * `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
 Required options:
-  - `--aws-account-id`: Your AWS account ID - can be found in your AWS account console.
   - `--project-type`: `ruby-rack`, `ruby-rails`, `nodejs`, `elixir`, or `python-wsgi`.
 
 When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define configuration for a staging / production Kubernetes context that you are assumed to have available, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
@@ -80,7 +79,7 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 
 * `hokusai [staging|production] deploy` - Update the project's deployment(s) for a given environment to reference the given image tag and update the tag (staging/production) to reference the same image.
 * `hokusai [staging|production] history` - Print the project's deployment history in terms of revision number, creation time, container name and image tag for a given environment.
-* `hokusai [staging|production] refresh` - Refresh the project's deployment(s) by recreating the currently running containers. 
+* `hokusai [staging|production] [refresh|restart]` - Refresh the project's deployment(s) by recreating the currently running containers.
 
 * `hokusai [staging|production] env` - Interact with the runtime environment for the application
   - `hokusai [staging|production] env create` - Create the Kubernetes configmap object `{project_name}-environment`
