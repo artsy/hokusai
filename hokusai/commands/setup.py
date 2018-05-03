@@ -15,21 +15,20 @@ from hokusai.lib.exceptions import HokusaiError
 
 @command
 def setup(project_type, project_name, port, internal, template_dir):
+  mkpath(os.path.join(os.getcwd(), 'hokusai'))
+  config.create(clean_string(project_name))
+
   ecr = ECR()
-  docker_repo, created = ecr.get_or_create_project_repo(project_name)
+  created = ecr.create_project_repo()
   if created:
-    print_green("Created project repo %s" % docker_repo)
+    print_green("Created project repo %s" % ecr.project_repo)
   else:
-    print_green("Project repo %s already exists.  Skipping create." % docker_repo)
+    print_green("Project repo %s already exists.  Skipping create." % ecr.project_repo)
 
   if template_dir:
     env = Environment(loader=FileSystemLoader(template_dir))
   else:
     env = Environment(loader=PackageLoader('hokusai', 'templates'))
-
-  mkpath(os.path.join(os.getcwd(), 'hokusai'))
-
-  config.create(clean_string(project_name), docker_repo)
 
   if project_type == 'ruby-rack':
     dockerfile = env.get_template("Dockerfile-ruby.j2")
@@ -123,7 +122,7 @@ def setup(project_type, project_name, port, internal, template_dir):
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:staging" % config.docker_repo,
+      image="%s:staging" % ecr.project_repo,
       internal=internal
     ))
   with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
@@ -133,7 +132,7 @@ def setup(project_type, project_name, port, internal, template_dir):
       port=port,
       layer="application",
       environment=runtime_environment['production'],
-      image="%s:production" % config.docker_repo,
+      image="%s:production" % ecr.project_repo,
       internal=internal
     ))
 

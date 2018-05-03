@@ -20,7 +20,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
-    repositories = [str(repo['repositoryName']) for repo in self.ecr.registry()]
+    repositories = [str(repo['repositoryName']) for repo in self.ecr.registry]
     self.assertTrue('foo' in repositories)
     self.assertTrue('bar' in repositories)
     self.assertTrue('baz' in repositories)
@@ -36,11 +36,27 @@ class TestECR(HokusaiIntegrationTestCase):
     self.assertTrue(self.ecr.project_repo_exists())
 
   @httpretty.activate
+  def test_get_project_repo(self):
+    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            content_type="application/xml")
+    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                            content_type="application/x-amz-json-1.1")
+    self.assertEqual(self.ecr.project_repo, '123456789012.dkr.ecr.us-east-1.amazonaws.com/foo')
+
+  @httpretty.activate
   def test_create_project_repo(self):
+    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-create-repository-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
-    self.assertEqual(self.ecr.create_project_repo('foo'), '123456789012.dkr.ecr.us-east-1.amazonaws.com/foo')
+    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-empty-repositories-response.json')).read(),
+                            content_type="application/x-amz-json-1.1")
+    self.assertTrue(self.ecr.create_project_repo())
 
   @httpretty.activate
   def test_get_login(self):

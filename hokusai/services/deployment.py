@@ -12,19 +12,18 @@ class Deployment(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
+    self.ecr = ECR()
     self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag, constraint):
     print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
-      ecr = ECR()
-
-      ecr.retag(tag, self.context)
+      self.ecr.retag(tag, self.context)
       print_green("Updated tag %s -> %s" % (tag, self.context))
 
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      ecr.retag(tag, deployment_tag)
+      self.ecr.retag(tag, deployment_tag)
       print_green("Updated tag %s -> %s" % (tag, deployment_tag))
 
     if config.pre_deploy is not None:
@@ -37,7 +36,7 @@ class Deployment(object):
     for deployment in self.cache:
       containers = deployment['spec']['template']['spec']['containers']
       container_names = [container['name'] for container in containers]
-      deployment_targets = [{"name": name, "image": "%s:%s" % (config.docker_repo, tag)} for name in container_names]
+      deployment_targets = [{"name": name, "image": "%s:%s" % (self.ecr.project_repo, tag)} for name in container_names]
       patch = {
         "spec": {
           "template": {

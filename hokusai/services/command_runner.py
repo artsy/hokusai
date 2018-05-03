@@ -3,6 +3,7 @@ import json
 
 from hokusai.lib.config import config
 from hokusai.lib.common import shout, returncode, k8s_uuid
+from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
@@ -10,6 +11,7 @@ class CommandRunner(object):
   def __init__(self, context):
     self.context = context
     self.kctl = Kubectl(self.context)
+    self.ecr = ECR()
 
   def run(self, image_tag, cmd, tty=False, env=(), constraint=()):
     if os.environ.get('USER') is not None:
@@ -18,7 +20,7 @@ class CommandRunner(object):
       uuid = k8s_uuid()
 
     name = "%s-hokusai-run-%s" % (config.project_name, uuid)
-    image_name = "%s:%s" % (config.docker_repo, image_tag)
+    image_name = "%s:%s" % (self.ecr.project_repo, image_tag)
     container = {
       "args": cmd.split(' '),
       "name": name,

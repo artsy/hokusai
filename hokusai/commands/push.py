@@ -31,10 +31,10 @@ def push(tag, build, force, overwrite):
 
   build_tag = "hokusai_%s:latest" % config.project_name
 
-  shout("docker tag %s %s:%s" % (build_tag, config.docker_repo, tag))
-  shout("docker push %s:%s" % (config.docker_repo, tag), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build_tag, config.docker_repo, tag))
+  shout("docker tag %s %s:%s" % (build_tag, ecr.project_repo, tag))
+  shout("docker push %s:%s" % (ecr.project_repo, tag), print_output=True)
+  print_green("Pushed %s to %s:%s" % (build_tag, ecr.project_repo, tag))
 
-  shout("docker tag %s %s:%s" % (build_tag, config.docker_repo, 'latest'))
-  shout("docker push %s:%s" % (config.docker_repo, 'latest'), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build_tag, config.docker_repo, 'latest'))
+  shout("docker tag %s %s:%s" % (build_tag, ecr.project_repo, 'latest'))
+  shout("docker push %s:%s" % (ecr.project_repo, 'latest'), print_output=True)
+  print_green("Pushed %s to %s:%s" % (build_tag, ecr.project_repo, 'latest'))
