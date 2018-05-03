@@ -12,6 +12,8 @@ class ECR(object):
   def __init__(self):
     self.client = boto3.client('ecr')
     self.__aws_account_id = None
+    self.__registry = None
+    self.__project_repo = None
 
   @property
   def aws_account_id(self):
@@ -19,30 +21,39 @@ class ECR(object):
       self.__aws_account_id = boto3.client('sts').get_caller_identity().get('Account')
     return self.__aws_account_id
 
+  @property
   def registry(self):
-    repos = []
-    res = self.client.describe_repositories(registryId=self.aws_account_id)
-    repos += res['repositories']
-    while 'nextToken' in res:
-      res = self.client.describe_repositories(registryId=self.aws_account_id,
-                                                nextToken=res['nextToken'])
-      repos += res['repositories']
-    return repos
+    if self.__registry is None:
+      repos = []
+      res = self.client.describe_repositories(registryId=self.aws_account_id)
+      try:
+        repos += res['repositories']
+      except KeyError, err:
+        print(res)
+        raise
+      while 'nextToken' in res:
+        res = self.client.describe_repositories(registryId=self.aws_account_id,
+                                                  nextToken=res['nextToken'])
+        repos += res['repositories']
+      self.__registry = repos
+    return self.__registry
 
-  def get_or_create_project_repo(self, project_name):
-    for repo in self.registry():
-      if repo['repositoryName'] == project_name:
-        return (repo['repositoryUri'], False)
-
-    return (self.create_project_repo(project_name), True)
-
-  def create_project_repo(self, project_name):
-    res = self.client.create_repository(repositoryName=project_name)
-    return res['repository']['repositoryUri']
+  @property
+  def project_repo(self):
+    if self.__project_repo is None:
+      for repo in self.registry:
+        if repo['repositoryName'] == config.project_name:
+          self.__project_repo = repo['repositoryUri']
+    return self.__project_repo
 
   def project_repo_exists(self):
-    repo_names = [r['repositoryName'] for r in self.registry()]
-    return config.project_name in repo_names
+    return self.project_repo is not None
+
+  def create_project_repo(self):
+    if self.project_repo_exists():
+      return False
+    self.client.create_repository(repositoryName=config.project_name)
+    return True
 
   def get_login(self):
     res = self.client.get_authorization_token(registryIds=[str(self.aws_account_id)])['authorizationData'][0]

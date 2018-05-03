@@ -27,9 +27,8 @@ class TestConfig(HokusaiUnitTestCase):
   def test_create(self):
     self.assertFalse(os.path.isfile(TMP_CONFIG_FILE))
     try:
-      self.config.create('foo', 'bar')
+      self.config.create('foo')
       self.assertTrue(os.path.isfile(TMP_CONFIG_FILE))
       self.assertEqual(self.config.project_name, 'foo')
-      self.assertEqual(self.config.docker_repo, 'bar')
     finally:
       os.remove(TMP_CONFIG_FILE)

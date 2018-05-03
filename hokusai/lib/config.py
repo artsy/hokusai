@@ -11,10 +11,9 @@ from hokusai.lib.exceptions import HokusaiError
 HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
 
 class HokusaiConfig(object):
-  def create(self, project_name, docker_repo):
+  def create(self, project_name):
     config = OrderedDict([
-      ('project-name', project_name),
-      ('docker-repo', docker_repo)
+      ('project-name', project_name)
     ])
 
     with open(HOKUSAI_CONFIG_FILE, 'w') as f:
@@ -45,13 +44,6 @@ class HokusaiConfig(object):
     if project is None:
       raise HokusaiError("Unconfigured 'project-name'! Plz check ./hokusai/config.yml")
     return project
-
-  @property
-  def docker_repo(self):
-    repo = self.get('docker-repo')
-    if repo is None:
-      raise HokusaiError("Unconfigured 'docker-repo'! Plz check ./hokusai/config.yml")
-    return repo
 
   @property
   def pre_deploy(self):

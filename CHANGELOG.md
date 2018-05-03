@@ -1,3 +1,13 @@
+## v0.4.3
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.3/README.md)
+
+### Notable changes since v0.4.2
+
+* ce94d62 fix ECR repo auto-discovery
+* d79f707 add restart command as alias for refresh
+
+
 ## v0.4.2
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.4.2/README.md)

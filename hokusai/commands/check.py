@@ -26,12 +26,6 @@ def check():
     check_err('Config project-name')
 
   try:
-    config.docker_repo
-    check_ok('Config docker-repo')
-  except HokusaiError:
-    check_err('Config docker-repo')
-
-  try:
     shout('docker --version')
     check_ok('docker')
   except CalledProcessError:
