@@ -30,26 +30,26 @@ The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting 
 
 3) Run the development environment
 
-`hokusai local dev start` will build a Docker image, then start a Docker Compose environment defined by `./hokusai/development.yml`
+`hokusai dev start` will build a Docker image, then start a Docker Compose environment defined by `./hokusai/development.yml`
 
 If this command throws no errors, try interacting with the running environment with:
 
 ```bash
-hokusai local dev status
-hokusai local dev logs
-hokusai local dev run bash
+hokusai dev status
+hokusai dev logs
+hokusai dev run bash
 ```
 
-To shut down the environment's running containers, run `hokusai local dev stop`
+To shut down the environment's running containers, run `hokusai dev stop`
 
-Container filesystems will be preserved between environment starts and stops, unless you run `hokusai local dev clean`, in which case the container filesystems will be deleted.
+Container filesystems will be preserved between environment starts and stops, unless you run `hokusai dev clean`, in which case the container filesystems will be deleted.
 
 See [Configuration Options](./Configuration_Options.md) if you want to modify your development environment's configuration.
 
 
 4) Run the test suite in the test environment
 
-`hokusai local test` will build a Docker image, start a Docker Compose environment defined by `./hokusai/test.yml`, run the defined test command in the main (project-name) container to completion, and return its exit code.
+`hokusai test` will build a Docker image, start a Docker Compose environment defined by `./hokusai/test.yml`, run the defined test command in the main (project-name) container to completion, and return its exit code.
 
 See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
 
