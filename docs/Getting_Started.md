@@ -11,6 +11,8 @@ cd ./path/to/my/rails/project/git/repo
 hokusai setup --project-type ruby-rails
 ```
 
+(`hokusai setup --help` can report the list of all supported project types.)
+
 `hokusai setup` will create:
 - A `Dockerfile` in your project root
 - A configuration folder `./hokusai`.  This folder contains:
