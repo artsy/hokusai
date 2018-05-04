@@ -11,6 +11,8 @@ cd ./path/to/my/rails/project/git/repo
 hokusai setup --project-type ruby-rails
 ```
 
+(Other currently supported project types include `ruby-rack`, `nodejs`, `elixir` and `python-wsgi`.)
+
 `hokusai setup` will create:
 - A `Dockerfile` in your project root
 - A configuration folder `./hokusai`.  This folder contains:
