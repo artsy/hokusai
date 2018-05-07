@@ -1,6 +1,7 @@
 import os
 
 import click
+from click_repl import repl
 
 import hokusai
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
@@ -9,6 +10,12 @@ from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 def base(context_settings=CONTEXT_SETTINGS):
   """Hokusai is a CLI for managing application deployments on Kubernetes"""
   pass
+
+
+@base.command(context_settings=CONTEXT_SETTINGS)
+def console():
+    """Start an interactive console session"""
+    repl(click.get_current_context())
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

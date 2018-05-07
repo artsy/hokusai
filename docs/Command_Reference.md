@@ -1,11 +1,15 @@
 ## Command Reference
 
+For any command, you can access the help documentation via the CLI:
+
 ```bash
 hokusai --help
 hokusai {command} --help
 ```
 
-You can add `-v` (Verbose) to most commands which will show you details of the individual commands Hokusai will run.
+You can add `-v` / `--verbose` to most commands which will show you details of the individual commands Hokusai will run.
+
+For an interactive console session, run `hokusai console`.  All commands are available within the session.  Use TAB to autocomplete Hokusai commands and `:help` for console help.
 
 ### Configuring Hokusai for your organization
 
