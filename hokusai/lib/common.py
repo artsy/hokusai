@@ -5,11 +5,11 @@ import string
 import random
 import json
 
-
 from subprocess import call, check_call, check_output, Popen, STDOUT
 
 import yaml
-import boto3
+
+from botocore import session as botosession
 
 from termcolor import cprint
 
@@ -26,6 +26,8 @@ EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, si
 YAML_HEADER = '---\n'
 
 VERBOSE = False
+
+AWS_DEFAULT_REGION = 'us-east-1'
 
 def print_green(msg):
   cprint(msg, 'green')
@@ -82,3 +84,13 @@ def k8s_uuid():
 
 def clean_string(str):
   return str.lower().replace('_', '-')
+
+def get_region_name():
+  # boto3 autodiscovery
+  _region = botosession.get_session().get_config_variable('region')
+  if _region:
+    return _region
+  # boto2 compatibility
+  if os.environ.get('AWS_REGION'):
+    return os.environ.get('AWS_REGION')
+  return AWS_DEFAULT_REGION
