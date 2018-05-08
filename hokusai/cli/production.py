@@ -60,7 +60,7 @@ def run(command, tty, tag, env, constraint, verbose):
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-t', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
+@click.option('-s', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')

@@ -5,12 +5,13 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 from hokusai.lib.config import config
+from hokusai.lib.common import get_region_name
 
 SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
 
 class ECR(object):
   def __init__(self):
-    self.client = boto3.client('ecr')
+    self.client = boto3.client('ecr', region_name=get_region_name())
     self.__aws_account_id = None
     self.__registry = None
     self.__project_repo = None
@@ -18,7 +19,7 @@ class ECR(object):
   @property
   def aws_account_id(self):
     if self.__aws_account_id is None:
-      self.__aws_account_id = boto3.client('sts').get_caller_identity().get('Account')
+      self.__aws_account_id = boto3.client('sts', region_name=get_region_name()).get_caller_identity().get('Account')
     return self.__aws_account_id
 
   @property

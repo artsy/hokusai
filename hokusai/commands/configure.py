@@ -7,7 +7,7 @@ from distutils.dir_util import mkpath
 import boto3
 
 from hokusai.lib.command import command
-from hokusai.lib.common import print_green
+from hokusai.lib.common import print_green, get_region_name
 from hokusai.lib.exceptions import HokusaiError
 
 @command
@@ -25,7 +25,7 @@ def configure(kubectl_version, bucket_name, key_name, config_file, platform, ins
     mkpath(install_config_to)
 
   if bucket_name and key_name:
-    bucket = boto3.resource('s3').Bucket(bucket_name)
-    bucket.download_file(key_name, os.path.join(install_config_to, 'config'))
+    client = boto3.client('s3', region_name=get_region_name())
+    client.download_file(bucket_name, key_name, os.path.join(install_config_to, 'config'))
   else:
     shutil.copy(config_file, os.path.join(install_config_to, 'config'))

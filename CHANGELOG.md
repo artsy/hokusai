@@ -1,3 +1,14 @@
+## v0.4.4
+
+* 3a45ed0 add interactive 'console' command with click-repl
+* 74ce4da aws region fallbacks with boto2 compatibility and default to us-east-1
+* aaa241a fix flag collision in logs command -- timestamps now use short flag -s
+* 42b3fe7, a034af5, 45628cf update documentation
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.4/README.md)
+
+### Notable changes since v0.4.3
+
 ## v0.4.3
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.4.3/README.md)
