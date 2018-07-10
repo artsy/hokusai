@@ -1,8 +1,9 @@
 import os
 from setuptools import setup
+from hokusai.version import VERSION
 
 setup(name='hokusai',
-      version=open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hokusai', 'VERSION.txt'), 'r').read(),
+      version=VERSION,
       description='Artsy Docker development toolkit',
       url='http://github.com/artsy/hokusai',
       author='Isac Petruzzi',
