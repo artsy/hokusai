@@ -1,4 +1,3 @@
-include VERSION.txt
 include hokusai/cli/*
 include hokusai/commands/*
 include hokusai/lib/*

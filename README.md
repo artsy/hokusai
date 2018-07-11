@@ -39,6 +39,14 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `(sudo) pip install hokusai --ignore-installed`.
 
+Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai and adding it to your `$PATH`, i.e.
+
+```
+wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai
+chmod +x hokusai
+mv hokusai /usr/local/bin/
+```
+
 2) Set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` in your shell / `~/.bash_profile`.
 
 3) Run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>`.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file. (System administrators, see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS, Kubernetes, and publishing a kubectl config file.)
@@ -79,6 +87,16 @@ Only run integration tests: `python -m unittest discover test.integration`
 Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
 Set the `DEBUG=1` environment variable to print boto logging
+
+## Distributing Hokusai
+
+To distribute Hokusai you must be a member of Artsy engineering and have write credentials to:
+- https://github.com/artsy/hokusai
+- https://pypi.org/project/hokusai/
+- https://hub.docker.com/r/artsy/hokusai/
+- The S3 bucket `artsy-provisioning-public` in `us-east-1`
+
+Install `git`, `twine`, `pyinstaller`, `s3cmd` and `docker` then run `./distribute.sh`
 
 ## The Name
 
