@@ -16,7 +16,8 @@ rm -rf build/ dist/ hokusai.egg-info/
 
 # Pyinstaller binary
 
-pyinstaller --onefile bin/hokusai
+pip install -r requirements.txt
+pyinstaller hokusai.spec
 s3cmd put dist/hokusai s3://artsy-provisioning-public/hokusai-v$(python -c 'from hokusai.version import VERSION; print(VERSION)')
 s3cmd put dist/hokusai s3://artsy-provisioning-public/hokusai
 rm -rf build/ dist/
