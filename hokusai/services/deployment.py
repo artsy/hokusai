@@ -15,7 +15,7 @@ class Deployment(object):
     self.ecr = ECR()
     self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint):
+  def update(self, tag, constraint, git_remote):
     print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
@@ -25,6 +25,12 @@ class Deployment(object):
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
       self.ecr.retag(tag, deployment_tag)
       print_green("Updated tag %s -> %s" % (tag, deployment_tag))
+
+      if git_remote is not None:
+        print_green("Pushing deployment tags to %s..." % git_remote)
+        shout("git tag -f %s" % self.context, print_output=True)
+        shout("git tag %s" % deployment_tag, print_output=True)
+        shout("git push --force %s --tags" % git_remote, print_output=True)
 
     if config.pre_deploy is not None:
       print_green("Running pre-deploy hook '%s' on %s..." % (config.pre_deploy, self.context))
