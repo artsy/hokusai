@@ -73,13 +73,14 @@ def logs(timestamps, follow, tail, verbose):
 @click.argument('tag', type=click.STRING)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
+@click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(tag, migration, constraint, verbose):
+def deploy(tag, migration, constraint, git_remote, verbose):
   """Update the project's deployment(s) to reference
   the given image tag and update the tag production
   to reference the same image"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint)
+  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
