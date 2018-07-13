@@ -106,11 +106,11 @@ class Deployment(object):
       container_images = [container['image'] for container in containers]
 
       if not all(x == container_images[0] for x in container_images):
-        raise HokusaiError("Deployment's containers do not reference the same image tag", return_code=return_code)
+        raise HokusaiError("Deployment's containers do not reference the same image tag.  Aborting.")
 
       images.append(containers[0]['image'])
 
     if not all(y == images[0] for y in images):
-      raise HokusaiError("Deployments do not reference the same image tag", return_code=return_code)
+      raise HokusaiError("Deployments do not reference the same image tag. Aborting.")
 
     return images[0].rsplit(':', 1)[1]
