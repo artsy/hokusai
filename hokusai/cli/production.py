@@ -84,15 +84,6 @@ def deploy(tag, migration, constraint, verbose):
 
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def history(verbose):
-  """Print the project's deployment history in terms of revision number,
-  creation time, container name and image tag"""
-  set_verbosity(verbose)
-  hokusai.history(KUBE_CONTEXT)
-
-
-@production.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def refresh(verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)

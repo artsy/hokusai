@@ -90,10 +90,6 @@ class Deployment(object):
     if return_code:
       raise HokusaiError("Refresh failed!", return_code=return_code)
 
-  def history(self, deployment_name):
-    replicasets = self.kctl.get_object('replicaset', selector="app=%s,layer=application" % config.project_name)
-    replicasets = filter(lambda rs: rs['metadata']['ownerReferences'][0]['name'] == deployment_name, replicasets)
-    return sorted(replicasets, key=lambda rs: int(rs['metadata']['annotations']['deployment.kubernetes.io/revision']))
 
   @property
   def names(self):
