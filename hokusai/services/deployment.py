@@ -16,6 +16,9 @@ class Deployment(object):
     self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag, constraint):
+    if not self.ecr.project_repo_exists():
+      raise HokusaiError("Project repo does not exist.  Aborting.")
+
     print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
