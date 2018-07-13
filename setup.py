@@ -1,18 +1,20 @@
 import os
 from setuptools import setup
+from hokusai.version import VERSION
 
 setup(name='hokusai',
-      version=open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hokusai', 'VERSION.txt'), 'r').read(),
+      version=VERSION,
       description='Artsy Docker development toolkit',
       url='http://github.com/artsy/hokusai',
       author='Isac Petruzzi',
       author_email='isac@artsymail.com',
       license='MIT',
       packages=['hokusai'],
-      package_data={'hokusai': ['VERSION.txt', 'cli/*', 'commands/*', 'lib/*', 'services/*', 'templates/*']},
+      package_data={'hokusai': ['cli/*', 'commands/*', 'lib/*', 'services/*', 'templates/*']},
       install_requires=[
           'click==6.7',
           'click-repl==0.1.3',
+          'prompt-toolkit==1.0.15',
           'MarkupSafe==1.0',
           'Jinja2==2.9.6',
           'PyYAML==3.12',

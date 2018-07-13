@@ -29,11 +29,18 @@ VERBOSE = False
 
 AWS_DEFAULT_REGION = 'us-east-1'
 
+def smart_str(s):
+  if isinstance(s, unicode):
+      return unicode(s).encode("utf-8")
+  elif isinstance(s, int) or isinstance(s, float):
+      return str(s)
+  return s
+
 def print_green(msg):
-  cprint(msg, 'green')
+  cprint(smart_str(msg), 'green')
 
 def print_red(msg):
-  cprint(msg, 'red')
+  cprint(smart_str(msg), 'red')
 
 def set_verbosity(v):
   global VERBOSE
@@ -44,7 +51,7 @@ def get_verbosity():
   return VERBOSE
 
 def verbose(msg):
-  if VERBOSE: cprint("==> hokusai exec `%s`" % msg, 'yellow')
+  if VERBOSE: cprint("==> hokusai exec `%s`" % smart_str(msg), 'yellow')
   return msg
 
 

@@ -1,4 +1,5 @@
 FROM python:2
+ARG HOKUSAI_VERSION
 
 # Install Docker
 RUN apt-get update
@@ -15,5 +16,4 @@ RUN pip install docker-compose
 RUN apt-get install -y git
 
 # Install Hokusai
-ADD hokusai/VERSION.txt VERSION.txt
-RUN pip install hokusai==$(cat VERSION.txt)
+RUN pip install hokusai==$HOKUSAI_VERSION
