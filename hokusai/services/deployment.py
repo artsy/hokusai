@@ -16,6 +16,9 @@ class Deployment(object):
     self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag, constraint, git_remote):
+    if not self.ecr.project_repo_exists():
+      raise HokusaiError("Project repo does not exist.  Aborting.")
+
     print_green("Deploying %s to %s..." % (tag, self.context))
 
     if self.context != tag:
@@ -93,10 +96,6 @@ class Deployment(object):
     if return_code:
       raise HokusaiError("Refresh failed!", return_code=return_code)
 
-  def history(self, deployment_name):
-    replicasets = self.kctl.get_object('replicaset', selector="app=%s,layer=application" % config.project_name)
-    replicasets = filter(lambda rs: rs['metadata']['ownerReferences'][0]['name'] == deployment_name, replicasets)
-    return sorted(replicasets, key=lambda rs: int(rs['metadata']['annotations']['deployment.kubernetes.io/revision']))
 
   @property
   def names(self):
@@ -112,11 +111,11 @@ class Deployment(object):
       container_images = [container['image'] for container in containers]
 
       if not all(x == container_images[0] for x in container_images):
-        raise HokusaiError("Deployment's containers do not reference the same image tag", return_code=return_code)
+        raise HokusaiError("Deployment's containers do not reference the same image tag.  Aborting.")
 
       images.append(containers[0]['image'])
 
     if not all(y == images[0] for y in images):
-      raise HokusaiError("Deployments do not reference the same image tag", return_code=return_code)
+      raise HokusaiError("Deployments do not reference the same image tag. Aborting.")
 
     return images[0].rsplit(':', 1)[1]

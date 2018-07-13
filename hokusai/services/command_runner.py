@@ -14,6 +14,9 @@ class CommandRunner(object):
     self.ecr = ECR()
 
   def run(self, image_tag, cmd, tty=False, env=(), constraint=()):
+    if not self.ecr.project_repo_exists():
+      raise HokusaiError("Project repo does not exist.  Aborting.")
+
     if os.environ.get('USER') is not None:
       uuid = "%s-%s" % (os.environ.get('USER'), k8s_uuid())
     else:

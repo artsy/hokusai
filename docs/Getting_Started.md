@@ -84,7 +84,7 @@ See [Configuration Options](./Configuration_Options.md) if you want to modify yo
 
 `hokusai staging status` should eventually (once Kubernetes creates a load balancer for your project), output the ELB's DNS record.
 
-Get logs by running `hokusai staging logs` and see deployment history with `hokusai staging history`
+Get logs by running `hokusai staging logs`
 
 8) Create the Kubernetes production environment and environment configuration
 
@@ -101,7 +101,6 @@ See [Configuration Options](./Configuration_Options.md) if you want to modify yo
 hokusai production create
 hokusai production status
 hokusai production logs
-hokusai production history
 ```
 
 10) Deploy changes to the Kubernetes staging environment
