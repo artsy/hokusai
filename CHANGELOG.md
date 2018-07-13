@@ -1,3 +1,17 @@
+## v0.4.5
+
+* 1a9822a resolve this directory in hokusai.spec
+* 5746219 (origin/fea-push-git-tags, fea-push-git-tags) push tags to specified git remote if provided on deploy and promote
+* b6406df remove image digest from registry images output
+* 2561c03 remove history command
+* 3c43592 check project repo exists before updating deployment or running a command
+* 5738ff4 bugfix in hokusai/services/deployment.py
+* 93219ea include Pyinstaller spec
+* 10a7e12 updates to pyinstaller build steps
+* ec590d7 updates to distribute with PyInstaller
+* 8011f78 read VERSION from module
+* 96f8f52 fix Yarn failure in CI build
+
 ## v0.4.4
 
 * 3a45ed0 add interactive 'console' command with click-repl
