@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['bin/hokusai'],
-             pathex=['/Users/isacpetruzzi/Code/artsy/hokusai'],
+             pathex=['.'],
              binaries=[],
              datas=[],
              hiddenimports=['ConfigParser'],
