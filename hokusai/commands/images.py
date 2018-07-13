@@ -9,9 +9,9 @@ from hokusai.lib.common import print_green, shout
 def images():
   images = ECR().get_images()
   print('')
-  print_green('Image Pushed At           | Image Digest                                                     | Image Tags')
-  print_green('-------------------------------------------------------------------------------------------------------------------------------')
+  print_green('Image Pushed At            | Image Tags')
+  print_green('----------------------------------------------------------')
   for image in sorted(images, key=itemgetter('imagePushedAt'), reverse=True):
     if 'imageTags' not in image.keys():
       continue
-    print("%s | %s | %s" % (image['imagePushedAt'], image['imageDigest'][7:], ', '.join(image['imageTags'])))
+    print("%s | %s" % (image['imagePushedAt'], ', '.join(image['imageTags'])))
