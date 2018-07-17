@@ -128,14 +128,27 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app env_copy <name>
     ```
 
-6) Update review app:
+6) Find and visit your staging app:
+    - In the Kubernetes UI, find the "Namespace" dropdown in the main nav and select your chosen `<name>` from that menu
+    - Go to Replica Sets > _replica set name_ (there is probably only one)
+    - Browse to the "Services" section
+    - Look in the "External endpoints" column
+    - These endpoints are your publicly accessible URLs
+
+7) If you need to update environment variables:
+    - Until this feature is added to Hokusai, you can update environment variables as usual from the Config Maps section of the Kubernetes UI
+
+8) If you need to refresh  your app, (e.g. after updating environment variables)
+    - Until this feature is added to Hokusai, you can restart apps as usual by terminating pods from the Pods section of the Kubernetes UI
+
+9) Update review app:
 
     If you have made changes to your review app's yaml file, you need to update deployment for that do:
     ```shell
     hokusai review_app update <name>
     ```
 
-7) Delete review app:
+10) Delete review app:
     ```shell
     hokusai review_app delete <name>
     ```
