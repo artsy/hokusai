@@ -42,9 +42,7 @@ Note: If installing via pip fails due to pip failing to upgrade your system Pyth
 Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai and adding it to your `$PATH`, i.e.
 
 ```
-wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai
-chmod +x hokusai
-mv hokusai /usr/local/bin/
+curl https://artsy-provisioning-public.s3.amazonaws.com/hokusai -o /usr/local/bin/hokusai && chmod +x /usr/local/bin/hokusai
 ```
 
 2) Set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` in your shell / `~/.bash_profile`.
