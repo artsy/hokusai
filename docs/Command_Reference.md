@@ -153,6 +153,8 @@ In order to start a review app you will need to follow these steps:
     - Browse to the "Services" section
     - Look in the "External endpoints" column
     - These endpoints are your publicly accessible URLs
+    - You may need to tweak the URL to use `https` instead of `http`
+    - You may need to accept a browser warning about a missing or bad certificate
 
 8) If you need to update environment variables:
 
