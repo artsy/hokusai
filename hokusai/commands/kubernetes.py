@@ -36,7 +36,7 @@ def k8s_create(context, tag='latest', yaml_file_name=None):
 @command
 def k8s_update(context, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
-  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % context)
+  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
