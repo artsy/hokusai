@@ -98,60 +98,10 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 
 
 ### Working with review apps
-Hokusai provides a command for managing review apps. Review apps are useful for testing feature branches that are not yet ready to be deployed to staging but we do want to test them on a staging-like environment.
-In order to start a review app you will need to follow these steps:
-1) Create new review app
-    ```shell
-    hokusai review_app setup <name> # we recommend using branch name or pr number as name
-    ```
-    This command will create a new `<name>.yaml` under `hokusai/` folder.
 
-2) Check newly created `<name>.yaml` file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps. Basically each review app will end up being in its own namespace to not collide with staging.
+Review apps can be created and managed with `hokusai review_app`.
 
-3) Push an image with this review app tag:
-    ```shell
-    hokusai registry push --tag <name>
-    ```
-
-    If you have git-ignored files in your working directory (likely) you will have to force push with:
-    ```shell
-    hokusai registry push --force --tag <name>
-    ```
-
-4) Create new deployment on k8s:
-    ```shell
-    hokusai review_app create <name>
-    ```
-
-5) Copy staging `configMap` to new namespace:
-    ```shell
-    hokusai review_app env_copy <name>
-    ```
-
-6) Find and visit your staging app:
-    - In the Kubernetes UI, find the "Namespace" dropdown in the main nav and select your chosen `<name>` from that menu
-    - Go to Replica Sets > _replica set name_ (there is probably only one)
-    - Browse to the "Services" section
-    - Look in the "External endpoints" column
-    - These endpoints are your publicly accessible URLs
-
-7) If you need to update environment variables:
-    - Until this feature is added to Hokusai, you can update environment variables as usual from the Config Maps section of the Kubernetes UI
-
-8) If you need to refresh  your app, (e.g. after updating environment variables)
-    - Until this feature is added to Hokusai, you can restart apps as usual by terminating pods from the Pods section of the Kubernetes UI
-
-9) Update review app:
-
-    If you have made changes to your review app's yaml file, you need to update deployment for that do:
-    ```shell
-    hokusai review_app update <name>
-    ```
-
-10) Delete review app:
-    ```shell
-    hokusai review_app delete <name>
-    ```
+See full details in the [Review App reference](Review_Apps.md).
 
 ### Working with the Staging -> Production pipeline
 
