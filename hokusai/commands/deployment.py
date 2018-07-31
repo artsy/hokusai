@@ -2,6 +2,7 @@ from hokusai.lib.command import command
 from hokusai.lib.common import print_green
 from hokusai.services.deployment import Deployment
 from hokusai.services.command_runner import CommandRunner
+from hokusai.services.ecr import ECR
 from hokusai.lib.exceptions import HokusaiError
 
 @command
@@ -23,10 +24,17 @@ def refresh(context, deployment_name, namespace=None):
 
 @command
 def promote(migration, constraint, git_remote):
+  ecr = ECR()
+
   deploy_from = Deployment('staging')
   tag = deploy_from.current_tag
   if tag is None:
+    raise HokusaiError("Could not find a tag for staging.  Aborting.")
+  tag = ecr.find_git_sha1_image_tag(tag)
+  if tag is None:
+    print_red("Could not find a git SHA1 for tag %s.  Aborting." % tag)
     return -1
+
   print_green("Deploying tag %s to production..." % tag)
   if migration is not None:
     print_green("Running migration '%s' on production..." % migration)
