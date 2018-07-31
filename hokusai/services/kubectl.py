@@ -5,11 +5,14 @@ import yaml
 from hokusai.lib.common import shout
 
 class Kubectl(object):
-  def __init__(self, context):
+  def __init__(self, context, namespace=None):
     self.context = context
+    self.namespace = namespace
 
   def command(self, cmd):
-    return "kubectl --context %s %s" % (self.context, cmd)
+    if self.namespace is None:
+      return "kubectl --context %s %s" % (self.context, cmd)
+    return "kubectl --context %s --namespace %s %s" % (self.context, self.namespace, cmd)
 
   def get_object(self, obj):
     cmd = self.command("get %s -o json" % obj)

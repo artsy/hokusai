@@ -5,20 +5,22 @@ from hokusai.lib.common import print_green
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def create_env(context):
-  configmap = ConfigMap(context)
+def create_env(context, namespace=None):
+  configmap = ConfigMap(context, namespace=namespace)
   configmap.create()
   print_green("Created configmap %s-environment" % config.project_name)
 
+
 @command
-def delete_env(context):
-  configmap = ConfigMap(context)
+def delete_env(context, namespace=None):
+  configmap = ConfigMap(context, namespace=namespace)
   configmap.destroy()
   print_green("Deleted configmap %s-environment" % config.project_name)
 
+
 @command
-def get_env(context, environment):
-  configmap = ConfigMap(context)
+def get_env(context, environment, namespace=None):
+  configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
   if environment:
     for k, v in configmap.all():
@@ -28,9 +30,10 @@ def get_env(context, environment):
     for k, v in configmap.all():
       print("%s=%s" % (k, v))
 
+
 @command
-def set_env(context, environment):
-  configmap = ConfigMap(context)
+def set_env(context, environment, namespace=None):
+  configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
   for s in environment:
     if '=' not in s:
@@ -39,9 +42,10 @@ def set_env(context, environment):
     configmap.update(split[0], split[1])
   configmap.save()
 
+
 @command
-def unset_env(context, environment):
-  configmap = ConfigMap(context)
+def unset_env(context, environment, namespace=None):
+  configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
   for s in environment:
     configmap.delete(s)

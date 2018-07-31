@@ -4,8 +4,8 @@ from hokusai.lib.common import shout, shout_concurrent
 from hokusai.services.kubectl import Kubectl
 
 @command
-def logs(context, timestamps, follow, tail):
-  kctl = Kubectl(context)
+def logs(context, timestamps, follow, tail, namespace=None):
+  kctl = Kubectl(context, namespace=namespace)
 
   opts = ''
   if timestamps:

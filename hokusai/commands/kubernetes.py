@@ -31,7 +31,8 @@ def k8s_create(context, tag='latest', yaml_file_name=None):
 
   kctl = Kubectl(context)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
-  print_green("Created Kubernetes environment %s" % context)
+  print_green("Created Kubernetes environment %s" % kubernetes_yml)
+
 
 @command
 def k8s_update(context, yaml_file_name=None):
@@ -42,7 +43,8 @@ def k8s_update(context, yaml_file_name=None):
 
   kctl = Kubectl(context)
   shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
-  print_green("Updated Kubernetes environment %s" % context)
+  print_green("Updated Kubernetes environment %s" % kubernetes_yml)
+
 
 @command
 def k8s_delete(context, yaml_file_name=None):
@@ -53,28 +55,24 @@ def k8s_delete(context, yaml_file_name=None):
 
   kctl = Kubectl(context)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)
-  print_green("Deleted Kubernetes environment %s" % context)
+  print_green("Deleted Kubernetes environment %s" % kubernetes_yml)
+
 
 @command
-def k8s_status(context):
+def k8s_status(context, yaml_file_name=None):
+  if yaml_file_name is None: yaml_file_name = context
+  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
+  if not os.path.isfile(kubernetes_yml):
+    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+
   kctl = Kubectl(context)
-  print('')
-  print_green("Deployments")
-  print_green('-----------------------------------------------------------')
-  shout(kctl.command("get deployments --selector app=%s -o wide" % config.project_name), print_output=True)
-  print('')
-  print_green("Services")
-  print_green('-----------------------------------------------------------')
-  shout(kctl.command("get services --selector app=%s -o wide" % config.project_name), print_output=True)
-  print('')
-  print_green("Pods")
-  print_green('-----------------------------------------------------------')
-  shout(kctl.command("get pods --selector app=%s -o wide" % config.project_name), print_output=True)
+  shout(kctl.command("get -f %s -o wide" % kubernetes_yml), print_output=True)
+
 
 @command
 def k8s_copy_config(context, destination_namespace):
-  kctl = Kubectl(context)
-  configmap = ConfigMap(context)
-  configmap.load()
-  configmap.struct['metadata']['namespace'] = destination_namespace
-  configmap.save()
+  source_configmap = ConfigMap(context)
+  destination_configmap = ConfigMap(context, namespace=destination_namespace)
+  source_configmap.load()
+  destination_configmap.struct['data'] = source_configmap.struct['data']
+  destination_configmap.save()

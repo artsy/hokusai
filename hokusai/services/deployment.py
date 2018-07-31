@@ -9,9 +9,10 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.lib.exceptions import HokusaiError
 
 class Deployment(object):
-  def __init__(self, context, deployment_name=None):
+  def __init__(self, context, deployment_name=None, namespace=None):
     self.context = context
-    self.kctl = Kubectl(self.context)
+    self.namespace = namespace
+    self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
     if deployment_name:
       self.cache = [self.kctl.get_object("deployment %s" % deployment_name)]
@@ -22,9 +23,12 @@ class Deployment(object):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
-    print_green("Deploying %s to %s..." % (tag, self.context))
+    if self.namespace is None:
+      print_green("Deploying %s to %s..." % (tag, self.context))
+    else:
+      print_green("Deploying %s to %s/%s..." % (tag, self.context, self.namespace))
 
-    if self.context != tag:
+    if self.context != tag and self.namespace is None:
       self.ecr.retag(tag, self.context)
       print_green("Updated tag %s -> %s" % (tag, self.context))
 
@@ -39,8 +43,8 @@ class Deployment(object):
         shout("git push --force %s --tags" % git_remote, print_output=True)
 
     if config.pre_deploy is not None:
-      print_green("Running pre-deploy hook '%s' on %s..." % (config.pre_deploy, self.context))
-      return_code = CommandRunner(self.context).run(tag, config.pre_deploy, constraint=constraint)
+      print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)
+      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint)
       if return_code:
         raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
@@ -72,8 +76,8 @@ class Deployment(object):
       raise HokusaiError("Deployment failed!", return_code=return_code)
 
     if config.post_deploy is not None:
-      print_green("Running post-deploy hook '%s' on %s..." % (config.post_deploy, self.context))
-      return_code = CommandRunner(self.context).run(tag, config.post_deploy, constraint=constraint)
+      print_green("Running post-deploy hook '%s'..." % config.post_deploy)
+      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.post_deploy, constraint=constraint)
       if return_code:
         raise HokusaiError("Post-deploy hook failed with return code %s" % return_code, return_code=return_code)
 

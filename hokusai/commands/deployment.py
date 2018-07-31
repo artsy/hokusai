@@ -5,19 +5,19 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def update(context, tag, migration, constraint, git_remote):
+def update(context, tag, migration, constraint, git_remote, namespace=None):
   if migration is not None:
     print_green("Running migration '%s' on %s..." % (migration, context))
-    return_code = CommandRunner(context).run(tag, migration, constraint=constraint)
+    return_code = CommandRunner(context, namespace=namespace).run(tag, migration, constraint=constraint)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
-  Deployment(context).update(tag, constraint, git_remote)
+  Deployment(context, namespace=namespace).update(tag, constraint, git_remote)
   print_green("Deployment updated to %s" % tag)
 
 
 @command
-def refresh(context, deployment_name):
-  deployment = Deployment(context, deployment_name=deployment_name)
+def refresh(context, deployment_name, namespace=None):
+  deployment = Deployment(context, deployment_name=deployment_name, namespace=namespace)
   deployment.refresh()
 
 
