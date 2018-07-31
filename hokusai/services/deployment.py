@@ -9,11 +9,14 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.lib.exceptions import HokusaiError
 
 class Deployment(object):
-  def __init__(self, context):
+  def __init__(self, context, deployment_name=None):
     self.context = context
     self.kctl = Kubectl(self.context)
     self.ecr = ECR()
-    self.cache = self.kctl.get_object('deployment', selector="app=%s,layer=application" % config.project_name)
+    if deployment_name:
+      self.cache = [self.kctl.get_object("deployment %s" % deployment_name)]
+    else:
+      self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
   def update(self, tag, constraint, git_remote):
     if not self.ecr.project_repo_exists():

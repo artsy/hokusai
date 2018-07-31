@@ -84,19 +84,21 @@ def deploy(tag, migration, constraint, git_remote, verbose):
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def refresh(verbose):
+def refresh(deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT)
+  hokusai.refresh(KUBE_CONTEXT, deployment)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def restart(verbose):
+def restart(deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT)
+  hokusai.refresh(KUBE_CONTEXT, deployment)
 
 
 @production.group()

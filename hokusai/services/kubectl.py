@@ -11,7 +11,14 @@ class Kubectl(object):
   def command(self, cmd):
     return "kubectl --context %s %s" % (self.context, cmd)
 
-  def get_object(self, obj, selector=None):
+  def get_object(self, obj):
+    cmd = self.command("get %s -o json" % obj)
+    try:
+      return json.loads(shout(cmd))
+    except ValueError:
+      return None
+
+  def get_objects(self, obj, selector=None):
     if selector is not None:
       cmd = self.command("get %s --selector %s -o json" % (obj, selector))
     else:

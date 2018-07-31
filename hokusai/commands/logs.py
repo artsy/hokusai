@@ -15,7 +15,7 @@ def logs(context, timestamps, follow, tail):
   if tail:
     opts += " --tail=%s" % tail
 
-  pods = kctl.get_object('pod', selector="app=%s,layer=application" % config.project_name)
+  pods = kctl.get_objects('pod', selector="app=%s,layer=application" % config.project_name)
   pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)
   containers = []
 

@@ -16,8 +16,8 @@ def update(context, tag, migration, constraint, git_remote):
 
 
 @command
-def refresh(context):
-  deployment = Deployment(context)
+def refresh(context, deployment_name):
+  deployment = Deployment(context, deployment_name=deployment_name)
   deployment.refresh()
 
 
