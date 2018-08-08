@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import urllib
 import tempfile
@@ -55,7 +56,11 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
     custom_template_dir = os.path.abspath(template_dir)
     env = Environment(loader=FileSystemLoader(os.path.abspath(template_dir)), **loader_kwargs)
   else:
-    env = Environment(loader=PackageLoader('hokusai', 'templates'))
+    try:
+      base_path = sys._MEIPASS
+      env = Environment(loader=FileSystemLoader(os.path.join(base_path, 'hokusai', 'templates')))
+    except:
+      env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
   required_templates = [
     'Dockerfile.j2',
