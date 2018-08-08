@@ -3,7 +3,7 @@ version: '2'
 services:
   {{ project_name }}:
     extends:
-      file: common.yml
+      file: build.yml
       service: {{ project_name }}
     ports:
       - 80:80

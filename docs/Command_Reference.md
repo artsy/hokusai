@@ -60,7 +60,7 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 ### Testing and building images
 
 * `hokusai test` - Start the testing environment defined `hokusai/test.yml` and exit with the return code of the test command.
-* `hokusai build` - Build the docker image defined in ./hokusai/common.yml.
+* `hokusai build` - Build the docker image defined in ./hokusai/build.yml.
 
 
 ### Managing images in the registry

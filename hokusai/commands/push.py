@@ -26,7 +26,7 @@ def push(tag, build, force, overwrite):
     raise HokusaiError("Tag %s already exists in registry.  Aborting." % tag)
 
   if build:
-    docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
+    docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/build.yml')
     shout("docker-compose -f %s -p hokusai build" % docker_compose_yml, print_output=True)
 
   build_tag = "hokusai_%s:latest" % config.project_name

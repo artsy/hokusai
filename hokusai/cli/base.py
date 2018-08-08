@@ -49,7 +49,7 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def build(verbose):
-  """Build the Docker image defined in ./hokusai/common.yml"""
+  """Build the Docker image defined in ./hokusai/build.yml"""
   set_verbosity(verbose)
   hokusai.build()
 

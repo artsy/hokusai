@@ -14,17 +14,18 @@ hokusai setup
 (`hokusai setup --help` can report the list of all available options.)
 
 `hokusai setup` will create:
-- A `Dockerfile` in your project root
+- An ECR repository for your project
+- A `Dockerfile` in your project's root directory
+- A `.dockerignore` file in your project's root directory
 - A configuration folder `./hokusai`.  This folder contains:
   * `config.yml` - Hokusai project configuration
-  * `common.yml` - a Docker Compose YAML file imported by `development.yml` and `test.yml`
-  * `development.yml`- a Docker Compose YAML file for the development environment
-  * `test.yml` - a Docker Compose YAML file for the test environment
-  * `staging.yml` - a Kubernetes YAML file for the staging environment
-  * `production.yml` - a Kubernetes YAML file for the production environment
-- An ECR repository for your project
+  * `build.yml` - a Docker Compose YAML file used by `hokusai build` and imported by `development.yml` and `test.yml`
+  * `development.yml`- a Docker Compose YAML file used by `hokusai dev`
+  * `test.yml` - a Docker Compose YAML file used by `hokusai test`
+  * `staging.yml` - a Kubernetes YAML file used by `hokusai staging`
+  * `production.yml` - a Kubernetes YAML file used by `hokusai production`
 
-The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
+The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
 
 You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local path with the `--template-dir` option, a remote git repository with the `--template-remote` option and pass in custom template variables with the `--var` option.
 

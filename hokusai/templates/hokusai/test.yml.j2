@@ -4,6 +4,6 @@ services:
   {{ project_name }}:
     command: ["bash", "test.sh"]
     extends:
-      file: common.yml
+      file: build.yml
       service: {{ project_name }}
 

@@ -60,7 +60,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
   required_templates = [
     'Dockerfile.j2',
     '.dockerignore.j2',
-    'hokusai/common.yml.j2',
+    'hokusai/build.yml.j2',
     'hokusai/development.yml.j2',
     'hokusai/test.yml.j2',
     'hokusai/staging.yml.j2',
