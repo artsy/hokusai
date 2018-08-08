@@ -6,7 +6,6 @@ from hokusai.cli.base import base
 from hokusai.cli.staging import KUBE_CONTEXT
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
 from hokusai.lib.config import config
-from hokusai.lib.namespace import create_new_app_yaml
 
 @base.group()
 def review_app(context_settings=CONTEXT_SETTINGS):
@@ -20,7 +19,7 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 def setup(app_name, verbose, source_file):
   """Setup a new review-app - create a Yaml file based on APP_NAME and --source-file"""
   set_verbosity(verbose)
-  create_new_app_yaml(source_file, app_name)
+  hokusai.create_new_app_yaml(source_file, app_name)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
