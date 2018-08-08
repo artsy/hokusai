@@ -1,5 +1,9 @@
 ## v0.4.5
 
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.5/README.md)
+
+### Notable changes since v0.4.4
+
 * 1a9822a resolve this directory in hokusai.spec
 * 5746219 (origin/fea-push-git-tags, fea-push-git-tags) push tags to specified git remote if provided on deploy and promote
 * b6406df remove image digest from registry images output
@@ -12,16 +16,18 @@
 * 8011f78 read VERSION from module
 * 96f8f52 fix Yarn failure in CI build
 
+
 ## v0.4.4
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.4/README.md)
+
+### Notable changes since v0.4.3
 
 * 3a45ed0 add interactive 'console' command with click-repl
 * 74ce4da aws region fallbacks with boto2 compatibility and default to us-east-1
 * aaa241a fix flag collision in logs command -- timestamps now use short flag -s
 * 42b3fe7, a034af5, 45628cf update documentation
 
-[Documentation](https://github.com/artsy/hokusai/blob/v0.4.4/README.md)
-
-### Notable changes since v0.4.3
 
 ## v0.4.3
 
