@@ -27,9 +27,9 @@ hokusai setup
 
 The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
 
-You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local path with the `--template-dir` option, a remote git repository with the `--template-remote` option and pass in custom template variables with the `--var` option.
+You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local directory with the `--template-dir` option, or specify a remote git repository with `--template-remote` and point to a remote path in that repository with `--template-dir`.  Additionally, you can pass in custom template variables with the `--var` option.
 
-See [https://github.com/artsy/artsy-hokusai-templates](https://github.com/artsy/artsy-hokusai-templates) for examples of custom templates for different application types.
+For example, Artsy devs can run `hokusai setup --template-remote git@github.com:artsy/artsy-hokusai-templates.git --template-dir rails` to bootstrap a Rails configuration.
 
 2) Check that Hokusai is correctly configured for your project
 
