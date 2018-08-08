@@ -86,6 +86,12 @@ Tests for specific modules, TestClasses, or even methods can be run with `python
 
 Set the `DEBUG=1` environment variable to print boto logging
 
+## Review Apps
+
+Hokusai can be used to simplify the process of spinning up a "review app" instance of your project, based on a feature branch or pull request.
+
+Full details are in the [Review App reference](./docs/Review_Apps.md).
+
 ## Distributing Hokusai
 
 To distribute Hokusai you must be a member of Artsy engineering and have write credentials to:
