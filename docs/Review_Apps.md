@@ -62,11 +62,15 @@ In order to start a review app you will need to follow these steps:
 
 8) If you need to update environment variables:
 
-    - Until this feature is added to Hokusai, you can update environment variables as usual from the Config Maps section of the Kubernetes UI
+    ```shell
+    hokusai review_app env set <name> FOO=BAR
+    ```
 
 9) If you need to refresh your app, (e.g. after updating environment variables)
 
-    - Until this feature is added to Hokusai, you can restart apps as usual by terminating pods from the Pods section of the Kubernetes UI
+    ```shell
+    hokusai review_app refresh <name>
+    ```
 
 10) Update review app:
 
