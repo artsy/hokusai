@@ -32,7 +32,7 @@ class Deployment(object):
     else:
       print_green("Deploying %s to %s/%s..." % (tag, self.context, self.namespace))
 
-    if self.context != tag and self.namespace is None:
+    if self.namespace is None:
       self.ecr.retag(tag, self.context)
       print_green("Updated tag %s -> %s" % (tag, self.context))
 

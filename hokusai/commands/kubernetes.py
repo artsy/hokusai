@@ -12,7 +12,7 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def k8s_create(context, tag='latest', yaml_file_name=None):
+def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
@@ -29,31 +29,31 @@ def k8s_create(context, tag='latest', yaml_file_name=None):
     ecr.retag(tag, context)
     print_green("Updated tag 'latest' -> %s" % context)
 
-  kctl = Kubectl(context)
+  kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
   print_green("Created Kubernetes environment %s" % kubernetes_yml)
 
 
 @command
-def k8s_update(context, yaml_file_name=None):
+def k8s_update(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  kctl = Kubectl(context)
+  kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
   print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
 
 @command
-def k8s_delete(context, yaml_file_name=None):
+def k8s_delete(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  kctl = Kubectl(context)
+  kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)
   print_green("Deleted Kubernetes environment %s" % kubernetes_yml)
 

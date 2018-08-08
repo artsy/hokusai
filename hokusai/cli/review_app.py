@@ -27,7 +27,7 @@ def setup(app_name, verbose, source_file):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(app_name, verbose):
   """Creates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
-  hokusai.k8s_create(KUBE_CONTEXT, yaml_file_name=app_name)
+  hokusai.k8s_create(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -36,7 +36,7 @@ def create(app_name, verbose):
 def delete(app_name, verbose):
   """Deletes the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_delete(KUBE_CONTEXT, yaml_file_name=app_name)
+  hokusai.k8s_delete(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -45,18 +45,18 @@ def delete(app_name, verbose):
 def update(app_name, verbose):
   """Updates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, yaml_file_name=app_name)
+  hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.option('--resources', type=click.BOOL, is_flag=True, help='Print Kubernetes API objects defined in ./hokusai/staging.yml')
+@click.option('--resources', type=click.BOOL, is_flag=True, help='Print Kubernetes API objects defined in ./hokusai/APP_NAME.yml')
 @click.option('--pods', type=click.BOOL, is_flag=True, help='Print pods')
 @click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output")
 @click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def status(app_name, resources, pods, describe, top, verbose):
-  """Print the Kubernetes resources status defined in ./hokusai/{APP_NAME}.yml"""
+  """Print the Kubernetes resources status defined in the staging context / {APP_NAME} namespace"""
   set_verbosity(verbose)
   hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, namespace=clean_string(app_name), yaml_file_name=app_name)
 
@@ -65,13 +65,15 @@ def status(app_name, resources, pods, describe, top, verbose):
 @click.argument('app_name', type=click.STRING)
 @click.argument('command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
-@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to "staging")')
+@click.option('--tag', type=click.STRING, help='The image tag to run (defaults to APP_NAME)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def run(app_name, command, tty, tag, env, constraint, verbose):
   """Launch a new container and run a command"""
   set_verbosity(verbose)
+  if tag is None:
+    tag = clean_string(app_name)
   hokusai.run(KUBE_CONTEXT, command, tty, tag, env, constraint, namespace=clean_string(app_name))
 
 

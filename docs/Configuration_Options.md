@@ -89,8 +89,8 @@ spec:
     metadata:
       labels:
         app: {{ project_name }}
-        layer: worker
-        component: application
+        layer: application
+        component: worker
 ```
 
 With this structure, Hokusai will update *both* the web and worker deployments simultaneuosly, which is probably what you want.
@@ -103,8 +103,8 @@ spec:
     metadata:
       labels:
         app: {{ project_name }}
-        layer: redis
-        component: cache
+        layer: cache
+        component: redis
 ```
 
 Hokusai would ignore this when `hokusai [staging|production]` commands, but it would be included as part of your application's Kubernetes environment.
