@@ -26,25 +26,32 @@ def console():
 @click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS (default: darwin)')
 @click.option('--install-to', type=click.STRING, default='/usr/local/bin', help='Install kubectl to (default: /usr/local/bin)')
 @click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to (default: ~/.kube)')
-def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to):
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to, verbose):
   """Install and configure kubectl"""
+  set_verbosity(verbose)
   hokusai.configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--project-type', type=click.Choice(['ruby-rack', 'ruby-rails', 'nodejs', 'elixir', 'python-wsgi']), required=True, help='The type of project')
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
 @click.option('--port', type=click.INT, default=8080, help='The port of the service (default: 8080)')
-@click.option('--internal', type=click.BOOL, is_flag=True, help='Create an internal Kubernetes service definition')
-@click.option('--template-dir', type=click.STRING, default="", help='Directory of templates to use.')
-def setup(project_type, project_name, port, internal, template_dir):
+@click.option('--template-remote', type=click.STRING, help='Git remote of templates to use - you can specify a branch via <git-remote>#<branch>')
+@click.option('--template-dir', type=click.STRING, help='Directory of templates to use - can be used with --template-remote')
+@click.option('--var', type=click.STRING, multiple=True, help='Extra variables to render Jinja templates in the form of key=value')
+@click.option('--allow-missing-vars', is_flag=True, help='Do not fail on undefined template vars')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def setup(project_name, port, template_remote, template_dir, var, allow_missing_vars, verbose):
   """Set up Hokusai for the current project"""
-  hokusai.setup(project_type, project_name, port, internal, template_dir)
+  set_verbosity(verbose)
+  hokusai.setup(project_name, port, template_remote, template_dir, var, allow_missing_vars)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-def build():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def build(verbose):
   """Build the Docker image defined in ./hokusai/common.yml"""
+  set_verbosity(verbose)
   hokusai.build()
 
 

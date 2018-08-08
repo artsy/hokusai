@@ -1,0 +1,12 @@
+FROM debian:jessie
+
+RUN mkdir /app
+ADD . /app
+WORKDIR /app
+
+ENV PORT {{ port }}
+EXPOSE {{ port }}
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["start.sh"]
+

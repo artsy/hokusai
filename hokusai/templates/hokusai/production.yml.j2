@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ project_name }}-{{ component }}
+  name: {{ project_name }}-web
   namespace: default
 spec:
   replicas: 2
@@ -15,25 +15,16 @@ spec:
     metadata:
       labels:
         app: {{ project_name }}
-        component: {{ component }}
-        layer: {{ layer }}
-      name: {{ project_name }}-{{ component }}
+        component: web
+        layer: application
+      name: {{ project_name }}-web
     spec:
       containers:
-      - name: {{ project_name }}-{{ component }}
-        {%- if environment %}
-        env:
-        {%- for k,v in environment.items() %}
-        - name: {{ k }}
-          value: {{ v }}
-        {%- endfor -%}
-        {%- endif -%}
-        {%- if layer == 'application' %}
+      - name: {{ project_name }}-web
         envFrom:
         - configMapRef:
             name: {{ project_name }}-environment
-        {%- endif %}
-        image: {{ image }}
+        image: {{ project_repo }}:production
         imagePullPolicy: Always
         ports:
         - containerPort: {{ port }}
@@ -43,9 +34,9 @@ kind: Service
 metadata:
   labels:
     app: {{ project_name }}
-    component: {{ component }}
-    layer: {{ layer }}
-  name: {{ project_name }}-{{ component }}
+    component: web
+    layer: application
+  name: {{ project_name }}-web
   namespace: default
 spec:
   ports:
@@ -54,11 +45,7 @@ spec:
     targetPort: {{ port }}
   selector:
     app: {{ project_name }}
-    component: {{ component }}
-    layer: {{ layer }}
-  {%- if internal %}
+    component: web
+    layer: application
   type: ClusterIP
-  {%- else %}
-  type: LoadBalancer
-  {%- endif %}
 

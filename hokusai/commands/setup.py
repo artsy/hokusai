@@ -1,140 +1,107 @@
 import os
+import time
 import urllib
+import tempfile
 
+from shutil import rmtree
 from distutils.dir_util import mkpath
 
 import yaml
 
-from jinja2 import Environment, PackageLoader, FileSystemLoader
+from jinja2 import Environment, PackageLoader, FileSystemLoader, StrictUndefined
 
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, YAML_HEADER, clean_string
+from hokusai.lib.common import print_green, YAML_HEADER, clean_string, shout
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def setup(project_type, project_name, port, internal, template_dir):
+def setup(project_name, port, template_remote, template_dir, template_vars, allow_missing_vars):
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
   config.create(clean_string(project_name))
 
   ecr = ECR()
-  created = ecr.create_project_repo()
-  if created:
-    print_green("Created project repo %s" % ecr.project_repo)
-  else:
+  if ecr.project_repo_exists():
     print_green("Project repo %s already exists.  Skipping create." % ecr.project_repo)
+  else:
+    ecr.create_project_repo()
+    print_green("Created project repo %s" % ecr.project_repo)
 
-  if template_dir:
-    env = Environment(loader=FileSystemLoader(template_dir))
+  scratch_dir = None
+  if template_remote:
+    scratch_dir = tempfile.mkdtemp()
+    git_repo_and_branch = template_remote.split('#', 1)
+    git_repo = git_repo_and_branch[0]
+    if len(git_repo_and_branch) == 2:
+      git_branch = git_repo_and_branch[1]
+    else:
+      git_branch = "master"
+    shout("git clone -b %s --single-branch %s %s" % (git_branch, git_repo, scratch_dir))
+
+  custom_template_dir = None
+  if allow_missing_vars:
+    loader_kwargs = {}
+  else:
+    loader_kwargs = { "undefined": StrictUndefined }
+
+  if scratch_dir and template_dir:
+    custom_template_dir = os.path.join(scratch_dir, os.path.basename(template_dir))
+    env = Environment(loader=FileSystemLoader(os.path.join(scratch_dir, os.path.basename(template_dir))), **loader_kwargs)
+  elif scratch_dir:
+    custom_template_dir = scratch_dir
+    env = Environment(loader=FileSystemLoader(scratch_dir), **loader_kwargs)
+  elif template_dir:
+    custom_template_dir = os.path.abspath(template_dir)
+    env = Environment(loader=FileSystemLoader(os.path.abspath(template_dir)), **loader_kwargs)
   else:
     env = Environment(loader=PackageLoader('hokusai', 'templates'))
 
-  if project_type == 'ruby-rack':
-    dockerfile = env.get_template("Dockerfile-ruby.j2")
-    base_image = 'ruby:latest'
-    run_command = 'bundle exec rackup'
-    development_command = 'bundle exec rackup'
-    test_command = 'bundle exec rake'
-    runtime_environment = {
-      'development': {"RACK_ENV": "development"},
-      'test': {"RACK_ENV": "test"},
-      'production': {'RACK_ENV': 'production'}
-    }
-  elif project_type == 'ruby-rails':
-    dockerfile = env.get_template("Dockerfile-rails.j2")
-    base_image = 'ruby:latest'
-    run_command = 'bundle exec rails server'
-    development_command = 'bundle exec rails server'
-    test_command = 'bundle exec rake'
-    runtime_environment = {
-      'development': {"RAILS_ENV": "development"},
-      'test': {"RAILS_ENV": "test"},
-      'production': {'RAILS_ENV': 'production',
-                     'RAILS_SERVE_STATIC_FILES': 'true',
-                     'RAILS_LOG_TO_STDOUT': 'true'}
-    }
-  elif project_type == 'nodejs':
-    dockerfile = env.get_template("Dockerfile-node.j2")
-    base_image = 'node:latest'
-    run_command = 'node index.js'
-    development_command = 'node index.js'
-    test_command = 'npm test'
-    runtime_environment = {
-      'development': {"NODE_ENV": "development"},
-      'test': {"NODE_ENV": "test"},
-      'production': {'NODE_ENV': 'production'}
-    }
-  elif project_type == 'elixir':
-    dockerfile = env.get_template("Dockerfile-elixir.j2")
-    base_image = 'elixir:latest'
-    run_command = 'mix run --no-halt'
-    development_command = 'mix run'
-    test_command = 'mix test'
-    runtime_environment = {
-      'development': {"MIX_ENV": "dev"},
-      'test': {'MIX_ENV': 'test'},
-      'production': {'MIX_ENV': 'prod'}
-    }
-  elif project_type == 'python-wsgi':
-    dockerfile = env.get_template("Dockerfile-python.j2")
-    base_image = 'python:latest'
-    run_command = "gunicorn -b 0.0.0.0:%s app" % port
-    development_command = "python -m werkzeug.serving -b 0.0.0.0:%s %s" % (port, project_name)
-    test_command = 'python -m unittest discover .'
-    runtime_environment = {
-      'development': {"CONFIG_FILE": "config/development.py"},
-      'test': {"CONFIG_FILE": "config/test.py"},
-      'production': {'CONFIG_FILE': 'config/production.py'}
-    }
+  required_templates = [
+    'Dockerfile.j2',
+    '.dockerignore.j2',
+    'hokusai/common.yml.j2',
+    'hokusai/development.yml.j2',
+    'hokusai/test.yml.j2',
+    'hokusai/staging.yml.j2',
+    'hokusai/production.yml.j2'
+  ]
 
-  with open(os.path.join(os.getcwd(), 'Dockerfile'), 'w') as f:
-    f.write(dockerfile.render(
-      base_image=base_image,
-      command=run_command,
-      target_port=port
-    ))
-  with open(os.path.join(os.getcwd(), '.dockerignore'), 'w') as f:
-    f.write(env.get_template("dockerignore.j2").render(
-      project_type=project_type
-    ))
-  with open(os.path.join(os.getcwd(), 'hokusai', "common.yml"), 'w') as f:
-    f.write(env.get_template("common.yml.j2").render(
-      project_name=config.project_name
-    ))
-  with open(os.path.join(os.getcwd(), 'hokusai', "development.yml"), 'w') as f:
-    f.write(env.get_template("development.yml.j2").render(
-      project_name=config.project_name,
-      development_command=development_command,
-      port=port,
-      environment=runtime_environment['development']
-    ))
-  with open(os.path.join(os.getcwd(), 'hokusai', "test.yml"), 'w') as f:
-    f.write(env.get_template("test.yml.j2").render(
-      project_name=config.project_name,
-      development_command=test_command,
-      environment=runtime_environment['test']
-    ))
-  with open(os.path.join(os.getcwd(), 'hokusai', "staging.yml"), 'w') as f:
-    f.write(env.get_template("staging.yml.j2").render(
-      project_name=config.project_name,
-      component="web",
-      port=port,
-      layer="application",
-      environment=runtime_environment['production'],
-      image="%s:staging" % ecr.project_repo,
-      internal=internal
-    ))
-  with open(os.path.join(os.getcwd(), 'hokusai', "production.yml"), 'w') as f:
-    f.write(env.get_template("production.yml.j2").render(
-      project_name=config.project_name,
-      component="web",
-      port=port,
-      layer="application",
-      environment=runtime_environment['production'],
-      image="%s:production" % ecr.project_repo,
-      internal=internal
-    ))
+  template_context = {
+    "project_name": config.project_name,
+    "project_repo": ecr.project_repo,
+    "port": port
+  }
 
-  print_green("Config created in ./hokusai")
+  for s in template_vars:
+    if '=' not in s:
+      raise HokusaiError("Error: template variables must be of the form 'key=value'")
+    split = s.split('=', 1)
+    template_context[split[0]] = split[1]
 
+  try:
+    for template in required_templates:
+      if custom_template_dir and not os.path.isfile(os.path.join(custom_template_dir, template)):
+        raise HokusaiError("Could not find required template file %s" % template)
+      with open(os.path.join(os.getcwd(), template.rstrip('.j2')), 'w') as f:
+        f.write(env.get_template(template).render(**template_context))
+      print_green("Created %s" % template.rstrip('.j2'))
+
+    if custom_template_dir:
+      for root, _, files in os.walk(custom_template_dir):
+        subpath = os.path.relpath(root, custom_template_dir)
+        if subpath is not '.':
+          mkpath(os.path.join(os.getcwd(), subpath))
+        for file in files:
+          if subpath is not '.':
+            file_path = os.path.join(subpath, file)
+          else:
+            file_path = file
+          if file_path in required_templates:
+            continue
+          with open(os.path.join(os.getcwd(), file_path), 'w') as f:
+            f.write(env.get_template(file_path).render(**template_context))
+          print_green("Created %s" % file_path.rstrip('.j2'))
+  finally:
+    if scratch_dir:
+      rmtree(scratch_dir)
