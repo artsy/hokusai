@@ -50,11 +50,15 @@ def update(app_name, verbose):
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
+@click.option('--resources', type=click.BOOL, is_flag=True, help='Print Kubernetes API objects defined in ./hokusai/staging.yml')
+@click.option('--pods', type=click.BOOL, is_flag=True, help='Print pods')
+@click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output")
+@click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def status(app_name, verbose):
-  """Print the Kubernetes resources status defined in ./hokusai/staging.yml"""
+def status(app_name, resources, pods, describe, top, verbose):
+  """Print the Kubernetes resources status defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT, yaml_file_name=app_name)
+  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, namespace=clean_string(app_name), yaml_file_name=app_name)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -91,9 +95,7 @@ def logs(app_name, timestamps, follow, tail, verbose):
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(app_name, tag, migration, constraint, git_remote, verbose):
-  """Update the project's deployment(s) to reference
-  the given image tag and update the tag staging
-  to reference the same image"""
+  """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
   hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, namespace=clean_string(app_name))
 

@@ -39,11 +39,15 @@ def update(verbose):
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--resources/--no-resources', default=True, help='Print Kubernetes API objects defined in ./hokusai/staging.yml (default: true)')
+@click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
+@click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output for resources and pods")
+@click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def status(verbose):
-  """Print the Kubernetes resources status defined in ./hokusai/staging.yml"""
+def status(resources, pods, describe, top, verbose):
+  """Print Kubernetes resources in the staging context"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT)
+  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)

@@ -59,14 +59,34 @@ def k8s_delete(context, yaml_file_name=None):
 
 
 @command
-def k8s_status(context, yaml_file_name=None):
+def k8s_status(context, resources, pods, describe, top, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  kctl = Kubectl(context)
-  shout(kctl.command("get -f %s -o wide" % kubernetes_yml), print_output=True)
+  kctl = Kubectl(context, namespace=namespace)
+  if describe:
+    kctl_cmd = "describe"
+    output = ""
+  else:
+    kctl_cmd = "get"
+    output = " -o wide"
+  if resources:
+    print('')
+    print_green("Resources")
+    print_green("===========")
+    shout(kctl.command("%s -f %s%s" % (kctl_cmd, kubernetes_yml, output)), print_output=True)
+  if pods:
+    print('')
+    print_green("Pods")
+    print_green("===========")
+    shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
+  if top:
+    print('')
+    print_green("Top Pods")
+    print_green("===========")
+    shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
 
 
 @command
