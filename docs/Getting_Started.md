@@ -8,10 +8,10 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
 
 ```bash
 cd ./path/to/my/rails/project/git/repo
-hokusai setup --project-type ruby-rails
+hokusai setup
 ```
 
-(`hokusai setup --help` can report the list of all supported project types.)
+(`hokusai setup --help` can report the list of all available options.)
 
 `hokusai setup` will create:
 - A `Dockerfile` in your project root
@@ -25,6 +25,10 @@ hokusai setup --project-type ruby-rails
 - An ECR repository for your project
 
 The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
+
+You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local path with the `--template-dir` option, a remote git repository with the `--template-remote` option and pass in custom template variables with the `--var` option.
+
+See [https://github.com/artsy/artsy-hokusai-templates](https://github.com/artsy/artsy-hokusai-templates) for examples of custom templates for different application types.
 
 2) Check that Hokusai is correctly configured for your project
 

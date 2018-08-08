@@ -40,9 +40,6 @@ hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> 
 
 * `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
-Required options:
-  - `--project-type`: `ruby-rack`, `ruby-rails`, `nodejs`, `elixir`, or `python-wsgi`.
-
 When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define configuration for a staging / production Kubernetes context that you are assumed to have available, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
 
 Note: `hokusai staging` `hokusai production` subcommands such as `create`, `update`, `env`, `deploy` and `logs` reference the respective environment YAML file and interacts with the respective Kubernetes context.
@@ -104,7 +101,7 @@ In order to start a review app you will need to follow these steps:
     ```shell
     hokusai review_app setup <name> # we recommend using branch name or pr number as name
     ```
-    This command will create a new `<name>.yaml` under `hokusai/` folder.
+    This command will create a new `<name>.yml` under `hokusai/` folder.
 
 2) Check newly created `<name>.yaml` file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps. Basically each review app will end up being in its own namespace to not collide with staging.
 
@@ -125,7 +122,7 @@ In order to start a review app you will need to follow these steps:
 
 5) Copy staging `configMap` to new namespace:
     ```shell
-    hokusai review_app env_copy <name>
+    hokusai review_app env copy <name>
     ```
 
 6) Find and visit your staging app:

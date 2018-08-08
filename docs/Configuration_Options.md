@@ -16,7 +16,6 @@ When running `hokusai setup` the following files are created:
 * `./hokusai/config.yml` contains project-specific configuration options.  It accepts the following keys:
 
     - `project-name`: <string> (required) - The project name
-    - `docker-repo`: <string> (required) - The project's Docker repository URI
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook
 
@@ -42,10 +41,10 @@ spec:
         containers:
             envFrom:
                 - configMapRef:
-                    name: {{ project-name }}
+                    name: {{ project_name }}
 ```
 
-This instructs Kubernetes to use the `ConfigMap` object named `{project-name}` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.
+This instructs Kubernetes to use the `ConfigMap` object named `{project-name}-environment` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.
 
 Note: When changing the project environment (i.e. after running `hokusai [staging|production] env set FOO=bar`) you need to run `hokusai [staging|production] deployment refresh` to re-create the project deployment's containers as Kubernetes will not propogate the new environment variables automatically.
 
@@ -60,7 +59,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project-name }}
+        app: {{ project_name }}
         layer: web
         component: application
 ```
@@ -74,13 +73,13 @@ spec:
     protocol: TCP
     targetPort: {{ --port option based to hokusai setup }}
   selector:
-    app: {{ project-name }}
+    app: {{ project_name }}
     layer: application
     component: web
-  type: {{ ClusterIP if --internal option passed to hokusai setup, else LoadBalancer }}
+  type: ClusterIP
 ```
 
-Additional Deployments and Services should preserve the label structure `app` / `layer` / `component` label structure.  Hokusai will only target deployments with the `app={project-name},layer=application` label selector when running `hokusai [staging|production]` subcommands.
+Custom templates as well as additional Deployments and Services should preserve the label structure `app` / `layer` / `component` label structure.  Hokusai will only target deployments with the `app={project_name},layer=application` label selector when running `hokusai [staging|production]` subcommands.
 
 For example, to add a worker `Deployment` to `./hokusai/staging.yml` or `./hokusai/production.yml` you would create it with the following labels:
 
@@ -89,7 +88,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project-name }}
+        app: {{ project_name }}
         layer: worker
         component: application
 ```
@@ -103,7 +102,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project-name }}
+        app: {{ project_name }}
         layer: redis
         component: cache
 ```
