@@ -35,16 +35,15 @@ def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install
 
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
-@click.option('--port', type=click.INT, default=8080, help='The port of the service (default: 8080)')
 @click.option('--template-remote', type=click.STRING, help='Git remote of templates to use - you can specify a branch via <git-remote>#<branch>')
 @click.option('--template-dir', type=click.STRING, help='Directory of templates to use - can be used with --template-remote')
 @click.option('--var', type=click.STRING, multiple=True, help='Extra variables to render Jinja templates in the form of key=value')
 @click.option('--allow-missing-vars', is_flag=True, help='Do not fail on undefined template vars')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def setup(project_name, port, template_remote, template_dir, var, allow_missing_vars, verbose):
+def setup(project_name, template_remote, template_dir, var, allow_missing_vars, verbose):
   """Set up Hokusai for the current project"""
   set_verbosity(verbose)
-  hokusai.setup(project_name, port, template_remote, template_dir, var, allow_missing_vars)
+  hokusai.setup(project_name, template_remote, template_dir, var, allow_missing_vars)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

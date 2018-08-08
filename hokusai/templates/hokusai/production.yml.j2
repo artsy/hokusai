@@ -27,7 +27,7 @@ spec:
         image: {{ project_repo }}:production
         imagePullPolicy: Always
         ports:
-        - containerPort: {{ port }}
+        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -40,9 +40,9 @@ metadata:
   namespace: default
 spec:
   ports:
-  - port: {{ port }}
+  - port: 80
     protocol: TCP
-    targetPort: {{ port }}
+    targetPort: 80
   selector:
     app: {{ project_name }}
     component: web

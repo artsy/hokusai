@@ -2,7 +2,7 @@
 version: '2'
 services:
   {{ project_name }}:
-    command: ["test.sh"]
+    command: ["bash", "test.sh"]
     extends:
       file: common.yml
       service: {{ project_name }}

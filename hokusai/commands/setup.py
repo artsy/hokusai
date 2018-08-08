@@ -17,7 +17,7 @@ from hokusai.lib.common import print_green, YAML_HEADER, clean_string, shout
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def setup(project_name, port, template_remote, template_dir, template_vars, allow_missing_vars):
+def setup(project_name, template_remote, template_dir, template_vars, allow_missing_vars):
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
   config.create(clean_string(project_name))
 
@@ -69,8 +69,7 @@ def setup(project_name, port, template_remote, template_dir, template_vars, allo
 
   template_context = {
     "project_name": config.project_name,
-    "project_repo": ecr.project_repo,
-    "port": port
+    "project_repo": ecr.project_repo
   }
 
   for s in template_vars:

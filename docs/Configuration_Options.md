@@ -69,9 +69,9 @@ And a `Service` with the following structure:
 ```
 spec:
   ports:
-  - port: {{ --port option based to hokusai setup }}
+  - port: 80
     protocol: TCP
-    targetPort: {{ --port option based to hokusai setup }}
+    targetPort: 80
   selector:
     app: {{ project_name }}
     layer: application
