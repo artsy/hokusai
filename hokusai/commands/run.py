@@ -6,4 +6,4 @@ def run(context, cmd, tty, tag, env, constraint, namespace=None):
   if tag is None:
     tag = context
 
-  return CommandRunner(context, namespace=namespace).run(image_tag, cmd, tty=tty, env=env, constraint=constraint)
+  return CommandRunner(context, namespace=namespace).run(tag, cmd, tty=tty, env=env, constraint=constraint)
