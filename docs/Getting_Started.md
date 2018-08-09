@@ -27,9 +27,23 @@ hokusai setup
 
 The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
 
-You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local directory with the `--template-dir` option, or specify a remote git repository with `--template-remote` and point to a remote path in that repository with `--template-dir`.  Additionally, you can pass in custom template variables with the `--var` option.
+You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local directory with the `--template-dir` option, or specify a remote git repository with `--template-remote` and point to a remote path in that repository with `--template-dir`.
 
-For example, Artsy devs can run `hokusai setup --template-remote git@github.com:artsy/artsy-hokusai-templates.git --template-dir rails` to bootstrap a Rails configuration.
+Running without these options provides a default configuration.  All other template directories should provide this structure:
+
+- Dockerfile.j2
+- .dockerignore.j2
+- hokusai/build.yml.j2
+- hokusai/development.yml.j2
+- hokusai/test.yml.j2
+- hokusai/staging.yml.j2
+- hokusai/production.yml.j2
+
+All templates are rendered with `project_name` and `project_repo` template variables.  You can reference them like so: `{{ project_name }}`. Additionally, you can pass in custom template variables to `hokusai setup` with the `--var` option.
+
+Any additional `.j2` template files in the template directory and its child directories will be rendered with the provided template variables, and any other regular files will also be copied with the paths relative to the root of the project when running `hokusai setup`.
+
+Artsy devs can find more information on our org-specific templates [in the artsy-hokusai-templates repo](https://github.com/artsy/artsy-hokusai-templates).
 
 2) Check that Hokusai is correctly configured for your project
 
