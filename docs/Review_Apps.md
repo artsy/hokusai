@@ -23,6 +23,11 @@ In order to start a review app you will need to follow these steps:
     hokusai registry push --force --tag <name>
     ```
 
+    You may want to push subsequent build to the same tag - you can do so with the `--overwrite` flag.  Also it may be a good idea to skip updating the `latest` tag in the registry, which you can do with:
+    ```shell
+    hokusai registry push --overwrite --skip-latest --tag <name>
+    ```
+
 4) Make sure your review app deployment will use the image you just pushed. This can be done by modifying the new `<name>.yml` file.
 
     There will be a `containers` subsection of the configuration that specifies the `image` that should be pulled from AWS Elastic Container Registry when booting up your review app. Update the value of that `image` so that it points to your newly tagged image, rather than the default staging image for that project.
@@ -60,9 +65,16 @@ In order to start a review app you will need to follow these steps:
     - You may need to tweak the URL to use `https` instead of `http`
     - You may need to accept a browser warning about a missing or bad certificate
 
-8) If you need to update environment variables:
+    You can also view a summarized status of your review app with:
 
     ```shell
+    hokusai review_app status <name>
+    ```
+
+8) If you need to view or update environment variables:
+
+    ```shell
+    hokusai review_app env get <name> FOO
     hokusai review_app env set <name> FOO=BAR
     ```
 
@@ -72,16 +84,35 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app refresh <name>
     ```
 
-10) Update review app:
+10) If you need to redeploy your app, (e.g. after pushing a new build for <name>)
+
+    ```shell
+    hokusai review_app deploy <name> <name>
+    ```
+
+11) If you need to view logs for your app, (e.g. after a refresh or deploy)
+
+    ```shell
+    hokusai review_app logs <name>
+    ```
+
+12) If you need to get a shell in your app, (e.g. to launch a Rails console)
+
+    ```shell
+    hokusai review_app run <name> <command> --tty
+    ```
+
+13) Update review app:
 
     If you have made changes to your review app's yaml file, you need to update deployment for that do:
     ```shell
     hokusai review_app update <name>
     ```
 
-11) Delete review app:
+14) Delete review app:
 
     ```shell
+    hokusai review_app env delete <name>
     hokusai review_app delete <name>
     ```
 
