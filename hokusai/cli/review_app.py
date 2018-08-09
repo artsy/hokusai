@@ -27,7 +27,7 @@ def setup(app_name, verbose, source_file):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(app_name, verbose):
   """Creates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
-  hokusai.k8s_create(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name)
+  hokusai.k8s_create(KUBE_CONTEXT, tag=app_name, namespace=clean_string(app_name), yaml_file_name=app_name)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
