@@ -6,13 +6,13 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def update(context, tag, migration, constraint, git_remote, namespace=None):
+def update(context, tag, migration, constraint, git_remote, namespace=None, resolve_tag_sha1=True):
   if migration is not None:
     print_green("Running migration '%s' on %s..." % (migration, context))
     return_code = CommandRunner(context, namespace=namespace).run(tag, migration, constraint=constraint)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
-  Deployment(context, namespace=namespace).update(tag, constraint, git_remote)
+  Deployment(context, namespace=namespace).update(tag, constraint, git_remote, resolve_tag_sha1=resolve_tag_sha1)
   print_green("Deployment updated to %s" % tag)
 
 

@@ -99,7 +99,7 @@ def logs(app_name, timestamps, follow, tail, verbose):
 def deploy(app_name, tag, migration, constraint, git_remote, verbose):
   """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, namespace=clean_string(app_name))
+  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, namespace=clean_string(app_name), resolve_tag_sha1=False)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)

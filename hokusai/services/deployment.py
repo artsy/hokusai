@@ -19,13 +19,14 @@ class Deployment(object):
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint, git_remote):
+  def update(self, tag, constraint, git_remote, resolve_tag_sha1=True):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
-    tag = self.ecr.find_git_sha1_image_tag(tag)
-    if tag is None:
-      raise HokusaiError("Could not find a git SHA1 for tag %s.  Aborting." % tag)
+    if resolve_tag_sha1:
+      tag = self.ecr.find_git_sha1_image_tag(tag)
+      if tag is None:
+        raise HokusaiError("Could not find a git SHA1 for tag %s.  Aborting." % tag)
 
     if self.namespace is None:
       print_green("Deploying %s to %s..." % (tag, self.context))
