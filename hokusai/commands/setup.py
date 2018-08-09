@@ -4,7 +4,7 @@ import time
 import urllib
 import tempfile
 
-from shutil import rmtree
+from shutil import rmtree, copyfile
 from distutils.dir_util import mkpath
 
 import yaml
@@ -103,8 +103,11 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
             file_path = file
           if file_path in required_templates:
             continue
-          with open(os.path.join(os.getcwd(), file_path), 'w') as f:
-            f.write(env.get_template(file_path).render(**template_context))
+          if file_path.endswith('.j2'):
+            with open(os.path.join(os.getcwd(), file_path), 'w') as f:
+              f.write(env.get_template(file_path).render(**template_context))
+          else:
+            copyfile(os.path.join(custom_template_dir, file_path), os.path.join(os.getcwd(), file_path))
           print_green("Created %s" % file_path.rstrip('.j2'))
   finally:
     if scratch_dir:
