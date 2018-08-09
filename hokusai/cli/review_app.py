@@ -50,8 +50,8 @@ def update(app_name, verbose):
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.option('--resources', type=click.BOOL, is_flag=True, help='Print Kubernetes API objects defined in ./hokusai/APP_NAME.yml')
-@click.option('--pods', type=click.BOOL, is_flag=True, help='Print pods')
+@click.option('--resources/--no-resources', default=True, help='Print Kubernetes API objects defined in ./hokusai/APP_NAME.yml (default: true)')
+@click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
 @click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output")
 @click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
