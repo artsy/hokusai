@@ -100,7 +100,7 @@ To distribute Hokusai you must be a member of Artsy engineering and have write c
 - https://hub.docker.com/r/artsy/hokusai/
 - The S3 bucket `artsy-provisioning-public` in `us-east-1`
 
-Install `git`, `twine`, `pyinstaller`, `s3cmd` and `docker` then run `./distribute.sh`
+Install `git`, `twine`, `pyinstaller`, `s3cmd` and `docker` then run `./distribute.sh {VERSION}`
 
 ## The Name
 
