@@ -39,11 +39,15 @@ def update(verbose):
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--resources/--no-resources', default=True, help='Print Kubernetes API objects defined in ./hokusai/production.yml (default: true)')
+@click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
+@click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output for resources and pods")
+@click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def status(verbose):
-  """Print the Kubernetes resources status defined in ./hokusai/production.yml"""
+def status(resources, pods, describe, top, verbose):
+  """Print Kubernetes resources in the production context"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT)
+  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -84,19 +88,21 @@ def deploy(tag, migration, constraint, git_remote, verbose):
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def refresh(verbose):
+def refresh(deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT)
+  hokusai.refresh(KUBE_CONTEXT, deployment)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def restart(verbose):
+def restart(deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT)
+  hokusai.refresh(KUBE_CONTEXT, deployment)
 
 
 @production.group()

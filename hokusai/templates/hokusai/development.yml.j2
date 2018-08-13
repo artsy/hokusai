@@ -1,0 +1,10 @@
+---
+version: '2'
+services:
+  {{ project_name }}:
+    extends:
+      file: build.yml
+      service: {{ project_name }}
+    ports:
+      - 80:80
+

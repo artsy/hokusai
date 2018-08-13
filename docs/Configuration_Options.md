@@ -16,15 +16,14 @@ When running `hokusai setup` the following files are created:
 * `./hokusai/config.yml` contains project-specific configuration options.  It accepts the following keys:
 
     - `project-name`: <string> (required) - The project name
-    - `docker-repo`: <string> (required) - The project's Docker repository URI
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook
 
-* `./hokusai/common.yml` is the base docker-compose Yaml file referenced when running `hokusai local` commands. It should contain a single service for the project, `build` referencing the root project directory, and any build args (i.e.) host environment variables to inject into the Dockerfile. 
+* `./hokusai/build.yml` is the base docker-compose Yaml file referenced when running `hokusai local` commands. It should contain a single service for the project, `build` referencing the root project directory, and any build args (i.e.) host environment variables to inject into the Dockerfile.
 
-* `./hokusai/development.yml` is the docker-compose Yaml file referenced when running `hokusai local dev` commands. It should contain a definition for your project service (extending `./hokusai/common.yml`) as well as development environment variables and any dependent services.
+* `./hokusai/development.yml` is the docker-compose Yaml file referenced when running `hokusai local dev` commands. It should contain a definition for your project service (extending `./hokusai/build.yml`) as well as development environment variables and any dependent services.
 
-* `./hokusai/test.yml` is the docker-compose Yaml file referenced when running `hokusai local test`. It should contain a definition for your project service (extending `./hokusai/common.yml`) as well as test environment variables and any dependent services.
+* `./hokusai/test.yml` is the docker-compose Yaml file referenced when running `hokusai local test`. It should contain a definition for your project service (extending `./hokusai/build.yml`) as well as test environment variables and any dependent services.
 
 * `./hokusai/staging.yml` is the Kubernetes Yaml file referenced with running `hokusai staging` subcommands. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
 
@@ -42,10 +41,10 @@ spec:
         containers:
             envFrom:
                 - configMapRef:
-                    name: {{ project-name }}
+                    name: {{ project_name }}
 ```
 
-This instructs Kubernetes to use the `ConfigMap` object named `{project-name}` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.
+This instructs Kubernetes to use the `ConfigMap` object named `{project-name}-environment` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.
 
 Note: When changing the project environment (i.e. after running `hokusai [staging|production] env set FOO=bar`) you need to run `hokusai [staging|production] deployment refresh` to re-create the project deployment's containers as Kubernetes will not propogate the new environment variables automatically.
 
@@ -60,7 +59,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project-name }}
+        app: {{ project_name }}
         layer: web
         component: application
 ```
@@ -70,17 +69,17 @@ And a `Service` with the following structure:
 ```
 spec:
   ports:
-  - port: {{ --port option based to hokusai setup }}
+  - port: 80
     protocol: TCP
-    targetPort: {{ --port option based to hokusai setup }}
+    targetPort: 80
   selector:
-    app: {{ project-name }}
+    app: {{ project_name }}
     layer: application
     component: web
-  type: {{ ClusterIP if --internal option passed to hokusai setup, else LoadBalancer }}
+  type: ClusterIP
 ```
 
-Additional Deployments and Services should preserve the label structure `app` / `layer` / `component` label structure.  Hokusai will only target deployments with the `app={project-name},layer=application` label selector when running `hokusai [staging|production]` subcommands.
+Custom templates as well as additional Deployments and Services should preserve the label structure `app` / `layer` / `component` label structure.  Hokusai will only target deployments with the `app={project_name},layer=application` label selector when running `hokusai [staging|production]` subcommands.
 
 For example, to add a worker `Deployment` to `./hokusai/staging.yml` or `./hokusai/production.yml` you would create it with the following labels:
 
@@ -89,9 +88,9 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project-name }}
-        layer: worker
-        component: application
+        app: {{ project_name }}
+        layer: application
+        component: worker
 ```
 
 With this structure, Hokusai will update *both* the web and worker deployments simultaneuosly, which is probably what you want.
@@ -103,9 +102,9 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project-name }}
-        layer: redis
-        component: cache
+        app: {{ project_name }}
+        layer: cache
+        component: redis
 ```
 
 Hokusai would ignore this when `hokusai [staging|production]` commands, but it would be included as part of your application's Kubernetes environment.

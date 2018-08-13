@@ -8,9 +8,9 @@ In order to start a review app you will need to follow these steps:
     ```shell
     hokusai review_app setup <name> # we recommend using branch name or pr number as name
     ```
-    This command will create a new `<name>.yaml` under `hokusai/` folder.
+    This command will create a new `<name>.yml` under `hokusai/` folder.
 
-2) Check the newly created `<name>.yaml` file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps. Basically each review app will end up being in its own namespace to not collide with staging.
+2) Check the newly created `<name>.yml` file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps. Basically each review app will end up being in its own namespace to not collide with staging.
 
 3) Push an image with this review app tag:
 
@@ -23,7 +23,12 @@ In order to start a review app you will need to follow these steps:
     hokusai registry push --force --tag <name>
     ```
 
-4) Make sure your review app deployment will use the image you just pushed. This can be done by modifying the new `<name>.yaml` file.
+    You may want to push subsequent build to the same tag - you can do so with the `--overwrite` flag.  Also it may be a good idea to skip updating the `latest` tag in the registry, which you can do with:
+    ```shell
+    hokusai registry push --overwrite --skip-latest --tag <name>
+    ```
+
+4) Make sure your review app deployment will use the image you just pushed. This can be done by modifying the new `<name>.yml` file.
 
     There will be a `containers` subsection of the configuration that specifies the `image` that should be pulled from AWS Elastic Container Registry when booting up your review app. Update the value of that `image` so that it points to your newly tagged image, rather than the default staging image for that project.
 
@@ -47,7 +52,7 @@ In order to start a review app you will need to follow these steps:
 6) Copy the staging `configMap` to the new namespace:
 
     ```shell
-    hokusai review_app env_copy <name>
+    hokusai review_app env copy <name>
     ```
 
 7) Find and visit your staging app:
@@ -60,24 +65,54 @@ In order to start a review app you will need to follow these steps:
     - You may need to tweak the URL to use `https` instead of `http`
     - You may need to accept a browser warning about a missing or bad certificate
 
-8) If you need to update environment variables:
+    You can also view a summarized status of your review app with:
 
-    - Until this feature is added to Hokusai, you can update environment variables as usual from the Config Maps section of the Kubernetes UI
+    ```shell
+    hokusai review_app status <name>
+    ```
+
+8) If you need to view or update environment variables:
+
+    ```shell
+    hokusai review_app env get <name> FOO
+    hokusai review_app env set <name> FOO=BAR
+    ```
 
 9) If you need to refresh your app, (e.g. after updating environment variables)
 
-    - Until this feature is added to Hokusai, you can restart apps as usual by terminating pods from the Pods section of the Kubernetes UI
+    ```shell
+    hokusai review_app refresh <name>
+    ```
 
-10) Update review app:
+10) If you need to redeploy your app, (e.g. after pushing a new build for <name>)
+
+    ```shell
+    hokusai review_app deploy <name> <name>
+    ```
+
+11) If you need to view logs for your app, (e.g. after a refresh or deploy)
+
+    ```shell
+    hokusai review_app logs <name>
+    ```
+
+12) If you need to get a shell in your app, (e.g. to launch a Rails console)
+
+    ```shell
+    hokusai review_app run <name> <command> --tty
+    ```
+
+13) Update review app:
 
     If you have made changes to your review app's yaml file, you need to update deployment for that do:
     ```shell
     hokusai review_app update <name>
     ```
 
-11) Delete review app:
+14) Delete review app:
 
     ```shell
+    hokusai review_app env delete <name>
     hokusai review_app delete <name>
     ```
 

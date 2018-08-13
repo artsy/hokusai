@@ -8,9 +8,9 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
 class CommandRunner(object):
-  def __init__(self, context):
+  def __init__(self, context, namespace=None):
     self.context = context
-    self.kctl = Kubectl(self.context)
+    self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
 
   def run(self, image_tag, cmd, tty=False, env=(), constraint=()):

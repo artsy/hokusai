@@ -51,9 +51,8 @@ class ECR(object):
     return self.project_repo is not None
 
   def create_project_repo(self):
-    if self.project_repo_exists():
-      return False
     self.client.create_repository(repositoryName=config.project_name)
+    self.__registry = None
     return True
 
   def get_login(self):

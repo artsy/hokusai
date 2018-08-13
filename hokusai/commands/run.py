@@ -2,10 +2,8 @@ from hokusai.lib.command import command
 from hokusai.services.command_runner import CommandRunner
 
 @command
-def run(context, cmd, tty, tag, env, constraint):
-  if tag is not None:
-    image_tag = tag
-  else:
-    image_tag = context
+def run(context, cmd, tty, tag, env, constraint, namespace=None):
+  if tag is None:
+    tag = context
 
-  return CommandRunner(context).run(image_tag, cmd, tty=tty, env=env, constraint=constraint)
+  return CommandRunner(context, namespace=namespace).run(tag, cmd, tty=tty, env=env, constraint=constraint)

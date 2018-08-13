@@ -12,7 +12,7 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
 
 @command
-def k8s_create(context, tag='latest', yaml_file_name=None):
+def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
@@ -29,52 +29,70 @@ def k8s_create(context, tag='latest', yaml_file_name=None):
     ecr.retag(tag, context)
     print_green("Updated tag 'latest' -> %s" % context)
 
-  kctl = Kubectl(context)
+  kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
-  print_green("Created Kubernetes environment %s" % context)
+  print_green("Created Kubernetes environment %s" % kubernetes_yml)
+
 
 @command
-def k8s_update(context, yaml_file_name=None):
+def k8s_update(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  kctl = Kubectl(context)
+  kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
-  print_green("Updated Kubernetes environment %s" % context)
+  print_green("Updated Kubernetes environment %s" % kubernetes_yml)
+
 
 @command
-def k8s_delete(context, yaml_file_name=None):
+def k8s_delete(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  kctl = Kubectl(context)
+  kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)
-  print_green("Deleted Kubernetes environment %s" % context)
+  print_green("Deleted Kubernetes environment %s" % kubernetes_yml)
+
 
 @command
-def k8s_status(context):
-  kctl = Kubectl(context)
-  print('')
-  print_green("Deployments")
-  print_green('-----------------------------------------------------------')
-  shout(kctl.command("get deployments --selector app=%s -o wide" % config.project_name), print_output=True)
-  print('')
-  print_green("Services")
-  print_green('-----------------------------------------------------------')
-  shout(kctl.command("get services --selector app=%s -o wide" % config.project_name), print_output=True)
-  print('')
-  print_green("Pods")
-  print_green('-----------------------------------------------------------')
-  shout(kctl.command("get pods --selector app=%s -o wide" % config.project_name), print_output=True)
+def k8s_status(context, resources, pods, describe, top, namespace=None, yaml_file_name=None):
+  if yaml_file_name is None: yaml_file_name = context
+  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
+  if not os.path.isfile(kubernetes_yml):
+    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+
+  kctl = Kubectl(context, namespace=namespace)
+  if describe:
+    kctl_cmd = "describe"
+    output = ""
+  else:
+    kctl_cmd = "get"
+    output = " -o wide"
+  if resources:
+    print('')
+    print_green("Resources")
+    print_green("===========")
+    shout(kctl.command("%s -f %s%s" % (kctl_cmd, kubernetes_yml, output)), print_output=True)
+  if pods:
+    print('')
+    print_green("Pods")
+    print_green("===========")
+    shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
+  if top:
+    print('')
+    print_green("Top Pods")
+    print_green("===========")
+    shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
+
 
 @command
 def k8s_copy_config(context, destination_namespace):
-  kctl = Kubectl(context)
-  configmap = ConfigMap(context)
-  configmap.load()
-  configmap.struct['metadata']['namespace'] = destination_namespace
-  configmap.save()
+  source_configmap = ConfigMap(context)
+  destination_configmap = ConfigMap(context, namespace=destination_namespace)
+  source_configmap.load()
+  destination_configmap.struct['data'] = source_configmap.struct['data']
+  destination_configmap.save()

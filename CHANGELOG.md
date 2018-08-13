@@ -1,4 +1,29 @@
+## v0.4.6
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.6/README.md)
+
+### Notable changes since v0.4.5
+
+* 4a89e3d Fix build in push and add --skip-latest option and logging in build
+* 8b38b51 copy non-template files on setup
+* ffcfc94 add namespace to all k8s commands and small fixes
+* 6726051 update output formatters for k8s_status and images
+* 53eef13 rename common.yml to build.yml - maintain backwards compatibility
+* 1e466e1 generalize setup further and drop port option - can be set in custom templates
+* 2d472f3 Refactor setup to use git remote and path for a given project type and accept custom template variables
+* 20518c9 Bust the registry cache when creating a new repository - fixes https://github.com/artsy/hokusai/issues/69
+* 9417d99 always resolve git SHA1 tags in pipeline and deploy commands
+* 022e2b3 update review_app commands to support all staging/production commands
+* 01d226d add --deployment option to refresh / restart
+* c5da8d2 Update README with Artsy-specific config link
+* 76c4fa0 Fix using context on k8s_update and not use yaml_file_name
+
+
 ## v0.4.5
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.5/README.md)
+
+### Notable changes since v0.4.4
 
 * 1a9822a resolve this directory in hokusai.spec
 * 5746219 (origin/fea-push-git-tags, fea-push-git-tags) push tags to specified git remote if provided on deploy and promote
@@ -12,16 +37,18 @@
 * 8011f78 read VERSION from module
 * 96f8f52 fix Yarn failure in CI build
 
+
 ## v0.4.4
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.4/README.md)
+
+### Notable changes since v0.4.3
 
 * 3a45ed0 add interactive 'console' command with click-repl
 * 74ce4da aws region fallbacks with boto2 compatibility and default to us-east-1
 * aaa241a fix flag collision in logs command -- timestamps now use short flag -s
 * 42b3fe7, a034af5, 45628cf update documentation
 
-[Documentation](https://github.com/artsy/hokusai/blob/v0.4.4/README.md)
-
-### Notable changes since v0.4.3
 
 ## v0.4.3
 

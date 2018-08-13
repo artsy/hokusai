@@ -8,23 +8,42 @@ We will assume you have already installed Hokusai and run `hokusai configure`, a
 
 ```bash
 cd ./path/to/my/rails/project/git/repo
-hokusai setup --project-type ruby-rails
+hokusai setup
 ```
 
-(`hokusai setup --help` can report the list of all supported project types.)
+(`hokusai setup --help` can report the list of all available options.)
 
 `hokusai setup` will create:
-- A `Dockerfile` in your project root
+- An ECR repository for your project
+- A `Dockerfile` in your project's root directory
+- A `.dockerignore` file in your project's root directory
 - A configuration folder `./hokusai`.  This folder contains:
   * `config.yml` - Hokusai project configuration
-  * `common.yml` - a Docker Compose YAML file imported by `development.yml` and `test.yml`
-  * `development.yml`- a Docker Compose YAML file for the development environment
-  * `test.yml` - a Docker Compose YAML file for the test environment
-  * `staging.yml` - a Kubernetes YAML file for the staging environment
-  * `production.yml` - a Kubernetes YAML file for the production environment
-- An ECR repository for your project
+  * `build.yml` - a Docker Compose YAML file used by `hokusai build` and imported by `development.yml` and `test.yml`
+  * `development.yml`- a Docker Compose YAML file used by `hokusai dev`
+  * `test.yml` - a Docker Compose YAML file used by `hokusai test`
+  * `staging.yml` - a Kubernetes YAML file used by `hokusai staging`
+  * `production.yml` - a Kubernetes YAML file used by `hokusai production`
 
-The files in `./hokusai` as well as the `Dockerfile` are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
+The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
+
+You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local directory with the `--template-dir` option, or specify a remote git repository with `--template-remote` and point to a remote path in that repository with `--template-dir`.
+
+Running without these options provides a default configuration.  All other template directories should provide this structure:
+
+- Dockerfile.j2
+- .dockerignore.j2
+- hokusai/build.yml.j2
+- hokusai/development.yml.j2
+- hokusai/test.yml.j2
+- hokusai/staging.yml.j2
+- hokusai/production.yml.j2
+
+All templates are rendered with `project_name` and `project_repo` template variables.  You can reference them like so: `{{ project_name }}`. Additionally, you can pass in custom template variables to `hokusai setup` with the `--var` option.
+
+Any additional `.j2` template files in the template directory and its child directories will be rendered with the provided template variables, and any other regular files will also be copied with the paths relative to the root of the project when running `hokusai setup`.
+
+Artsy devs can find more information on our org-specific templates [in the artsy-hokusai-templates repo](https://github.com/artsy/artsy-hokusai-templates).
 
 2) Check that Hokusai is correctly configured for your project
 

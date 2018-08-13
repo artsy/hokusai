@@ -72,10 +72,13 @@ def check():
     check_err("ECR repository '%s'" % config.project_name)
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):
-    check_ok('./hokusai/common.yml')
+  if not os.path.isfile(os.path.join(os.getcwd(), 'hokusai/build.yml')):
+    if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):
+      check_ok('./hokusai/common.yml')
+    else:
+      check_err('./hokusai/build.yml')
   else:
-    check_err('./hokusai/common.yml')
+    check_ok('./hokusai/build.yml')
     return_code += 1
 
   if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/development.yml')):

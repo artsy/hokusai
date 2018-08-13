@@ -12,9 +12,9 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
 class ConfigMap(object):
-  def __init__(self, context):
+  def __init__(self, context, namespace=None):
     self.context = context
-    self.kctl = Kubectl(context)
+    self.kctl = Kubectl(context, namespace=namespace)
     self.struct = OrderedDict([
       ('apiVersion', 'v1'),
       ('kind', 'ConfigMap'),

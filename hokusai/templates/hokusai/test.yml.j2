@@ -1,0 +1,9 @@
+---
+version: '2'
+services:
+  {{ project_name }}:
+    command: ["bash", "test.sh"]
+    extends:
+      file: build.yml
+      service: {{ project_name }}
+

@@ -12,5 +12,6 @@ from hokusai.commands.push import push
 from hokusai.commands.run import run
 from hokusai.commands.setup import setup
 from hokusai.commands.kubernetes import k8s_create, k8s_update, k8s_delete, k8s_status, k8s_copy_config
+from hokusai.commands.namespace import create_new_app_yaml
 from hokusai.commands.test import test
 from hokusai.commands.version import version
