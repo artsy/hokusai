@@ -28,16 +28,16 @@ If you use homebrew on OSX, install Docker for Mac with: `brew tap caskroom/cask
 
 3) [Docker Compose](https://docs.docker.com/compose/)
 
-If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `(sudo) pip install docker-compose`.
+If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `pip install docker-compose`.
 
 4) [Git](https://git-scm.com/)
 
 
 ## Setup
 
-1) Install Hokusai via pip with `(sudo) pip install hokusai` and `hokusai` will be installed on your `PATH`.
+1) Install Hokusai via pip with `pip install hokusai` and `hokusai` will be installed on your `PATH`.
 
-Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `(sudo) pip install hokusai --ignore-installed`.
+Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `pip install hokusai --ignore-installed`.
 
 Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai and adding it to your `$PATH`, i.e.
 
@@ -70,7 +70,7 @@ To work on Hokusai itself, set up your local development environment like so:
 
 - Install Python development packages: `pip install -r requirements.txt`.
 
-Finally, to install the Hokusai package to your system's `PATH` from a checkout of this repository, you can run `(sudo) pip install --upgrade .`
+Finally, to install the Hokusai package to your system's `PATH` from a checkout of this repository, you can run `pip install --upgrade .`
 
 Alternatively, you can invoke Hokusai directly with `python bin/hokusai`.
 
