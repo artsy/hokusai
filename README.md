@@ -54,7 +54,7 @@ To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
 
 ## Getting Started
 
-See [Getting Started.md](./docs/Getting_Started.md) to start using Hokusai your project.
+See [Getting Started.md](./docs/Getting_Started.md) to start using Hokusai for your project.
 
 
 ## Command Reference
