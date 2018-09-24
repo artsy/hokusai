@@ -106,3 +106,7 @@ See full details in the [Review App reference](Review_Apps.md).
   - `hokusai pipeline gitdiff` - Print a git diff between the tags deployed on production vs staging.
   - `hokusai pipeline gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
   - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
+
+### How to do a rollback
+
+You can use the command `hokusai registry images` to get a list of all images for your current project. They order from most recent to oldest. To do a rollback use `hokusai production deploy [image_tag]` to get back to a particular version. 
