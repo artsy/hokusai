@@ -6,7 +6,7 @@ In order to start a review app you will need to follow these steps:
 
 1) Create a new review app
     ```shell
-    hokusai review_app setup <name> # we recommend using branch name or pr number as name
+    hokusai review_app setup <name> # we recommend using branch name or PR number as name
     ```
     This command will create a new `<name>.yml` under `hokusai/` folder.
 
@@ -23,9 +23,9 @@ In order to start a review app you will need to follow these steps:
     hokusai registry push --force --tag <name>
     ```
 
-    You may want to push subsequent build to the same tag - you can do so with the `--overwrite` flag.  Also it may be a good idea to skip updating the `latest` tag in the registry, which you can do with:
+    It may be a good idea to skip updating the `latest` tag in the registry, which you can do with:
     ```shell
-    hokusai registry push --overwrite --skip-latest --tag <name>
+    hokusai registry push --skip-latest --tag <name>
     ```
 
 4) Make sure your review app deployment will use the image you just pushed. This can be done by modifying the new `<name>.yml` file.
@@ -36,11 +36,11 @@ In order to start a review app you will need to follow these steps:
     ```yml
     image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/volt:staging
 
-    # …must be changed to…
+    # must be changed to...
 
     image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/volt:<name>
     ```
-    …where `<name>` is the review app name you've been using in previous steps, especially step 3.
+    ... where `<name>` is the review app name you've been using in previous steps, especially step 3.
 
 
 5) Create new deployment on k8s based on your new local YAML config:
@@ -58,10 +58,8 @@ In order to start a review app you will need to follow these steps:
 7) Find and visit your staging app:
 
     - In the Kubernetes UI, find the "Namespace" dropdown in the main nav and select your chosen `<name>` from that menu
-    - Go to Replica Sets > _replica set name_ (there is probably only one)
     - Browse to the "Services" section
-    - Look in the "External endpoints" column
-    - These endpoints are your publicly accessible URLs
+    - In "Details", look for "External endpoints". These are your publicly accessible URLs.
     - You may need to tweak the URL to use `https` instead of `http`
     - You may need to accept a browser warning about a missing or bad certificate
 
@@ -84,27 +82,32 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app refresh <name>
     ```
 
-10) If you need to redeploy your app, (e.g. after pushing a new build for <name>)
-
-    ```shell
-    hokusai review_app deploy <name> <name>
-    ```
-
-11) If you need to view logs for your app, (e.g. after a refresh or deploy)
+10) If you need to view logs for your app, (e.g. after a refresh or deploy)
 
     ```shell
     hokusai review_app logs <name>
     ```
 
-12) If you need to get a shell in your app, (e.g. to launch a Rails console)
+11) If you need to get a shell in your app, (e.g. to launch a Rails console)
 
     ```shell
     hokusai review_app run <name> <command> --tty
     ```
 
-13) Update review app:
+12) If you want to push subsequent changes to the review app,
 
-    If you have made changes to your review app's yaml file, you need to update deployment for that do:
+    you can push a new build to the same tag with the `--overwrite` flag:
+    ```shell
+    hokusai registry push --overwrite --skip-latest --force --tag <name>
+    ```
+
+    and you need to redeploy your app:
+    ```shell
+    hokusai review_app deploy <name> <name>
+    ```
+
+13) If you have made changes to your review app's yaml file, you need to update deployment:
+
     ```shell
     hokusai review_app update <name>
     ```
@@ -115,4 +118,3 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app env delete <name>
     hokusai review_app delete <name>
     ```
-
