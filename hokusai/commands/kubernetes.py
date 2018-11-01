@@ -23,7 +23,7 @@ def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
     raise HokusaiError("ECR repository %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
   if not ecr.tag_exists(tag):
-    raise HokusaiError("Image tag %s does not exist... did you run `hokusai push`?" % tag)
+    raise HokusaiError("Image tag %s does not exist... did you run `hokusai registry push`?" % tag)
 
   if tag is 'latest' and not ecr.tag_exists(context):
     ecr.retag(tag, context)
