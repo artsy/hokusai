@@ -28,6 +28,15 @@ def gitlog(verbose):
   set_verbosity(verbose)
   hokusai.gitlog()
 
+@pipeline.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--git-compare-link', type=click.STRING, help='Run a migration before deploying', default="https://github.com/%s/compare/%s...%s")
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def gitlog(git_compare_link, verbose):
+  """Prints a git compare link between the tag currently deployed on production
+  and the tag currently deployed on staging"""
+  set_verbosity(verbose)
+  hokusai.gitcopmare(git_compare_link)
+
 
 @pipeline.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
