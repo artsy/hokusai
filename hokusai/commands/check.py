@@ -1,10 +1,13 @@
+import boto3
 import os
+
+import botocore.exceptions as botoexceptions
 
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
-from hokusai.lib.common import print_red, print_green, shout
+from hokusai.lib.common import get_region_name, print_red, print_green, shout
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 @command
@@ -53,16 +56,11 @@ def check():
     check_err('git')
     return_code += 1
 
-  if os.environ.get('AWS_ACCESS_KEY_ID') is not None:
-    check_ok('$AWS_ACCESS_KEY_ID')
-  else:
-    check_err('$AWS_ACCESS_KEY_ID')
-    return_code += 1
-
-  if os.environ.get('AWS_SECRET_ACCESS_KEY') is not None:
-    check_ok('$AWS_SECRET_ACCESS_KEY')
-  else:
-    check_err('$AWS_SECRET_ACCESS_KEY')
+  try:
+    boto3.client('sts', region_name=get_region_name()).get_caller_identity()
+    check_ok('Valid AWS credentials')
+  except botoexceptions.ClientError, botoexceptions.NoCredentialsError:
+    check_err('Valid AWS credentials')
     return_code += 1
 
   ecr = ECR()
