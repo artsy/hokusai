@@ -26,28 +26,28 @@ def check():
     check_err('Config project-name')
 
   try:
-    shout('docker --version')
+    shout('which docker')
     check_ok('docker')
   except CalledProcessError:
     check_err('docker')
     return_code += 1
 
   try:
-    shout('docker-compose --version')
+    shout('which docker-compose')
     check_ok('docker-compose')
   except CalledProcessError:
     check_err('docker-compose')
     return_code += 1
 
   try:
-    shout('kubectl version')
+    shout('which kubectl')
     check_ok('kubectl')
   except CalledProcessError:
     check_err('kubectl')
     return_code += 1
 
   try:
-    shout('git version')
+    shout('which git')
     check_ok('git')
   except CalledProcessError:
     check_err('git')
