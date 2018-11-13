@@ -94,16 +94,20 @@ def check():
     return_code += 1
 
   for context in ['staging', 'production']:
-    if context in Kubectl('staging').contexts():
-      check_ok("kubectl context '%s'" % context)
-    else:
-      check_err("kubectl context '%s'" % context)
-      return_code += 1
+    try:
+      if context in Kubectl('staging').contexts():
+        check_ok("kubectl context '%s'" % context)
+      else:
+        check_err("kubectl context '%s'" % context)
+        return_code += 1
 
-    if os.path.isfile(os.path.join(os.getcwd(), "hokusai/%s.yml" % context)):
-      check_ok("./hokusai/%s.yml" % context)
-    else:
-      check_err("./hokusai/%s.yml" % context)
+      if os.path.isfile(os.path.join(os.getcwd(), "hokusai/%s.yml" % context)):
+        check_ok("./hokusai/%s.yml" % context)
+      else:
+        check_err("./hokusai/%s.yml" % context)
+        return_code += 1
+    except CalledProcessError:
+      check_err('%s context' % context)
       return_code += 1
 
   return return_code
