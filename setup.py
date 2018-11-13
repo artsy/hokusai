@@ -2,9 +2,14 @@ import os
 from setuptools import setup
 from hokusai.version import VERSION
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(name='hokusai',
       version=VERSION,
       description='Artsy Docker development toolkit',
+      long_description=long_description,
+      long_description_content_type="text/markdown",
       url='http://github.com/artsy/hokusai',
       author='Isac Petruzzi',
       author_email='isac@artsymail.com',
