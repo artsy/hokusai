@@ -5,7 +5,7 @@ from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
 
 @command
-def gitcompare(git_compare_link):
+def gitcompare(git_compare_link, org_name):
   ecr = ECR()
 
   staging_deployment = Deployment('staging')
@@ -24,5 +24,4 @@ def gitcompare(git_compare_link):
   if production_tag is None:
     raise HokusaiError("Could not find a git SHA1 for tag %s.  Aborting." % production_tag)
 
-  print_green("Comparing %s to %s" % (production_tag, staging_tag))
-  shout(git_compare_link % (config.project_name, production_tag, staging_tag), print_output=True)
+  print_green(git_compare_link % (org_name, config.project_name, production_tag, staging_tag))
