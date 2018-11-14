@@ -4,9 +4,9 @@ import yaml
 from mock import patch
 
 from test import HokusaiUnitTestCase
-from test.utils import captured_output
+from test.utils import captured_output, mock_verbosity
 
-from hokusai.lib.common import print_green, print_red, set_verbosity, verbose, returncode, shout, k8s_uuid
+from hokusai.lib.common import print_green, print_red, verbose, returncode, shout, k8s_uuid
 
 TEST_MESSAGE = 'Ohai!'
 
@@ -25,28 +25,23 @@ class TestCommon(HokusaiUnitTestCase):
     from hokusai.lib.common import VERBOSE
     self.assertEqual(VERBOSE, False)
 
-  def test_set_verbosity(self):
-    set_verbosity(True)
-    from hokusai.lib.common import VERBOSE
-    self.assertEqual(VERBOSE, True)
-
   def test_verbose_returns_input(self):
-    with captured_output() as (out, err):
-      set_verbosity(True)
-      msg = verbose(TEST_MESSAGE)
-      self.assertEqual(msg, TEST_MESSAGE)
+    with mock_verbosity(True):
+      with captured_output() as (out, err):
+        msg = verbose(TEST_MESSAGE)
+        self.assertEqual(msg, TEST_MESSAGE)
 
   def test_verbose_output(self):
-    with captured_output() as (out, err):
-      set_verbosity(True)
-      verbose(TEST_MESSAGE)
-      self.assertEqual(out.getvalue().strip(), "\x1b[33m==> hokusai exec `%s`\x1b[0m" % TEST_MESSAGE)
+    with mock_verbosity(True):
+      with captured_output() as (out, err):
+        verbose(TEST_MESSAGE)
+        self.assertEqual(out.getvalue().strip(), "\x1b[33m==> hokusai exec `%s`\x1b[0m" % TEST_MESSAGE)
 
   def test_non_verbose_output(self):
-    set_verbosity(False)
-    with captured_output() as (out, err):
-      verbose(TEST_MESSAGE)
-      self.assertEqual(out.getvalue().strip(), '')
+    with mock_verbosity(False):
+      with captured_output() as (out, err):
+        verbose(TEST_MESSAGE)
+        self.assertEqual(out.getvalue().strip(), '')
 
   def test_k8s_uuid(self):
     self.assertEqual(len(k8s_uuid()), 5)
