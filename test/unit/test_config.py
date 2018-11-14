@@ -38,3 +38,8 @@ class TestConfig(HokusaiUnitTestCase):
     self.assertEqual(config.config.project_name, 'foo')
     self.assertEqual(config.config.pre_deploy, 'migrate.sh')
     self.assertEqual(config.config.post_deploy, 'sh -c report.sh')
+
+  def test_environment_fallback(self):
+    self.assertEqual(config.config.git_remote, None)
+    os.environ['HOKUSAI_GIT_REMOTE'] = 'origin'
+    self.assertEqual(config.config.git_remote, 'origin')

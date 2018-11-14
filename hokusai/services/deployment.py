@@ -41,11 +41,12 @@ class Deployment(object):
       self.ecr.retag(tag, deployment_tag)
       print_green("Updated tag %s -> %s" % (tag, deployment_tag))
 
-      if git_remote is not None:
-        print_green("Pushing deployment tags to %s..." % git_remote)
+      remote = git_remote or config.git_remote
+      if remote is not None:
+        print_green("Pushing deployment tags to %s..." % remote)
         shout("git tag -f %s" % self.context, print_output=True)
         shout("git tag %s" % deployment_tag, print_output=True)
-        shout("git push --force %s --tags" % git_remote, print_output=True)
+        shout("git push --force %s --tags" % remote, print_output=True)
 
     if config.pre_deploy is not None:
       print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)

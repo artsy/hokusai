@@ -62,4 +62,8 @@ class HokusaiConfig(object):
   def post_deploy(self):
     return self.get('post_deploy', fallback_to_env=False)
 
+  @property
+  def git_remote(self):
+    return self.get('git_remote')
+
 config = HokusaiConfig()
