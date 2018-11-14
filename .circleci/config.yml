@@ -8,20 +8,24 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
-          - v1-dependencies-
+          - v1-pip-cache-{{ checksum "requirements.txt" }}
+          - v1-pip-cache-
 
       - run:
           name: Install dependencies
           command: |
-            sudo pip install -r requirements.txt
+            mkdir -p ./venv
+            virtualenv ./venv
+            . venv/bin/activate
+            pip install -r requirements.txt
 
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v1-pip-cache-{{ checksum "requirements.txt" }}
 
       - run:
           name: Run tests
           command: |
+            . venv/bin/activate
             python -m unittest discover test
