@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:2
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-pip-cache-{{ checksum "requirements.txt" }}
+          - v1-pip-cache-
+
+      - run:
+          name: Install dependencies
+          command: |
+            mkdir -p ./venv
+            virtualenv ./venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-pip-cache-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            python -m unittest discover test
