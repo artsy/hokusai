@@ -105,6 +105,7 @@ See full details in the [Review App reference](Review_Apps.md).
 * `hokusai pipeline` - Interact with the project's' staging -> production pipeline
   - `hokusai pipeline gitdiff` - Print a git diff between the tags deployed on production vs staging.
   - `hokusai pipeline gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
+  - `hokusai pipeline gitcompare --org-name <your org name in githug>` - Print a git compare url for comparing whats on staging with production.
   - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
 
 ### How to do a rollback
