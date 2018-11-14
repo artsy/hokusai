@@ -7,7 +7,7 @@ from test import HokusaiUnitTestCase
 
 TMP_CONFIG_FILE = os.path.join('/tmp', 'config.yml')
 
-class TestConfig(HokusaiUnitTestCase):
+class TestConfigSetup(HokusaiUnitTestCase):
   @classmethod
   def setUpClass(cls):
     cls.__hokusai_config_file = config.HOKUSAI_CONFIG_FILE
@@ -27,8 +27,14 @@ class TestConfig(HokusaiUnitTestCase):
   def test_create(self):
     self.assertFalse(os.path.isfile(TMP_CONFIG_FILE))
     try:
-      self.config.create('foo')
+      self.config.create('bar')
       self.assertTrue(os.path.isfile(TMP_CONFIG_FILE))
-      self.assertEqual(self.config.project_name, 'foo')
+      self.assertEqual(self.config.project_name, 'bar')
     finally:
       os.remove(TMP_CONFIG_FILE)
+
+class TestConfig(HokusaiUnitTestCase):
+  def test_config_yaml_parsing(self):
+    self.assertEqual(config.config.project_name, 'foo')
+    self.assertEqual(config.config.pre_deploy, 'migrate.sh')
+    self.assertEqual(config.config.post_deploy, 'sh -c report.sh')

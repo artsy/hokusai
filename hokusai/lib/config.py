@@ -27,7 +27,7 @@ class HokusaiConfig(object):
       raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
     return self
 
-  def get(self, key):
+  def get(self, key, default=None, fallback_to_env=True):
     self.check()
     config_file = open(HOKUSAI_CONFIG_FILE, 'r')
     config_data = config_file.read()
@@ -36,21 +36,30 @@ class HokusaiConfig(object):
     try:
       return config[key]
     except KeyError:
-      return None
+      pass
+    try:
+      return config[key.replace('_', '-')]
+    except KeyError:
+      pass
+
+    if fallback_to_env:
+      return os.environ.get('HOKUSAI_' + key.upper(), default)
+
+    return default
 
   @property
   def project_name(self):
-    project = self.get('project-name')
+    project = self.get('project_name', fallback_to_env=False)
     if project is None:
       raise HokusaiError("Unconfigured 'project-name'! Plz check ./hokusai/config.yml")
     return project
 
   @property
   def pre_deploy(self):
-    return self.get('pre-deploy')
+    return self.get('pre_deploy', fallback_to_env=False)
 
   @property
   def post_deploy(self):
-    return self.get('post-deploy')
+    return self.get('post_deploy', fallback_to_env=False)
 
 config = HokusaiConfig()

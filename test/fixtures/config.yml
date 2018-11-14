@@ -1,2 +1,4 @@
 ---
 project-name: foo
+pre-deploy: migrate.sh
+post_deploy: sh -c report.sh
