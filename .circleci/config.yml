@@ -1,31 +1,60 @@
 version: 2
+
 jobs:
-  build:
+  test_linux:
     docker:
-      - image: circleci/python:2
+      - image: python:2
     steps:
       - checkout
+      - run: make dependencies
+      - run: make test
 
-      - restore_cache:
-          keys:
-          - v1-pip-cache-{{ checksum "requirements.txt" }}
-          - v1-pip-cache-
+  release_linux:
+    docker:
+      - image: python:2
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get -qq install awscli
+      - run: make dependencies
+      - run: make build VERSION=head
+      - run: make publish-head
 
-      - run:
-          name: Install dependencies
-          command: |
-            mkdir -p ./venv
-            virtualenv ./venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+  test_macos:
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: make dependencies
+      - run: make test
 
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-pip-cache-{{ checksum "requirements.txt" }}
+  release_macos:
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli
+      - run: make dependencies
+      - run: make build VERSION=head
+      - run: make publish-head
 
-      - run:
-          name: Run tests
-          command: |
-            . venv/bin/activate
-            python -m unittest discover test
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - test_linux
+      - test_macos
+      - release_linux:
+          requires:
+            - test_linux
+            - test_macos
+          filters:
+            branches:
+              only: master
+      - release_macos:
+          requires:
+            - test_linux
+            - test_macos
+          filters:
+            branches:
+              only: master

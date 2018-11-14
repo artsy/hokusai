@@ -5,7 +5,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 from test import HokusaiUnitTestCase
 
-TMP_CONFIG_FILE = os.path.join(os.getcwd(), 'test', 'tmp', 'config.yml')
+TMP_CONFIG_FILE = os.path.join('/tmp', 'config.yml')
 
 class TestConfig(HokusaiUnitTestCase):
   @classmethod
