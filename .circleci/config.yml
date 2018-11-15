@@ -9,7 +9,7 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  release_linux:
+  release_head_linux:
     docker:
       - image: python:2
     steps:
@@ -20,6 +20,19 @@ jobs:
       - run: make build VERSION=head
       - run: make publish-head
 
+  release_version_linux:
+    docker:
+      - image: python:2
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get -qq install awscli
+      - run: make dependencies
+      - run: make build
+      - run: make build VERSION=latest
+      - run: make publish-version
+      - run: make publish-latest
+
   test_macos:
     macos:
       xcode: "9.0"
@@ -28,7 +41,7 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  release_macos:
+  release_head_macos:
     macos:
       xcode: "9.0"
     steps:
@@ -38,23 +51,53 @@ jobs:
       - run: make build VERSION=head
       - run: make publish-head
 
+  release_version_macos:
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli
+      - run: make dependencies
+      - run: make build
+      - run: make build VERSION=latest
+      - run: make publish-version
+      - run: make publish-latest
+
 workflows:
   version: 2
   build_deploy:
     jobs:
       - test_linux
       - test_macos
-      - release_linux:
+      - release_head_linux:
           requires:
             - test_linux
             - test_macos
           filters:
             branches:
               only: master
-      - release_macos:
+      - release_head_macos:
           requires:
             - test_linux
             - test_macos
           filters:
             branches:
               only: master
+      - release_version_linux:
+          requires:
+            - test_linux
+            - test_macos
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - release_version_macos:
+          requires:
+            - test_linux
+            - test_macos
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

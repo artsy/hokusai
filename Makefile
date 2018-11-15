@@ -74,13 +74,3 @@ tag:
 
 clean:
 	sudo $(RM) -r ./dist
-
-# This must be run on an OS X machine as the OS X binary is built natively.
-release:
-	$(MAKE) build-docker-linux
-	$(MAKE) build
-	$(MAKE) build-docker-linux VERSION=latest
-	$(MAKE) build VERSION=latest
-	$(MAKE) publish-version
-	$(MAKE) publish-latest
-	$(MAKE) tag
