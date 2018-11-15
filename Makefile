@@ -28,7 +28,7 @@ test-docker:
 	$(DOCKER_RUN) \
 	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
 	  --workdir "/src/$(PROJECT)" \
-	  python:2 make install-dependencies test
+	  python:2 make dependencies test
 
 build-linux-docker:
 	$(DOCKER_RUN) \
@@ -37,7 +37,7 @@ build-linux-docker:
 	  --volume "$(PWD)"/dist:/dist \
 	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
 	  --workdir "/src/$(PROJECT)" \
-	  python:2 make install-dependencies build
+	  python:2 make dependencies build
 
 publish-head:
 	$(AWS) s3 cp \
