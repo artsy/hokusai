@@ -29,14 +29,14 @@ class ConfigMap(object):
     f = NamedTemporaryFile(delete=False)
     f.write(yaml.safe_dump(self.struct, default_flow_style=False))
     f.close()
-    return f.name
+    return f
 
   def create(self):
     f = self._to_file()
     try:
-      shout(self.kctl.command("create -f %s" % f))
+      shout(self.kctl.command("create -f %s" % f.name))
     finally:
-      os.unlink(f)
+      os.unlink(f.name)
 
   def destroy(self):
     shout(self.kctl.command("delete configmap %s-environment" % config.project_name))
