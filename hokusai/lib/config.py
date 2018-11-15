@@ -27,25 +27,40 @@ class HokusaiConfig(object):
       raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
     return self
 
-  def get(self, key, default=None, fallback_to_env=True):
+  def get(self, key, default=None, fallback_to_env=True, _type=str):
+    value = self.__value_for(key)
+    if value is not None:
+      if not isinstance(value, _type):
+        raise HokusaiError("Config key %s is not of %s" % (key, _type))
+      return value
+
+    if fallback_to_env is False:
+      return default
+
+    env_var_for_key = 'HOKUSAI_' + key.upper()
+    value_from_env = os.environ.get(env_var_for_key)
+    if value_from_env is None:
+      return default
+
+    try:
+      return _type(value_from_env)
+    except ValueError:
+      raise HokusaiError("Environment variable %s could not be cast to %s" % (env_var_for_key, _type))
+
+
+  def __value_for(self, key):
     self.check()
-    config_file = open(HOKUSAI_CONFIG_FILE, 'r')
-    config_data = config_file.read()
-    config_file.close()
-    config = yaml.safe_load(config_data)
-    try:
-      return config[key]
-    except KeyError:
-      pass
-    try:
-      return config[key.replace('_', '-')]
-    except KeyError:
-      pass
+    with open(HOKUSAI_CONFIG_FILE, 'r') as config_file:
+      config_struct = yaml.safe_load(config_file.read())
+      try:
+        return config_struct[key]
+      except KeyError:
+        pass
+      try:
+        return config_struct[key.replace('_', '-')]
+      except KeyError:
+        pass
 
-    if fallback_to_env:
-      return os.environ.get('HOKUSAI_' + key.upper(), default)
-
-    return default
 
   @property
   def project_name(self):
@@ -65,5 +80,9 @@ class HokusaiConfig(object):
   @property
   def git_remote(self):
     return self.get('git_remote')
+
+  @property
+  def run_tty(self):
+    return self.get('run_tty', default=False, _type=bool)
 
 config = HokusaiConfig()

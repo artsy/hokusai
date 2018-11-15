@@ -41,5 +41,8 @@ class TestConfig(HokusaiUnitTestCase):
 
   def test_environment_fallback(self):
     self.assertEqual(config.config.git_remote, None)
+    self.assertEqual(config.config.run_tty, False)
     os.environ['HOKUSAI_GIT_REMOTE'] = 'origin'
+    os.environ['HOKUSAI_RUN_TTY'] = 'True'
     self.assertEqual(config.config.git_remote, 'origin')
+    self.assertEqual(config.config.run_tty, True)
