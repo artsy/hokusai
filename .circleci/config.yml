@@ -67,8 +67,14 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - test_linux
-      - test_macos
+      - test_linux:
+          filters:
+            branches:
+              ignore: release
+      - test_macos:
+          filters:
+            branches:
+              ignore: release
       - release_head_linux:
           requires:
             - test_linux
@@ -88,16 +94,12 @@ workflows:
             - test_linux
             - test_macos
           filters:
-            tags:
-              only: /^v.*/
             branches:
-              ignore: /.*/
+              only: release
       - release_version_macos:
           requires:
             - test_linux
             - test_macos
           filters:
-            tags:
-              only: /^v.*/
             branches:
-              ignore: /.*/
+              only: release
