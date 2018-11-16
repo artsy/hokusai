@@ -2,7 +2,12 @@
 
 ## Global configuration
 
-The environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` are referenced by Hokusai when running `setup` as well as `registry` commands.
+Hokusai requires IAM configuration for working with AWS resources. It uses the Boto3 library and [loads configuration](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials) from a local file or via the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY`.
+
+You can set overrides for certain command options and project-specific configuration varaiables in the environment as well.  See below for project-specific configuration variables and their enviroment overrides.  The order of precence for these variables is as follows:
+
+- If the configuration variable is bound to a command-line option, the option supplied on the command line always takes precendence.
+- If the configuration variable can be overridden by an environment variable, the environment variable takes precendence if set.
 
 When running `hokusai configure` the following files are created:
 
@@ -13,11 +18,13 @@ When running `hokusai configure` the following files are created:
 
 When running `hokusai setup` the following files are created:
 
-* `./hokusai/config.yml` contains project-specific configuration options.  It accepts the following keys:
+* `./hokusai/config.yml` contains project-specific configuration variables.  It is loaded a top-level hash that accepts the following keys:
 
     - `project-name`: <string> (required) - The project name
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook
+    - `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hoksuai [staging|production] deploy` or the `hoksuai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like 'git@github.com:artsy/hokusai.git'.  Bound to the `--git-remote` option for these commands.
+    - `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production] run`.  Bound to the `--tty` option for this command, overridden by the `HOKUSAI_RUN_TTY` env var.
 
 * `./hokusai/build.yml` is the base docker-compose Yaml file referenced when running `hokusai local` commands. It should contain a single service for the project, `build` referencing the root project directory, and any build args (i.e.) host environment variables to inject into the Dockerfile.
 
@@ -37,11 +44,11 @@ In order to inject an application's environment into running containers, Hokusai
 
 ```
 spec:
-    spec:
-        containers:
-            envFrom:
-                - configMapRef:
-                    name: {{ project_name }}
+  spec:
+    containers:
+      envFrom:
+        - configMapRef:
+          name: {{ project_name }}
 ```
 
 This instructs Kubernetes to use the `ConfigMap` object named `{project-name}-environment` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.

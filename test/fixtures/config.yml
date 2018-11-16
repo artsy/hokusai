@@ -1,2 +1,5 @@
 ---
 project-name: foo
+pre-deploy: migrate.sh
+post-deploy: sh -c report.sh
+git-remote: git@github.com:artsy/hokusai.git

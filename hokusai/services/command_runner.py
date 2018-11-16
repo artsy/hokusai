@@ -32,7 +32,8 @@ class CommandRunner(object):
       'envFrom': [{'configMapRef': {'name': "%s-environment" % config.project_name}}]
     }
 
-    if tty:
+    run_tty = tty or config.run_tty
+    if run_tty:
       container.update({
         "stdin": True,
         "stdinOnce": True,
@@ -58,7 +59,7 @@ class CommandRunner(object):
 
     overrides = { "apiVersion": "v1", "spec": spec }
 
-    if tty:
+    if run_tty:
       shout(self.kctl.command("run %s -t -i --image=%s --restart=Never --overrides='%s' --rm" %
                      (name, image_name, json.dumps(overrides))), print_output=True)
     else:
