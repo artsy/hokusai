@@ -63,6 +63,35 @@ jobs:
       - run: make publish-version
       - run: make publish-latest
 
+  release_pip:
+    docker:
+      - image: python:2
+    steps:
+      - checkout
+      - run: make dependencies
+      - run: make publish-pip
+
+  release_dockerhub:
+    docker:
+      - image: docker:18.09
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - run: apk add make
+      - run: make image
+      - run: make publish-dockerhub
+
+  release_github:
+    docker:
+      - image: golang:1.11
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get -qq install awscli
+      - run: go get -u github.com/tcnksm/ghr
+      - run: make publish-github
+
 workflows:
   version: 2
   build_deploy:
@@ -100,6 +129,26 @@ workflows:
           requires:
             - test_linux
             - test_macos
+          filters:
+            branches:
+              only: release
+      - release_pip:
+          requires:
+            - test_linux
+            - test_macos
+          filters:
+            branches:
+              only: release
+      - release_dockerhub:
+          requires:
+            - release_pip
+          filters:
+            branches:
+              only: release
+      - release_github:
+          requires:
+            - release_version_linux
+            - release_version_macos
           filters:
             branches:
               only: release

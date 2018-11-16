@@ -1,4 +1,4 @@
-.PHONY: dependencies test test-docker build build-linux-docker publish-head publish-latest publish-version tag clean release
+.PHONY: dependencies test test-docker build build-linux-docker image publish-head publish-latest publish-version publish-pip publish-dockerhub publish-github clean
 
 AWS ?= $(shell which aws)
 DOCKER_RUN ?= $(shell which docker) run --rm
@@ -16,6 +16,12 @@ dependencies:
 test:
 	python -m unittest discover test
 
+test-docker:
+	$(DOCKER_RUN) \
+	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
+	  --workdir "/src/$(PROJECT)" \
+	  python:2 make dependencies test
+
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
 	pyinstaller \
@@ -23,12 +29,6 @@ build:
 	  --workpath=/tmp/build/ \
 	  hokusai.spec
 	mv $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)
-
-test-docker:
-	$(DOCKER_RUN) \
-	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
-	  --workdir "/src/$(PROJECT)" \
-	  python:2 make dependencies test
 
 build-linux-docker:
 	$(DOCKER_RUN) \
@@ -38,6 +38,12 @@ build-linux-docker:
 	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
 	  --workdir "/src/$(PROJECT)" \
 	  python:2 make dependencies build
+
+image:
+	echo $(VERSION)
+	docker build \
+	  --tag hokusai \
+	  --build-arg HOKUSAI_VERSION=$(VERSION) .
 
 publish-head:
 	$(AWS) s3 cp \
@@ -56,7 +62,7 @@ publish-latest:
 	  dist/ s3://artsy-provisioning-public/hokusai/
 
 publish-version:
-	if [ "$(shell curl https://s3.amazonaws.com/artsy-provisioning-public/hokusai/hokusai-$(VERSION)-linux-amd64 --output /dev/null --write-out %{http_code})" -eq 403 ]; then \
+	if [ "$(shell curl --silent https://s3.amazonaws.com/artsy-provisioning-public/hokusai/hokusai-$(VERSION)-linux-amd64 --output /dev/null --write-out %{http_code})" -eq 403 ]; then \
 	  $(AWS) s3 cp \
 	    --acl public-read \
 	    --recursive \
@@ -68,9 +74,35 @@ publish-version:
 	  exit 1; \
 	fi
 
-tag:
-	$(GIT_TAG) --message v$(VERSION) v$(VERSION)
-	$(GIT_PUSH) origin refs/tags/v$(VERSION)
+publish-pip:
+	python setup.py sdist bdist_wheel
+	pip install twine
+	twine upload dist/*
+
+publish-dockerhub:
+	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
+	  docker tag hokusai:latest artsy/hokusai:$(VERSION) && \
+	  docker push artsy/hokusai:$(VERSION) && \
+	  docker tag hokusai:latest artsy/hokusai:latest && \
+	  docker push artsy/hokusai:latest; \
+	else \
+	  echo "Version $(VERSION) already published"; \
+	  exit 1; \
+	fi
+
+publish-github:
+	$(AWS) s3 cp \
+	  --acl public-read \
+	  --recursive \
+	  --exclude "*" \
+	  --include "hokusai-$(VERSION)-*" \
+	  s3://artsy-provisioning-public/hokusai/ dist/; \
+	ghr \
+	  --username artsy \
+	  --repository hokusai \
+	  --name v$(VERSION) \
+	  --soft \
+	  v$(VERSION) dist/
 
 clean:
 	sudo $(RM) -r ./dist
