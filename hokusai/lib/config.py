@@ -41,7 +41,7 @@ class HokusaiConfig(object):
     return default
 
   def _env_value_for(self, key, _type):
-    env_var = HOKUSAI_ENV_VAR_PREFIX + key.upper()
+    env_var = HOKUSAI_ENV_VAR_PREFIX + key.upper().replace('-', '_')
     val = os.environ.get(env_var)
     if val is None:
       return val
@@ -55,8 +55,8 @@ class HokusaiConfig(object):
     with open(HOKUSAI_CONFIG_FILE, 'r') as config_file:
       config_struct = yaml.safe_load(config_file.read())
       try:
-        val = filter(lambda x: x is not None, [config_struct.get(k) for k in [key, key.replace('_', '-')]])[0]
-      except IndexError:
+        val = config_struct[key]
+      except KeyError:
         return None
       if not isinstance(val, _type):
         raise HokusaiError("Config key %s is not of %s" % (key, _type))
@@ -65,25 +65,25 @@ class HokusaiConfig(object):
 
   @property
   def project_name(self):
-    project = self.get('project_name')
+    project = self.get('project-name')
     if project is None:
       raise HokusaiError("Unconfigured 'project-name'! Plz check ./hokusai/config.yml")
     return project
 
   @property
   def pre_deploy(self):
-    return self.get('pre_deploy')
+    return self.get('pre-deploy')
 
   @property
   def post_deploy(self):
-    return self.get('post_deploy')
+    return self.get('post-deploy')
 
   @property
   def git_remote(self):
-    return self.get('git_remote')
+    return self.get('git-remote')
 
   @property
   def run_tty(self):
-    return self.get('run_tty', default=False, use_env=True, _type=bool)
+    return self.get('run-tty', default=False, use_env=True, _type=bool)
 
 config = HokusaiConfig()
