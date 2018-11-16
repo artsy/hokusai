@@ -76,7 +76,7 @@ publish-version:
 
 publish-pip:
 	python setup.py sdist bdist_wheel
-	pip install twine
+	pip install twine wheel
 	twine upload dist/*
 
 publish-dockerhub:
