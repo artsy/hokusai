@@ -34,12 +34,12 @@ class TestConfigSetup(HokusaiUnitTestCase):
       os.remove(TMP_CONFIG_FILE)
 
 class TestConfig(HokusaiUnitTestCase):
-  def test_config_yaml_parsing(self):
+  def test_config_from_file(self):
     self.assertEqual(config.config.project_name, 'foo')
     self.assertEqual(config.config.pre_deploy, 'migrate.sh')
     self.assertEqual(config.config.post_deploy, 'sh -c report.sh')
 
-  def test_environment_fallback(self):
+  def test_config_from_environment(self):
     self.assertEqual(config.config.git_remote, None)
     self.assertEqual(config.config.run_tty, False)
     os.environ['HOKUSAI_GIT_REMOTE'] = 'origin'
