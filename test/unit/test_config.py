@@ -38,11 +38,9 @@ class TestConfig(HokusaiUnitTestCase):
     self.assertEqual(config.config.project_name, 'foo')
     self.assertEqual(config.config.pre_deploy, 'migrate.sh')
     self.assertEqual(config.config.post_deploy, 'sh -c report.sh')
+    self.assertEqual(config.config.git_remote, 'git@github.com:artsy/hokusai.git')
 
   def test_config_from_environment(self):
-    self.assertEqual(config.config.git_remote, None)
     self.assertEqual(config.config.run_tty, False)
-    os.environ['HOKUSAI_GIT_REMOTE'] = 'origin'
     os.environ['HOKUSAI_RUN_TTY'] = 'True'
-    self.assertEqual(config.config.git_remote, 'origin')
     self.assertEqual(config.config.run_tty, True)

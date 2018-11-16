@@ -80,7 +80,7 @@ class HokusaiConfig(object):
 
   @property
   def git_remote(self):
-    return self.get('git_remote', use_env=True)
+    return self.get('git_remote')
 
   @property
   def run_tty(self):
