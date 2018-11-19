@@ -1,3 +1,32 @@
+## v0.4.7
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.6/README.md)
+
+### Notable changes since v0.4.7
+
+* 804eba6 Release to PyPi, DockerHub, and GitHub
+* f370081 git-remote only in config file
+* 87f02fa refactor config.get and use env var precedence before project yaml config
+* 8be10ce refactor config.get and add run_tty config option
+* d923476 add git_remote fallback to config
+* b5f5c6a update config to parse either _ or -, fallback to env vars or set default values per property
+* 9b4bad6 minor refactor in hokusai/services/configmap.py
+* 23d3fd3 Fix install dependency make task references
+* bac0f4b Release version and latest binaries for every version git tag
+* 5f00acb Prevent verbosity from leaking between specs
+* 4393b6c Configure CI to build and release hokusai binaries
+* 831f3e7 Update Circle CI configuration to use virtualenv
+* 64f8eb3 Add Circle CI config
+* 4b4d6da Code review comment + update readme
+* 91023b4 Add org name
+* d3248c5 First pass in adding gitcompare
+* 293a961 Report error when kubectl unavailable during context check
+* 2c5dd5e add long description for pip repo
+* 63472d5 Docker alpine build
+* e9ed3a3 remove sudo recommendation from install instructions in README.md
+* 4698007 Determine if AWS credentials are valid via AWS API call
+* b6e2a84 Update hokusai check command to find executables via which
+
 ## v0.4.6
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.4.6/README.md)
