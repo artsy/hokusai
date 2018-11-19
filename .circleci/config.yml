@@ -119,23 +119,14 @@ workflows:
             branches:
               only: master
       - release_version_linux:
-          requires:
-            - test_linux
-            - test_macos
           filters:
             branches:
               only: release
       - release_version_macos:
-          requires:
-            - test_linux
-            - test_macos
           filters:
             branches:
               only: release
       - release_pip:
-          requires:
-            - test_linux
-            - test_macos
           filters:
             branches:
               only: release
