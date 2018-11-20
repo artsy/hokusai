@@ -1,8 +1,8 @@
 ## v0.4.8
 
-[Documentation](https://github.com/artsy/hokusai/blob/v0.4.6/README.md)
+[Documentation](https://github.com/artsy/hokusai/blob/v0.4.8/README.md)
 
-### Notable changes since v0.4.6
+### Notable changes since v0.4.6 (v0.4.7 release broken and skipped)
 
 * 804eba6 Release to PyPi, DockerHub, and GitHub
 * f370081 git-remote only in config file
