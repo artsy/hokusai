@@ -1,12 +1,11 @@
 import os
 from setuptools import setup
-from hokusai.version import VERSION
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='hokusai',
-      version=VERSION,
+      version=open(os.path.join(os.path.dirname(__file__), "hokusai", "VERSION")).read().strip(),
       description='Artsy Docker development toolkit',
       long_description=long_description,
       long_description_content_type="text/markdown",
