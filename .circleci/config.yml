@@ -132,7 +132,8 @@ workflows:
               only: release
       - release_dockerhub:
           requires:
-            - release_pip
+            - test_linux
+            - test_macos
           filters:
             branches:
               only: release

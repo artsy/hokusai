@@ -52,9 +52,9 @@ class ConfigMap(object):
   def save(self):
     f = self._to_file()
     try:
-      shout(self.kctl.command("apply -f %s" % f))
+      shout(self.kctl.command("apply -f %s" % f.name))
     finally:
-      os.unlink(f)
+      os.unlink(f.name)
 
   def all(self):
     for k, v in self.struct['data'].iteritems():

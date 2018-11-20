@@ -1,5 +1,4 @@
 FROM python:2-alpine
-ARG HOKUSAI_VERSION
 
 # Install Docker
 RUN apk add docker
@@ -10,5 +9,8 @@ RUN pip install docker-compose
 # Install Git
 RUN apk add git
 
+ADD . /src
+WORKDIR /src
+
 # Install Hokusai
-RUN pip install hokusai==$HOKUSAI_VERSION
+RUN pip install .
