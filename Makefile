@@ -41,9 +41,8 @@ build-linux-docker:
 
 image:
 	echo $(VERSION)
-	docker build \
-	  --tag hokusai \
-	  --build-arg HOKUSAI_VERSION=$(VERSION) .
+	docker build . \
+	  --tag hokusai
 
 publish-head:
 	$(AWS) s3 cp \
