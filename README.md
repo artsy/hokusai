@@ -39,11 +39,12 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `pip install hokusai --ignore-installed`.
 
-Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai and adding it to your `$PATH`, i.e.
+Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-{version}-{platform}-x86_64 and adding it to your `$PATH`, i.e. to download the latest version, run:
 
 ```
-curl https://artsy-provisioning-public.s3.amazonaws.com/hokusai -o /usr/local/bin/hokusai && chmod +x /usr/local/bin/hokusai
+curl --silent https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-latest-$(uname -s)-$(uname -m) -o /usr/local/bin/hokusai && chmod +x /use/local/bin/hokusai
 ```
+
 
 2) [Configure your AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
 
@@ -92,13 +93,9 @@ Full details are in the [Review App reference](./docs/Review_Apps.md).
 
 ## Distributing Hokusai
 
-To distribute Hokusai you must be a member of Artsy engineering and have write credentials to:
-- https://github.com/artsy/hokusai
-- https://pypi.org/project/hokusai/
-- https://hub.docker.com/r/artsy/hokusai/
-- The S3 bucket `artsy-provisioning-public` in `us-east-1`
+Merges to master automatically distribute Pyinstaller versions for beta testing at https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-head-Darwin-x86_64 and https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-head-Linux-x86_64 respectively.
 
-Install `git`, `twine`, `pyinstaller`, `s3cmd` and `docker` then run `./distribute.sh {VERSION}`
+To create a new release, bump the version by editing the `./hokusai VERSION` file, create an entry in CHANGELOG.md and open a PR from `master` to the `release` branch of this repo.
 
 ## The Name
 
