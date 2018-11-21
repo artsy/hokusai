@@ -78,7 +78,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-      - run: apk add make
+      - run: apk add curl make
       - run: make image
       - run: make publish-dockerhub
 
