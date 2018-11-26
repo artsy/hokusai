@@ -42,7 +42,7 @@ Note: If installing via pip fails due to pip failing to upgrade your system Pyth
 Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-{version}-{platform}-x86_64 and adding it to your `$PATH`, i.e. to download the latest version, run:
 
 ```
-curl --silent https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-latest-$(uname -s)-$(uname -m) -o /usr/local/bin/hokusai && chmod +x /use/local/bin/hokusai
+curl --silent https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-latest-$(uname -s)-$(uname -m) -o /usr/local/bin/hokusai && chmod +x /usr/local/bin/hokusai
 ```
 
 
