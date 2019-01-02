@@ -5,7 +5,7 @@ from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
 
 @command()
-def gitcompare(git_compare_link, org_name):
+def gitcompare(org_name, git_compare_link):
   ecr = ECR()
 
   staging_deployment = Deployment('staging')
