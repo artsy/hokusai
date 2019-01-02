@@ -3,7 +3,7 @@ from hokusai.lib.config import config
 from hokusai.lib.common import shout, shout_concurrent
 from hokusai.services.kubectl import Kubectl
 
-@command
+@command()
 def logs(context, timestamps, follow, tail, namespace=None):
   kctl = Kubectl(context, namespace=namespace)
 

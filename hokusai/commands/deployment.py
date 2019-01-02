@@ -5,7 +5,7 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def update(context, tag, migration, constraint, git_remote, namespace=None, resolve_tag_sha1=True):
   if migration is not None:
     print_green("Running migration '%s' on %s..." % (migration, context))
@@ -16,13 +16,13 @@ def update(context, tag, migration, constraint, git_remote, namespace=None, reso
   print_green("Deployment updated to %s" % tag)
 
 
-@command
+@command()
 def refresh(context, deployment_name, namespace=None):
   deployment = Deployment(context, deployment_name=deployment_name, namespace=namespace)
   deployment.refresh()
 
 
-@command
+@command()
 def promote(migration, constraint, git_remote):
   ecr = ECR()
 

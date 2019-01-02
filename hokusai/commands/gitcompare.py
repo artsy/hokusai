@@ -4,7 +4,7 @@ from hokusai.lib.config import config
 from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
 
-@command
+@command()
 def gitcompare(git_compare_link, org_name):
   ecr = ECR()
 

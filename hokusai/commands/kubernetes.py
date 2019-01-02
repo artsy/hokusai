@@ -11,7 +11,7 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
@@ -34,7 +34,7 @@ def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
   print_green("Created Kubernetes environment %s" % kubernetes_yml)
 
 
-@command
+@command()
 def k8s_update(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
@@ -46,7 +46,7 @@ def k8s_update(context, namespace=None, yaml_file_name=None):
   print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
 
-@command
+@command()
 def k8s_delete(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
@@ -58,7 +58,7 @@ def k8s_delete(context, namespace=None, yaml_file_name=None):
   print_green("Deleted Kubernetes environment %s" % kubernetes_yml)
 
 
-@command
+@command()
 def k8s_status(context, resources, pods, describe, top, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
@@ -89,7 +89,7 @@ def k8s_status(context, resources, pods, describe, top, namespace=None, yaml_fil
     shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
 
 
-@command
+@command()
 def k8s_copy_config(context, destination_namespace):
   source_configmap = ConfigMap(context)
   destination_configmap = ConfigMap(context, namespace=destination_namespace)

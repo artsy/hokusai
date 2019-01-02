@@ -5,7 +5,7 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.config import config
 from hokusai.lib.common import print_green, shout
 
-@command
+@command()
 def images():
   images = ECR().get_images()
   print('')

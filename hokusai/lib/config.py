@@ -1,12 +1,13 @@
 import os
 import sys
-
+from distutils.version import LooseVersion
 from collections import OrderedDict
 
 import yaml
 
 from hokusai.lib.common import print_red, YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.version import VERSION
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
@@ -26,6 +27,8 @@ class HokusaiConfig(object):
   def check(self):
     if not os.path.isfile(HOKUSAI_CONFIG_FILE):
       raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
+    if self.required_version and LooseVersion(VERSION) < LooseVersion(self.required_version):
+      raise HokusaiError("Hokusai version is less than required version %s - please upgrade Hokusai" % self.required_version)
     return self
 
   def get(self, key, default=None, use_env=False, _type=str):
@@ -51,7 +54,6 @@ class HokusaiConfig(object):
       raise HokusaiError("Environment variable %s could not be cast to %s" % (env_var, _type))
 
   def _config_value_for(self, key, _type):
-    self.check()
     with open(HOKUSAI_CONFIG_FILE, 'r') as config_file:
       config_struct = yaml.safe_load(config_file.read())
       try:
@@ -69,6 +71,10 @@ class HokusaiConfig(object):
     if project is None:
       raise HokusaiError("Unconfigured 'project-name'! Plz check ./hokusai/config.yml")
     return project
+
+  @property
+  def required_version(self):
+    return self.get('required-version')
 
   @property
   def pre_deploy(self):

@@ -4,7 +4,7 @@ from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def gitdiff():
   ecr = ECR()
 

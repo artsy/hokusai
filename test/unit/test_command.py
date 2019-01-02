@@ -5,7 +5,7 @@ from test.utils import captured_output
 
 from hokusai.lib.command import command
 
-@command
+@command()
 def foo_command(foo):
   if foo:
     return 0

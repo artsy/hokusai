@@ -17,7 +17,7 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, YAML_HEADER, clean_string, shout
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command(config_check=False)
 def setup(project_name, template_remote, template_dir, template_vars, allow_missing_vars):
   mkpath(os.path.join(os.getcwd(), 'hokusai'))
   config.create(clean_string(project_name))
