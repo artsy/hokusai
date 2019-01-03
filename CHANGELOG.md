@@ -1,3 +1,15 @@
+## v0.5.1
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.1/README.md)
+
+### Notable changes since v0.5.0
+* c785e39 change config key required-version to more explicit hokusai-required-version, refactor config check and add tests and docs
+* 3a5234d refactor command decorator check config and allow commands like version and setup to opt-out and check required-version against current version if project specifies it
+* 82d5129 add openssh client to Docker build
+* 3deea30 lock docker-compose version to 1.22.0 in Dockerfile
+* e352309 one-liner for downloading Pyinstaller binaries for your os
+* f8a3564 remove distribute.sh
+
 ## v0.5.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.0/README.md)
