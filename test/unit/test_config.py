@@ -1,7 +1,5 @@
 import os
 
-from mock import patch
-
 from hokusai.lib import config
 from hokusai.lib.exceptions import HokusaiError
 
