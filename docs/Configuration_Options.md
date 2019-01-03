@@ -21,6 +21,7 @@ When running `hokusai setup` the following files are created:
 * `./hokusai/config.yml` contains project-specific configuration variables.  It is loaded a top-level hash that accepts the following keys:
 
     - `project-name`: <string> (required) - The project name
+    - `hokusai-required-version`: <string> (optional) - The required minimum version of Hokusai to use with this project.  Hokusai will raise an error when running commands if this requirement is not met
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook
     - `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hoksuai [staging|production] deploy` or the `hoksuai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like 'git@github.com:artsy/hokusai.git'.  Bound to the `--git-remote` option for these commands.

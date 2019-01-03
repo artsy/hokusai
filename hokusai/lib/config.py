@@ -22,14 +22,23 @@ class HokusaiConfig(object):
       payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
       f.write(payload)
 
-    return self
-
   def check(self):
-    if not os.path.isfile(HOKUSAI_CONFIG_FILE):
+    if not self._check_config_present(HOKUSAI_CONFIG_FILE):
       raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
-    if self.required_version and LooseVersion(VERSION) < LooseVersion(self.required_version):
-      raise HokusaiError("Hokusai version is less than required version %s - please upgrade Hokusai" % self.required_version)
-    return self
+    if not self._check_required_version(self.hokusai_required_version, VERSION):
+      raise HokusaiError("Hokusai version is less than required version %s - please upgrade Hokusai" % self.hokusai_required_version)
+
+  def _check_config_present(self, config_file):
+    if not os.path.isfile(config_file):
+      return False
+    return True
+
+  def _check_required_version(self, required_version, current_version):
+    if required_version is None:
+      return True
+    if LooseVersion(current_version) < LooseVersion(required_version):
+      return False
+    return True
 
   def get(self, key, default=None, use_env=False, _type=str):
     if use_env:
@@ -73,8 +82,8 @@ class HokusaiConfig(object):
     return project
 
   @property
-  def required_version(self):
-    return self.get('required-version')
+  def hokusai_required_version(self):
+    return self.get('hokusai-required-version')
 
   @property
   def pre_deploy(self):
