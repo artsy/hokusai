@@ -22,8 +22,10 @@ When running `hokusai setup` the following files are created:
 
     - `project-name`: <string> (required) - The project name
     - `hokusai-required-version`: <string> (optional) - The required minimum version of Hokusai to use with this project.  Hokusai will raise an error when running commands if this requirement is not met
+    - `pre-build`: <string> (optional) - A pre-build hook - useful to inject dynamic environment variables into the build, for example: `export COMMIT_HASH=$(git rev-parse HEAD)`
+    - `post-build`: <string> (optional) - A post-build hook - useful for image post-processing
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
-    - `post-deploy`: <string> (optional) - A post-deploy hook
+    - `post-deploy`: <string> (optional) - A post-deploy hook - useful for deploy notifications
     - `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hoksuai [staging|production] deploy` or the `hoksuai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like 'git@github.com:artsy/hokusai.git'.  Bound to the `--git-remote` option for these commands.
     - `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production] run`.  Bound to the `--tty` option for this command, overridden by the `HOKUSAI_RUN_TTY` env var.
 
