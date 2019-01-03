@@ -77,11 +77,8 @@ def shout_concurrent(commands, print_output=False):
   except KeyboardInterrupt:
     for p in processes:
       p.terminate()
-      return -1
-
-  for return_code in return_codes:
-    if return_code:
-      return return_code
+    return_codes = [1 for p in processes]
+  return return_codes
 
 def k8s_uuid():
   uuid = []

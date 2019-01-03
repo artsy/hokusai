@@ -30,6 +30,6 @@ def command(config_check=True):
           print_red(traceback.format_exc(e))
         else:
           print_red("ERROR: %s" % str(e))
-        sys.exit(-1)
+        sys.exit(1)
     return wrapper
   return decorator
