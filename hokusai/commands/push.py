@@ -5,6 +5,7 @@ from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, shout
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.services.docker import Docker
 
 @command()
 def push(tag, build, force, overwrite, skip_latest=False):
@@ -26,14 +27,7 @@ def push(tag, build, force, overwrite, skip_latest=False):
     raise HokusaiError("Tag %s already exists in registry.  Aborting." % tag)
 
   if build:
-    docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/build.yml')
-    legacy_docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')
-    if not os.path.isfile(docker_compose_yml) and not os.path.isfile(legacy_docker_compose_yml):
-      raise HokusaiError("Yaml files %s / %s do not exist." % (docker_compose_yml, legacy_docker_compose_yml))
-    if os.path.isfile(docker_compose_yml):
-      shout("docker-compose -f %s -p hokusai build" % docker_compose_yml, print_output=True)
-    if os.path.isfile(legacy_docker_compose_yml):
-      shout("docker-compose -f %s -p hokusai build" % legacy_docker_compose_yml, print_output=True)
+    Docker().build()
 
   build_tag = "hokusai_%s:latest" % config.project_name
 
