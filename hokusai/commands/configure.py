@@ -10,7 +10,7 @@ from hokusai.lib.command import command
 from hokusai.lib.common import print_green, get_region_name
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def configure(kubectl_version, bucket_name, key_name, config_file, platform, install_to, install_config_to):
   if not ((bucket_name and key_name) or config_file):
     raise HokusaiError("Must define bucket_name and key_name or config_file")

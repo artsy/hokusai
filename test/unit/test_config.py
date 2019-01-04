@@ -1,5 +1,7 @@
 import os
 
+from mock import patch
+
 from hokusai.lib import config
 from hokusai.lib.exceptions import HokusaiError
 
@@ -23,15 +25,23 @@ class TestConfigSetup(HokusaiUnitTestCase):
   def test_requires_config(self):
     with self.assertRaises(HokusaiError):
       self.config.check()
+    self.assertFalse(self.config._check_config_present(TMP_CONFIG_FILE))
 
   def test_create(self):
     self.assertFalse(os.path.isfile(TMP_CONFIG_FILE))
     try:
       self.config.create('bar')
       self.assertTrue(os.path.isfile(TMP_CONFIG_FILE))
+      self.assertTrue(self.config._check_config_present(TMP_CONFIG_FILE))
       self.assertEqual(self.config.project_name, 'bar')
     finally:
       os.remove(TMP_CONFIG_FILE)
+
+  def test_check_hokusai_required_version(self):
+    self.assertTrue(self.config._check_required_version(None, '0.0.1'))
+    self.assertTrue(self.config._check_required_version('0.0.1', '0.0.1'))
+    self.assertTrue(self.config._check_required_version('0.0.1', '0.0.2'))
+    self.assertFalse(self.config._check_required_version('1.0', '0.2'))
 
 class TestConfig(HokusaiUnitTestCase):
   def test_config_from_file(self):

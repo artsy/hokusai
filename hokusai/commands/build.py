@@ -5,7 +5,7 @@ from hokusai.lib.config import config
 from hokusai.lib.common import shout
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def build():
   docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/build.yml')
   legacy_docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/common.yml')

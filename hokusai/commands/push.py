@@ -6,7 +6,7 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, shout
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def push(tag, build, force, overwrite, skip_latest=False):
   if force is None and shout('git status --porcelain'):
     raise HokusaiError("Working directory is not clean.  Aborting.")

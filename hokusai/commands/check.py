@@ -10,7 +10,7 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.lib.common import get_region_name, print_red, print_green, shout
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
-@command
+@command()
 def check():
   return_code = 0
 
@@ -19,8 +19,6 @@ def check():
 
   def check_err(check_item):
     print_red(u'\u2718 ' + check_item + ' not found')
-
-  config.check()
 
   try:
     config.project_name

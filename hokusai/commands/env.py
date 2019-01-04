@@ -4,21 +4,21 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.lib.common import print_green
 from hokusai.lib.exceptions import HokusaiError
 
-@command
+@command()
 def create_env(context, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.create()
   print_green("Created configmap %s-environment" % config.project_name)
 
 
-@command
+@command()
 def delete_env(context, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.destroy()
   print_green("Deleted configmap %s-environment" % config.project_name)
 
 
-@command
+@command()
 def get_env(context, environment, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
@@ -31,7 +31,7 @@ def get_env(context, environment, namespace=None):
       print("%s=%s" % (k, v))
 
 
-@command
+@command()
 def set_env(context, environment, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
@@ -43,7 +43,7 @@ def set_env(context, environment, namespace=None):
   configmap.save()
 
 
-@command
+@command()
 def unset_env(context, environment, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.load()

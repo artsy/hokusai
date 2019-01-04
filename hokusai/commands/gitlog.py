@@ -3,7 +3,7 @@ from hokusai.lib.common import print_red, print_green, shout
 from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
 
-@command
+@command()
 def gitlog():
   ecr = ECR()
 

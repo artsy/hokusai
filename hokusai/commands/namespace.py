@@ -5,7 +5,7 @@ from hokusai.lib.command import command
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.common import YAML_HEADER, print_green, clean_string
 
-@command
+@command()
 def create_new_app_yaml(source_file, app_name):
   with open(source_file, 'r') as stream:
     try:
