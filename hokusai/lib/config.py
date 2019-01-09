@@ -29,7 +29,8 @@ class HokusaiConfig(object):
     if not self._check_config_present(HOKUSAI_CONFIG_FILE):
       raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
     if not self._check_required_version(self.hokusai_required_version, VERSION):
-      raise HokusaiError("Hokusai version is less than required version %s - please upgrade Hokusai" % self.hokusai_required_version)
+      raise HokusaiError("Hokusai's current version %s does not satisfy this project's version requirements '%s'.  Aborting."
+                           % (VERSION, self.hokusai_required_version))
 
   def _check_config_present(self, config_file):
     return os.path.isfile(config_file)
@@ -40,11 +41,11 @@ class HokusaiConfig(object):
     try:
       match_versions = SpecifierSet(required_version)
     except InvalidSpecifier:
-      raise HokusaiError("Could not parse %s as valid version specifiers. See PEP-440." % required_version)
+      raise HokusaiError("Could not parse '%s' as a valid version specifier. See https://www.python.org/dev/peps/pep-0440/#version-specifiers" % required_version)
     try:
       compare_version = Version(target_version)
     except InvalidVersion:
-      raise HokusaiError("Could not parse %s as a valid version number.  See PEP-440." % target_version)
+      raise HokusaiError("Could not parse '%s' as a valid version identifier. See https://www.python.org/dev/peps/pep-0440/#version-scheme" % target_version)
     return compare_version in match_versions
 
   def get(self, key, default=None, use_env=False, _type=str):
