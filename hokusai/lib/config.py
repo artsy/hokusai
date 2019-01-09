@@ -1,9 +1,12 @@
 import os
 import sys
-from distutils.version import LooseVersion
+
 from collections import OrderedDict
 
 import yaml
+
+from packaging.specifiers import SpecifierSet, InvalidSpecifier
+from packaging.version import Version, InvalidVersion
 
 from hokusai.lib.common import print_red, YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
@@ -29,16 +32,20 @@ class HokusaiConfig(object):
       raise HokusaiError("Hokusai version is less than required version %s - please upgrade Hokusai" % self.hokusai_required_version)
 
   def _check_config_present(self, config_file):
-    if not os.path.isfile(config_file):
-      return False
-    return True
+    return os.path.isfile(config_file)
 
-  def _check_required_version(self, required_version, current_version):
+  def _check_required_version(self, required_version, target_version):
     if required_version is None:
       return True
-    if LooseVersion(current_version) < LooseVersion(required_version):
-      return False
-    return True
+    try:
+      match_versions = SpecifierSet(required_version)
+    except InvalidSpecifier:
+      raise HokusaiError("Could not parse %s as valid version specifiers. See PEP-440." % required_version)
+    try:
+      compare_version = Version(target_version)
+    except InvalidVersion:
+      raise HokusaiError("Could not parse %s as a valid version number.  See PEP-440." % target_version)
+    return compare_version in match_versions
 
   def get(self, key, default=None, use_env=False, _type=str):
     if use_env:
