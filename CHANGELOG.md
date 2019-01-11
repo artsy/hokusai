@@ -3,6 +3,8 @@
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.1/README.md)
 
 ### Notable changes since v0.5.0
+* cd7b48a More helpful error messages in hokusai/lib/config.py
+* c027a4c update hokusai-required-version check to use PEP-440 version specifiers - add the packaging lib
 * c785e39 change config key required-version to more explicit hokusai-required-version, refactor config check and add tests and docs
 * 3a5234d refactor command decorator check config and allow commands like version and setup to opt-out and check required-version against current version if project specifies it
 * 82d5129 add openssh client to Docker build
