@@ -1,6 +1,7 @@
 import os
 import signal
 
+from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
@@ -8,7 +9,7 @@ from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 @command()
 def test(build, cleanup):
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/test.yml')
+  docker_compose_yml = os.path.join(CWD, 'hokusai/test.yml')
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 

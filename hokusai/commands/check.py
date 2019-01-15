@@ -3,6 +3,7 @@ import os
 
 import botocore.exceptions as botoexceptions
 
+from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
@@ -68,8 +69,8 @@ def check():
     check_err("ECR repository '%s'" % config.project_name)
     return_code += 1
 
-  if not os.path.isfile(os.path.join(os.getcwd(), 'hokusai/build.yml')):
-    if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/common.yml')):
+  if not os.path.isfile(os.path.join(CWD, 'hokusai/build.yml')):
+    if os.path.isfile(os.path.join(CWD, 'hokusai/common.yml')):
       check_ok('./hokusai/common.yml')
     else:
       check_err('./hokusai/build.yml')
@@ -77,13 +78,13 @@ def check():
     check_ok('./hokusai/build.yml')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/development.yml')):
+  if os.path.isfile(os.path.join(CWD, 'hokusai/development.yml')):
     check_ok('./hokusai/development.yml')
   else:
     check_err('./hokusai/development.yml')
     return_code += 1
 
-  if os.path.isfile(os.path.join(os.getcwd(), 'hokusai/test.yml')):
+  if os.path.isfile(os.path.join(CWD, 'hokusai/test.yml')):
     check_ok('./hokusai/test.yml')
   else:
     check_err('./hokusai/test.yml')
@@ -97,7 +98,7 @@ def check():
         check_err("kubectl context '%s'" % context)
         return_code += 1
 
-      if os.path.isfile(os.path.join(os.getcwd(), "hokusai/%s.yml" % context)):
+      if os.path.isfile(os.path.join(CWD, "hokusai/%s.yml" % context)):
         check_ok("./hokusai/%s.yml" % context)
       else:
         check_err("./hokusai/%s.yml" % context)

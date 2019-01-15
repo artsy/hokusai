@@ -34,7 +34,7 @@ def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--project-name', type=click.STRING, default=os.path.basename(os.getcwd()), help='The project name (default: name of current directory)')
+@click.option('--project-name', type=click.STRING, default=os.path.basename(hokusai.CWD), help='The project name (default: name of current directory)')
 @click.option('--template-remote', type=click.STRING, help='Git remote of templates to use - you can specify a branch via <git-remote>#<branch>')
 @click.option('--template-dir', type=click.STRING, help='Directory of templates to use - can be used with --template-remote')
 @click.option('--var', type=click.STRING, multiple=True, help='Extra variables to render Jinja templates in the form of key=value')

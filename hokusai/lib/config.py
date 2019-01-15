@@ -5,12 +5,14 @@ from collections import OrderedDict
 
 import yaml
 
+from hokusai import CWD
 from hokusai.lib.common import print_red, YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
-HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
+HOKUSAI_CONFIG_DIR = 'hokusai'
+HOKUSAI_CONFIG_FILE = os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'config.yml')
 
 class HokusaiConfig(object):
   def create(self, project_name):

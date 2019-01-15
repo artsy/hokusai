@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-web
+  namespace: default
+  labels:
+    testFixture: 'true'
+    app: hello
+    component: web
+    layer: application
+spec:
+  selector:
+    matchLabels:
+      app: hello
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: hello
+        component: web
+        layer: application
+      name: hello-web
+    spec:
+      containers:
+        - name: hello-web
+          envFrom:
+            - configMapRef:
+                name: hello-environment
+          image: nginxdemos/hello:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    testFixture: 'true'
+    app: hello
+    component: web
+    layer: application
+  name: hello-web
+  namespace: default
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      name: http
+      targetPort: 8080
+    - port: 443
+      protocol: TCP
+      name: https
+      targetPort: 8443
+  selector:
+    app: hello
+    layer: application
+    component: web
+  sessionAffinity: None
+  type: ClusterIP
