@@ -10,10 +10,8 @@ from hokusai import CWD
 from hokusai.lib.common import shout
 from hokusai.commands import kubernetes
 from hokusai.services.kubectl import Kubectl
-from hokusai.lib import template_processor
 
 kubernetes.HOKUSAI_CONFIG_DIR = os.path.join(CWD, 'test/fixtures/project/hokusai')
-template_processor.BASE_SEARCH_PATHS = [os.path.join(CWD, 'test/fixtures/project/hokusai/')]
 
 class TestKubernetes(HokusaiIntegrationTestCase):
     def setUp(self):
