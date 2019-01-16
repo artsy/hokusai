@@ -54,15 +54,14 @@ def verbose(msg):
   if VERBOSE: cprint("==> hokusai exec `%s`" % smart_str(msg), 'yellow')
   return msg
 
-
 def returncode(command):
   return call(verbose(command), stderr=STDOUT, shell=True)
 
 def shout(command, print_output=False):
+  output = check_output(verbose(command), stderr=STDOUT, shell=True)
   if print_output:
-    return check_call(verbose(command), stderr=STDOUT, shell=True)
-  else:
-    return check_output(verbose(command), stderr=STDOUT, shell=True)
+    print(output)
+  return output
 
 def shout_concurrent(commands, print_output=False):
   if print_output:
