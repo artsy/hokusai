@@ -1,5 +1,6 @@
 import os
 import json
+import pipes
 
 from hokusai.lib.config import config
 from hokusai.lib.common import shout, returncode, k8s_uuid
@@ -60,8 +61,8 @@ class CommandRunner(object):
     overrides = { "apiVersion": "v1", "spec": spec }
 
     if run_tty:
-      shout(self.kctl.command("run %s -t -i --image=%s --restart=Never --overrides='%s' --rm" %
-                     (name, image_name, json.dumps(overrides))), print_output=True)
+      shout(self.kctl.command("run %s -t -i --image=%s --restart=Never --overrides=%s --rm" %
+                     (name, image_name, pipes.quote(json.dumps(overrides)))), print_output=True)
     else:
-      return returncode(self.kctl.command("run %s --attach --image=%s --overrides='%s' --restart=Never --rm" %
-                                        (name, image_name, json.dumps(overrides))))
+      return returncode(self.kctl.command("run %s --attach --image=%s --overrides=%s --restart=Never --rm" %
+                                        (name, image_name, pipes.quote(json.dumps(overrides)))))
