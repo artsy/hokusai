@@ -33,9 +33,8 @@ def promote(migration, constraint, git_remote):
   tag = ecr.find_git_sha1_image_tag(tag)
   if tag is None:
     print_red("Could not find a git SHA1 for tag %s.  Aborting." % tag)
-    return -1
+    return 1
 
-  print_green("Deploying tag %s to production..." % tag)
   if migration is not None:
     print_green("Running migration '%s' on production..." % migration)
     return_code = CommandRunner('production').run(tag, migration, constraint=constraint)
