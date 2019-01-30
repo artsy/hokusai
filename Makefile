@@ -11,7 +11,7 @@ VERSION ?= $(shell cat hokusai/VERSION)
 
 dependencies:
 	pip install --requirement requirements.txt --quiet
-	pip install --quiet pyinstaller
+	pip install --quiet pyinstaller==3.3.1
 
 test:
 	python -m unittest discover test
