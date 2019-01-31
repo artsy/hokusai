@@ -106,6 +106,14 @@ class HokusaiConfig(object):
     return self.get('git-remote')
 
   @property
+  def pre_build(self):
+    return self.get('pre-build')
+
+  @property
+  def post_build(self):
+    return self.get('post-build')
+
+  @property
   def run_tty(self):
     return self.get('run-tty', default=False, use_env=True, _type=bool)
 

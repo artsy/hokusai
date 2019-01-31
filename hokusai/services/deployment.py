@@ -56,9 +56,8 @@ class Deployment(object):
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
-      containers = deployment['spec']['template']['spec']['containers']
-      container_names = [container['name'] for container in containers]
-      deployment_targets = [{"name": name, "image": "%s:%s" % (self.ecr.project_repo, tag)} for name in container_names]
+      containers = [(container['name'], container['image']) for container in deployment['spec']['template']['spec']['containers']]
+      deployment_targets = [{"name": name, "image": "%s:%s" % (self.ecr.project_repo, tag)} for name, image in containers if self.ecr.project_repo in image]
       patch = {
         "spec": {
           "template": {
