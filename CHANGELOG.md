@@ -1,3 +1,13 @@
+## v0.5.2
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.2/README.md)
+
+### Notable changes since v0.5.1
+* 2f68593 refactor and DRY-up calls to docker-compose build and add pre-build and post-build hooks
+* ca89edf refactor gitcompare - add org-name as first, required option
+* 76587b1 patch deployment targets only if the project repo matches
+* 39ad325 properly quote json for bash
+
 ## v0.5.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.1/README.md)
