@@ -68,6 +68,19 @@ In order to start a review app you will need to follow these steps:
     ```shell
     hokusai review_app status <name>
     ```
+    
+    - If you get gravity _Back to Safety_ error when visiting the page you need to add the `redirect_url` to gravity:
+        - Take the client application id from the url and search for it in gravity staging console:
+        ```ruby
+            app = ClientApplication.find_by app_id: '<app-id>'
+        ```
+        - Then add your url (with https://) to `redirect_urls`:
+        ```ruby
+            urls = app.redirect_urls
+            urls << 'https://<your-app-url>'
+            app.update_attributes! redirect_urls: urls
+        ```
+        
 
 8) If you need to view or update environment variables:
 
