@@ -46,7 +46,7 @@ class Deployment(object):
         print_green("Pushing deployment tags to %s..." % remote)
         shout("git tag -f %s" % self.context, print_output=True)
         shout("git tag %s" % deployment_tag, print_output=True)
-        shout("git push --force %s --tags" % remote, print_output=True)
+        shout("git push --force %s --tags --no-verify" % remote, print_output=True)
 
     if config.pre_deploy is not None:
       print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)
