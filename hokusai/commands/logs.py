@@ -24,4 +24,4 @@ def logs(context, timestamps, follow, tail, namespace=None):
       containers.append({'pod': pod['metadata']['name'], 'name': container['name']})
 
   commands = [kctl.command("logs %s %s%s" % (container['pod'], container['name'], opts)) for container in containers]
-  return shout_concurrent(commands, print_output=True)
+  shout_concurrent(commands, print_output=True)
