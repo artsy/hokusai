@@ -21,12 +21,12 @@ When running `hokusai setup` the following files are created:
 * `./hokusai/config.yml` contains project-specific configuration variables.  It is loaded a top-level hash that accepts the following keys:
 
     - `project-name`: <string> (required) - The project name
-    - `hokusai-required-version`: <string> (optional) - The required minimum version of Hokusai to use with this project.  Hokusai will raise an error when running commands if this requirement is not met
+    - `hokusai-required-version`: <string> (optional) - A [PEP-440 version specifier string](https://www.python.org/dev/peps/pep-0440/#version-specifiers).  Hokusai will raise an error when running commands if its current version does not satisfy these version specifications.  For example: `~=0.5`, `==0.5.1`, `>=0.4.0,<0.4.6`, `!=0.1.*` are all valid version specifier strings
     - `pre-build`: <string> (optional) - A pre-build hook - useful to inject dynamic environment variables into the build, for example: `export COMMIT_HASH=$(git rev-parse HEAD)`
     - `post-build`: <string> (optional) - A post-build hook - useful for image post-processing
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook - useful for deploy notifications
-    - `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hoksuai [staging|production] deploy` or the `hoksuai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like 'git@github.com:artsy/hokusai.git'.  Bound to the `--git-remote` option for these commands.
+    - `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hokusai [staging|production] deploy` or the `hokusai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like `git@github.com:artsy/hokusai.git`.  Bound to the `--git-remote` option for these commands.
     - `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production] run`.  Bound to the `--tty` option for this command, overridden by the `HOKUSAI_RUN_TTY` env var.
 
 * `./hokusai/build.yml` is the base docker-compose Yaml file referenced when running `hokusai local` commands. It should contain a single service for the project, `build` referencing the root project directory, and any build args (i.e.) host environment variables to inject into the Dockerfile.

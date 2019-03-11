@@ -33,7 +33,6 @@ class Deployment(object):
     else:
       print_green("Deploying %s to %s/%s..." % (tag, self.context, self.namespace))
 
-
     if config.pre_deploy is not None:
       print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)
       return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint)
@@ -81,9 +80,9 @@ class Deployment(object):
       if remote is not None:
         print_green("Pushing deployment tags to %s..." % remote)
         shout("git tag -f %s" % self.context, print_output=True)
-        shout("git tag %s" % deployment_tag, print_output=True)
-        shout("git push -f %s refs/tags/%s" % (remote, self.context), print_output=True)
-        shout("git push %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
+        shout("git tag -f %s" % deployment_tag, print_output=True)
+        shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
+        shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
 
     if config.post_deploy is not None:
       print_green("Running post-deploy hook '%s'..." % config.post_deploy)

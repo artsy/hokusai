@@ -1,9 +1,12 @@
 import os
 import sys
-from distutils.version import LooseVersion
+
 from collections import OrderedDict
 
 import yaml
+
+from packaging.specifiers import SpecifierSet, InvalidSpecifier
+from packaging.version import Version, InvalidVersion
 
 from hokusai import CWD
 from hokusai.lib.common import print_red, YAML_HEADER
@@ -28,19 +31,24 @@ class HokusaiConfig(object):
     if not self._check_config_present(HOKUSAI_CONFIG_FILE):
       raise HokusaiError("Hokusai is not set up for this project - run 'hokusai setup'")
     if not self._check_required_version(self.hokusai_required_version, VERSION):
-      raise HokusaiError("Hokusai version is less than required version %s - please upgrade Hokusai" % self.hokusai_required_version)
+      raise HokusaiError("Hokusai's current version %s does not satisfy this project's version requirements '%s'.  Aborting."
+                           % (VERSION, self.hokusai_required_version))
 
   def _check_config_present(self, config_file):
-    if not os.path.isfile(config_file):
-      return False
-    return True
+    return os.path.isfile(config_file)
 
-  def _check_required_version(self, required_version, current_version):
+  def _check_required_version(self, required_version, target_version):
     if required_version is None:
       return True
-    if LooseVersion(current_version) < LooseVersion(required_version):
-      return False
-    return True
+    try:
+      match_versions = SpecifierSet(required_version)
+    except InvalidSpecifier:
+      raise HokusaiError("Could not parse '%s' as a valid version specifier. See https://www.python.org/dev/peps/pep-0440/#version-specifiers" % required_version)
+    try:
+      compare_version = Version(target_version)
+    except InvalidVersion:
+      raise HokusaiError("Could not parse '%s' as a valid version identifier. See https://www.python.org/dev/peps/pep-0440/#version-scheme" % target_version)
+    return compare_version in match_versions
 
   def get(self, key, default=None, use_env=False, _type=str):
     if use_env:

@@ -37,9 +37,32 @@ class TestConfigSetup(HokusaiUnitTestCase):
 
   def test_check_hokusai_required_version(self):
     self.assertTrue(self.config._check_required_version(None, '0.0.1'))
-    self.assertTrue(self.config._check_required_version('0.0.1', '0.0.1'))
-    self.assertTrue(self.config._check_required_version('0.0.1', '0.0.2'))
-    self.assertFalse(self.config._check_required_version('1.0', '0.2'))
+    with self.assertRaises(HokusaiError):
+      self.config._check_required_version('0.0.1', '0.0.1')
+    with self.assertRaises(HokusaiError):
+      self.config._check_required_version('someinvalidversionspecifier', '0.0.1')
+    self.assertTrue(self.config._check_required_version('~=0.1', '0.1.1'))
+    self.assertTrue(self.config._check_required_version('~=0.1', '0.2'))
+    self.assertFalse(self.config._check_required_version('~=0.1', '1.0'))
+    self.assertTrue(self.config._check_required_version('==0.0.1', '0.0.1'))
+    self.assertFalse(self.config._check_required_version('==0.0.1', '0.0.2'))
+    self.assertFalse(self.config._check_required_version('==1.0', '0.2'))
+    self.assertTrue(self.config._check_required_version('<0.0.2.post2', '0.0.2.post1'))
+    self.assertTrue(self.config._check_required_version('<1.1', '1.0.2'))
+    self.assertFalse(self.config._check_required_version('<1.1', '2.0.2'))
+    self.assertFalse(self.config._check_required_version('<=0.0.2', '2.2'))
+    self.assertTrue(self.config._check_required_version('<=2.2', '2.2'))
+    self.assertTrue(self.config._check_required_version('>0.0.1', '1.2.3'))
+    self.assertTrue(self.config._check_required_version('>0.0.1.post1', '0.0.1.post3'))
+    self.assertTrue(self.config._check_required_version('>=0.0.1', '1.2.3'))
+    self.assertTrue(self.config._check_required_version('>=1.2.3', '1.2.3'))
+    self.assertTrue(self.config._check_required_version('!=0.0.1', '1.2.3'))
+    self.assertFalse(self.config._check_required_version('!=0.0.1', '0.0.1'))
+    self.assertFalse(self.config._check_required_version('!=0.1.*', '0.1.1'))
+    self.assertTrue(self.config._check_required_version('===1.0+trololo', '1.0+trololo'))
+    self.assertFalse(self.config._check_required_version('===1.0+trololo', '1.0+tralala'))
+    self.assertTrue(self.config._check_required_version('>0.0.1,~=0.2,!=0.2.3', '0.2.2'))
+    self.assertFalse(self.config._check_required_version('>0.0.1,~=0.2,!=0.2.3', '0.2.3'))
 
 class TestConfig(HokusaiUnitTestCase):
   def test_config_from_file(self):

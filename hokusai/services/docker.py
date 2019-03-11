@@ -9,6 +9,7 @@ class Docker(object):
   def build(self):
     docker_compose_yml = os.path.join(CWD, 'hokusai/build.yml')
     legacy_docker_compose_yml = os.path.join(CWD, 'hokusai/common.yml')
+
     if not os.path.isfile(docker_compose_yml) and not os.path.isfile(legacy_docker_compose_yml):
       raise HokusaiError("Yaml files %s / %s do not exist." % (docker_compose_yml, legacy_docker_compose_yml))
 
