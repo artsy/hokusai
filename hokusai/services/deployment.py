@@ -19,7 +19,7 @@ class Deployment(object):
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint, git_remote, resolve_tag_sha1=True, timeout='10m'):
+  def update(self, tag, constraint, git_remote, resolve_tag_sha1=True):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
@@ -60,7 +60,7 @@ class Deployment(object):
 
     print_green("Waiting for deployment rollouts to complete...")
 
-    rollout_commands = [self.kctl.command("rollout status deployment/%s --timeout %s" % (deployment['metadata']['name'], timeout)) for deployment in self.cache]
+    rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
     return_codes = shout_concurrent(rollout_commands, print_output=True)
     if any(return_codes):
       print_red("One or more deployment rollouts timed out!  Rolling back...")
@@ -108,9 +108,9 @@ class Deployment(object):
     print_green("Waiting for refresh to complete...")
 
     rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
-    return_code = shout_concurrent(rollout_commands)
-    if return_code:
-      raise HokusaiError("Refresh failed!", return_code=return_code)
+    return_codes = shout_concurrent(rollout_commands, print_output=True)
+    if any(return_codes):
+      raise HokusaiError("Refresh failed!")
 
 
   @property
