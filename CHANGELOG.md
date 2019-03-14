@@ -1,3 +1,14 @@
+## v0.5.3
+
+* d23aafc DRY up references to development, test, build and common yml files
+* 867da74 update return value of hokusai/commands/logs.py
+* 3295d9f remove the kubectl timeout flag and rely on deployment config to specify progressDeadlineSeconds to orchestrate deployment rollouts (note - this also fixes issues with pipeline commands referencing sidecar containers running alongside application containers)
+* 708ffdd create and push git tags individually with --no-verify
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.3/README.md)
+
+### Notable changes since v0.5.2
+
 ## v0.5.2
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.2/README.md)
