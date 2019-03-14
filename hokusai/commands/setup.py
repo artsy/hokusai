@@ -13,14 +13,14 @@ from jinja2 import Environment, PackageLoader, FileSystemLoader, StrictUndefined
 
 from hokusai import CWD
 from hokusai.lib.command import command
-from hokusai.lib.config import config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, YAML_HEADER, clean_string, shout
 from hokusai.lib.exceptions import HokusaiError
 
 @command(config_check=False)
 def setup(project_name, template_remote, template_dir, template_vars, allow_missing_vars):
-  mkpath(os.path.join(CWD, 'hokusai'))
+  mkpath(os.path.join(CWD, HOKUSAI_CONFIG_DIR))
   config.create(clean_string(project_name))
 
   ecr = ECR()
