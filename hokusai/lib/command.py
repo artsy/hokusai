@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 from functools import wraps
@@ -26,10 +27,10 @@ def command(config_check=True):
       except KeyboardInterrupt:
         raise
       except (CalledProcessError, Exception) as e:
-        if get_verbosity():
+        if get_verbosity() or os.environ.get('DEBUG') is '1':
           print_red(traceback.format_exc(e))
         else:
           print_red("ERROR: %s" % str(e))
-        sys.exit(-1)
+        sys.exit(1)
     return wrapper
   return decorator

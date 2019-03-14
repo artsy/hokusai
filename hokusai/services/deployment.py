@@ -4,7 +4,7 @@ import json
 from hokusai.lib.config import config
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, shout, shout_concurrent
+from hokusai.lib.common import print_green, print_red, shout, shout_concurrent
 from hokusai.services.command_runner import CommandRunner
 from hokusai.lib.exceptions import HokusaiError
 
@@ -33,22 +33,6 @@ class Deployment(object):
     else:
       print_green("Deploying %s to %s/%s..." % (tag, self.context, self.namespace))
 
-    if self.namespace is None:
-      self.ecr.retag(tag, self.context)
-      print_green("Updated tag %s -> %s" % (tag, self.context))
-
-      deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      self.ecr.retag(tag, deployment_tag)
-      print_green("Updated tag %s -> %s" % (tag, deployment_tag))
-
-      remote = git_remote or config.git_remote
-      if remote is not None:
-        print_green("Pushing deployment tags to %s..." % remote)
-        shout("git tag -f %s" % self.context, print_output=True)
-        shout("git tag -f %s" % deployment_tag, print_output=True)
-        shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
-        shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
-
     if config.pre_deploy is not None:
       print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)
       return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint)
@@ -74,12 +58,31 @@ class Deployment(object):
       print_green("Patching deployment %s..." % deployment['metadata']['name'])
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
-    print_green("Waiting for rollout to complete...")
+    print_green("Waiting for deployment rollouts to complete...")
 
     rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
-    return_code = shout_concurrent(rollout_commands)
-    if return_code:
-      raise HokusaiError("Deployment failed!", return_code=return_code)
+    return_codes = shout_concurrent(rollout_commands, print_output=True)
+    if any(return_codes):
+      print_red("One or more deployment rollouts timed out!  Rolling back...")
+      rollback_commands = [self.kctl.command("rollout undo deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
+      shout_concurrent(rollback_commands, print_output=True)
+      raise HokusaiError("Deployment failed!")
+
+    if self.namespace is None:
+      self.ecr.retag(tag, self.context)
+      print_green("Updated tag %s -> %s" % (tag, self.context))
+
+      deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
+      self.ecr.retag(tag, deployment_tag)
+      print_green("Updated tag %s -> %s" % (tag, deployment_tag))
+
+      remote = git_remote or config.git_remote
+      if remote is not None:
+        print_green("Pushing deployment tags to %s..." % remote)
+        shout("git tag -f %s" % self.context, print_output=True)
+        shout("git tag -f %s" % deployment_tag, print_output=True)
+        shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
+        shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
 
     if config.post_deploy is not None:
       print_green("Running post-deploy hook '%s'..." % config.post_deploy)
@@ -105,9 +108,9 @@ class Deployment(object):
     print_green("Waiting for refresh to complete...")
 
     rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
-    return_code = shout_concurrent(rollout_commands)
-    if return_code:
-      raise HokusaiError("Refresh failed!", return_code=return_code)
+    return_codes = shout_concurrent(rollout_commands, print_output=True)
+    if any(return_codes):
+      raise HokusaiError("Refresh failed!")
 
 
   @property
@@ -120,13 +123,14 @@ class Deployment(object):
 
     for deployment in self.cache:
       containers = deployment['spec']['template']['spec']['containers']
-      container_names = [container['name'] for container in containers]
-      container_images = [container['image'] for container in containers]
+      container_images = [container['image'] for container in containers if self.ecr.project_repo in container['image']]
 
+      if not container_images:
+        raise HokusaiError("Deployment has no valid target containers.  Aborting.")
       if not all(x == container_images[0] for x in container_images):
         raise HokusaiError("Deployment's containers do not reference the same image tag.  Aborting.")
 
-      images.append(containers[0]['image'])
+      images.append(container_images[0])
 
     if not all(y == images[0] for y in images):
       raise HokusaiError("Deployments do not reference the same image tag. Aborting.")

@@ -1,10 +1,10 @@
 import os
-from collections import OrderedDict
 
 import yaml
 
+from hokusai import CWD
 from hokusai.lib.command import command
-from hokusai.lib.config import config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.lib.common import print_green, shout
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
@@ -14,7 +14,7 @@ from hokusai.lib.exceptions import HokusaiError
 @command()
 def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
-  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
+  kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
@@ -37,7 +37,7 @@ def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
 @command()
 def k8s_update(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
-  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
+  kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
@@ -49,7 +49,7 @@ def k8s_update(context, namespace=None, yaml_file_name=None):
 @command()
 def k8s_delete(context, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
-  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
+  kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
@@ -61,7 +61,7 @@ def k8s_delete(context, namespace=None, yaml_file_name=None):
 @command()
 def k8s_status(context, resources, pods, describe, top, namespace=None, yaml_file_name=None):
   if yaml_file_name is None: yaml_file_name = context
-  kubernetes_yml = os.path.join(os.getcwd(), "hokusai/%s.yml" % yaml_file_name)
+  kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 

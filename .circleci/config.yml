@@ -9,6 +9,53 @@ jobs:
       - run: make dependencies
       - run: make test
 
+  test_integration:
+    machine:
+      image: circleci/classic:201808-01
+    environment:
+      K8S_VERSION: v1.10.7
+      KUBECONFIG: /home/circleci/.kube/config
+      MINIKUBE_VERSION: v0.30.0
+      MINIKUBE_WANTUPDATENOTIFICATION: false
+      MINIKUBE_WANTREPORTERRORPROMPT: false
+      MINIKUBE_HOME: /home/circleci
+      CHANGE_MINIKUBE_NONE_USER: true
+    steps:
+      - checkout
+      - run:
+          name: setup kubectl
+          command: |
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            mkdir -p ${HOME}/.kube
+            touch ${HOME}/.kube/config
+      - run:
+          name: setup minikube
+          command: |
+            curl -Lo minikube https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+      - run:
+          name: start minikube
+          command: |
+            sudo -E minikube start --vm-driver=none --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube.log 2>&1 < /dev/null
+      - run:
+          name: wait for minikube
+          command: |
+            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+            until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+              sleep 1;
+            done
+      - run:
+          name: fix RBAC
+          command: |
+            # make default account cluster-admin
+            kubectl create clusterrolebinding add-on-cluster-admin --clusterrole cluster-admin --serviceaccount=kube-system:default
+      - run:
+          name: dump cluster-info
+          command: |
+            kubectl cluster-info
+            kubectl get pods --all-namespaces
+      - run: make dependencies
+      - run: make integration
+
   release_head_linux:
     docker:
       - image: python:2
@@ -101,6 +148,10 @@ workflows:
             branches:
               ignore: release
       - test_macos:
+          filters:
+            branches:
+              ignore: release
+      - test_integration:
           filters:
             branches:
               ignore: release

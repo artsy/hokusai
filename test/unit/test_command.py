@@ -22,5 +22,5 @@ class TestCommand(HokusaiUnitTestCase):
   def test_command_catches_exceptions(self, mocked_sys_exit):
     with captured_output() as (out, err):
       foo_command(False)
-      mocked_sys_exit.assert_called_once_with(-1)
+      mocked_sys_exit.assert_called_once_with(1)
       self.assertIn('ERROR: Bad command', out.getvalue().strip())

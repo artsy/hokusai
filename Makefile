@@ -14,7 +14,10 @@ dependencies:
 	pip install --quiet pyinstaller==3.3.1
 
 test:
-	python -m unittest discover test
+	python -m unittest discover test.unit
+
+integration:
+	python -m unittest discover test.integration
 
 test-docker:
 	$(DOCKER_RUN) \

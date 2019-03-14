@@ -66,7 +66,7 @@ class TestConfigSetup(HokusaiUnitTestCase):
 
 class TestConfig(HokusaiUnitTestCase):
   def test_config_from_file(self):
-    self.assertEqual(config.config.project_name, 'foo')
+    self.assertEqual(config.config.project_name, 'hello')
     self.assertEqual(config.config.pre_deploy, 'migrate.sh')
     self.assertEqual(config.config.post_deploy, 'sh -c report.sh')
     self.assertEqual(config.config.git_remote, 'git@github.com:artsy/hokusai.git')

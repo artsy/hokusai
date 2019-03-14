@@ -1,14 +1,15 @@
 import os
 import signal
 
+from hokusai import CWD
 from hokusai.lib.command import command
-from hokusai.lib.config import config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE, config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import HokusaiError
 
 @command()
 def dev_start(build, detach):
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -33,7 +34,7 @@ def dev_start(build, detach):
 
 @command()
 def dev_stop():
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -41,7 +42,7 @@ def dev_stop():
 
 @command()
 def dev_status():
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -49,7 +50,7 @@ def dev_status():
 
 @command()
 def dev_logs(follow, tail):
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -63,7 +64,7 @@ def dev_logs(follow, tail):
 
 @command()
 def dev_run(command, service_name, stop):
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -74,7 +75,7 @@ def dev_run(command, service_name, stop):
 
 @command()
 def dev_clean():
-  docker_compose_yml = os.path.join(os.getcwd(), 'hokusai/development.yml')
+  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 

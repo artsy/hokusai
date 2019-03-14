@@ -2,10 +2,12 @@ import os
 import unittest
 import boto3
 
-from hokusai.lib.common import shout
+from hokusai import CWD
 from hokusai.lib import config
 
-config.HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'test', 'fixtures', 'config.yml')
+TEST_KUBE_CONTEXT = os.environ.get('HOKUSAI_TEST_KUBE_CTX', 'minikube')
+
+config.HOKUSAI_CONFIG_FILE = os.path.join(CWD, 'test/fixtures/project/hokusai/', 'config.yml')
 
 boto3.setup_default_session(aws_access_key_id='foo', aws_secret_access_key='bar')
 

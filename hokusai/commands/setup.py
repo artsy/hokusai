@@ -11,15 +11,16 @@ import yaml
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader, StrictUndefined
 
+from hokusai import CWD
 from hokusai.lib.command import command
-from hokusai.lib.config import config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, YAML_HEADER, clean_string, shout
 from hokusai.lib.exceptions import HokusaiError
 
 @command(config_check=False)
 def setup(project_name, template_remote, template_dir, template_vars, allow_missing_vars):
-  mkpath(os.path.join(os.getcwd(), 'hokusai'))
+  mkpath(os.path.join(CWD, HOKUSAI_CONFIG_DIR))
   config.create(clean_string(project_name))
 
   ecr = ECR()
@@ -87,7 +88,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
     for template in required_templates:
       if custom_template_dir and not os.path.isfile(os.path.join(custom_template_dir, template)):
         raise HokusaiError("Could not find required template file %s" % template)
-      with open(os.path.join(os.getcwd(), template.rstrip('.j2')), 'w') as f:
+      with open(os.path.join(CWD, template.rstrip('.j2')), 'w') as f:
         f.write(env.get_template(template).render(**template_context))
       print_green("Created %s" % template.rstrip('.j2'))
 
@@ -95,7 +96,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
       for root, _, files in os.walk(custom_template_dir):
         subpath = os.path.relpath(root, custom_template_dir)
         if subpath is not '.':
-          mkpath(os.path.join(os.getcwd(), subpath))
+          mkpath(os.path.join(CWD, subpath))
         for file in files:
           if subpath is not '.':
             file_path = os.path.join(subpath, file)
@@ -104,10 +105,10 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
           if file_path in required_templates:
             continue
           if file_path.endswith('.j2'):
-            with open(os.path.join(os.getcwd(), file_path.rstrip('.j2')), 'w') as f:
+            with open(os.path.join(CWD, file_path.rstrip('.j2')), 'w') as f:
               f.write(env.get_template(file_path).render(**template_context))
           else:
-            copyfile(os.path.join(custom_template_dir, file_path), os.path.join(os.getcwd(), file_path))
+            copyfile(os.path.join(custom_template_dir, file_path), os.path.join(CWD, file_path))
           print_green("Created %s" % file_path.rstrip('.j2'))
   finally:
     if scratch_dir:

@@ -8,12 +8,18 @@ import yaml
 from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version, InvalidVersion
 
+from hokusai import CWD
 from hokusai.lib.common import print_red, YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
-HOKUSAI_CONFIG_FILE = os.path.join(os.getcwd(), 'hokusai', 'config.yml')
+HOKUSAI_CONFIG_DIR = 'hokusai'
+HOKUSAI_CONFIG_FILE = os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'config.yml')
+BUILD_YAML_FILE = 'build.yml'
+LEGACY_BUILD_YAML_FILE = 'common.yml'
+TEST_YML_FILE = 'test.yml'
+DEVELOPMENT_YML_FILE = 'development.yml'
 
 class HokusaiConfig(object):
   def create(self, project_name):
