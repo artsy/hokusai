@@ -50,9 +50,10 @@ class CommandRunner(object):
         container['env'].append({'name': split[0], 'value': split[1]})
 
     spec = { "containers": [container] }
-    if constraint:
+    constraints = constraint or config.run_constraints
+    if constraints:
       spec['nodeSelector'] = {}
-      for label in constraint:
+      for label in constraints:
         if '=' not in label:
           raise HokusaiError("Error: Node selectors must of the form 'key=value'")
         split = label.split('=', 1)

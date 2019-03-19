@@ -123,4 +123,16 @@ class HokusaiConfig(object):
   def run_tty(self):
     return self.get('run-tty', default=False, use_env=True, _type=bool)
 
+  @property
+  def run_constraints(self):
+    return self.get('run-constraints', default=[], _type=list)
+
+  @property
+  def follow_logs(self):
+    return self.get('follow-logs', default=False, use_env=True, _type=bool)
+
+  @property
+  def tail_logs(self):
+    return self.get('tail-logs', use_env=True, _type=int)
+
 config = HokusaiConfig()
