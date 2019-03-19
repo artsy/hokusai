@@ -9,7 +9,7 @@ from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version, InvalidVersion
 
 from hokusai import CWD
-from hokusai.lib.common import print_red, YAML_HEADER
+from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
 
@@ -134,5 +134,9 @@ class HokusaiConfig(object):
   @property
   def tail_logs(self):
     return self.get('tail-logs', use_env=True, _type=int)
+
+  @property
+  def always_verbose(self):
+    return self.get('always-verbose', default=False, use_env=True, _type=bool)
 
 config = HokusaiConfig()

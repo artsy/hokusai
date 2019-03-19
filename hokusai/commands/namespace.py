@@ -3,7 +3,8 @@ import yaml
 
 from hokusai.lib.command import command
 from hokusai.lib.exceptions import HokusaiError
-from hokusai.lib.common import YAML_HEADER, print_green, clean_string
+from hokusai.lib.common import print_green, clean_string
+from hokusai.lib.constants import YAML_HEADER
 
 @command()
 def create_new_app_yaml(source_file, app_name):
