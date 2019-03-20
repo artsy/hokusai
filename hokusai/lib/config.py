@@ -55,14 +55,14 @@ class HokusaiConfig(object):
     return compare_version in match_versions
 
   def get(self, key, default=None, use_env=False, _type=str):
+    value = self._config_value_for(key, _type)
+    if value is not None:
+      return value
+
     if use_env:
       value = self._env_value_for(key, _type)
       if value is not None:
         return value
-
-    value = self._config_value_for(key, _type)
-    if value is not None:
-      return value
 
     return default
 
