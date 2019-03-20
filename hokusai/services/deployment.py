@@ -79,6 +79,7 @@ class Deployment(object):
       remote = git_remote or config.git_remote
       if remote is not None:
         print_green("Pushing deployment tags to %s..." % remote)
+        shout("git fetch %s" % remote)
         shout("git tag -f %s %s" % (self.context, tag), print_output=True)
         shout("git tag -f %s %s" % (deployment_tag, tag), print_output=True)
         shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
