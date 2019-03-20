@@ -9,7 +9,7 @@ from hokusai.lib.exceptions import HokusaiError
 def update(context, tag, migration, constraint, git_remote, namespace=None, resolve_tag_sha1=True):
   if migration is not None:
     print_green("Running migration '%s' on %s..." % (migration, context))
-    return_code = CommandRunner(context, namespace=namespace).run(tag, migration, constraint=constraint)
+    return_code = CommandRunner(context, namespace=namespace).run(tag, migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
   Deployment(context, namespace=namespace).update(tag, constraint, git_remote, resolve_tag_sha1=resolve_tag_sha1)
@@ -37,7 +37,7 @@ def promote(migration, constraint, git_remote):
 
   if migration is not None:
     print_green("Running migration '%s' on production..." % migration)
-    return_code = CommandRunner('production').run(tag, migration, constraint=constraint)
+    return_code = CommandRunner('production').run(tag, migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
   deploy_to = Deployment('production').update(tag, constraint, git_remote)

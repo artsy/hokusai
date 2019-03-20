@@ -14,7 +14,7 @@ class CommandRunner(object):
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
 
-  def run(self, image_tag, cmd, tty=False, env=(), constraint=()):
+  def run(self, image_tag, cmd, tty=None, env=(), constraint=()):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
@@ -33,7 +33,7 @@ class CommandRunner(object):
       'envFrom': [{'configMapRef': {'name': "%s-environment" % config.project_name}}]
     }
 
-    run_tty = tty or config.run_tty
+    run_tty = tty if tty is not None else config.run_tty
     if run_tty:
       container.update({
         "stdin": True,

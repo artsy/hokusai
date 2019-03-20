@@ -41,6 +41,9 @@ def print_green(msg):
 def print_red(msg):
   cprint(smart_str(msg), 'red')
 
+def print_yellow(msg):
+  cprint(smart_str(msg), 'yellow')
+
 def set_verbosity(v):
   global VERBOSE
   VERBOSE = v or config.always_verbose
