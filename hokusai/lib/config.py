@@ -71,6 +71,11 @@ class HokusaiConfig(object):
     val = os.environ.get(env_var)
     if val is None:
       return val
+    if _type == list:
+      try:
+        return _type(val.split(','))
+      except ValueError:
+        raise HokusaiError("Environment variable %s could not be split to %s" % (env_var, _type))
     try:
       return _type(val)
     except ValueError:
@@ -125,7 +130,7 @@ class HokusaiConfig(object):
 
   @property
   def run_constraints(self):
-    return self.get('run-constraints', default=[], _type=list)
+    return self.get('run-constraints', default=[], use_env=True, _type=list)
 
   @property
   def follow_logs(self):
