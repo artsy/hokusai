@@ -4,12 +4,14 @@ from hokusai.lib.common import shout, shout_concurrent
 from hokusai.services.kubectl import Kubectl
 
 @command()
-def logs(context, timestamps, follow, tail, namespace=None):
+def logs(context, timestamps, follow, tail, previous, namespace=None):
   kctl = Kubectl(context, namespace=namespace)
 
   opts = ''
   if timestamps:
     opts += ' --timestamps'
+  if previous:
+    opts += ' --previous'
   if follow or config.follow_logs:
     opts += ' --follow'
   if tail or config.tail_logs:

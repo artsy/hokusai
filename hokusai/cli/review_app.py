@@ -82,11 +82,12 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
 @click.option('-s', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
+@click.option('-p', '--previous', type=click.BOOL, is_flag=True, help='Get from the previous run of the Pod container(s)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def logs(app_name, timestamps, follow, tail, verbose):
+def logs(app_name, timestamps, follow, tail, previous, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, namespace=clean_string(app_name))
+  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, namespace=clean_string(app_name))
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
