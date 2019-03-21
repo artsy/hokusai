@@ -2,9 +2,10 @@ from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.lib.common import shout, shout_concurrent
 from hokusai.services.kubectl import Kubectl
+from hokusai.lib.exceptions import HokusaiError
 
 @command()
-def logs(context, timestamps, follow, tail, previous, namespace=None):
+def logs(context, timestamps, follow, tail, previous, labels, namespace=None):
   kctl = Kubectl(context, namespace=namespace)
 
   opts = ''
@@ -18,7 +19,13 @@ def logs(context, timestamps, follow, tail, previous, namespace=None):
     num_tail = tail if tail else config.tail_logs
     opts += " --tail=%s" % num_tail
 
-  pods = kctl.get_objects('pod', selector="app=%s,layer=application" % config.project_name)
+  selectors = ["app=%s" % config.project_name, "layer=application"]
+  for l in labels:
+    if '=' not in l:
+      raise HokusaiError("Error: label selectors of the form 'key=value'")
+    selectors.append(l)
+
+  pods = kctl.get_objects('pod', selector=(',').join(selectors))
   pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)
   containers = []
 
