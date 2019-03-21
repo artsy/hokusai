@@ -6,6 +6,7 @@ from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE, config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.services.docker import Docker
 
 @command()
 def dev_start(build, detach):
@@ -20,7 +21,7 @@ def dev_start(build, detach):
 
   opts = ''
   if build:
-    opts += ' --build'
+    Docker().build()
   if detach:
     opts += ' -d'
 

@@ -4,10 +4,12 @@
 
 Hokusai requires IAM configuration for working with AWS resources. It uses the Boto3 library and [loads configuration](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials) from a local file or via the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY`.
 
-You can set overrides for certain command options and project-specific configuration varaiables in the environment as well.  See below for project-specific configuration variables and their enviroment overrides.  The order of precence for these variables is as follows:
+You can set defaults for certain command options in `./hokusai/config.yml` or in environment variables.  See below for project-specific configuration variables and their environment-variable fallbacks.  The order of precedence for these variables is as follows:
 
-- If the configuration variable is bound to a command-line option, the option supplied on the command line always takes precendence.
-- If the configuration variable can be overridden by an environment variable, the environment variable takes precendence if set.
+- If the configuration variable is bound to a command-line option, the option supplied on the command line always takes precedence.
+- If the configuration variable is provided in `./hokusai/config.yml` it is used as the option if not supplied on the command line.
+- If an environment variable is set it is used as a fallback.
+- The default value from the command-line option is used.
 
 When running `hokusai configure` the following files are created:
 
@@ -27,7 +29,11 @@ When running `hokusai setup` the following files are created:
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
     - `post-deploy`: <string> (optional) - A post-deploy hook - useful for deploy notifications
     - `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hokusai [staging|production] deploy` or the `hokusai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like `git@github.com:artsy/hokusai.git`.  Bound to the `--git-remote` option for these commands.
-    - `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production] run`.  Bound to the `--tty` option for this command, overridden by the `HOKUSAI_RUN_TTY` env var.
+    - `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production|review_app] run`.  Bound to the `--tty` option for this command, and falls back to by the `HOKUSAI_RUN_TTY` env var.
+    - `follow-logs`: <boolean> (optional) - Follow log output when invoking `hokusai [staging|production|review_app] logs`.  Bound to the `--follow` option for this command, and falls back to the `HOKUSAI_FOLLOW_LOGS` env var.
+    - `tail-logs`: <integer> (optional) - Tail N lines of log output when invoking `hokusai [staging|production|review_app] logs`.  Bound to the `--tail` option for this command, and falls back to the `HOKUSAI_TAIL_LOGS` env var.
+    - `run-constraints`: <list of kubernetes label selector strings> - Constrain run containers to Kubernetes nodes matching the label selectors in the form `key=value` by setting the `nodeSelector` field on the container's spec. Bound to the `--constrint` option for `hokusai [staging|production|review_app] run` as well as containers run via the `--migration` flag as well as `pre-deploy` / `post-deploy` hooks triggered by `hokusai [staging|production|review_app] deploy` or `hokusai pipeline promote`.  Falls back to the `HOKUSAI_RUN_CONSTRAINTS` env var, in which case a list is parsed from a comma-delimited string.
+    - `always-verbose`: <boolean> (optional) - Always pront verbose output.  Bound to the `--verbose` option for various commands, and falls back to the `HOKUSAI_ALWAYS_VERBOSE` env var.
 
 * `./hokusai/build.yml` is the base docker-compose Yaml file referenced when running `hokusai local` commands. It should contain a single service for the project, `build` referencing the root project directory, and any build args (i.e.) host environment variables to inject into the Dockerfile.
 

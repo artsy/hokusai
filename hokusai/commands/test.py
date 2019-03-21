@@ -6,6 +6,7 @@ from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, TEST_YML_FILE, config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
+from hokusai.services.docker import Docker
 
 @command()
 def test(build, cleanup):
@@ -23,7 +24,7 @@ def test(build, cleanup):
 
   opts = ' --abort-on-container-exit'
   if build:
-    opts += ' --build'
+    Docker().build()
 
   print_green("Starting test environment... Press Ctrl+C to stop.")
   try:

@@ -13,6 +13,7 @@ from botocore import session as botosession
 
 from termcolor import cprint
 
+from hokusai.lib.config import config
 from hokusai.lib.exceptions import CalledProcessError
 
 CONTEXT_SETTINGS = {
@@ -22,8 +23,6 @@ CONTEXT_SETTINGS = {
 }
 
 EXIT_SIGNALS = [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE, signal.SIGTERM]
-
-YAML_HEADER = '---\n'
 
 VERBOSE = False
 
@@ -42,9 +41,12 @@ def print_green(msg):
 def print_red(msg):
   cprint(smart_str(msg), 'red')
 
+def print_yellow(msg):
+  cprint(smart_str(msg), 'yellow')
+
 def set_verbosity(v):
   global VERBOSE
-  VERBOSE = v
+  VERBOSE = v or config.always_verbose
 
 def get_verbosity():
   global VERBOSE

@@ -15,7 +15,7 @@ from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, YAML_HEADER, clean_string, shout
+from hokusai.lib.common import print_green, clean_string, shout
 from hokusai.lib.exceptions import HokusaiError
 
 @command(config_check=False)

@@ -10,10 +10,11 @@ def logs(context, timestamps, follow, tail, namespace=None):
   opts = ''
   if timestamps:
     opts += ' --timestamps'
-  if follow:
+  if follow or config.follow_logs:
     opts += ' --follow'
-  if tail:
-    opts += " --tail=%s" % tail
+  if tail or config.tail_logs:
+    num_tail = tail if tail else config.tail_logs
+    opts += " --tail=%s" % num_tail
 
   pods = kctl.get_objects('pod', selector="app=%s,layer=application" % config.project_name)
   pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)

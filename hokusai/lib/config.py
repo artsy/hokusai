@@ -9,7 +9,7 @@ from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version, InvalidVersion
 
 from hokusai import CWD
-from hokusai.lib.common import print_red, YAML_HEADER
+from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
 
@@ -55,14 +55,14 @@ class HokusaiConfig(object):
     return compare_version in match_versions
 
   def get(self, key, default=None, use_env=False, _type=str):
+    value = self._config_value_for(key, _type)
+    if value is not None:
+      return value
+
     if use_env:
       value = self._env_value_for(key, _type)
       if value is not None:
         return value
-
-    value = self._config_value_for(key, _type)
-    if value is not None:
-      return value
 
     return default
 
@@ -71,6 +71,11 @@ class HokusaiConfig(object):
     val = os.environ.get(env_var)
     if val is None:
       return val
+    if _type == list:
+      try:
+        return _type(val.split(','))
+      except ValueError:
+        raise HokusaiError("Environment variable %s could not be split to %s" % (env_var, _type))
     try:
       return _type(val)
     except ValueError:
@@ -122,5 +127,21 @@ class HokusaiConfig(object):
   @property
   def run_tty(self):
     return self.get('run-tty', default=False, use_env=True, _type=bool)
+
+  @property
+  def run_constraints(self):
+    return self.get('run-constraints', default=[], use_env=True, _type=list)
+
+  @property
+  def follow_logs(self):
+    return self.get('follow-logs', default=False, use_env=True, _type=bool)
+
+  @property
+  def tail_logs(self):
+    return self.get('tail-logs', use_env=True, _type=int)
+
+  @property
+  def always_verbose(self):
+    return self.get('always-verbose', default=False, use_env=True, _type=bool)
 
 config = HokusaiConfig()

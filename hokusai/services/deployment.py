@@ -3,10 +3,10 @@ import json
 
 from hokusai.lib.config import config
 from hokusai.services.kubectl import Kubectl
-from hokusai.services.ecr import ECR
-from hokusai.lib.common import print_green, print_red, shout, shout_concurrent
+from hokusai.services.ecr import ECR, ClientError
+from hokusai.lib.common import print_green, print_red, print_yellow, shout, shout_concurrent
 from hokusai.services.command_runner import CommandRunner
-from hokusai.lib.exceptions import HokusaiError
+from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 class Deployment(object):
   def __init__(self, context, deployment_name=None, namespace=None):
@@ -35,7 +35,7 @@ class Deployment(object):
 
     if config.pre_deploy is not None:
       print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)
-      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint)
+      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint, tty=False)
       if return_code:
         raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
@@ -68,27 +68,50 @@ class Deployment(object):
       shout_concurrent(rollback_commands, print_output=True)
       raise HokusaiError("Deployment failed!")
 
-    if self.namespace is None:
-      self.ecr.retag(tag, self.context)
-      print_green("Updated tag %s -> %s" % (tag, self.context))
-
-      deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      self.ecr.retag(tag, deployment_tag)
-      print_green("Updated tag %s -> %s" % (tag, deployment_tag))
-
-      remote = git_remote or config.git_remote
-      if remote is not None:
-        print_green("Pushing deployment tags to %s..." % remote)
-        shout("git tag -f %s" % self.context, print_output=True)
-        shout("git tag -f %s" % deployment_tag, print_output=True)
-        shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
-        shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
+    post_deploy_success = True
 
     if config.post_deploy is not None:
       print_green("Running post-deploy hook '%s'..." % config.post_deploy)
-      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.post_deploy, constraint=constraint)
+      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.post_deploy, constraint=constraint, tty=False)
       if return_code:
-        raise HokusaiError("Post-deploy hook failed with return code %s" % return_code, return_code=return_code)
+        print_yellow("WARNING: Running the post-deploy hook failed with return code %s" % return_code)
+        print_yellow("The tag %s has been rolled out.  However, you should run the post-deploy hook '%s' manually, or re-run this deployment." % (tag, config.post_deploy))
+        post_deploy_success = False
+
+    if self.namespace is None:
+      deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
+      print_green("Updating ECR deployment tags in %s..." % self.ecr.project_repo)
+      try:
+        self.ecr.retag(tag, self.context)
+        print_green("Updated ECR tag %s -> %s" % (tag, self.context))
+
+        self.ecr.retag(tag, deployment_tag)
+        print_green("Updated ECR tag %s -> %s" % (tag, deployment_tag))
+      except (ValueError, ClientError) as e:
+        print_yellow("WARNING: Updating ECR deployment tags failed due to the error: '%s'" % str(e))
+        print_yellow("The tag %s has been rolled out.  However, you should create the ECR tags '%s' and '%s' manually, or re-run this deployment." % (tag, deployment_tag, self.context))
+        post_deploy_success = False
+
+      remote = git_remote or config.git_remote
+      if remote is not None:
+        print_green("Pushing Git deployment tags to %s..." % remote)
+        try:
+          shout("git fetch %s" % remote)
+          shout("git tag -f %s %s" % (self.context, tag), print_output=True)
+          shout("git tag -f %s %s" % (deployment_tag, tag), print_output=True)
+          shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
+          print_green("Updated Git tag %s -> %s" % (tag, self.context))
+          shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
+          print_green("Updated Git tag %s -> %s" % (tag, deployment_tag))
+        except CalledProcessError as e:
+          print_yellow("WARNING: Creating Git deployment tags failed due to the error: '%s'" % str(e))
+          print_yellow("The tag %s has been rolled out.  However, you should create the Git tags '%s' and '%s' manually, or re-run this deployment." % (tag, deployment_tag, self.context))
+          post_deploy_success = False
+
+    if post_deploy_success:
+      print_green("Deployment succeeded!")
+    else:
+      raise HokusaiError("One or more post-deploy steps failed!")
 
   def refresh(self):
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")

@@ -108,6 +108,19 @@ See full details in the [Review App reference](Review_Apps.md).
   - `hokusai pipeline gitcompare --org-name <your org name in githug>` - Print a git compare url for comparing whats on staging with production.
   - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
 
+### A note on deployment rollouts
+
+When running `hoksuai [staging|production] deploy` or `hokusai pipeline promote`, Hokusai takes the following steps:
+1) Selects all the project's deployments (those matching the label selectors "app={project_name},layer=application").
+2) Attempts to run a `--migration` command, if specified.  If this command fails, Hokusai exits with the return code of this command.
+3) Attempts to run a `pre-deploy` hook, if specified.  If this command fails, Hokusai exits with the return code of this command.
+4) Patches the deployment's containers that run the application image (those that contain the project's repository in their `image` field) with the new deeployment tag.
+5) Waits for the deployment to roll out.  If the deployment does not specify a `progressDeadlineSeconds` it could hang indefinitely.  If the deployment fails to rollout, Hokusai runs a `kubectl rollout undo` to roll all deployments back automatically, then exits with `1`.
+6) Attempts to run a `post-deploy` hook, if defined.  If it fails, Hokusai prints a warning and continues.
+7) Attempts to push deployment tags to the project registry.  If it fails, Hokusai prints a warning and continues.
+8) Attempts to push deployment tags to Git if `git-remote` is defined in the project's config.  If it fails, Hokusai prints a warning and continues.
+9) Finally, Hokusai exits `0` if all steps were successful.  If any of steps `6`, `7` or `8` failed, it exits with `1`.
+
 ### How to do a rollback
 
 You can use the command `hokusai registry images` to get a list of all images for your current project. They order from most recent to oldest. To do a rollback use `hokusai production deploy [image_tag]` to get back to a particular version. 
