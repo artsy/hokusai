@@ -60,7 +60,7 @@ def get_verbosity():
   return VERBOSE
 
 def verbose(msg):
-  if VERBOSE: print_yellow("==> hokusai exec `%s`" % msg, newline_before=True, newline_after=True)
+  if VERBOSE: print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
   return msg
 
 
