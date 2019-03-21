@@ -25,8 +25,11 @@ def push(tag, build, force, overwrite, skip_latest, verbose):
 
 
 @registry.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-r', '--reverse-sort', type=click.BOOL, is_flag=True, help='Sort oldest to latest')
+@click.option('-l', '--limit', type=click.INT, default=20, help="Limit output to N images")
+@click.option('-f', '--filter-tags', type=click.STRING, help='Filter images that have at least one tag matching the provided string')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def images(verbose):
+def images(reverse_sort, limit, filter_tags, verbose):
   """Print images and tags in the project's registry"""
   set_verbosity(verbose)
-  hokusai.images()
+  hokusai.images(reverse_sort, limit, filter_tags)
