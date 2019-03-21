@@ -73,18 +73,15 @@ def k8s_status(context, resources, pods, describe, top, namespace=None, yaml_fil
     kctl_cmd = "get"
     output = " -o wide"
   if resources:
-    print('')
-    print_green("Resources")
+    print_green("Resources", newline_before=True)
     print_green("===========")
     shout(kctl.command("%s -f %s%s" % (kctl_cmd, kubernetes_yml, output)), print_output=True)
   if pods:
-    print('')
-    print_green("Pods")
+    print_green("Pods", newline_before=True)
     print_green("===========")
     shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
   if top:
-    print('')
-    print_green("Top Pods")
+    print_green("Top Pods", newline_before=True)
     print_green("===========")
     shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
 

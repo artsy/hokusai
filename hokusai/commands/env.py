@@ -1,7 +1,7 @@
 from hokusai.lib.config import config
 from hokusai.lib.command import command
 from hokusai.services.configmap import ConfigMap
-from hokusai.lib.common import print_green
+from hokusai.lib.common import print_green, print_smart
 from hokusai.lib.exceptions import HokusaiError
 
 @command()
@@ -25,10 +25,10 @@ def get_env(context, environment, namespace=None):
   if environment:
     for k, v in configmap.all():
       if k in environment:
-        print("%s=%s" % (k, v))
+        print_smart("%s=%s" % (k, v))
   else:
     for k, v in configmap.all():
-      print("%s=%s" % (k, v))
+      print_smart("%s=%s" % (k, v))
 
 
 @command()

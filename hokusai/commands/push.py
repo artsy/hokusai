@@ -33,10 +33,10 @@ def push(tag, build, force, overwrite, skip_latest=False):
 
   shout("docker tag %s %s:%s" % (build_tag, ecr.project_repo, tag))
   shout("docker push %s:%s" % (ecr.project_repo, tag), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build_tag, ecr.project_repo, tag))
+  print_green("Pushed %s to %s:%s" % (build_tag, ecr.project_repo, tag), newline_after=True)
 
   if skip_latest: return
 
   shout("docker tag %s %s:%s" % (build_tag, ecr.project_repo, 'latest'))
   shout("docker push %s:%s" % (ecr.project_repo, 'latest'), print_output=True)
-  print_green("Pushed %s to %s:%s" % (build_tag, ecr.project_repo, 'latest'))
+  print_green("Pushed %s to %s:%s" % (build_tag, ecr.project_repo, 'latest'), newline_after=True)

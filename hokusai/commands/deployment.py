@@ -8,7 +8,7 @@ from hokusai.lib.exceptions import HokusaiError
 @command()
 def update(context, tag, migration, constraint, git_remote, timeout, namespace=None, resolve_tag_sha1=True):
   if migration is not None:
-    print_green("Running migration '%s' on %s..." % (migration, context))
+    print_green("Running migration '%s' on %s..." % (migration, context), newline_after=True)
     return_code = CommandRunner(context, namespace=namespace).run(tag, migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
@@ -36,7 +36,7 @@ def promote(migration, constraint, git_remote, timeout):
     return 1
 
   if migration is not None:
-    print_green("Running migration '%s' on production..." % migration)
+    print_green("Running migration '%s' on production..." % migration, newline_after=True)
     return_code = CommandRunner('production').run(tag, migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)

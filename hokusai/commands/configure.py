@@ -15,12 +15,12 @@ def configure(kubectl_version, bucket_name, key_name, config_file, platform, ins
   if not ((bucket_name and key_name) or config_file):
     raise HokusaiError("Must define bucket_name and key_name or config_file")
 
-  print_green("Downloading and installing kubectl...")
+  print_green("Downloading and installing kubectl...", newline_before=True, newline_after=True)
   urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform), os.path.join('/tmp', 'kubectl'))
   os.chmod(os.path.join('/tmp', 'kubectl'), 0755)
   shutil.move(os.path.join('/tmp', 'kubectl'), os.path.join(install_to, 'kubectl'))
 
-  print_green("Configuring kubectl...")
+  print_green("Configuring kubectl...", newline_after=True)
   if not os.path.isdir(install_config_to):
     mkpath(install_config_to)
 
