@@ -43,10 +43,11 @@ def gitcompare(org_name, git_compare_link, verbose):
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
+@click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def promote(migration, constraint, git_remote, verbose):
+def promote(migration, constraint, git_remote, timeout, verbose):
   """Update the project's deployment(s) on production with the image tag
   currently deployed on staging and update the production tag
   to reference the same image"""
   set_verbosity(verbose)
-  hokusai.promote(migration, constraint, git_remote)
+  hokusai.promote(migration, constraint, git_remote, timeout)

@@ -19,7 +19,7 @@ class Deployment(object):
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint, git_remote, resolve_tag_sha1=True):
+  def update(self, tag, constraint, git_remote, timeout, resolve_tag_sha1=True):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
@@ -52,9 +52,11 @@ class Deployment(object):
             "spec": {
               "containers": deployment_targets
             }
-          }
+          },
+          "progressDeadlineSeconds": timeout
         }
       }
+
       print_green("Patching deployment %s..." % deployment['metadata']['name'])
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 

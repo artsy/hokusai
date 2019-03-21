@@ -6,13 +6,13 @@ from hokusai.services.ecr import ECR
 from hokusai.lib.exceptions import HokusaiError
 
 @command()
-def update(context, tag, migration, constraint, git_remote, namespace=None, resolve_tag_sha1=True):
+def update(context, tag, migration, constraint, git_remote, timeout, namespace=None, resolve_tag_sha1=True):
   if migration is not None:
     print_green("Running migration '%s' on %s..." % (migration, context))
     return_code = CommandRunner(context, namespace=namespace).run(tag, migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
-  Deployment(context, namespace=namespace).update(tag, constraint, git_remote, resolve_tag_sha1=resolve_tag_sha1)
+  Deployment(context, namespace=namespace).update(tag, constraint, git_remote, timeout, resolve_tag_sha1=resolve_tag_sha1)
   print_green("Deployment updated to %s" % tag)
 
 
@@ -23,7 +23,7 @@ def refresh(context, deployment_name, namespace=None):
 
 
 @command()
-def promote(migration, constraint, git_remote):
+def promote(migration, constraint, git_remote, timeout):
   ecr = ECR()
 
   deploy_from = Deployment('staging')
@@ -40,5 +40,6 @@ def promote(migration, constraint, git_remote):
     return_code = CommandRunner('production').run(tag, migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
-  deploy_to = Deployment('production').update(tag, constraint, git_remote)
+
+  deploy_to = Deployment('production').update(tag, constraint, git_remote, timeout)
   print_green("Promoted staging to production at %s" % tag)

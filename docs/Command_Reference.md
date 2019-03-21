@@ -115,7 +115,7 @@ When running `hoksuai [staging|production] deploy` or `hokusai pipeline promote`
 2) Attempts to run a `--migration` command, if specified.  If this command fails, Hokusai exits with the return code of this command.
 3) Attempts to run a `pre-deploy` hook, if specified.  If this command fails, Hokusai exits with the return code of this command.
 4) Patches the deployment's containers that run the application image (those that contain the project's repository in their `image` field) with the new deeployment tag.
-5) Waits for the deployment to roll out.  If the deployment does not specify a `progressDeadlineSeconds` it could hang indefinitely.  If the deployment fails to rollout, Hokusai runs a `kubectl rollout undo` to roll all deployments back automatically, then exits with `1`.
+5) Waits for the deployment to roll out.  If the deployment fails to rollout withing the provided `--timeout` (default 10 minutes), Hokusai runs a `kubectl rollout undo` to roll all deployments back automatically, then exits with `1`.
 6) Attempts to run a `post-deploy` hook, if defined.  If it fails, Hokusai prints a warning and continues.
 7) Attempts to push deployment tags to the project registry.  If it fails, Hokusai prints a warning and continues.
 8) Attempts to push deployment tags to Git if `git-remote` is defined in the project's config.  If it fails, Hokusai prints a warning and continues.

@@ -95,11 +95,13 @@ def logs(app_name, timestamps, follow, tail, verbose):
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
+@click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(app_name, tag, migration, constraint, git_remote, verbose):
+def deploy(app_name, tag, migration, constraint, git_remote, timeout, verbose):
   """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, namespace=clean_string(app_name), resolve_tag_sha1=False)
+  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout,
+                  namespace=clean_string(app_name), resolve_tag_sha1=False)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
