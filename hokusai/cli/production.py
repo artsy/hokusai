@@ -67,24 +67,27 @@ def run(command, tty, tag, env, constraint, verbose):
 @click.option('-s', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
+@click.option('-p', '--previous', type=click.BOOL, is_flag=True, help='Get from the previous run of the Pod container(s)')
+@click.option('-l', '--label', type=click.STRING, multiple=True, help='Filter pods by additional label selectors in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def logs(timestamps, follow, tail, verbose):
+def logs(timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail)
+  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, label)
 
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
+@click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def deploy(tag, migration, constraint, git_remote, verbose):
+def deploy(tag, migration, constraint, git_remote, timeout, verbose):
   """Update the project's deployment(s) to reference
   the given image tag and update the tag production
   to reference the same image"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote)
+  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)

@@ -6,6 +6,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 
 from hokusai.lib.config import config
 from hokusai.lib.common import get_region_name
+from hokusai.lib.exceptions import HokusaiError
 
 SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
 
@@ -30,8 +31,7 @@ class ECR(object):
       try:
         repos += res['repositories']
       except KeyError, err:
-        print(res)
-        raise
+        raise HokusaiError("Fetching ECR registry failed with error %s" % str(err))
       while 'nextToken' in res:
         res = self.client.describe_repositories(registryId=self.aws_account_id,
                                                   nextToken=res['nextToken'])

@@ -19,7 +19,7 @@ class Deployment(object):
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint, git_remote, resolve_tag_sha1=True):
+  def update(self, tag, constraint, git_remote, timeout, resolve_tag_sha1=True):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
@@ -29,12 +29,12 @@ class Deployment(object):
         raise HokusaiError("Could not find a git SHA1 for tag %s.  Aborting." % tag)
 
     if self.namespace is None:
-      print_green("Deploying %s to %s..." % (tag, self.context))
+      print_green("Deploying %s to %s..." % (tag, self.context), newline_after=True)
     else:
-      print_green("Deploying %s to %s/%s..." % (tag, self.context, self.namespace))
+      print_green("Deploying %s to %s/%s..." % (tag, self.context, self.namespace), newline_after=True)
 
     if config.pre_deploy is not None:
-      print_green("Running pre-deploy hook '%s'..." % config.pre_deploy)
+      print_green("Running pre-deploy hook '%s'..." % config.pre_deploy, newline_after=True)
       return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint, tty=False)
       if return_code:
         raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
@@ -52,10 +52,12 @@ class Deployment(object):
             "spec": {
               "containers": deployment_targets
             }
-          }
+          },
+          "progressDeadlineSeconds": timeout
         }
       }
-      print_green("Patching deployment %s..." % deployment['metadata']['name'])
+
+      print_green("Patching deployment %s..." % deployment['metadata']['name'], newline_after=True)
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
     print_green("Waiting for deployment rollouts to complete...")
@@ -63,7 +65,7 @@ class Deployment(object):
     rollout_commands = [self.kctl.command("rollout status deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
     return_codes = shout_concurrent(rollout_commands, print_output=True)
     if any(return_codes):
-      print_red("One or more deployment rollouts timed out!  Rolling back...")
+      print_red("One or more deployment rollouts timed out!  Rolling back...", newline_before=True, newline_after=True)
       rollback_commands = [self.kctl.command("rollout undo deployment/%s" % deployment['metadata']['name']) for deployment in self.cache]
       shout_concurrent(rollback_commands, print_output=True)
       raise HokusaiError("Deployment failed!")
@@ -71,30 +73,30 @@ class Deployment(object):
     post_deploy_success = True
 
     if config.post_deploy is not None:
-      print_green("Running post-deploy hook '%s'..." % config.post_deploy)
+      print_green("Running post-deploy hook '%s'..." % config.post_deploy, newline_after=True)
       return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.post_deploy, constraint=constraint, tty=False)
       if return_code:
-        print_yellow("WARNING: Running the post-deploy hook failed with return code %s" % return_code)
-        print_yellow("The tag %s has been rolled out.  However, you should run the post-deploy hook '%s' manually, or re-run this deployment." % (tag, config.post_deploy))
+        print_yellow("WARNING: Running the post-deploy hook failed with return code %s" % return_code, newline_before=True, newline_after=True)
+        print_yellow("The tag %s has been rolled out.  However, you should run the post-deploy hook '%s' manually, or re-run this deployment." % (tag, config.post_deploy), newline_after=True)
         post_deploy_success = False
 
     if self.namespace is None:
       deployment_tag = "%s--%s" % (self.context, datetime.datetime.utcnow().strftime("%Y-%m-%d--%H-%M-%S"))
-      print_green("Updating ECR deployment tags in %s..." % self.ecr.project_repo)
+      print_green("Updating ECR deployment tags in %s..." % self.ecr.project_repo, newline_after=True)
       try:
         self.ecr.retag(tag, self.context)
         print_green("Updated ECR tag %s -> %s" % (tag, self.context))
 
         self.ecr.retag(tag, deployment_tag)
-        print_green("Updated ECR tag %s -> %s" % (tag, deployment_tag))
+        print_green("Updated ECR tag %s -> %s" % (tag, deployment_tag), newline_after=True)
       except (ValueError, ClientError) as e:
-        print_yellow("WARNING: Updating ECR deployment tags failed due to the error: '%s'" % str(e))
-        print_yellow("The tag %s has been rolled out.  However, you should create the ECR tags '%s' and '%s' manually, or re-run this deployment." % (tag, deployment_tag, self.context))
+        print_yellow("WARNING: Updating ECR deployment tags failed due to the error: '%s'" % str(e), newline_before=True, newline_after=True)
+        print_yellow("The tag %s has been rolled out.  However, you should create the ECR tags '%s' and '%s' manually, or re-run this deployment." % (tag, deployment_tag, self.context), newline_after=True)
         post_deploy_success = False
 
       remote = git_remote or config.git_remote
       if remote is not None:
-        print_green("Pushing Git deployment tags to %s..." % remote)
+        print_green("Pushing Git deployment tags to %s..." % remote, newline_after=True)
         try:
           shout("git fetch %s" % remote)
           shout("git tag -f %s %s" % (self.context, tag), print_output=True)
@@ -102,10 +104,10 @@ class Deployment(object):
           shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
           print_green("Updated Git tag %s -> %s" % (tag, self.context))
           shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
-          print_green("Updated Git tag %s -> %s" % (tag, deployment_tag))
+          print_green("Updated Git tag %s -> %s" % (tag, deployment_tag), newline_after=True)
         except CalledProcessError as e:
-          print_yellow("WARNING: Creating Git deployment tags failed due to the error: '%s'" % str(e))
-          print_yellow("The tag %s has been rolled out.  However, you should create the Git tags '%s' and '%s' manually, or re-run this deployment." % (tag, deployment_tag, self.context))
+          print_yellow("WARNING: Creating Git deployment tags failed due to the error: '%s'" % str(e), newline_before=True, newline_after=True)
+          print_yellow("The tag %s has been rolled out.  However, you should create the Git tags '%s' and '%s' manually, or re-run this deployment." % (tag, deployment_tag, self.context), newline_after=True)
           post_deploy_success = False
 
     if post_deploy_success:
@@ -125,7 +127,7 @@ class Deployment(object):
           }
         }
       }
-      print_green("Refreshing %s..." % deployment['metadata']['name'])
+      print_green("Refreshing %s..." % deployment['metadata']['name'], newline_after=True)
       shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
     print_green("Waiting for refresh to complete...")
