@@ -8,6 +8,7 @@ GIT_TAG ?= $(shell which git) tag --sign
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
 VERSION ?= $(shell cat hokusai/VERSION)
+MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
 	pip install --requirement requirements.txt --quiet
@@ -85,6 +86,8 @@ publish-dockerhub:
 	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
 	  docker tag hokusai:latest artsy/hokusai:$(VERSION) && \
 	  docker push artsy/hokusai:$(VERSION) && \
+	  docker tag hokusai:latest artsy/hokusai:$(MINOR_VERSION) && \
+	  docker push artsy/hokusai:$(MINOR_VERSION) && \
 	  docker tag hokusai:latest artsy/hokusai:latest && \
 	  docker push artsy/hokusai:latest; \
 	else \

@@ -1,5 +1,31 @@
+## v0.5.4
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.4/README.md)
+
+### Notable changes since v0.5.3
+* 987a77d add --label option to logs to filter by additional label selectors
+* a10105f print newline only after verbose log line
+* 1cdb7b9 add the --previous option to logs commands
+* 395d57d use a unique tmp dir to download and configure kubectl
+* 36316e7 refactor printing always via smart_str and add some spacing
+* 538f5d5 add --timeout flag to deploy and promote and patch deployments with progressDeadlineSeconds when rolling out
+* 8cf1ce4 add flags --reverse-sort, --limit and --filter-tags to hokusai registry images
+* 93dd0e1 update docs/Command_Reference.md with a note on deployment rollout behavior
+* 4730592 refactor post-deploy steps to attempt post-deploy hook, pushing Git and ECR tags and print warnings if any fail before exiting 1 - fix CommandRunner.run so config value run-tty is not respected when running migrations, pre-deploy or post-deploy hooks
+* 3061785 change order of precedence for configuration - project-specific config takes precedence over environment variable fallbacks
+* 97fedd9 fetch from git-remote before creating or pushing tags
+* a835e28 update docs for git-remote config option as it does not apply to review apps as well as run-constraints set via an env var
+* 2d91f25 fix parsing run-constratins from an env var - accept a comma-delimited string and parse as a list
+* 6ea6190 add hokusai.lib.constants and always-verbose to config
+* d2b1da4 explicity tag git deployment tags at the tag to be deployed rather than HEAD
+* 2b78d57 add the congif options follow-logs, tail-logs and run-constraints
+* 76f4ccb call Docker.build() in commands/development.py and commands/test.py rather than passing the --build option to docker-compose so pre- and post-build hooks are executed
+
 ## v0.5.3
 
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.3/README.md)
+
+### Notable changes since v0.5.2
 * d23aafc DRY up references to development, test, build and common yml files
 * 867da74 update return value of hokusai/commands/logs.py
 * 3295d9f remove the kubectl timeout flag and rely on deployment config to specify progressDeadlineSeconds to orchestrate deployment rollouts (note - this also fixes issues with pipeline commands referencing sidecar containers running alongside application containers)
