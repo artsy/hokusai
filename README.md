@@ -35,16 +35,13 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 
 ## Setup
 
-1) Install Hokusai via pip with `pip install hokusai` and `hokusai` will be installed on your `PATH`.
-
-Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `pip install hokusai --ignore-installed`.
-
-Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-{version}-{platform}-x86_64 and adding it to your `$PATH`, i.e. to download the latest version, run:
+1) Install a binary for OSX by downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-{version}-{platform}-x86_64 and adding it to your `$PATH`, e.g. to download the latest version, run:
 
 ```
 curl --silent https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-latest-$(uname -s)-$(uname -m) -o /usr/local/bin/hokusai && chmod +x /usr/local/bin/hokusai
 ```
 
+Note: This script will also update Hokusai to the latest version.
 
 2) [Configure your AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
 
