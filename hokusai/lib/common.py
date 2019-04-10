@@ -4,6 +4,7 @@ import signal
 import string
 import random
 import json
+import re
 
 from subprocess import call, check_call, check_output, Popen, STDOUT
 
@@ -59,25 +60,28 @@ def get_verbosity():
   global VERBOSE
   return VERBOSE
 
-def verbose(msg):
-  if VERBOSE: print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
+def verbose(msg, mask=()):
+  if VERBOSE:
+    if mask:
+      print_yellow("==> hokusai exec `%s`" % re.sub(mask[0], mask[1], msg), newline_after=True)
+    else:
+      print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
   return msg
 
+def returncode(command, mask=()):
+  return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
-def returncode(command):
-  return call(verbose(command), stderr=STDOUT, shell=True)
-
-def shout(command, print_output=False):
+def shout(command, print_output=False, mask=()):
   if print_output:
-    return check_call(verbose(command), stderr=STDOUT, shell=True)
+    return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
   else:
-    return check_output(verbose(command), stderr=STDOUT, shell=True)
+    return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def shout_concurrent(commands, print_output=False):
   if print_output:
-    processes = [Popen(verbose(command), shell=True) for command in commands]
+    processes = [Popen(verbose(command, mask=mask), shell=True) for command in commands]
   else:
-    processes = [Popen(verbose(command), shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
+    processes = [Popen(verbose(command, mask=mask), shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
 
   return_codes = []
   try:

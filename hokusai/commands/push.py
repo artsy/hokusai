@@ -19,7 +19,7 @@ def push(tag, build, force, overwrite, skip_latest=False):
   if not ecr.project_repo_exists():
     raise HokusaiError("ECR repo %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
-  shout(ecr.get_login())
+  shout(ecr.get_login(), mask=(r'^(docker login -u) .+ (-p) .+ (.+)$', r'\1 ****** \2 ***** \3'))
   if tag is None:
     tag = shout('git rev-parse HEAD').strip()
 
