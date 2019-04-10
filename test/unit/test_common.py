@@ -37,6 +37,12 @@ class TestCommon(HokusaiUnitTestCase):
         verbose(TEST_MESSAGE)
         self.assertEqual(out.getvalue().strip(), "\x1b[33m==> hokusai exec `%s`\n\x1b[0m" % TEST_MESSAGE)
 
+  def test_masked_verbose_output(self):
+    with mock_verbosity(True):
+      with captured_output() as (out, err):
+        verbose(TEST_MESSAGE, mask=(r'^(\w*).*$', r'\1 ***'))
+        self.assertEqual(out.getvalue().strip(), "\x1b[33m==> hokusai exec `%s`\n\x1b[0m" % 'Ohai ***')
+
   def test_non_verbose_output(self):
     with mock_verbosity(False):
       with captured_output() as (out, err):
