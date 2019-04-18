@@ -77,7 +77,7 @@ def shout(command, print_output=False, mask=()):
   else:
     return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
-def shout_concurrent(commands, print_output=False):
+def shout_concurrent(commands, print_output=False, mask=()):
   if print_output:
     processes = [Popen(verbose(command, mask=mask), shell=True) for command in commands]
   else:
