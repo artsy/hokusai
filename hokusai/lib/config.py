@@ -82,15 +82,18 @@ class HokusaiConfig(object):
       raise HokusaiError("Environment variable %s could not be cast to %s" % (env_var, _type))
 
   def _config_value_for(self, key, _type):
-    with open(HOKUSAI_CONFIG_FILE, 'r') as config_file:
-      config_struct = yaml.safe_load(config_file.read())
-      try:
-        val = config_struct[key]
-      except KeyError:
-        return None
-      if not isinstance(val, _type):
-        raise HokusaiError("Config key %s is not of %s" % (key, _type))
-      return val
+    try:
+      with open(HOKUSAI_CONFIG_FILE, 'r') as config_file:
+        config_struct = yaml.safe_load(config_file.read())
+        try:
+          val = config_struct[key]
+        except KeyError:
+          return None
+        if not isinstance(val, _type):
+          raise HokusaiError("Config key %s is not of %s" % (key, _type))
+        return val
+    except IOError:
+      return None
 
 
   @property
