@@ -5,12 +5,11 @@ import boto3
 from hokusai import CWD
 from hokusai.lib import config
 
+TEST_KUBE_CONTEXT = os.environ.get('HOKUSAI_TEST_KUBE_CTX', 'minikube')
+
 for varname, varval in os.environ.items():
   if 'HOKUSAI_' in varname:
     del os.environ[varname]
-
-
-TEST_KUBE_CONTEXT = os.environ.get('HOKUSAI_TEST_KUBE_CTX', 'minikube')
 
 config.HOKUSAI_CONFIG_FILE = os.path.join(CWD, 'test/fixtures/project/hokusai/', 'config.yml')
 
