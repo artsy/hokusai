@@ -31,11 +31,14 @@ def delete(verbose):
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--check-branch', type=click.STRING, default="master", help='Check branch before updating (default: master)')
+@click.option('--check-remote', type=click.STRING, help='Check remotes before updating (otherwise check all remotes)')
+@click.option('--skip-checks', type=click.BOOL, is_flag=True, help='Skip all checks and update configuration recklessly')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def update(verbose):
+def update(check_branch, check_remote, skip_checks, verbose):
   """Update the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT)
+  hokusai.k8s_update(KUBE_CONTEXT, check_branch=check_branch, check_remote=check_remote, skip_checks=skip_checks)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)

@@ -25,4 +25,6 @@ def gitdiff():
     raise HokusaiError("Could not find a git SHA1 for tag %s.  Aborting." % production_tag)
 
   print_green("Comparing %s to %s" % (production_tag, staging_tag))
+  for remote in shout('git remote').splitlines():
+    shout("git fetch %s" % remote)
   shout("git diff %s %s" % (production_tag, staging_tag), print_output=True)

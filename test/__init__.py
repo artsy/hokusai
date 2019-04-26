@@ -7,6 +7,10 @@ from hokusai.lib import config
 
 TEST_KUBE_CONTEXT = os.environ.get('HOKUSAI_TEST_KUBE_CTX', 'minikube')
 
+for varname, varval in os.environ.items():
+  if 'HOKUSAI_' in varname:
+    del os.environ[varname]
+
 config.HOKUSAI_CONFIG_FILE = os.path.join(CWD, 'test/fixtures/project/hokusai/', 'config.yml')
 
 boto3.setup_default_session(aws_access_key_id='foo', aws_secret_access_key='bar')

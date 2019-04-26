@@ -45,7 +45,7 @@ def delete(app_name, verbose):
 def update(app_name, verbose):
   """Updates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name)
+  hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name, skip_checks=True)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)

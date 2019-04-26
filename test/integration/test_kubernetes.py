@@ -38,7 +38,7 @@ class TestKubernetes(HokusaiIntegrationTestCase):
     @patch('hokusai.lib.command.sys.exit')
     def test_01_k8s_update(self, mocked_sys_exit):
         with captured_output() as (out, err):
-            kubernetes.k8s_update(TEST_KUBE_CONTEXT, yaml_file_name='minikube')
+            kubernetes.k8s_update(TEST_KUBE_CONTEXT, yaml_file_name='minikube', skip_checks=True)
             mocked_sys_exit.assert_called_once_with(0)
             # self.assertIn('deployment.apps "hello-web" unchanged', out.getvalue().strip())
             # self.assertIn('service "hello-web" unchanged', out.getvalue().strip())

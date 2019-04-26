@@ -5,7 +5,7 @@ import yaml
 from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
-from hokusai.lib.common import print_green, shout
+from hokusai.lib.common import print_green, shout, returncode
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.configmap import ConfigMap
@@ -35,11 +35,29 @@ def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
 
 
 @command()
-def k8s_update(context, namespace=None, yaml_file_name=None):
+def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="master", check_remote=None, skip_checks=False):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+
+  current_branch = None
+  for branchname in shout('git branch').splitlines():
+    if '* ' in branchname:
+      current_branch = branchname.replace('* ', '')
+      break
+
+  if not skip_checks:
+    if 'detached' in current_branch:
+      raise HokusaiError("Not on any branch!  Aborting.")
+    if current_branch != check_branch:
+      raise HokusaiError("Not on %s branch!  Aborting." % check_branch)
+
+    remotes = [check_remote] if check_remote else shout('git remote').splitlines()
+    for remote in remotes:
+      shout("git fetch %s" % remote)
+      if returncode("git diff --quiet %s/%s" % (remote, current_branch)):
+        raise HokusaiError("Local branch %s is divergent from %s/%s.  Aborting." % (current_branch, remote, current_branch))
 
   kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
