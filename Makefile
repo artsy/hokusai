@@ -32,6 +32,10 @@ build:
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
 	  hokusai.spec
+	mkdir -p $(DIST_DIR)hokusai$(BINARY_SUFFIX)
+	cp $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)/hokusai
+	tar cfvz $(DIST_DIR)hokusai$(BINARY_SUFFIX).tar.gz -C $(DIST_DIR)hokusai$(BINARY_SUFFIX) .
+	rm -rf $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 	mv $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
 build-linux-docker:
