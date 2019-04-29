@@ -1,5 +1,8 @@
 ## v0.5.5
 
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.5/README.md)
+
+### Notable changes since v0.5.4
 * d31a771 create tar archive upon release
 * fdec578 fetch from remotes before running gitdiff and gitlog commands
 * 1c7a4a8 add checks to staging and production updates command so they are run on up-to-date checkouts of master
@@ -8,9 +11,6 @@
 * e44e7a5 Add mask argument to shout_concurrent function
 * 8b65615 mask verbose output - add a mask when shelling out to docker login
 
-[Documentation](https://github.com/artsy/hokusai/blob/v0.5.5/README.md)
-
-### Notable changes since v0.5.4
 
 ## v0.5.4
 
