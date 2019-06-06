@@ -8,7 +8,7 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
 
 @command()
-def push(tag, build, force, overwrite, skip_latest=False):
+def push(tag, local_tag, build, force, overwrite, skip_latest=False):
   if force is None and shout('git status --porcelain'):
     raise HokusaiError("Working directory is not clean.  Aborting.")
 
@@ -29,7 +29,7 @@ def push(tag, build, force, overwrite, skip_latest=False):
   if build:
     Docker().build()
 
-  build_tag = "hokusai_%s:latest" % config.project_name
+  build_tag = "hokusai_%s:%s" % (config.project_name, local_tag)
 
   shout("docker tag %s %s:%s" % (build_tag, ecr.project_repo, tag))
   shout("docker push %s:%s" % (ecr.project_repo, tag), print_output=True)
