@@ -9,8 +9,12 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
 
 @command()
-def dev_start(build, detach):
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_start(build, detach, yaml_file_name):
+  if yaml_file_name is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, yaml_file_name)
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -21,7 +25,7 @@ def dev_start(build, detach):
 
   opts = ''
   if build:
-    Docker().build()
+    Docker().build(yaml_file_name)
   if detach:
     opts += ' -d'
 

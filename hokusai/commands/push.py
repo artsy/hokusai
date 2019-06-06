@@ -8,7 +8,7 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
 
 @command()
-def push(tag, local_tag, build, force, overwrite, skip_latest=False):
+def push(tag, local_tag, build, yaml_file_name, force, overwrite, skip_latest=False):
   if force is None and shout('git status --porcelain'):
     raise HokusaiError("Working directory is not clean.  Aborting.")
 
@@ -27,7 +27,7 @@ def push(tag, local_tag, build, force, overwrite, skip_latest=False):
     raise HokusaiError("Tag %s already exists in registry.  Aborting." % tag)
 
   if build:
-    Docker().build()
+    Docker().build(yaml_file_name)
 
   build_tag = "hokusai_%s:%s" % (config.project_name, local_tag)
 

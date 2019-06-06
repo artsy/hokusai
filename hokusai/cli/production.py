@@ -15,30 +15,34 @@ def production(context_settings=CONTEXT_SETTINGS):
   pass
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--yaml-file-name', type=click.STRING, help='Kubernetes Yaml filename in the ./hokusai directory (default production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def create(verbose):
+def create(yaml_file_name, verbose):
   """Create the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_create(KUBE_CONTEXT)
+  hokusai.k8s_create(KUBE_CONTEXT, yaml_file_name=yaml_file_name)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--yaml-file-name', type=click.STRING, help='Kubernetes Yaml filename in the ./hokusai directory (default production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def delete(verbose):
+def delete(yaml_file_name, verbose):
   """Delete the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_delete(KUBE_CONTEXT)
+  hokusai.k8s_delete(KUBE_CONTEXT, yaml_file_name=yaml_file_name)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--check-branch', type=click.STRING, default="master", help='Check branch before updating (default: master)')
 @click.option('--check-remote', type=click.STRING, help='Check remotes before updating (otherwise check all remotes)')
 @click.option('--skip-checks', type=click.BOOL, is_flag=True, help='Skip all checks and update configuration recklessly')
+@click.option('--yaml-file-name', type=click.STRING, help='Kubernetes Yaml filename in the ./hokusai directory (default production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def update(check_branch, check_remote, skip_checks, verbose):
+def update(check_branch, check_remote, skip_checks, yaml_file_name, verbose):
   """Update the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, check_branch=check_branch, check_remote=check_remote, skip_checks=skip_checks)
+  hokusai.k8s_update(KUBE_CONTEXT, check_branch=check_branch,
+                      check_remote=check_remote, skip_checks=skip_checks, yaml_file_name=yaml_file_name)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -46,11 +50,12 @@ def update(check_branch, check_remote, skip_checks, verbose):
 @click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
 @click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output for resources and pods")
 @click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
+@click.option('--yaml-file-name', type=click.STRING, help='Kubernetes Yaml filename in the ./hokusai directory (default production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def status(resources, pods, describe, top, verbose):
+def status(resources, pods, describe, top, yaml_file_name, verbose):
   """Print Kubernetes resources in the production context"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top)
+  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, yaml_file_name=yaml_file_name)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)

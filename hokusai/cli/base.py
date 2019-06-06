@@ -47,23 +47,25 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--yaml-file-name', type=click.STRING, help='Use the docker-compose Yaml filename in the ./hokusai directory (default: build.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def build(verbose):
+def build(yaml_file_name, verbose):
   """Build the Docker image defined in ./hokusai/build.yml"""
   set_verbosity(verbose)
-  hokusai.build()
+  hokusai.build(yaml_file_name)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before running the test suite (default: true)')
 @click.option('--cleanup/--no-cleanup', default=False, help='Remove containers on exit / error (default: False)')
+@click.option('--yaml-file-name', type=click.STRING, help='Use the docker-compose Yaml filename in the ./hokusai directory (default: test.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def test(build, cleanup, verbose):
+def test(build, cleanup, yaml_file_name, verbose):
   """Boot the docker-compose test environment defined by `./hokusai/test.yml` and run the test suite
 
   Return the exit code of the container with the name 'project-name' in `hokusai/config.yml`"""
   set_verbosity(verbose)
-  hokusai.test(build, cleanup)
+  hokusai.test(build, cleanup, yaml_file_name)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
