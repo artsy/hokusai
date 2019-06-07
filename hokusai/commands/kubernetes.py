@@ -1,4 +1,5 @@
 import os
+from tempfile import NamedTemporaryFile
 
 import yaml
 
@@ -10,6 +11,7 @@ from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.lib.constants import YAML_HEADER
 
 @command()
 def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
@@ -39,19 +41,20 @@ def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
 
 
 @command()
-def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="master", check_remote=None, skip_checks=False):
+def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="master",
+                check_remote=None, skip_checks=False, tag=None):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  current_branch = None
-  for branchname in shout('git branch').splitlines():
-    if '* ' in branchname:
-      current_branch = branchname.replace('* ', '')
-      break
-
   if not skip_checks:
+    current_branch = None
+    for branchname in shout('git branch').splitlines():
+      if '* ' in branchname:
+        current_branch = branchname.replace('* ', '')
+        break
+
     if 'detached' in current_branch:
       raise HokusaiError("Not on any branch!  Aborting.")
     if current_branch != check_branch:
@@ -64,7 +67,28 @@ def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="maste
         raise HokusaiError("Local branch %s is divergent from %s/%s.  Aborting." % (current_branch, remote, current_branch))
 
   kctl = Kubectl(context, namespace=namespace)
-  shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+
+  if tag is None:
+    shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+  else:
+    ecr = ECR()
+    payload = []
+    for item in yaml.safe_load_all(open(kubernetes_yml, 'r')):
+      if item['kind'] == 'Deployment':
+        for container in item['spec']['template']['spec']['containers']:
+          if ecr.project_repo in container['image']:
+            container['image'] = "%s:%s" % (ecr.project_repo, tag)
+      payload.append(item)
+
+    f = NamedTemporaryFile(delete=False)
+    f.write(YAML_HEADER)
+    f.write(yaml.safe_dump_all(payload, default_flow_style=False))
+    f.close()
+    try:
+      shout(kctl.command("apply -f %s" % f.name), print_output=True)
+    finally:
+      os.unlink(f.name)
+
   print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
 
