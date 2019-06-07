@@ -42,7 +42,7 @@ def k8s_create(context, tag='latest', namespace=None, yaml_file_name=None):
 
 @command()
 def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="master",
-                check_remote=None, skip_checks=False, tag=None):
+                check_remote=None, skip_checks=False, tag=None, dry_run=False):
   if yaml_file_name is None: yaml_file_name = context
   kubernetes_yml = os.path.join(CWD, "%s/%s.yml" % (HOKUSAI_CONFIG_DIR, yaml_file_name))
   if not os.path.isfile(kubernetes_yml):
@@ -69,7 +69,10 @@ def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="maste
   kctl = Kubectl(context, namespace=namespace)
 
   if tag is None:
-    shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+    if dry_run:
+      shout(kctl.command("apply -f %s --dry-run" % kubernetes_yml), print_output=True)
+    else:
+      shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
   else:
     ecr = ECR()
     payload = []
@@ -85,7 +88,10 @@ def k8s_update(context, namespace=None, yaml_file_name=None, check_branch="maste
     f.write(yaml.safe_dump_all(payload, default_flow_style=False))
     f.close()
     try:
-      shout(kctl.command("apply -f %s" % f.name), print_output=True)
+      if dry_run:
+        shout(kctl.command("apply -f %s --dry-run" % f.name), print_output=True)
+      else:
+        shout(kctl.command("apply -f %s" % f.name), print_output=True)
     finally:
       os.unlink(f.name)
 

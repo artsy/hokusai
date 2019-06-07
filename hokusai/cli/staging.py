@@ -38,13 +38,14 @@ def delete(verbose):
 @click.option('--skip-checks', type=click.BOOL, is_flag=True, help='Skip all checks and update configuration recklessly')
 @click.option('--yaml-file-name', type=click.STRING, help='Kubernetes Yaml filename in the ./hokusai directory (default staging.yml)')
 @click.option('--tag', type=click.STRING, help='Also update the given deployment tag')
+@click.option('--dry-run', type=click.BOOL, is_flag=True, help='Perform a dry run of the configuration update')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def update(check_branch, check_remote, skip_checks, yaml_file_name, tag, verbose):
+def update(check_branch, check_remote, skip_checks, yaml_file_name, tag, dry_run, verbose):
   """Update the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
   hokusai.k8s_update(KUBE_CONTEXT, check_branch=check_branch,
                       check_remote=check_remote, skip_checks=skip_checks,
-                      yaml_file_name=yaml_file_name, tag=tag)
+                      yaml_file_name=yaml_file_name, tag=tag, dry_run=dry_run)
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
