@@ -143,15 +143,6 @@ def copy(app_name, verbose):
 
 @env.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def create(app_name, verbose):
-  """Create the Kubernetes configmap object `{project_name}-environment` in the {APP_NAME} namespace"""
-  set_verbosity(verbose)
-  hokusai.create_env(KUBE_CONTEXT, namespace=clean_string(app_name))
-
-
-@env.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('app_name', type=click.STRING)
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def get(app_name, env_vars, verbose):
@@ -178,13 +169,3 @@ def unset(app_name, env_vars, verbose):
   """Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'"""
   set_verbosity(verbose)
   hokusai.unset_env(KUBE_CONTEXT, env_vars, namespace=clean_string(app_name))
-
-
-@env.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('app_name', type=click.STRING)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def delete(app_name, verbose):
-  """Delete the Kubernetes configmap object `{project_name}-environment`"""
-  set_verbosity(verbose)
-  hokusai.delete_env(KUBE_CONTEXT, namespace=clean_string(app_name))
-

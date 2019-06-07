@@ -89,37 +89,46 @@ The reason for these conditional checks is that when building, Docker will copy 
 
 Once an image is pushed, you can list the images and tags in the project registry with: `hokusai registry images`.
 
-6) Create the Kubernetes staging environment and environment configuration
 
-```bash
-hokusai staging env create
-hokusai staging env set FOO=bar
-```
-
-See [Configuration Options](./Configuration_Options.md) if you want to modify your staging environment's configuration.
-
-
-7) Create the Kubernetes staging environment with `hokusai staging create`
+6) Create the Kubernetes staging environment with `hokusai staging create`
 
 `hokusai staging status` should eventually (once Kubernetes creates a load balancer for your project), output the ELB's DNS record.
 
 Get logs by running `hokusai staging logs`
 
-8) Create the Kubernetes production environment and environment configuration
+7) Set Kubernetes staging environment and environment variables
 
 ```bash
-hokusai production env create
-hokusai production env set FOO=baz
+hokusai staging env set FOO=bar
 ```
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your production environment's configuration.
+After setting environment variables you need to run:
 
-9) Create the Kubernetes production environment
+```bash
+hokusai staging refresh
+```
+
+See [Configuration Options](./Configuration_Options.md) if you want to modify your staging environment's configuration.
+
+
+8) Create the Kubernetes production environment
 
 ```bash
 hokusai production create
 hokusai production status
 hokusai production logs
+```
+
+9) Set Kubernetes production environment and environment variables
+
+```bash
+hokusai production env set FOO=bar
+```
+
+After setting environment variables you need to run:
+
+```bash
+hokusai production refresh
 ```
 
 10) Deploy changes to the Kubernetes staging environment

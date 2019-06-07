@@ -123,14 +123,6 @@ def env(context_settings=CONTEXT_SETTINGS):
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def create(verbose):
-  """Create the Kubernetes configmap object `{project_name}-environment`"""
-  set_verbosity(verbose)
-  hokusai.create_env(KUBE_CONTEXT)
-
-
-@env.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def get(env_vars, verbose):
@@ -156,10 +148,3 @@ def unset(env_vars, verbose):
   set_verbosity(verbose)
   hokusai.unset_env(KUBE_CONTEXT, env_vars)
 
-
-@env.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def delete(verbose):
-  """Delete the Kubernetes configmap object `{project_name}-environment`"""
-  set_verbosity(verbose)
-  hokusai.delete_env(KUBE_CONTEXT)
