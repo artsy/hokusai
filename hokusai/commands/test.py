@@ -9,7 +9,7 @@ from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
 
 @command()
-def test(build, cleanup, yaml_file_name):
+def test(build, cleanup, yaml_file_name, service_name):
   if yaml_file_name is None:
     docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, TEST_YML_FILE)
   else:
@@ -30,10 +30,13 @@ def test(build, cleanup, yaml_file_name):
   if build:
     Docker().build(yaml_file_name)
 
+  if service_name is None:
+    service_name = config.project_name
+
   print_green("Starting test environment... Press Ctrl+C to stop.", newline_after=True)
   try:
     shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
-    return_code = int(shout("docker wait hokusai_%s_1" % config.project_name))
+    return_code = int(shout("docker wait hokusai_%s_1" % service_name))
   except CalledProcessError:
     if cleanup: on_cleanup()
     raise HokusaiError('Tests Failed')
