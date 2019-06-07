@@ -30,7 +30,7 @@ def console():
 def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to, verbose):
   """Install and configure kubectl"""
   set_verbosity(verbose)
-  hokusai.configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to)
+  hokusai.configure(kubectl_version, s3_bucket, s3_key, config_file, install_to, install_config_to)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
