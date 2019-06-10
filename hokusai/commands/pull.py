@@ -16,6 +16,6 @@ def pull(tag, local_tag):
 
   shout("docker pull %s:%s" % (ecr.project_repo, tag))
 
-  shout("docker tag %s:%s hokusai_%s:%s" % (ecr.project_repo, tag, config.project_name, 'latest'))
+  shout("docker tag %s:%s hokusai_%s:%s" % (ecr.project_repo, tag, config.project_name, local_tag))
   
-  print_green("Pulled %s:%s to hokusai_%s:%s" % (ecr.project_repo, tag, config.project_name, 'latest'), newline_after=True)
+  print_green("Pulled %s:%s to hokusai_%s:%s" % (ecr.project_repo, tag, config.project_name, local_tag), newline_after=True)
