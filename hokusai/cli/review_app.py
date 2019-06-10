@@ -1,11 +1,13 @@
+import os
 import click
 
 import hokusai
 
+from hokusai import CWD
 from hokusai.cli.base import base
 from hokusai.cli.staging import KUBE_CONTEXT
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
-from hokusai.lib.config import config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 
 @base.group()
 def review_app(context_settings=CONTEXT_SETTINGS):
@@ -27,7 +29,7 @@ def setup(app_name, verbose, source_file):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(app_name, verbose):
   """Creates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
-  hokusai.k8s_create(KUBE_CONTEXT, tag=app_name, namespace=clean_string(app_name), yaml_file_name=app_name)
+  hokusai.k8s_create(KUBE_CONTEXT, tag=app_name, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -36,7 +38,7 @@ def create(app_name, verbose):
 def delete(app_name, verbose):
   """Deletes the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_delete(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name)
+  hokusai.k8s_delete(KUBE_CONTEXT, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -45,7 +47,7 @@ def delete(app_name, verbose):
 def update(app_name, verbose):
   """Updates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), yaml_file_name=app_name, skip_checks=True)
+  hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name), skip_checks=True)
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -58,7 +60,7 @@ def update(app_name, verbose):
 def status(app_name, resources, pods, describe, top, verbose):
   """Print the Kubernetes resources status defined in the staging context / {APP_NAME} namespace"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, namespace=clean_string(app_name), yaml_file_name=app_name)
+  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -143,15 +145,6 @@ def copy(app_name, verbose):
 
 @env.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def create(app_name, verbose):
-  """Create the Kubernetes configmap object `{project_name}-environment` in the {APP_NAME} namespace"""
-  set_verbosity(verbose)
-  hokusai.create_env(KUBE_CONTEXT, namespace=clean_string(app_name))
-
-
-@env.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('app_name', type=click.STRING)
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def get(app_name, env_vars, verbose):
@@ -178,13 +171,3 @@ def unset(app_name, env_vars, verbose):
   """Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'"""
   set_verbosity(verbose)
   hokusai.unset_env(KUBE_CONTEXT, env_vars, namespace=clean_string(app_name))
-
-
-@env.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('app_name', type=click.STRING)
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def delete(app_name, verbose):
-  """Delete the Kubernetes configmap object `{project_name}-environment`"""
-  set_verbosity(verbose)
-  hokusai.delete_env(KUBE_CONTEXT, namespace=clean_string(app_name))
-

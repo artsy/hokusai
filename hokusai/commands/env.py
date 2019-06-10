@@ -4,12 +4,6 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.lib.common import print_green, print_smart
 from hokusai.lib.exceptions import HokusaiError
 
-@command()
-def create_env(context, namespace=None):
-  configmap = ConfigMap(context, namespace=namespace)
-  configmap.create()
-  print_green("Created configmap %s-environment" % config.project_name)
-
 
 @command()
 def delete_env(context, namespace=None):

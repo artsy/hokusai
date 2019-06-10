@@ -1,10 +1,13 @@
+import os
 from collections import OrderedDict
 import yaml
 
+from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.common import print_green, clean_string
 from hokusai.lib.constants import YAML_HEADER
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR
 
 @command()
 def create_new_app_yaml(source_file, app_name):
@@ -25,11 +28,11 @@ def create_new_app_yaml(source_file, app_name):
     ])
   yaml_content = [new_namespace] + yaml_content
 
-  with open("hokusai/%s.yml" % app_name, 'w') as output:
+  with open(os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name), 'w') as output:
     output.write(YAML_HEADER)
     yaml.safe_dump_all(yaml_content, output, default_flow_style=False)
 
-  print_green("Created hokusai/%s.yml" % app_name)
+  print_green("Created %s/%s.yml" % (HOKUSAI_CONFIG_DIR, app_name))
 
 def update_namespace(yaml_section, destination_namespace):
   if 'apiVersion' in yaml_section:

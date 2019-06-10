@@ -9,8 +9,12 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
 
 @command()
-def dev_start(build, detach):
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_start(build, detach, filename):
+  if filename is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = filename
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -21,7 +25,7 @@ def dev_start(build, detach):
 
   opts = ''
   if build:
-    Docker().build()
+    Docker().build(filename)
   if detach:
     opts += ' -d'
 
@@ -34,24 +38,36 @@ def dev_start(build, detach):
     print_green("Run `hokousai dev stop` to shut down, or `hokusai dev logs --follow` to tail output.")
 
 @command()
-def dev_stop():
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_stop(filename):
+  if filename is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = filename
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
   shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
 @command()
-def dev_status():
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_status(filename):
+  if filename is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = filename
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
   shout("docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
 
 @command()
-def dev_logs(follow, tail):
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_logs(follow, tail, filename):
+  if filename is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = filename
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 
@@ -64,10 +80,17 @@ def dev_logs(follow, tail):
   shout("docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
 
 @command()
-def dev_run(command, service_name, stop):
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_run(command, service_name, stop, filename):
+  if filename is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = filename
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+
+  if service_name is None:
+    service_name = config.project_name
 
   shout("docker-compose -f %s -p hokusai run %s %s" % (docker_compose_yml, service_name, command), print_output=True)
 
@@ -75,8 +98,12 @@ def dev_run(command, service_name, stop):
     shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
 @command()
-def dev_clean():
-  docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+def dev_clean(filename):
+  if filename is None:
+    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+  else:
+    docker_compose_yml = filename
+
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
 

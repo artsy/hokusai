@@ -82,11 +82,9 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 * `hokusai [staging|production] [refresh|restart]` - Refresh the project's deployment(s) by recreating the currently running containers.
 
 * `hokusai [staging|production] env` - Interact with the runtime environment for the application
-  - `hokusai [staging|production] env create` - Create the Kubernetes configmap object `{project_name}-environment`
   - `hokusai [staging|production] env get` - Print environment variables stored on the Kubernetes server
   - `hokusai [staging|production] env set` - Set environment variables on the Kubernetes server. Environment variables are stored for the project as key-value pairs in the Kubernetes configmap object `{project_name}-environment`
   - `hokusai [staging|production] env unset` - Remove environment variables stored on the Kubernetes server
-  - `hokusai [staging|production] env delete` - Delete the Kubernetes configmap object `{project_name}-environment`
 
 * `hokusai [staging|production] run` - Launch a container and run a given command. It exits with the status code of the command run in the container (useful for `rake` tasks, etc). Use single quotes around your command string if it contains whitespace.
   - Use the flag `--tty` to attach your terminal, if your command is interactive. E.g. `hokusai production run --tty 'bundle exec rails c'` launches an interactive console for a Rails project.
