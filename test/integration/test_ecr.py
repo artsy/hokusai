@@ -17,7 +17,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
     repositories = [str(repo['repositoryName']) for repo in self.ecr.registry]
@@ -30,7 +30,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
     self.assertTrue(self.ecr.project_repo_exists())
@@ -40,7 +40,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
     self.assertEqual(self.ecr.project_repo, '123456789012.dkr.ecr.us-east-1.amazonaws.com/hello')
@@ -50,10 +50,10 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-create-repository-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-empty-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
     self.assertTrue(self.ecr.create_project_repo())
@@ -63,7 +63,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-authorization-response.json')).read(),
                            content_type="application/x-amz-json-1.1")
     self.assertEqual(self.ecr.get_login(), 'docker login -u AWS -p 76W8YEUFHDSAE98DFDHSFSDFIUHSDAJKGKSADFGKDF https://123456789012.dkr.ecr.us-east-1.amazonaws.com')
@@ -73,7 +73,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-images-response.json')).read(),
                            content_type="application/x-amz-json-1.1")
     self.assertEqual(self.ecr.get_images()[0]['imageTags'], ['7shdn4f0f34bb8shdkb313cbeccb2fc031808duho', 'latest'])
@@ -86,7 +86,7 @@ class TestECR(HokusaiIntegrationTestCase):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
-    httpretty.register_uri(httpretty.POST, "https://ecr.us-east-1.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-images-response.json')).read(),
                            content_type="application/x-amz-json-1.1")
     self.assertTrue(self.ecr.tag_exists('7shdn4f0f34bb8shdkb313cbeccb2fc031808duho'))
