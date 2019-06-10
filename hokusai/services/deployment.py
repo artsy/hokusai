@@ -1,3 +1,4 @@
+import os
 import datetime
 import json
 from tempfile import NamedTemporaryFile
@@ -49,7 +50,7 @@ class Deployment(object):
 
     if update_config:
       if filename is None:
-        kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+        kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % self.context)
       else:
         kubernetes_yml = filename
 
@@ -71,7 +72,7 @@ class Deployment(object):
 
       print_green("Applying patched spec %s..." % f.name, newline_after=True)
       try:
-        shout(kctl.command("apply -f %s" % f.name), print_output=True)
+        shout(self.kctl.command("apply -f %s" % f.name), print_output=True)
       finally:
         os.unlink(f.name)
 
