@@ -30,9 +30,10 @@ def k8s_create(context, tag='latest', namespace=None, filename=None):
     ecr.retag(tag, context)
     print_green("Updated tag 'latest' -> %s" % context)
 
-  configmap = ConfigMap(context, namespace=namespace)
-  configmap.create()
-  print_green("Created configmap %s-environment" % config.project_name)
+  if filename is None:
+    configmap = ConfigMap(context, namespace=namespace)
+    configmap.create()
+    print_green("Created configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
@@ -88,9 +89,10 @@ def k8s_delete(context, namespace=None, filename=None):
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  configmap = ConfigMap(context, namespace=namespace)
-  configmap.destroy()
-  print_green("Deleted configmap %s-environment" % config.project_name)
+  if filename is None:
+    configmap = ConfigMap(context, namespace=namespace)
+    configmap.destroy()
+    print_green("Deleted configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)
