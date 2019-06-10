@@ -6,8 +6,8 @@ from hokusai.lib.common import shout
 from hokusai.lib.exceptions import HokusaiError
 
 class Docker(object):
-  def build(self, yaml_file_name):
-    if yaml_file_name is None:
+  def build(self, filename):
+    if filename is None:
       docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE)
       legacy_docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, LEGACY_BUILD_YAML_FILE)
 
@@ -19,7 +19,7 @@ class Docker(object):
       if os.path.isfile(legacy_docker_compose_yml):
         build_command = "docker-compose -f %s -p hokusai build" % legacy_docker_compose_yml
     else:
-      build_command = "docker-compose -f %s -p hokusai build" % yaml_file_name
+      build_command = "docker-compose -f %s -p hokusai build" % filename
 
     if config.pre_build:
       build_command = "%s && %s" % (config.pre_build, build_command)

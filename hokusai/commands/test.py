@@ -9,11 +9,11 @@ from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
 
 @command()
-def test(build, cleanup, yaml_file_name, service_name):
-  if yaml_file_name is None:
+def test(build, cleanup, filename, service_name):
+  if filename is None:
     docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, TEST_YML_FILE)
   else:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, yaml_file_name)
+    docker_compose_yml = filename
 
   if not os.path.isfile(docker_compose_yml):
     raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
@@ -28,7 +28,7 @@ def test(build, cleanup, yaml_file_name, service_name):
 
   opts = ' --abort-on-container-exit'
   if build:
-    Docker().build(yaml_file_name)
+    Docker().build(filename)
 
   if service_name is None:
     service_name = config.project_name
