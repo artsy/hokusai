@@ -1,12 +1,17 @@
 import datetime
 import json
+from tempfile import NamedTemporaryFile
 
-from hokusai.lib.config import config
+import yaml
+
+from hokusai import CWD
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR, ClientError
 from hokusai.lib.common import print_green, print_red, print_yellow, shout, shout_concurrent
 from hokusai.services.command_runner import CommandRunner
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
+from hokusai.lib.constants import YAML_HEADER
 
 class Deployment(object):
   def __init__(self, context, deployment_name=None, namespace=None):
@@ -19,7 +24,8 @@ class Deployment(object):
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint, git_remote, timeout, resolve_tag_sha1=True):
+  def update(self, tag, constraint, git_remote, timeout,
+              resolve_tag_sha1=True, update_config=False, filename=None):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
@@ -40,25 +46,55 @@ class Deployment(object):
         raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
-    for deployment in self.cache:
-      containers = [(container['name'], container['image']) for container in deployment['spec']['template']['spec']['containers']]
-      deployment_targets = [{"name": name, "image": "%s:%s" % (self.ecr.project_repo, tag)} for name, image in containers if self.ecr.project_repo in image]
-      patch = {
-        "spec": {
-          "template": {
-            "metadata": {
-              "labels": {"deploymentTimestamp": deployment_timestamp}
-            },
-            "spec": {
-              "containers": deployment_targets
-            }
-          },
-          "progressDeadlineSeconds": timeout
-        }
-      }
 
-      print_green("Patching deployment %s..." % deployment['metadata']['name'], newline_after=True)
-      shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
+    if update_config:
+      if filename is None:
+        kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+      else:
+        kubernetes_yml = filename
+
+      print_green("Patching Deployments in spec %s with tag %s" % (kubernetes_yml, tag), newline_after=True)
+      payload = []
+      for item in yaml.safe_load_all(open(kubernetes_yml, 'r')):
+        if item['kind'] == 'Deployment':
+          item['spec']['template']['metadata']['labels']['deploymentTimestamp'] = deployment_timestamp
+          item['spec']['progressDeadlineSeconds'] = timeout
+          for container in item['spec']['template']['spec']['containers']:
+            if self.ecr.project_repo in container['image']:
+              container['image'] = "%s:%s" % (self.ecr.project_repo, tag)
+        payload.append(item)
+
+      f = NamedTemporaryFile(delete=False)
+      f.write(YAML_HEADER)
+      f.write(yaml.safe_dump_all(payload, default_flow_style=False))
+      f.close()
+
+      print_green("Applying patched spec %s..." % f.name, newline_after=True)
+      try:
+        shout(kctl.command("apply -f %s" % f.name), print_output=True)
+      finally:
+        os.unlink(f.name)
+
+    else:
+      for deployment in self.cache:
+        containers = [(container['name'], container['image']) for container in deployment['spec']['template']['spec']['containers']]
+        deployment_targets = [{"name": name, "image": "%s:%s" % (self.ecr.project_repo, tag)} for name, image in containers if self.ecr.project_repo in image]
+        patch = {
+          "spec": {
+            "template": {
+              "metadata": {
+                "labels": {"deploymentTimestamp": deployment_timestamp}
+              },
+              "spec": {
+                "containers": deployment_targets
+              }
+            },
+            "progressDeadlineSeconds": timeout
+          }
+        }
+
+        print_green("Patching deployment %s..." % deployment['metadata']['name'], newline_after=True)
+        shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
 
     print_green("Waiting for deployment rollouts to complete...")
 
