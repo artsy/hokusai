@@ -15,7 +15,7 @@ def staging(context_settings=CONTEXT_SETTINGS):
   pass
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-f', '--filename', type=click.STRING, help='Use the Kubernetes Yaml file in the ./hokusai directory (default staging.yml)')
+@click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/staging.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(filename, verbose):
   """Create the Kubernetes resources defined in ./hokusai/staging.yml"""
@@ -24,7 +24,7 @@ def create(filename, verbose):
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
-@click.option('-f', '--filename', type=click.STRING, help='Use the Kubernetes Yaml file in the ./hokusai directory (default staging.yml)')
+@click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/staging.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def delete(filename, verbose):
   """Delete the Kubernetes resources defined in ./hokusai/staging.yml"""
@@ -36,7 +36,7 @@ def delete(filename, verbose):
 @click.option('--check-branch', type=click.STRING, default="master", help='Check branch before updating (default: master)')
 @click.option('--check-remote', type=click.STRING, help='Check remotes before updating (otherwise check all remotes)')
 @click.option('--skip-checks', type=click.BOOL, is_flag=True, help='Skip all checks and update configuration recklessly')
-@click.option('-f', '--filename', type=click.STRING, help='Use the Kubernetes Yaml file in the ./hokusai directory (default staging.yml)')
+@click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/staging.yml)')
 @click.option('--dry-run', type=click.BOOL, is_flag=True, help='Perform a dry run of the configuration update')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
@@ -52,7 +52,7 @@ def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
 @click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
 @click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output for resources and pods")
 @click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
-@click.option('-f', '--filename', type=click.STRING, help='Use the Kubernetes Yaml file in the ./hokusai directory (default staging.yml)')
+@click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/staging.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def status(resources, pods, describe, top, filename, verbose):
   """Print Kubernetes resources in the staging context"""
