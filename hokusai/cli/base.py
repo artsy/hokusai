@@ -47,7 +47,7 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--filename', type=click.STRING, help='Use the docker-compose Yaml file in the ./hokusai directory (default: build.yml)')
+@click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default: ./hokusai/build.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def build(filename, verbose):
   """Build the Docker image defined in ./hokusai/build.yml"""
@@ -58,7 +58,7 @@ def build(filename, verbose):
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before running the test suite (default: true)')
 @click.option('--cleanup/--no-cleanup', default=False, help='Remove containers on exit / error (default: False)')
-@click.option('--filename', type=click.STRING, help='Use the docker-compose Yaml file in the ./hokusai directory (default: test.yml)')
+@click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default: ./hokusai/test.yml)')
 @click.option('--service-name', type=click.STRING, help="The service name to treat as the test container (default: the value of 'project-name' in `hokusai/config.yml`)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def test(build, cleanup, filename, service_name, verbose):

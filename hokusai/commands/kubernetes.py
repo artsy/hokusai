@@ -1,7 +1,4 @@
 import os
-from tempfile import NamedTemporaryFile
-
-import yaml
 
 from hokusai import CWD
 from hokusai.lib.command import command
@@ -11,7 +8,6 @@ from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
-from hokusai.lib.constants import YAML_HEADER
 
 @command()
 def k8s_create(context, tag='latest', namespace=None, filename=None):
@@ -34,9 +30,10 @@ def k8s_create(context, tag='latest', namespace=None, filename=None):
     ecr.retag(tag, context)
     print_green("Updated tag 'latest' -> %s" % context)
 
-  configmap = ConfigMap(context, namespace=namespace)
-  configmap.create()
-  print_green("Created configmap %s-environment" % config.project_name)
+  if filename is None:
+    configmap = ConfigMap(context, namespace=namespace)
+    configmap.create()
+    print_green("Created configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("create --save-config -f %s" % kubernetes_yml), print_output=True)
@@ -45,7 +42,7 @@ def k8s_create(context, tag='latest', namespace=None, filename=None):
 
 @command()
 def k8s_update(context, namespace=None, filename=None, check_branch="master",
-                check_remote=None, skip_checks=False, tag=None, dry_run=False):
+                check_remote=None, skip_checks=False, dry_run=False):
   if filename is None:
     kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
   else:
@@ -74,34 +71,13 @@ def k8s_update(context, namespace=None, filename=None, check_branch="master",
 
   kctl = Kubectl(context, namespace=namespace)
 
-  if tag is None:
-    if dry_run:
-      shout(kctl.command("apply -f %s --dry-run" % kubernetes_yml), print_output=True)
-    else:
-      shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+  if dry_run:
+    shout(kctl.command("apply -f %s --dry-run" % kubernetes_yml), print_output=True)
+    print_green("Updated Kubernetes environment %s (dry run)" % kubernetes_yml)
   else:
-    ecr = ECR()
-    payload = []
-    for item in yaml.safe_load_all(open(kubernetes_yml, 'r')):
-      if item['kind'] == 'Deployment':
-        for container in item['spec']['template']['spec']['containers']:
-          if ecr.project_repo in container['image']:
-            container['image'] = "%s:%s" % (ecr.project_repo, tag)
-      payload.append(item)
+    shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+    print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
-    f = NamedTemporaryFile(delete=False)
-    f.write(YAML_HEADER)
-    f.write(yaml.safe_dump_all(payload, default_flow_style=False))
-    f.close()
-    try:
-      if dry_run:
-        shout(kctl.command("apply -f %s --dry-run" % f.name), print_output=True)
-      else:
-        shout(kctl.command("apply -f %s" % f.name), print_output=True)
-    finally:
-      os.unlink(f.name)
-
-  print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
 
 @command()
@@ -114,9 +90,10 @@ def k8s_delete(context, namespace=None, filename=None):
   if not os.path.isfile(kubernetes_yml):
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
-  configmap = ConfigMap(context, namespace=namespace)
-  configmap.destroy()
-  print_green("Deleted configmap %s-environment" % config.project_name)
+  if filename is None:
+    configmap = ConfigMap(context, namespace=namespace)
+    configmap.destroy()
+    print_green("Deleted configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
   shout(kctl.command("delete -f %s" % kubernetes_yml), print_output=True)

@@ -4,7 +4,6 @@ click==6.7
 click-repl==0.1.6
 docutils==0.14
 futures==3.2.0
-hokusai==0.5.5
 Jinja2==2.10.1
 jmespath==0.9.4
 MarkupSafe==1.1.1
