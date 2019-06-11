@@ -73,10 +73,11 @@ def k8s_update(context, namespace=None, filename=None, check_branch="master",
 
   if dry_run:
     shout(kctl.command("apply -f %s --dry-run" % kubernetes_yml), print_output=True)
+    print_green("Updated Kubernetes environment %s (dry run)" % kubernetes_yml)
   else:
     shout(kctl.command("apply -f %s" % kubernetes_yml), print_output=True)
+    print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
-  print_green("Updated Kubernetes environment %s" % kubernetes_yml)
 
 
 @command()
