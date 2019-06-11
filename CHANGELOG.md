@@ -3,12 +3,13 @@
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.6/README.md)
 
 ### Notable changes since v0.5.5
+* c6f8338 Add a short option -f for --filename ( -fi in dev logs command )
+* 07bea52 Add --update-config and --filename options to staging/production deploy
 * 1896d71 Fix ECR integration tests for boto update
 * f2fa240 Update yaml-file-name to filename and refactor commands / fix kubernetes integration tests
 * 1d93ee6 Add a --service-name option to test command to get the return value from a different docker-compose service
-* 017f03c Add a global config file ~/.hokusai/config.yml to run hokusai configure with no arguments but keep backwards compatibility
+* 017f03c Add a global config file `~/.hokusai/config.yml` to run hokusai configure with no arguments but keep backwards compatibility
 * 1b33220 Add a --dry-run flag to staging/production update and pass through to kubectl apply
-* 92148f6 Add the --tag option to staging/production update commands to make a pseudo-deployment along with a config update
 * fdb2e6b Install the aws cli and iam authenticator in the docker image
 * bb74eda Loosen dependencies
 * 88220af Create and delete env configmap with stack
