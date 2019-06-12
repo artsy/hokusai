@@ -33,22 +33,40 @@ If you installed Docker for Mac, `docker-compose` is also installed. Otherwise i
 4) [Git](https://git-scm.com/)
 
 
-## Setup
+## Installation
 
-1) Install Hokusai via pip with `pip install hokusai` and `hokusai` will be installed on your `PATH`.
+If you're on OSX, the preferred installation method is via homebrew:
+
+```
+$ brew tap artsy/formulas
+$ brew install hokusai
+```
+
+If you've previously installed hokusai via an alternate installation method, you may need to force the `link` step. If you installed hokusai via pip, you may also want to cleanup that installation:
+
+```
+$ pip uninstall hokusai
+$ brew link --overwrite hokusai
+```
+
+### Alternate Installation Methods
+
+#### Via pip
 
 Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `pip install hokusai --ignore-installed`.
 
-Alternatively, you can workaround a pure Python installation and install a binary for OSX by simply downloading it from https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-{version}-{platform}-x86_64 and adding it to your `$PATH`, i.e. to download the latest version, run:
+#### Via curl
+
+Note: You may need to adjust the target desination to match a directory in your `$PATH`.
 
 ```
 curl --silent https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-latest-$(uname -s)-$(uname -m) -o /usr/local/bin/hokusai && chmod +x /usr/local/bin/hokusai
 ```
 
+## Setup
 
-2) [Configure your AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
-
-3) Run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>`.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file. System administrators: see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS, Kubernetes, and publishing a kubectl config file. Artsy devs: see [these artsy/README docs](https://github.com/artsy/README/blob/master/playbooks/hokusai.md) for the current way to install and configure hokusai.
+1. [Configure your AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
+1. Run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>`.  You'll need to provide the kubectl version matching your Kubernetes deployments, as well as the S3 bucket name and key of your org's kubectl config file. System administrators: see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS, Kubernetes, and publishing a kubectl config file. Artsy devs: see [these artsy/README docs](https://github.com/artsy/README/blob/master/playbooks/hokusai.md) for the current way to install and configure hokusai.
 
 To enable bash autocompletion: `eval "$(_HOKUSAI_COMPLETE=source hokusai)"`
 
@@ -62,7 +80,6 @@ See [Getting Started.md](./docs/Getting_Started.md) to start using Hokusai for y
 
 A full command reference can be found in [Command Reference.md](./docs/Command_Reference.md).
 
-
 ## Developing Hokusai
 
 To work on Hokusai itself, set up your local development environment like so:
@@ -70,7 +87,6 @@ To work on Hokusai itself, set up your local development environment like so:
 - As above, install `python`, `pip`, `docker`, `docker-compose` and `git`.
 
 To install the Hokusai package in "editable mode" from a checkout of this repository, you can run `pip install -e .`  This works well in combination with [Virtualenv/Virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) as you can install the project in editable mode within a virtualenv, and from a release in your default system environment.
-
 
 ## Testing Hokusai
 
