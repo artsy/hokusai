@@ -25,11 +25,10 @@ def refresh(context, deployment_name, namespace=None):
 
 
 @command()
-def promote(migration, constraint, git_remote, timeout):
+def promote(migration, constraint, git_remote, timeout, update_config=False, filename=None):
   ecr = ECR()
 
-  deploy_from = Deployment('staging')
-  tag = deploy_from.current_tag
+  tag = Deployment('staging').current_tag
   if tag is None:
     raise HokusaiError("Could not find a tag for staging.  Aborting.")
   tag = ecr.find_git_sha1_image_tag(tag)
@@ -43,5 +42,5 @@ def promote(migration, constraint, git_remote, timeout):
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
 
-  deploy_to = Deployment('production').update(tag, constraint, git_remote, timeout)
+  Deployment('production').update(tag, constraint, git_remote, timeout, update_config=update_config, filename=filename)
   print_green("Promoted staging to production at %s" % tag)
