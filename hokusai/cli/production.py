@@ -16,11 +16,12 @@ def production(context_settings=CONTEXT_SETTINGS):
 
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/production.yml)')
+@click.option('-e', '--environment', type=click.STRING, help='Create stack with the given environment variables (only applies if --filename is not supplied)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def create(filename, verbose):
+def create(filename, environment, verbose):
   """Create the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_create(KUBE_CONTEXT, filename=filename)
+  hokusai.k8s_create(KUBE_CONTEXT, filename=filename, environment=environment.split(' '))
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)

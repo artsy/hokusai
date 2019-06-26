@@ -10,7 +10,7 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
 
 @command()
-def k8s_create(context, tag='latest', namespace=None, filename=None):
+def k8s_create(context, tag='latest', namespace=None, filename=None, environment=[]):
   if filename is None:
     kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
   else:
@@ -32,6 +32,11 @@ def k8s_create(context, tag='latest', namespace=None, filename=None):
 
   if filename is None:
     configmap = ConfigMap(context, namespace=namespace)
+    for s in environment:
+      if '=' not in s:
+        raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
+      split = s.split('=', 1)
+      configmap.update(split[0], split[1])
     configmap.create()
     print_green("Created configmap %s-environment" % config.project_name)
 
