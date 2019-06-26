@@ -44,7 +44,7 @@ def gitcompare(org_name, git_compare_link, verbose):
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
 @click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
-@click.option('--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
+@click.option('-u', '--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
 @click.option('-f', '--filename', type=click.STRING, help='If updating config, use the Kubernetes Yaml file in the ./hokusai directory (default production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def promote(migration, constraint, git_remote, timeout, update_config, filename, verbose):
