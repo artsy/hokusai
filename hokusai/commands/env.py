@@ -17,10 +17,9 @@ def get_env(context, environment, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
   all_configs = configmap.all()
-  env_vars = {k:v for k,v in all_configs if (environment and k in environment) or not environment }
-  for k in sorted(env_vars.keys()):
-    print_smart("%s=%s" % (k, env_vars[k]))
-
+  for k in sorted(all_configs.keys()):
+    if not environment or (environment and k in environment):
+      print_smart("%s=%s" % (k, all_configs[k]))
 
 @command()
 def set_env(context, environment, namespace=None):
