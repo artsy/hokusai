@@ -16,6 +16,7 @@ class ECR(object):
     self.__aws_account_id = None
     self.__registry = None
     self.__project_repo = None
+    self.__images = None
 
   @property
   def aws_account_id(self):
@@ -38,6 +39,21 @@ class ECR(object):
         repos += res['repositories']
       self.__registry = repos
     return self.__registry
+
+  @property
+  def images(self):
+    if self.__images is None:
+      images = []
+      res = self.client.describe_images(registryId=self.aws_account_id,
+                                    repositoryName=config.project_name)
+      images += res['imageDetails']
+      while 'nextToken' in res:
+        res = self.client.describe_images(registryId=self.aws_account_id,
+                                      repositoryName=config.project_name,
+                                      nextToken=res['nextToken'])
+        images += res['imageDetails']
+      self.__images = images
+    return self.__images
 
   @property
   def project_repo(self):
@@ -69,20 +85,11 @@ class ECR(object):
     return res['imageDetails'][0]
 
   def get_images(self):
-    images = []
-    res = self.client.describe_images(registryId=self.aws_account_id,
-                                  repositoryName=config.project_name)
-    images += res['imageDetails']
-    while 'nextToken' in res:
-      res = self.client.describe_images(registryId=self.aws_account_id,
-                                    repositoryName=config.project_name,
-                                    nextToken=res['nextToken'])
-      images += res['imageDetails']
-    return images
+    return self.images
 
   def tags(self):
     tgs = []
-    for image in self.get_images():
+    for image in self.images:
       if 'imageTags' not in image.keys():
         continue
       for tag in image['imageTags']:
@@ -101,7 +108,7 @@ class ECR(object):
         return tag
 
   def tag_exists(self, tag):
-    for image in self.get_images():
+    for image in self.images:
       if 'imageTags' not in image.keys():
         continue
       if tag in image['imageTags']:
