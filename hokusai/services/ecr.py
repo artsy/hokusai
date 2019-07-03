@@ -80,6 +80,26 @@ class ECR(object):
       images += res['imageDetails']
     return images
 
+  def tags(self):
+    tgs = []
+    for image in self.get_images():
+      if 'imageTags' not in image.keys():
+        continue
+      for tag in image['imageTags']:
+        tgs.append(tag)
+    return tgs
+
+  def deployment_tags(self, context):
+    context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)
+    return sorted(filter(lambda x: context_re.match(x), self.tags()))
+
+  def current_deployment_tag(self, context):
+    context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)
+    image = self.get_image_by_tag(context)
+    for tag in image['imageTags']:
+      if context_re.match(tag):
+        return tag
+
   def tag_exists(self, tag):
     for image in self.get_images():
       if 'imageTags' not in image.keys():
