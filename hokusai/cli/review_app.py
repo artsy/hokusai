@@ -138,11 +138,12 @@ def env(context_settings=CONTEXT_SETTINGS):
 
 @env.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
+@click.option('--configmap', type=click.STRING, help="Copy the given ConfigMap (default: the project's environment ConfigMap)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def copy(app_name, verbose):
+def copy(app_name, configmap, verbose):
   """Copies the app's environment config map to the namespace {APP_NAME}"""
   set_verbosity(verbose)
-  hokusai.k8s_copy_config(KUBE_CONTEXT, clean_string(app_name))
+  hokusai.k8s_copy_config(KUBE_CONTEXT, clean_string(app_name), name=configmap)
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)

@@ -137,9 +137,9 @@ def k8s_status(context, resources, pods, describe, top, namespace=None, filename
 
 
 @command()
-def k8s_copy_config(context, destination_namespace):
-  source_configmap = ConfigMap(context)
-  destination_configmap = ConfigMap(context, namespace=destination_namespace)
+def k8s_copy_config(context, destination_namespace, name=None):
+  source_configmap = ConfigMap(context, name=name)
+  destination_configmap = ConfigMap(context, name=name, namespace=destination_namespace)
   source_configmap.load()
   destination_configmap.struct['data'] = source_configmap.struct['data']
   destination_configmap.save()
