@@ -40,8 +40,9 @@ def pull(tag, local_tag, verbose):
 @click.option('-r', '--reverse-sort', type=click.BOOL, is_flag=True, help='Sort oldest to latest')
 @click.option('-l', '--limit', type=click.INT, default=20, help="Limit output to N images")
 @click.option('-f', '--filter-tags', type=click.STRING, help='Filter images that have at least one tag matching the provided string')
+@click.option('-d', '--digests', type=click.BOOL, is_flag=True, help='Print image digests')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def images(reverse_sort, limit, filter_tags, verbose):
+def images(reverse_sort, limit, filter_tags, digests, verbose):
   """Print images and tags in the project's registry"""
   set_verbosity(verbose)
-  hokusai.images(reverse_sort, limit, filter_tags)
+  hokusai.images(reverse_sort, limit, filter_tags, digests)
