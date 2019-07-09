@@ -23,7 +23,8 @@ class MockECR(object):
   def get_image_by_tag(self, tag):
     return 'latest'
 
-  def get_images(self):
+  @property
+  def images(self):
     return []
 
   def tag_exists(self, tag):

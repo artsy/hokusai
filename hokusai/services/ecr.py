@@ -88,9 +88,6 @@ class ECR(object):
     if 'imageDetails' in res:
       return res['imageDetails'][0]
 
-  def get_images(self):
-    return self.images
-
   def tags(self):
     tgs = []
     for image in self.images:

@@ -69,17 +69,17 @@ class TestECR(HokusaiIntegrationTestCase):
     self.assertEqual(self.ecr.get_login(), 'docker login -u AWS -p 76W8YEUFHDSAE98DFDHSFSDFIUHSDAJKGKSADFGKDF https://123456789012.dkr.ecr.us-east-1.amazonaws.com')
 
   @httpretty.activate
-  def test_get_images(self):
+  def test_images(self):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-images-response.json')).read(),
                            content_type="application/x-amz-json-1.1")
-    self.assertEqual(self.ecr.get_images()[0]['imageTags'], ['7shdn4f0f34bb8shdkb313cbeccb2fc031808duho', 'latest'])
-    self.assertEqual(self.ecr.get_images()[0]['imageDigest'], 'sha256:8sh968hsn205e8bff53ba8ed1006c7f41dacd17db164efdn6d346204f997shdn')
-    self.assertEqual(self.ecr.get_images()[0]['registryId'], '123456789012')
-    self.assertEqual(self.ecr.get_images()[0]['repositoryName'], 'hello')
+    self.assertEqual(self.ecr.images[0]['imageTags'], ['7shdn4f0f34bb8shdkb313cbeccb2fc031808duho', 'latest'])
+    self.assertEqual(self.ecr.images[0]['imageDigest'], 'sha256:8sh968hsn205e8bff53ba8ed1006c7f41dacd17db164efdn6d346204f997shdn')
+    self.assertEqual(self.ecr.images[0]['registryId'], '123456789012')
+    self.assertEqual(self.ecr.images[0]['repositoryName'], 'hello')
 
   @httpretty.activate
   def test_tag_exists(self):

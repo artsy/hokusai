@@ -7,7 +7,7 @@ from hokusai.lib.common import print_green, print_yellow, print_smart, shout
 
 @command()
 def images(reverse_sort, limit, filter_tags, digests):
-  images = ECR().get_images()
+  images = ECR().images
   sorted_images = sorted(images, key=itemgetter('imagePushedAt'), reverse=not reverse_sort)
   filtered_images = filter(lambda image: 'imageTags' in image.keys(), sorted_images)
   if filter_tags:
