@@ -16,10 +16,9 @@ def delete_env(context, namespace=None):
 def get_env(context, environment, namespace=None):
   configmap = ConfigMap(context, namespace=namespace)
   configmap.load()
-  all_configs = configmap.all()
-  for k in sorted(all_configs.keys()):
+  for k, v in sorted(configmap.all().items()):
     if not environment or (environment and k in environment):
-      print_smart("%s=%s" % (k, all_configs[k]))
+      print_smart("%s=%s" % (k, v))
 
 @command()
 def set_env(context, environment, namespace=None):
