@@ -112,7 +112,13 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app deploy <name> <name>
     ```
 
-14) If you have made changes to your review app's yaml file, you need to update deployment:
+14) If you have made changes to your review app's yaml file, you need to update the deployment:
+
+    ```shell
+    hokusai review_app deploy <name> <name> --update-config
+    ```
+
+    or
 
     ```shell
     hokusai review_app update <name>
