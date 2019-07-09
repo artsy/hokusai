@@ -57,8 +57,7 @@ class ConfigMap(object):
       os.unlink(f.name)
 
   def all(self):
-    for k, v in self.struct['data'].iteritems():
-      yield k, v
+    return self.struct['data']
 
   def update(self, key, value):
     self.struct['data'].update({key: value})
