@@ -79,10 +79,14 @@ class ECR(object):
     return "docker login -u %s -p %s %s" % (username, password, res['proxyEndpoint'])
 
   def get_image_by_tag(self, tag):
-    res = self.client.describe_images(registryId=self.aws_account_id,
-                                      repositoryName=config.project_name,
-                                      imageIds=[{'imageTag': tag}])
-    return res['imageDetails'][0]
+    try:
+      res = self.client.describe_images(registryId=self.aws_account_id,
+                                        repositoryName=config.project_name,
+                                        imageIds=[{'imageTag': tag}])
+    except self.client.exceptions.ImageNotFoundException:
+      return
+    if 'imageDetails' in res:
+      return res['imageDetails'][0]
 
   def get_images(self):
     return self.images
@@ -103,6 +107,8 @@ class ECR(object):
   def current_deployment_tag(self, context):
     context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)
     image = self.get_image_by_tag(context)
+    if image is None:
+      return
     for tag in image['imageTags']:
       if context_re.match(tag):
         return tag
@@ -117,10 +123,17 @@ class ECR(object):
 
   def find_git_sha1_image_tag(self, tag):
     image = self.get_image_by_tag(tag)
+    if image is None:
+      return
     for t in image['imageTags']:
       if SHA1_REGEX.match(t) is not None:
         return t
-    return None
+
+  def image_digest_for_tag(self, tag):
+    image = self.get_image_by_tag(tag)
+    if image is None:
+      return
+    return image['imageDigest']
 
   def retag(self, tag, new_tag):
     res = self.client.batch_get_image(

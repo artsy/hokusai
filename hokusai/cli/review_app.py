@@ -106,8 +106,8 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
   """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
   hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout,
-                  namespace=clean_string(app_name), resolve_tag_sha1=False,
-                  update_config=update_config, filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
+                  namespace=clean_string(app_name), update_config=update_config,
+                  filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
