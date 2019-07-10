@@ -28,7 +28,7 @@ def refresh(context, deployment_name, namespace=None):
 def promote(migration, constraint, git_remote, timeout, update_config=False, filename=None):
   if migration is not None:
     print_green("Running migration '%s' on production..." % migration, newline_after=True)
-    return_code = CommandRunner('production').run(digest, migration, constraint=constraint, tty=False)
+    return_code = CommandRunner('production').run('staging', migration, constraint=constraint, tty=False)
     if return_code:
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
 
