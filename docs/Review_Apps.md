@@ -49,13 +49,19 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app create <name>
     ```
 
-6) Copy the staging `configMap` to the new namespace:
+6) Copy the staging environment's `ConfigMap` to the new namespace:
 
     ```shell
     hokusai review_app env copy <name>
     ```
 
-7) Find and visit your staging app:
+7) If necessary, copy other `ConfigMaps` to the new namespace, for example:
+
+    ```shell
+    hokusai review_app env copy <name> --configmap nginx-config
+    ```
+
+8) Find and visit your staging app:
 
     - In the Kubernetes UI, find the "Namespace" dropdown in the main nav and select your chosen `<name>` from that menu
     - Browse to the "Services" section
@@ -69,32 +75,32 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app status <name>
     ```
 
-8) If you need to view or update environment variables:
+9) If you need to view or update environment variables:
 
     ```shell
     hokusai review_app env get <name> FOO
     hokusai review_app env set <name> FOO=BAR
     ```
 
-9) If you need to refresh your app, (e.g. after updating environment variables)
+10) If you need to refresh your app, (e.g. after updating environment variables)
 
     ```shell
     hokusai review_app refresh <name>
     ```
 
-10) If you need to view logs for your app, (e.g. after a refresh or deploy)
+11) If you need to view logs for your app, (e.g. after a refresh or deploy)
 
     ```shell
     hokusai review_app logs <name>
     ```
 
-11) If you need to get a shell in your app, (e.g. to launch a Rails console)
+12) If you need to get a shell in your app, (e.g. to launch a Rails console)
 
     ```shell
     hokusai review_app run <name> <command> --tty
     ```
 
-12) If you want to push subsequent changes to the review app,
+13) If you want to push subsequent changes to the review app,
 
     you can push a new build to the same tag with the `--overwrite` flag:
     ```shell
@@ -106,13 +112,19 @@ In order to start a review app you will need to follow these steps:
     hokusai review_app deploy <name> <name>
     ```
 
-13) If you have made changes to your review app's yaml file, you need to update deployment:
+14) If you have made changes to your review app's yaml file, you need to update the deployment:
+
+    ```shell
+    hokusai review_app deploy <name> <name> --update-config
+    ```
+
+    or
 
     ```shell
     hokusai review_app update <name>
     ```
 
-14) Delete review app:
+15) Delete review app:
 
     ```shell
     hokusai review_app env delete <name>

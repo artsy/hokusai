@@ -12,16 +12,20 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
 class ConfigMap(object):
-  def __init__(self, context, namespace=None):
+  def __init__(self, context, namespace='default', name=None):
     self.context = context
     self.kctl = Kubectl(context, namespace=namespace)
+    self.name = name or "%s-environment" % config.project_name
+    self.metadata = {
+      'name': self.name,
+      'namespace': namespace
+    }
+    if name is None:
+      self.metadata['labels'] = { 'app': config.project_name }
     self.struct = OrderedDict([
       ('apiVersion', 'v1'),
       ('kind', 'ConfigMap'),
-      ('metadata', {
-        'labels': {'app': config.project_name},
-        'name': "%s-environment" % config.project_name
-      }),
+      ('metadata', self.metadata),
       ('data', {})
     ])
 
@@ -39,10 +43,10 @@ class ConfigMap(object):
       os.unlink(f.name)
 
   def destroy(self):
-    shout(self.kctl.command("delete configmap %s-environment" % config.project_name))
+    shout(self.kctl.command("delete configmap %s" % self.name))
 
   def load(self):
-    payload = shout(self.kctl.command("get configmap %s-environment -o yaml" % config.project_name))
+    payload = shout(self.kctl.command("get configmap %s -o yaml" % self.name))
     struct = yaml.load(payload)
     if 'data' in struct:
       self.struct['data'] = struct['data']

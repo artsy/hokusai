@@ -16,11 +16,12 @@ def production(context_settings=CONTEXT_SETTINGS):
 
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/production.yml)')
+@click.option('-e', '--environment', type=click.STRING, multiple=True, help='Create stack with the given environment variables (only applies if --filename is not supplied)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def create(filename, verbose):
+def create(filename, environment, verbose):
   """Create the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_create(KUBE_CONTEXT, filename=filename)
+  hokusai.k8s_create(KUBE_CONTEXT, filename=filename, environment=environment)
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -91,7 +92,7 @@ def logs(timestamps, follow, tail, previous, label, verbose):
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
 @click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
-@click.option('--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
+@click.option('-u', '--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
 @click.option('-f', '--filename', type=click.STRING, help='If updating config, use the Kubernetes Yaml file in the ./hokusai directory (default production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(tag, migration, constraint, git_remote, timeout, update_config, filename, verbose):

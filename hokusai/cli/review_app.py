@@ -100,14 +100,14 @@ def logs(app_name, timestamps, follow, tail, previous, label, verbose):
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
 @click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
-@click.option('--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
+@click.option('-u', '--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_config, verbose):
   """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
   hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout,
-                  namespace=clean_string(app_name), resolve_tag_sha1=False,
-                  update_config=update_config, filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
+                  namespace=clean_string(app_name), update_config=update_config,
+                  filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -138,11 +138,12 @@ def env(context_settings=CONTEXT_SETTINGS):
 
 @env.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
+@click.option('--configmap', type=click.STRING, help="Copy the given ConfigMap (default: the project's environment ConfigMap)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def copy(app_name, verbose):
+def copy(app_name, configmap, verbose):
   """Copies the app's environment config map to the namespace {APP_NAME}"""
   set_verbosity(verbose)
-  hokusai.k8s_copy_config(KUBE_CONTEXT, clean_string(app_name))
+  hokusai.k8s_copy_config(KUBE_CONTEXT, clean_string(app_name), name=configmap)
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
