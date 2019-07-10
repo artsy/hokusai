@@ -10,7 +10,7 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.lib.exceptions import HokusaiError
 
 @command()
-def k8s_create(context, tag='latest', namespace=None, filename=None, environment=[]):
+def k8s_create(context, tag='latest', namespace=None, filename=None, environment=()):
   if filename is None:
     kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
   else:
