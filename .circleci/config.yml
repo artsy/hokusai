@@ -170,6 +170,7 @@ workflows:
           requires:
             - test_linux
             - test_macos
+            - test_integration
           filters:
             branches:
               only: master
@@ -177,10 +178,15 @@ workflows:
           requires:
             - test_linux
             - test_macos
+            - test_integration
           filters:
             branches:
               only: master
       - release_head_dockerhub:
+          requires:
+            - test_linux
+            - test_macos
+            - test_integration
           filters:
             branches:
               only: master
