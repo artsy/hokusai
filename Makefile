@@ -1,4 +1,4 @@
-.PHONY: dependencies test test-docker build build-linux-docker image publish-head publish-latest publish-version publish-pip publish-dockerhub publish-github clean
+.PHONY: dependencies test test-docker build build-linux-docker image publish-head publish-latest publish-version publish-pip publish-dockerhub publish-head-dockerhub publish-github clean
 
 AWS ?= $(shell which aws)
 DOCKER_RUN ?= $(shell which docker) run --rm
@@ -98,6 +98,10 @@ publish-dockerhub:
 	  echo "Version $(VERSION) already published"; \
 	  exit 1; \
 	fi
+
+publish-head-dockerhub:
+	docker tag hokusai:latest artsy/hokusai:head
+	docker push artsy/hokusai:head
 
 publish-github:
 	$(AWS) s3 cp \
