@@ -1,3 +1,29 @@
+## v0.5.7
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.7/README.md)
+
+### Notable changes since v0.5.6
+
+* 52d7612 refactor deployment update behavior to account for canary and review apps
+* 90deb7e update head releases on master to require all test suites
+* 3be6be0 release Docker image tag head on master
+* 8949ff4 fix --environment flag in creaste command to accept multiple occurances
+* 2f2499a bugfix in hokusai/commands/deployment.py
+* f8b56d4 update review app docs
+* d28a724 update ECR tests
+* a2605e5 trim the ecr.get_images method as it now is the images property
+a87c15f Refactor deployments to patch image digests and pipeline to resolve Git SHAs - always use the registry rather than k8s as source of * truth for current deployment tag
+* 5b74e0e Add back image digest display to registry images with the --digests option
+* eb2f3fa refactor ECR to cache images
+* 19caa96 refactor ECR module to provide tags, deployment_tags, current_deployment_tag methods
+0393a11 add --configmap option to review_app env copy command to copy other configmaps other than the app's environment and refactor * configmap.py to support this
+* 266d542 Add --environment option to staging/production create to bootstrap stack with environment variables
+* d641fd0 Add short option -u to --update-config option
+* de9afff Add --update-config and --filename options to pipeline promote
+* 4d9dd48 Update env get to sort results
+* c13c985 Install bash in hokusai image
+* 142310f Update README with updated installation instructions
+
 ## v0.5.6
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.6/README.md)
