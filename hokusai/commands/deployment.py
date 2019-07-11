@@ -15,7 +15,7 @@ def update(context, tag, migration, constraint, git_remote, timeout,
       raise HokusaiError("Migration failed with return code %s" % return_code, return_code=return_code)
   Deployment(context, namespace=namespace).update(tag, constraint, git_remote, timeout,
                                                   update_config=update_config, filename=filename)
-  print_green("Deployment updated to %s" % tag)
+  print_green("Deployment(s) updated to %s" % tag)
 
 
 @command()
