@@ -2,6 +2,8 @@
 
 Hokusai provides a command for managing review apps. Review apps are useful for testing feature branches that are not yet ready to be deployed to staging but need to be tested in a staging-like environment.
 
+We also have a shorter version with less explanation over on the [Volt Review App](Volt_Review_App.md) page.
+
 In order to start a review app you will need to follow these steps:
 
 1) Create a new review app
