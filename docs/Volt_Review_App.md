@@ -11,9 +11,9 @@ list of commands to run:
 ```sh
 # create a new config file
 $ hokusai review_app setup 1234
-# update config file
-$ sed -I "s/staging/1234/g" hokusai/1234.yml
-# comit the config file
+# update config file with the image tag 1234
+$ sed -i "" "s/staging/1234/g" hokusai/1234.yml
+# commit the config file
 $ git add hokusai/1234.yml
 $ git commit -m "Config for review app 1234"
 # push the image - this takes a while...stop if it doesn't exit cleanly!
@@ -21,7 +21,7 @@ $ hokusai registry push --force --tag 1234
 # create a review app called 1234
 $ hokusai review_app create 1234
 # copy over the env from staging
-$ hokusai review_app env copy 1234
+$ hokusai review_app env copy 1234 --configmap nginx-config
 # inspect review app and get url
 $ hokusai review_app status 1234
 # or if you're feeling super 1337:
