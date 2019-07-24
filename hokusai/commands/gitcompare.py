@@ -3,6 +3,7 @@ from hokusai.lib.common import print_red, print_green, shout
 from hokusai.lib.config import config
 from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
+from hokusai.lib.exceptions import HokusaiError
 
 @command()
 def gitcompare(org_name, git_compare_link):
