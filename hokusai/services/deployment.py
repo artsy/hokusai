@@ -162,7 +162,7 @@ class Deployment(object):
       if remote:
         print_green("Pushing Git deployment tags to %s..." % remote, newline_after=True)
         try:
-          shout("git fetch %s" % remote)
+          shout("git fetch %s --tags" % remote)
           shout("git tag -f %s %s" % (self.context, tag), print_output=True)
           shout("git tag -f %s %s" % (deployment_tag, tag), print_output=True)
           shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
