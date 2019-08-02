@@ -1,10 +1,9 @@
 import os
 import sys
 
-from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 
-import yaml
+import json
 
 from hokusai.lib.config import config
 from hokusai.lib.common import print_green, shout
@@ -22,16 +21,16 @@ class ConfigMap(object):
     }
     if name is None:
       self.metadata['labels'] = { 'app': config.project_name }
-    self.struct = OrderedDict([
-      ('apiVersion', 'v1'),
-      ('kind', 'ConfigMap'),
-      ('metadata', self.metadata),
-      ('data', {})
-    ])
+    self.struct = {
+      'apiVersion': 'v1',
+      'kind': 'ConfigMap',
+      'metadata': self.metadata,
+      'data': {}
+    }
 
   def _to_file(self):
     f = NamedTemporaryFile(delete=False)
-    f.write(yaml.safe_dump(self.struct, default_flow_style=False))
+    f.write(json.dumps(self.struct))
     f.close()
     return f
 
@@ -46,8 +45,8 @@ class ConfigMap(object):
     shout(self.kctl.command("delete configmap %s" % self.name))
 
   def load(self):
-    payload = shout(self.kctl.command("get configmap %s -o yaml" % self.name))
-    struct = yaml.load(payload)
+    payload = shout(self.kctl.command("get configmap %s -o json" % self.name))
+    struct = json.loads(payload)
     if 'data' in struct:
       self.struct['data'] = struct['data']
     else:
