@@ -2,6 +2,7 @@ from hokusai.lib.command import command
 from hokusai.lib.common import print_red, print_green, shout
 from hokusai.services.deployment import Deployment
 from hokusai.services.ecr import ECR
+from hokusai.lib.exceptions import HokusaiError
 
 @command()
 def gitlog():
