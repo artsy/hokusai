@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import signal
@@ -111,3 +113,9 @@ def get_region_name():
   if os.environ.get('AWS_REGION'):
     return os.environ.get('AWS_REGION')
   return AWS_DEFAULT_REGION
+
+def pick_yes():
+  return random.choice(["Yep", "Si", "Da", "Ja", "Hai", "Jā", "Oui", "Shì", "Sim"])
+
+def pick_no():
+  return random.choice(["Nope", "No", "Nein", "Nay", "Nē", "Non", "Iya", "Méiyǒu", "Não"])
