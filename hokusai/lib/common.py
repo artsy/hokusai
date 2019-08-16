@@ -115,7 +115,7 @@ def get_region_name():
   return AWS_DEFAULT_REGION
 
 def pick_yes():
-  return random.choice(["Yep", "Si", "Da", "Ja", "Hai", "Jā", "Oui", "Shì", "Sim"])
+  return random.choice(["Yep", "Si", "да", "Da", "Aane", "हाँ", "Ja", "はい", "Jā", "так", "بله", "Tak", "Wi", "Oui", "יאָ", "예", "是", "Sim"])
 
 def pick_no():
-  return random.choice(["Nope", "No", "Nein", "Nay", "Nē", "Non", "Iya", "Méiyǒu", "Não"])
+  return random.choice(["Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"])
