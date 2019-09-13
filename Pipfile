@@ -29,6 +29,7 @@ Jinja2 = "==2.10.1"
 MarkupSafe = "==1.1.1"
 prompt_toolkit = "==1.0.16"
 PyYAML = "==3.13"
+hokusai = {path = ".",editable = true}
 
 [requires]
 python_version = "2.7"
