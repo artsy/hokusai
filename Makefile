@@ -11,8 +11,8 @@ VERSION ?= $(shell cat hokusai/VERSION)
 MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
-	pip install --requirement requirements.txt --quiet
-	pip install --quiet pyinstaller==3.3.1
+	pip install pipenv --quiet
+	pipenv install --dev --deploy
 
 test:
 	python -m unittest discover test.unit
@@ -83,7 +83,6 @@ publish-version:
 
 publish-pip:
 	python setup.py sdist bdist_wheel
-	pip install twine wheel
 	twine upload dist/*
 
 publish-dockerhub:

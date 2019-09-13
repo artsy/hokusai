@@ -9,6 +9,8 @@ RUN pip install docker-compose==1.22.0
 # Install the AWS CLI
 RUN pip install awscli --upgrade
 
+RUN pip install pipenv
+
 # Install Git, Ssh, and bash
 RUN apk add git openssh bash
 
@@ -19,4 +21,4 @@ ADD . /src
 WORKDIR /src
 
 # Install Hokusai
-RUN pip install .
+RUN pipenv install --deploy
