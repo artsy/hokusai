@@ -53,6 +53,7 @@ jobs:
           command: |
             kubectl cluster-info
             kubectl get pods --all-namespaces
+      - run: pyenv install -s
       - run: make dependencies
       - run: make integration
 
