@@ -18,7 +18,7 @@ test:
 	pipenv run unit-tests
 
 integration:
-	pipenv run python -m integration-tests
+	pipenv run integration-tests
 
 test-docker:
 	$(DOCKER_RUN) \
