@@ -15,10 +15,10 @@ dependencies:
 	pipenv install --dev --deploy
 
 test:
-	python -m unittest discover test.unit
+	pipenv run python -m unittest discover test.unit
 
 integration:
-	python -m unittest discover test.integration
+	pipenv run python -m unittest discover test.integration
 
 test-docker:
 	$(DOCKER_RUN) \
