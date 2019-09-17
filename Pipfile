@@ -33,3 +33,9 @@ hokusai = {path = ".",editable = true}
 
 [requires]
 python_version = "2.7"
+
+[scripts]
+test = "python -m unittest"
+tests = "python -m unittest discover test"
+unit-tests = "python -m unittest discover test.unit"
+integration-tests = "python -m unittest discover test.integration"

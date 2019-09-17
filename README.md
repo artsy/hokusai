@@ -20,15 +20,34 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 
 1. [Python 2.x](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
 
-2. [Docker](https://docs.docker.com/)
+It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.
+
+```
+# Only if you don't already have pyenv installed
+brew install pyenv
+
+pyenv install -s
+```
+
+2. [Pipenv](https://github.com/pypa/pipenv)
+
+If you use homebrew
+
+```
+brew install pipenv
+```
+
+Other installation methods can be found in the project's repo
+
+3. [Docker](https://docs.docker.com/)
 
 If you use homebrew on OSX, install Docker for Mac with: `brew tap caskroom/cask && brew cask install docker`
 
-3. [Docker Compose](https://docs.docker.com/compose/)
+4. [Docker Compose](https://docs.docker.com/compose/)
 
 If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `pip install docker-compose`.
 
-4. [Git](https://git-scm.com/)
+5. [Git](https://git-scm.com/)
 
 ## Installation
 
@@ -79,20 +98,22 @@ A full command reference can be found in [Command Reference.md](./docs/Command_R
 
 To work on Hokusai itself, set up your local development environment like so:
 
-- As above, install `python`, `pip`, `docker`, `docker-compose` and `git`.
+- As above, install `python`, `pipenv`, `docker`, `docker-compose` and `git`.
 
 To install the Hokusai package in "editable mode" from a checkout of this repository, you can run `pip install -e .` This works well in combination with [Virtualenv/Virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) as you can install the project in editable mode within a virtualenv, and from a release in your default system environment.
 
 ## Testing Hokusai
 
-Install dependencies: `pip install -r requirements.txt`.
+Install pipenv (see above)
 
-All tests can be run with `python -m unittest discover test`.
+Install dependencies: `pipenv install -d`.
 
-Only run unit tests: `python -m unittest discover test.unit`
-Only run integration tests: `python -m unittest discover test.integration`
+All tests can be run with `pipenv run tests`.
 
-Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
+Only run unit tests: `pipenv run unit-tests`
+Only run integration tests: `pipenv run integration-tests`
+
+Tests for specific modules, TestClasses, or even methods can be run with `pipenv run test test.unit.test_module.TestClass.test_method`
 
 Set the `DEBUG=1` environment variable to print boto logging
 
