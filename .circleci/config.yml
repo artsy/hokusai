@@ -53,6 +53,12 @@ jobs:
           command: |
             kubectl cluster-info
             kubectl get pods --all-namespaces
+      - run:
+          name: Update pyenv
+          command: |
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. 
+            git pull
+            cd -
       - run: pyenv install -s
       - run: make dependencies
       - run: make integration
