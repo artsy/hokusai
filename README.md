@@ -100,13 +100,13 @@ To work on Hokusai itself, set up your local development environment like so:
 
 - As above, install `python`, `pipenv`, `docker`, `docker-compose` and `git`.
 
-To install the Hokusai package in "editable mode" from a checkout of this repository, you can run `pip install -e .` This works well in combination with [Virtualenv/Virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) as you can install the project in editable mode within a virtualenv, and from a release in your default system environment.
+To install the Hokusai package in "editable mode" from a checkout of this repository, you can run `pip install --editable .` This works well in combination with [Virtualenv/Virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) as you can install the project in editable mode within a virtualenv, and from a release in your default system environment.
 
 ## Testing Hokusai
 
 Install pipenv (see above)
 
-Install dependencies: `pipenv install -d`.
+Install dependencies: `pipenv install --dev`.
 
 All tests can be run with `pipenv run tests`.
 

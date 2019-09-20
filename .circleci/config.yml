@@ -59,7 +59,7 @@ jobs:
             cd /opt/circleci/.pyenv/plugins/python-build/../.. 
             git pull
             cd -
-      - run: pyenv install -s
+      - run: pyenv install --skip-existing
       - run: make dependencies
       - run: make integration
 
