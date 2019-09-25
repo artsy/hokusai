@@ -3,13 +3,10 @@ FROM python:2-alpine
 # Install Docker
 RUN apk add docker curl
 
-# Install Docker Compose
-RUN pip install docker-compose==1.22.0
-
-# Install the AWS CLI
-RUN pip install awscli --upgrade
-
-RUN pip install pipenv
+# Install Docker Compose, AWS CLI, pipenv
+RUN pip install docker-compose==1.22.0 \
+  pip install awscli --upgrade \ 
+  pip install pipenv
 
 # Install Git, Ssh, and bash
 RUN apk add git openssh bash
