@@ -12,7 +12,8 @@ MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
 	pip install pipenv --quiet --ignore-installed
-	pipenv install --dev --deploy
+	pipenv install --deploy
+	pip install --quiet pyinstaller==3.3.1
 
 test:
 	pipenv run unit-tests
