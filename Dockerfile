@@ -4,8 +4,8 @@ FROM python:2-alpine
 RUN apk add docker curl
 
 # Install Docker Compose, AWS CLI, pipenv
-RUN pip install docker-compose==1.22.0 \
-  pip install awscli --upgrade \ 
+RUN pip install docker-compose==1.22.0 && \
+  pip install awscli --upgrade && \
   pip install pipenv
 
 # Install Git, Ssh, and bash
