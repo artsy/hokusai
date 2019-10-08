@@ -29,6 +29,12 @@ The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are
 
 You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local directory with the `--template-dir` option, or specify a remote git repository with `--template-remote` and point to a remote path in that repository with `--template-dir`.
 
+See [Artsy Hokusai Templates](https://github.com/artsy/artsy-hokusai-templates) for recommended templates. For example, bootstrap a Rails/Puma project:
+```shell
+hokusai setup --template-remote git@github.com:artsy/artsy-hokusai-templates.git --template-dir rails-puma
+```
+
+
 Running without these options provides a default configuration.  All other template directories should provide this structure:
 
 - Dockerfile.j2
