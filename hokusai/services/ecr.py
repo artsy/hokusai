@@ -31,7 +31,7 @@ class ECR(object):
       res = self.client.describe_repositories(registryId=self.aws_account_id)
       try:
         repos += res['repositories']
-      except KeyError, err:
+      except KeyError as err:
         raise HokusaiError("Fetching ECR registry failed with error %s" % str(err))
       while 'nextToken' in res:
         res = self.client.describe_repositories(registryId=self.aws_account_id,

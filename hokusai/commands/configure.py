@@ -5,7 +5,7 @@ import shutil
 import tempfile
 
 from distutils.dir_util import mkpath
-from urlparse import urlparse
+from six.moves import urllib
 
 import boto3
 
@@ -23,7 +23,7 @@ def configure(kubectl_version, bucket_name, key_name, config_file, install_to, i
     raise HokusaiError("You must supply a kubectl_version")
 
   if global_config.is_present() and global_config.kubectl_config_file is not None:
-    uri = urlparse(global_config.kubectl_config_file)
+    uri = urllib.urlparse(global_config.kubectl_config_file)
     if uri.scheme == 's3':
       bucket_name = uri.netloc
       key_name = uri.path
@@ -36,7 +36,7 @@ def configure(kubectl_version, bucket_name, key_name, config_file, install_to, i
   print_green("Downloading and installing kubectl...", newline_before=True, newline_after=True)
   tmpdir = tempfile.mkdtemp()
   urllib.urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform.system().lower()), os.path.join(tmpdir, 'kubectl'))
-  os.chmod(os.path.join(tmpdir, 'kubectl'), 0755)
+  os.chmod(os.path.join(tmpdir, 'kubectl'), 0o755)
   shutil.move(os.path.join(tmpdir, 'kubectl'), os.path.join(install_to, 'kubectl'))
   shutil.rmtree(tmpdir)
 
