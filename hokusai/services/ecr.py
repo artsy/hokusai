@@ -73,7 +73,7 @@ class ECR(object):
 
   def get_login(self):
     res = self.client.get_authorization_token(registryIds=[str(self.aws_account_id)])['authorizationData'][0]
-    token = base64.b64decode(res['authorizationToken'])
+    token = base64.b64decode(res['authorizationToken']).decode()
     username = token.split(':')[0]
     password = token.split(':')[1]
     return "docker login -u %s -p %s %s" % (username, password, res['proxyEndpoint'])
