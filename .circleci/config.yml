@@ -3,7 +3,7 @@ version: 2
 jobs:
   test_linux:
     docker:
-      - image: python:2
+      - image: python:3.6
     steps:
       - checkout
       - run: make dependencies
@@ -65,7 +65,7 @@ jobs:
 
   release_head_linux:
     docker:
-      - image: python:2
+      - image: python:3.6
     steps:
       - checkout
       - run: apt-get -qq update
@@ -76,7 +76,7 @@ jobs:
 
   release_version_linux:
     docker:
-      - image: python:2
+      - image: python:3.6
     steps:
       - checkout
       - run: apt-get -qq update
@@ -119,7 +119,7 @@ jobs:
 
   release_pip:
     docker:
-      - image: python:2
+      - image: python:3.6
     steps:
       - checkout
       - run: make dependencies
