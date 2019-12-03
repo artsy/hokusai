@@ -1,4 +1,4 @@
-FROM python:2-alpine
+FROM python:3.6-alpine
 
 # Install Docker
 RUN apk add docker curl

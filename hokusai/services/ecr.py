@@ -31,7 +31,7 @@ class ECR(object):
       res = self.client.describe_repositories(registryId=self.aws_account_id)
       try:
         repos += res['repositories']
-      except KeyError, err:
+      except KeyError as err:
         raise HokusaiError("Fetching ECR registry failed with error %s" % str(err))
       while 'nextToken' in res:
         res = self.client.describe_repositories(registryId=self.aws_account_id,
@@ -73,7 +73,7 @@ class ECR(object):
 
   def get_login(self):
     res = self.client.get_authorization_token(registryIds=[str(self.aws_account_id)])['authorizationData'][0]
-    token = base64.b64decode(res['authorizationToken'])
+    token = base64.b64decode(res['authorizationToken']).decode()
     username = token.split(':')[0]
     password = token.split(':')[1]
     return "docker login -u %s -p %s %s" % (username, password, res['proxyEndpoint'])

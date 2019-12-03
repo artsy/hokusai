@@ -52,7 +52,7 @@ class TestCommon(HokusaiUnitTestCase):
   def test_k8s_uuid(self):
     self.assertEqual(len(k8s_uuid()), 5)
     for char in list(k8s_uuid()):
-      self.assertIn(char, string.lowercase)
+      self.assertIn(char, string.ascii_lowercase)
 
   @patch('hokusai.lib.common.check_output', return_value='hokusai')
   def test_shout(self, mocked_check_output):

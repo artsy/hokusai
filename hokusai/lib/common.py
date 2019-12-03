@@ -36,11 +36,9 @@ def smart_str(s, newline_before=False, newline_after=False):
     s = '\n' + s
   if newline_after:
     s = s + '\n'
-  if isinstance(s, unicode):
-      return unicode(s).encode("utf-8")
-  elif isinstance(s, int) or isinstance(s, float):
-      return str(s)
-  return s
+  if isinstance(s, bytes):
+    return s.decode()
+  return str(s)
 
 def print_smart(msg, newline_before=False, newline_after=False):
   print(smart_str(msg, newline_before, newline_after))
@@ -98,7 +96,7 @@ def shout_concurrent(commands, print_output=False, mask=()):
 def k8s_uuid():
   uuid = []
   for i in range(0,5):
-    uuid.append(random.choice(string.lowercase))
+    uuid.append(random.choice(string.ascii_lowercase))
   return ''.join(uuid)
 
 def clean_string(str):
