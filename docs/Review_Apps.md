@@ -127,6 +127,5 @@ In order to start a review app you will need to follow these steps:
 15) Delete review app:
 
     ```shell
-    hokusai review_app env delete <name>
     hokusai review_app delete <name>
     ```
