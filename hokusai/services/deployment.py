@@ -76,7 +76,7 @@ class Deployment(object):
         if item['kind'] == 'Deployment':
           self.cache.append(item)
 
-    # If updating config, path the spec and apply
+    # If updating config, patch the spec and apply
     if update_config:
       print_green("Patching Deployments in spec %s with image digest %s" % (kubernetes_yml, digest), newline_after=True)
       payload = []
