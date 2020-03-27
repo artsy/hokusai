@@ -20,7 +20,7 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 
 1. [Python 2.x](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
 
-It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.
+It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.  See [this guide](https://realpython.com/intro-to-pyenv/) for working with pyenv.
 
 ```
 # Only if you don't already have pyenv installed
@@ -63,6 +63,8 @@ Installed Python-2.7.16 to /Users/isacpetruzzi/.pyenv/versions/2.7.16
 ```
 
 2. [Pipenv](https://github.com/pypa/pipenv)
+
+It's recommended that you use [`pipenv`](https://pypi.org/project/pipenv/) to install package dependencies.  See [this guide](https://realpython.com/pipenv-guide/) for working with pipenv.
 
 If you use homebrew
 
