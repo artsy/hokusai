@@ -20,7 +20,7 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 
 1. [Python 2.x](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
 
-It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.
+It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.  See [this guide](https://realpython.com/intro-to-pyenv/) for working with pyenv.
 
 ```
 # Only if you don't already have pyenv installed
@@ -29,12 +29,53 @@ brew install pyenv
 pyenv install -s
 ```
 
+Before installing pythons via pyenv, make sure you are using brew-installed libraries `openssl`, `readline` and xcode-installed `zlib` and these libraries are correctly linked.  For example:
+
+```
+brew install openssl
+
+If you need to have openssl@1.1 first in your PATH run:
+  echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
+
+For compilers to find openssl@1.1 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+  export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+For pkg-config to find openssl@1.1 you may need to set:
+  export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+```
+
+Now, when installing pythons (see `.python-version` for the current version to install for Hokusai development) you should see the following output.
+
+```
+$ pyenv install 2.7.16
+
+python-build: use openssl from homebrew
+python-build: use readline from homebrew
+
+Downloading Python-2.7.16.tar.xz...
+-> https://www.python.org/ftp/python/2.7.16/Python-2.7.16.tar.xz
+Installing Python-2.7.16...
+python-build: use readline from homebrew
+python-build: use zlib from xcode sdk
+
+Installed Python-2.7.16 to /Users/isacpetruzzi/.pyenv/versions/2.7.16
+```
+
 2. [Pipenv](https://github.com/pypa/pipenv)
+
+It's recommended that you use [`pipenv`](https://pypi.org/project/pipenv/) to install package dependencies.  See [this guide](https://realpython.com/pipenv-guide/) for working with pipenv.
 
 If you use homebrew
 
 ```
 brew install pipenv
+```
+
+Install dev dependencies via `pipenv`
+
+```
+`pipenv install --dev`.
 ```
 
 Other installation methods can be found in the project's repo

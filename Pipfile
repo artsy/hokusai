@@ -7,6 +7,18 @@ verify_ssl = true
 pyinstaller = "==3.3.1"
 twine = "*"
 wheel = "*"
+ipython = "*"
+ipdb = "*"
+jupyter = "*"
+
+# Tornado (required by jupyter) project is using
+#   an incompatible setup.py
+# https://github.com/pypa/pipenv/issues/2498
+singledispatch = "*"
+backports-abc = "*"
+futures = "*"
+nbformat = "==4.4.0"
+
 
 [packages]
 boto3 = "==1.9.162"
