@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: radiation-web
+  name: project-name-web
   namespace: default
 spec:
   strategy:
@@ -13,13 +13,13 @@ spec:
   template:
     metadata:
       labels:
-        app: radiation
+        app: project-name
         component: web
         layer: application
-      name: radiation-web
+      name: project-name-web
     spec:
       containers:
-        - name: radiation-web
+        - name: project-name-web
           env:
             - name: RAILS_SERVE_STATIC_FILES
               value: "true"
@@ -33,11 +33,11 @@ spec:
                   fieldPath: spec.nodeName
           envFrom:
             - configMapRef:
-                name: radiation-environment
-          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/radiation:production
+                name: project-name-environment
+          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/project-name:production
           imagePullPolicy: Always
           ports:
-            - name: radiation-http
+            - name: project-name-http
               containerPort: 8080
           resources:
             requests:
@@ -47,7 +47,7 @@ spec:
               memory: 1Gi
           readinessProbe:
             httpGet:
-              port: radiation-http
+              port: project-name-http
               path: /robots.txt
               httpHeaders:
                 - name: X-Forwarded-Proto
@@ -59,7 +59,7 @@ spec:
             preStop:
               exec:
                 command: ["sh", "-c", "sleep 10"]
-        - name: radiation-nginx
+        - name: project-name-nginx
           image: artsy/docker-nginx:1.14.2
           ports:
             - name: nginx-http
@@ -109,13 +109,13 @@ spec:
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: radiation-web
+  name: project-name-web
   namespace: default
 spec:
   scaleTargetRef:
     apiVersion: extensions/v1beta1
     kind: Deployment
-    name: radiation-web
+    name: project-name-web
   minReplicas: 2
   maxReplicas: 6
   targetCPUUtilizationPercentage: 70
@@ -125,13 +125,15 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: radiation
+    app: project-name
     component: web
     layer: application
-  name: radiation-web
+  name: project-name-web
   namespace: default
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ vars.artsyNetWildcardSSLCert }}
+    # prettier-ignore
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert:
+      {{ artsyNetWildcardSSLCert }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
     service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
@@ -148,7 +150,7 @@ spec:
       name: https
       targetPort: nginx-http
   selector:
-    app: radiation
+    app: project-name
     layer: application
     component: web
   sessionAffinity: None
@@ -158,13 +160,13 @@ spec:
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: radiation-sidekiq
+  name: project-name-sidekiq
   namespace: default
 spec:
   scaleTargetRef:
     apiVersion: extensions/v1beta1
     kind: Deployment
-    name: radiation-sidekiq
+    name: project-name-sidekiq
   minReplicas: 1
   maxReplicas: 2
   targetCPUUtilizationPercentage: 80
@@ -173,7 +175,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: radiation-sidekiq
+  name: project-name-sidekiq
 spec:
   strategy:
     rollingUpdate:
@@ -183,14 +185,14 @@ spec:
   template:
     metadata:
       labels:
-        app: radiation
+        app: project-name
         layer: application
         component: sidekiq
-      name: radiation-sidekiq
+      name: project-name-sidekiq
       namespace: default
     spec:
       containers:
-        - name: radiation-sidekiq
+        - name: project-name-sidekiq
           env:
             - name: RAILS_LOG_TO_STDOUT
               value: "true"
@@ -200,8 +202,8 @@ spec:
                   fieldPath: spec.nodeName
           envFrom:
             - configMapRef:
-                name: radiation-environment
-          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/radiation:production
+                name: project-name-environment
+          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/project-name:production
           imagePullPolicy: Always
           args: ["bundle", "exec", "sidekiq"]
           livenessProbe:

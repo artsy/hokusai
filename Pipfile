@@ -10,7 +10,6 @@ wheel = "*"
 ipython = "*"
 ipdb = "*"
 jupyter = "*"
-
 # Tornado (required by jupyter) project is using
 #   an incompatible setup.py
 # https://github.com/pypa/pipenv/issues/2498
@@ -18,7 +17,7 @@ singledispatch = "*"
 backports-abc = "*"
 futures = "*"
 nbformat = "==4.4.0"
-
+pylint = "*"
 
 [packages]
 boto3 = "==1.9.162"
