@@ -1,18 +1,15 @@
 from jinja2 import Template
-from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.exceptions import HokusaiError
 
 class TemplateRenderer(object):
-  def __init__(self, template_path, var_path):
+  def __init__(self, template_path, template_vars):
     self.template_path = template_path
-    self.var_path = var_path
+    self.template_vars = template_vars
 
   def load_variables(self):
-    configloader = ConfigLoader(self.var_path)
-    config = configloader.load()
-    if type(config) is not dict or "vars" not in config:
-      raise HokusaiError("YAML is not valid shape")
-    return config["vars"]
+    if type(self.template_vars) is not dict:
+      raise HokusaiError("Provided variables are not key-value pairs")
+    return self.template_vars
 
   def load_template(self):
     try:
@@ -22,7 +19,8 @@ class TemplateRenderer(object):
     except IOError: 
       raise HokusaiError("Template not found.")
 
-  def insert_variables(self):
-    vars = self.load_variables()
+  def render(self):
+    _vars = self.load_variables()
     template = self.load_template()
-    return template.render(**vars)
+    return template.render(**_vars)
+
