@@ -15,9 +15,10 @@ class KubernetesSpec(object):
   def to_string(self):
     template_config = {}
 
-    if config.template_config_file:
-      config_loader = ConfigLoader(config.template_config_file)
-      template_config = config_loader.load()
+    if config.template_config_files:
+      for template_config_file in config.template_config_files:
+        config_loader = ConfigLoader(template_config_file)
+        template_config.update(config_loader.load())
 
     return TemplateRenderer(self.kubernetes_yaml, template_config).render()
 
