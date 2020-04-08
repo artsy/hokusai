@@ -24,6 +24,7 @@ When running `hokusai setup` the following files are created:
 
     - `project-name`: <string> (required) - The project name
     - `hokusai-required-version`: <string> (optional) - A [PEP-440 version specifier string](https://www.python.org/dev/peps/pep-0440/#version-specifiers).  Hokusai will raise an error when running commands if its current version does not satisfy these version specifications.  For example: `~=0.5`, `==0.5.1`, `>=0.4.0,<0.4.6`, `!=0.1.*` are all valid version specifier strings
+    - `template-config-files`: <list> (optional) - Load template config files from the desired URIs, either `s3://` or a local file path.  See [Kubernetes Yaml Template Processing](#kubernetes-yaml-template-processing) for further details.
     - `pre-build`: <string> (optional) - A pre-build hook - useful to inject dynamic environment variables into the build, for example: `export COMMIT_HASH=$(git rev-parse HEAD)`
     - `post-build`: <string> (optional) - A post-build hook - useful for image post-processing
     - `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
@@ -47,6 +48,19 @@ When running `hokusai setup` the following files are created:
 
 These files are meant to be modified on a per-project basis.  You can (and should) use them as a starting point and modify them to suit the needs of your application.  Hokusai remains agnostic about the content of these files, only passes them to `docker-compose` and `kubectl` as part of its workflow.  To see how exactly these files are being used by Hokusai, run commands with the `-v / --verbose` flag.
 
+### Kubernetes Yaml Template Processing
+
+In order to support flexible configuration across multiple projects and keep Kubernetes Yaml specs DRY, Hokusai treats `./hokusai/staging.yml`, `./hokusai/production.yml` as well as other Yaml files overridden as `--filename` or referenced by a review app as [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates which are rendered before passing the files to the Kubernetes API server.
+
+The default [template context dictionary](https://jinja.palletsprojects.com/en/2.11.x/templates/#variables) includes the variables `project_name` and `project_repo` and the context can be extended by providing the location of multiple Yaml files to the `template-config-files` project config parameter.  These files must contain a dictionary as a single document.  The dictionaries are merged into the template context dictionary in the order specified.  Any variables defined in the template and not included in the context dictionary will result in Hokusai raising an error, as will invalid operations on a variable, i.e. attempting to access a missing property of a variable of the wrong type.
+
+For advanced template design see Jinja's [template designer documentation](https://jinja.palletsprojects.com/en/2.11.x/templates/).
+
+#### Tips on template design
+  - If you get errors when sending Kubernetes Yaml to the Kubernetes API server, set the `DEBUG` environment variable to print out the rendered Yaml.
+  - Pay attention to whitespace in resulting Yaml files.  Use the [whitespace control](https://jinja.palletsprojects.com/en/2.11.x/templates/#whitespace-control) features to strip leading and trailing whitespace.
+  - Make use of [template inheritance](https://jinja.palletsprojects.com/en/2.11.x/templates/#template-inheritance) to share config snippets between Yaml templates.  You can extend or include any other template file in the `./hokusai` directory.
+
 ### Environment Injection
 
 In order to inject an application's environment into running containers, Hokusai templates each `Deployment` in `./hokusai/staging.yml` and `./hokusai/production.yml` with the following definition:
@@ -57,7 +71,7 @@ spec:
     containers:
       envFrom:
         - configMapRef:
-          name: {{ project_name }}
+          name: {{ project_name }}-environment
 ```
 
 This instructs Kubernetes to use the `ConfigMap` object named `{project-name}-environment` as a key-value mapping of environment variables to set in the container runtime environment.  `hokusai [staging|production] env` commands are designed to manage this environment.
