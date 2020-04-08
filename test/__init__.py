@@ -15,7 +15,7 @@ config.HOKUSAI_CONFIG_FILE = os.path.join(CWD, 'test/fixtures/project/hokusai/',
 
 boto3.setup_default_session(aws_access_key_id='foo', aws_secret_access_key='bar')
 
-if os.environ.get('DEBUG') is '1':
+if os.environ.get('DEBUG'):
   boto3.set_stream_logger(name='botocore')
 
 class HokusaiTestCase(unittest.TestCase):
