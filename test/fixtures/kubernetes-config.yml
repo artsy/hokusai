@@ -20,4 +20,4 @@ spec:
     spec:
       containers:
         - name: project-name-web
-          image: {{ imageTag }}
+          image: {{ vars.imageTag }}

@@ -13,16 +13,13 @@ class KubernetesSpec(object):
     self.kubernetes_yaml = kubernetes_yaml
 
   def to_string(self):
-    template_vars = {}
+    template_config = {}
 
     if config.template_config_file:
       config_loader = ConfigLoader(config.template_config_file)
-      _config = config_loader.load()
-      if 'vars' not in _config:
-        raise HokusaiError("Config does not contain key 'vars'")
-      template_vars = _config['vars']
+      template_config = config_loader.load()
 
-    return TemplateRenderer(self.kubernetes_yaml, template_vars).render()
+    return TemplateRenderer(self.kubernetes_yaml, template_config).render()
 
   def to_file(self):
     f = NamedTemporaryFile(delete=False)
