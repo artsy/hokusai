@@ -25,4 +25,8 @@ class TestKubernetesSpec(HokusaiUnitTestCase):
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
     kubernetes_spec = KubernetesSpec(self.kubernetes_yml).to_list()
+    self.assertEqual(kubernetes_spec[0]['metadata']['name'], 'hello')
+    self.assertEqual(kubernetes_spec[0]['spec']['template']['spec']['containers'][0]['name'], 'web')
     self.assertEqual(kubernetes_spec[0]['spec']['template']['spec']['containers'][0]['image'], 'eggs')
+    self.assertEqual(kubernetes_spec[0]['spec']['template']['spec']['containers'][1]['name'], 'worker')
+    self.assertEqual(kubernetes_spec[0]['spec']['template']['spec']['containers'][1]['image'], 'eggs')

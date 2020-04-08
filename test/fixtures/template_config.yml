@@ -1,4 +1,6 @@
 ---
 vars:
-  containers: [ {'name': 'project-name-web'} ]
+  containers:
+    - name: web
+    - name: worker
   imageTag: "eggs"
