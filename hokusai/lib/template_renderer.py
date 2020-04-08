@@ -1,5 +1,4 @@
 from jinja2 import Template, StrictUndefined
-from jinja2.exceptions import UndefinedError
 
 from hokusai.lib.exceptions import HokusaiError
 
@@ -20,5 +19,5 @@ class TemplateRenderer(object):
     template = self.load_template()
     try:
       return template.render(**self.template_config)
-    except UndefinedError, e:
+    except Exception, e:
       raise HokusaiError("Rendering template raised error %s" % repr(e))
