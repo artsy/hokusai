@@ -58,7 +58,7 @@ For advanced template design see Jinja's [template designer documentation](https
 
 #### Tips on template design
   - If you get errors when sending Kubernetes Yaml to the Kubernetes API server, set the `DEBUG` environment variable to print out the rendered Yaml.
-  - Pay attention to whitespace in resulting Yaml files.  Use the [whitespace control](https://jinja.palletsprojects.com/en/2.11.x/templates/#whitespace-control) features to strip leading and trailing whitespace.
+  - Pay attention to whitespace and indentation in rendered Yaml files.  Use the [whitespace control](https://jinja.palletsprojects.com/en/2.11.x/templates/#whitespace-control) features to strip leading and trailing whitespace and the [indent filter](https://jinja.palletsprojects.com/en/2.11.x/templates/#indent) to control indentation.
   - Make use of [template inheritance](https://jinja.palletsprojects.com/en/2.11.x/templates/#template-inheritance) to share config snippets between Yaml templates.  You can extend or include any other template file in the `./hokusai` directory.
 
 ### Environment Injection
