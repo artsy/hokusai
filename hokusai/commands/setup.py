@@ -43,19 +43,19 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
 
   custom_template_dir = None
   if allow_missing_vars:
-    loader_kwargs = {}
+    environment_kwargs = {}
   else:
-    loader_kwargs = { "undefined": StrictUndefined }
+    environment_kwargs = { "undefined": StrictUndefined }
 
   if scratch_dir and template_dir:
     custom_template_dir = os.path.join(scratch_dir, os.path.basename(template_dir))
-    env = Environment(loader=FileSystemLoader(os.path.join(scratch_dir, os.path.basename(template_dir))), **loader_kwargs)
+    env = Environment(loader=FileSystemLoader(os.path.join(scratch_dir, os.path.basename(template_dir))), **environment_kwargs)
   elif scratch_dir:
     custom_template_dir = scratch_dir
-    env = Environment(loader=FileSystemLoader(scratch_dir), **loader_kwargs)
+    env = Environment(loader=FileSystemLoader(scratch_dir), **environment_kwargs)
   elif template_dir:
     custom_template_dir = os.path.abspath(template_dir)
-    env = Environment(loader=FileSystemLoader(os.path.abspath(template_dir)), **loader_kwargs)
+    env = Environment(loader=FileSystemLoader(os.path.abspath(template_dir)), **environment_kwargs)
   else:
     try:
       base_path = sys._MEIPASS
