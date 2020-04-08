@@ -1,5 +1,4 @@
 ---
-snippets:
-  containers: [ {'name': 'project-name-web'} ]
 vars:
+  containers: [ {'name': 'project-name-web'} ]
   imageTag: "eggs"
