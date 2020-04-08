@@ -1,3 +1,5 @@
+import os
+
 import yaml
 
 from tempfile import NamedTemporaryFile
@@ -26,7 +28,12 @@ class KubernetesSpec(object):
         config_loader = ConfigLoader(template_config_file)
         template_config.update(config_loader.load())
 
-    return TemplateRenderer(self.kubernetes_yaml, template_config).render()
+    rendered_template = TemplateRenderer(self.kubernetes_yaml, template_config).render()
+
+    if os.environ.get('DEBUG'):
+      print(rendered_template)
+
+    return rendered_template
 
   def to_file(self):
     f = NamedTemporaryFile(delete=False)
