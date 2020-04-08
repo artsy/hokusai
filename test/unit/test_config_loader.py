@@ -9,7 +9,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 class TestConfigLoader(HokusaiUnitTestCase):
   def test_load_config(self):
-    _config_file = os.path.join(CWD, 'test/fixtures/hokusai_vars.yml')
+    _config_file = os.path.join(CWD, 'test/fixtures/template_config.yml')
     config_loader = ConfigLoader(_config_file)
     _vars = config_loader.load()["vars"]
-    self.assertEqual("eggs", _vars["spam"])
+    self.assertEqual("eggs", _vars["imageTag"])
