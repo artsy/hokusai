@@ -19,7 +19,7 @@ spec:
       name: project-name-web
     spec:
       containers:
-        {% for container in vars.containers %}
+        {% for container in vars.containers -%}
         - name: {{ container.name }}
           image: {{ vars.imageTag }}
-        {% endfor %}
+        {%- endfor %}

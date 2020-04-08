@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ project_name }}-web
+  name: {% raw %}{{ project_name }}{% endraw %}-web
   namespace: default
 spec:
   replicas: 1
@@ -14,17 +14,17 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ project_name }}
+        app: {% raw %}{{ project_name }}{% endraw %}
         component: web
         layer: application
-      name: {{ project_name }}-web
+      name: {% raw %}{{ project_name }}{% endraw %}-web
     spec:
       containers:
-      - name: {{ project_name }}-web
+      - name: {% raw %}{{ project_name }}{% endraw %}-web
         envFrom:
         - configMapRef:
-            name: {{ project_name }}-environment
-        image: {{ project_repo }}:staging
+            name: {% raw %}{{ project_name }}{% endraw %}-environment
+        image: {% raw %}{{ project_repo }}{% endraw %}:staging
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -33,10 +33,10 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: {{ project_name }}
+    app: {% raw %}{{ project_name }}{% endraw %}
     component: web
     layer: application
-  name: {{ project_name }}-web
+  name: {% raw %}{{ project_name }}{% endraw %}-web
   namespace: default
 spec:
   ports:
@@ -44,7 +44,7 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: {{ project_name }}
+    app: {% raw %}{{ project_name }}{% endraw %}
     component: web
     layer: application
   type: ClusterIP
