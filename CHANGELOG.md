@@ -1,3 +1,16 @@
+## v0.5.8
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.8/README.md)
+
+### Notable changes since v0.5.7
+
+* 721bf51 Merge pull request #190 from izakp/fea-dynamic-interpolation
+* dece53b add ipython / ipnb and jupyter dev dependencies
+* c0a83b5 install pyinstaller outside pipenv
+* 63846ed Use Pyenv and Pipenv to manage hokusai's py version and dependencies
+* fec9f68 serialize / deserialize ConfigMaps as JSON
+* f5ba644 missing imports in gitcompare / gitlog commands
+
 ## v0.5.7
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.7/README.md)
