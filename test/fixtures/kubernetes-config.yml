@@ -11,12 +11,7 @@ spec:
       maxUnavailable: 0
     type: RollingUpdate
   template:
-    metadata:
-      labels:
-        app: {{ project_name }}
-        component: web
-        layer: application
-      name: {{ project_name }}
+{% include 'deployment-metadata.yml' %}
     spec:
       containers:
         {%- for container in vars.containers %}

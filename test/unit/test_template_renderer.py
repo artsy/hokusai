@@ -24,6 +24,7 @@ class TestTemplateRenderer(HokusaiUnitTestCase):
     template_renderer = TemplateRenderer(self.template_path, template_config)
     k8s_payload = list(yaml.safe_load_all(template_renderer.render()))
     self.assertEqual(k8s_payload[0]['metadata']['name'], 'hello')
+    self.assertEqual(k8s_payload[0]['spec']['template']['metadata']['name'], 'hello')
     self.assertEqual(k8s_payload[0]['spec']['template']['spec']['containers'][0]['name'], 'web')
     self.assertEqual(k8s_payload[0]['spec']['template']['spec']['containers'][0]['image'], 'spam')
     self.assertEqual(k8s_payload[0]['spec']['template']['spec']['containers'][1]['name'], 'worker')

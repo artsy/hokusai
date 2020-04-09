@@ -1,0 +1,6 @@
+    metadata:
+      labels:
+        app: {{ project_name }}
+        component: web
+        layer: application
+      name: {{ project_name }}
