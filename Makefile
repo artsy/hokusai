@@ -12,8 +12,7 @@ MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
 	pip install pipenv --quiet --ignore-installed
-	pipenv install --deploy
-	pip install --quiet pyinstaller==3.3.1
+	pipenv install --dev
 
 test:
 	pipenv run unit-tests
@@ -29,7 +28,7 @@ test-docker:
 
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
-	pyinstaller \
+	pipenv run pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
 	  hokusai.spec
