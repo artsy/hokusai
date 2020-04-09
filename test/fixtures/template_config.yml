@@ -1,0 +1,6 @@
+---
+vars:
+  containers:
+    - name: web
+    - name: worker
+  imageTag: "eggs"

@@ -128,6 +128,10 @@ class HokusaiConfig(object):
     return self.get('post-build')
 
   @property
+  def template_config_files(self):
+    return self.get('template-config-files', _type=list)
+
+  @property
   def run_tty(self):
     return self.get('run-tty', default=False, use_env=True, _type=bool)
 

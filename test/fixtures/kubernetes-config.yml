@@ -1,0 +1,20 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ project_name }}
+  namespace: default
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+{% include 'deployment-metadata.yml' %}
+    spec:
+      containers:
+        {%- for container in vars.containers %}
+        - name: {{ container.name }}
+          image: {{ vars.imageTag }}
+        {%- endfor %}
