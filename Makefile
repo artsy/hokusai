@@ -82,8 +82,8 @@ publish-version:
 	fi
 
 publish-pip:
-	python setup.py sdist bdist_wheel
-	twine upload dist/*
+	pipenv run python setup.py sdist bdist_wheel
+	pipenv run twine upload dist/*
 
 publish-dockerhub:
 	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
