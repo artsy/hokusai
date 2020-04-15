@@ -75,7 +75,7 @@ brew install pipenv
 Install dev dependencies via `pipenv`
 
 ```
-`pipenv install --dev`.
+pipenv install --dev
 ```
 
 Other installation methods can be found in the project's repo
