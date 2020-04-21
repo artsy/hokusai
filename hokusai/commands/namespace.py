@@ -8,14 +8,19 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.common import print_green, clean_string
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR
+from hokusai.services.kubernetes_spec import KubernetesSpec
 
 @command()
 def create_new_app_yaml(source_file, app_name):
-  with open(source_file, 'r') as stream:
-    try:
-      yaml_content = list(yaml.load_all(stream))
-    except yaml.YAMLError as exc:
-      raise HokusaiError("Cannot read source yaml file %s." % source_file)
+  kubernetes_spec = KubernetesSpec(source_file).to_file()
+  try:
+    with open(kubernetes_spec, 'r') as stream:
+      try:
+        yaml_content = list(yaml.load_all(stream))
+      except yaml.YAMLError as exc:
+        raise HokusaiError("Cannot read source yaml file %s." % source_file)
+  finally:
+    os.unlink(kubernetes_spec)
 
   for c in yaml_content: update_namespace(c, clean_string(app_name))
 
