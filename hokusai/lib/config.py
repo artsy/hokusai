@@ -17,7 +17,6 @@ HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_DIR = 'hokusai'
 HOKUSAI_CONFIG_FILE = os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'config.yml')
 BUILD_YAML_FILE = 'build.yml'
-LEGACY_BUILD_YAML_FILE = 'common.yml'
 TEST_YML_FILE = 'test.yml'
 DEVELOPMENT_YML_FILE = 'development.yml'
 
