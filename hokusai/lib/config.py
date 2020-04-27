@@ -16,9 +16,9 @@ from hokusai.version import VERSION
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_DIR = 'hokusai'
 HOKUSAI_CONFIG_FILE = os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'config.yml')
-BUILD_YAML_FILE = 'build.yml'
-TEST_YML_FILE = 'test.yml'
-DEVELOPMENT_YML_FILE = 'development.yml'
+BUILD_YAML_FILE = 'build'
+TEST_YML_FILE = 'test'
+DEVELOPMENT_YML_FILE = 'development'
 
 class HokusaiConfig(object):
   def create(self, project_name):

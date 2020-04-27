@@ -7,16 +7,17 @@ from hokusai.lib.config import HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE, config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
+from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.kubernetes_spec import KubernetesSpec
 
 @command()
 def dev_start(build, detach, filename):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   def cleanup(*args):
     shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
@@ -40,36 +41,33 @@ def dev_start(build, detach, filename):
 @command()
 def dev_stop(filename):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
 @command()
 def dev_status(filename):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   shout("docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
 
 @command()
 def dev_logs(follow, tail, filename):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   opts = ''
   if follow:
@@ -82,12 +80,11 @@ def dev_logs(follow, tail, filename):
 @command()
 def dev_run(command, service_name, stop, filename):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   if service_name is None:
     service_name = config.project_name
@@ -100,12 +97,11 @@ def dev_run(command, service_name, stop, filename):
 @command()
 def dev_clean(filename):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
   shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml, print_output=True)

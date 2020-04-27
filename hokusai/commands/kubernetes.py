@@ -4,6 +4,7 @@ from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.lib.common import print_green, shout, returncode
+from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.configmap import ConfigMap
@@ -13,12 +14,9 @@ from hokusai.lib.exceptions import HokusaiError
 @command()
 def k8s_create(context, tag='latest', namespace=None, filename=None, environment=()):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   ecr = ECR()
   if not ecr.project_repo_exists():
@@ -52,12 +50,9 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
 def k8s_update(context, namespace=None, filename=None, check_branch="master",
                 check_remote=None, skip_checks=False, dry_run=False):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   if not skip_checks:
     current_branch = None
@@ -91,12 +86,9 @@ def k8s_update(context, namespace=None, filename=None, check_branch="master",
 @command()
 def k8s_delete(context, namespace=None, filename=None):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   if filename is None:
     configmap = ConfigMap(context, namespace=namespace)
@@ -113,12 +105,9 @@ def k8s_delete(context, namespace=None, filename=None):
 @command()
 def k8s_status(context, resources, pods, describe, top, namespace=None, filename=None):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   kctl = Kubectl(context, namespace=namespace)
   kubernetes_spec = KubernetesSpec(yaml_template).to_file()

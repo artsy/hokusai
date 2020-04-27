@@ -7,16 +7,17 @@ from hokusai.lib.config import HOKUSAI_CONFIG_DIR, TEST_YML_FILE, config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
+from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.kubernetes_spec import KubernetesSpec
 
 @command()
 def test(build, cleanup, filename, service_name):
   if filename is None:
-    docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, TEST_YML_FILE)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, TEST_YML_FILE))
   else:
-    docker_compose_yml = filename
+    yaml_template = TemplateSelector().get(filename)
 
-  if not os.path.isfile(docker_compose_yml):
-    raise HokusaiError("Yaml file %s does not exist." % docker_compose_yml)
+  docker_compose_yml = KubernetesSpec(yaml_template).to_file()
 
   def on_cleanup(*args):
     shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml)
