@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 import yaml
 
 from hokusai import CWD
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR, ClientError
 from hokusai.lib.common import print_green, print_red, print_yellow, shout, shout_concurrent
@@ -92,7 +92,7 @@ class Deployment(object):
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
         payload.append(item)
 
-      f = NamedTemporaryFile(delete=False)
+      f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR)
       f.write(YAML_HEADER)
       f.write(yaml.safe_dump_all(payload, default_flow_style=False))
       f.close()

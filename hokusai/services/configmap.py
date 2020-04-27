@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 
 import json
 
-from hokusai.lib.config import config
+from hokusai.lib.config import config, HOKUSAI_TMP_DIR
 from hokusai.lib.common import print_green, shout
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
@@ -29,7 +29,7 @@ class ConfigMap(object):
     }
 
   def _to_file(self):
-    f = NamedTemporaryFile(delete=False)
+    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR)
     f.write(json.dumps(self.struct))
     f.close()
     return f
