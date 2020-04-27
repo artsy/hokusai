@@ -1,4 +1,5 @@
 import os
+import atexit
 
 import yaml
 
@@ -16,6 +17,8 @@ class KubernetesSpec(object):
   def __init__(self, kubernetes_yaml):
     self.kubernetes_yaml = kubernetes_yaml
     self.ecr = ECR()
+    self.tmp_filename = None
+    atexit.register(self.cleanup)
 
   def to_string(self):
     template_config = {
@@ -39,7 +42,12 @@ class KubernetesSpec(object):
     f = NamedTemporaryFile(delete=False)
     f.write(self.to_string())
     f.close()
+    self.tmp_filename = f.name
     return f.name
 
   def to_list(self):
     return list(yaml.safe_load_all(self.to_string()))
+
+  def cleanup(self):
+    if self.tmp_filename is not None:
+      os.unlink(self.tmp_filename)

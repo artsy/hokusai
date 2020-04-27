@@ -42,12 +42,10 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
     print_green("Created configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    shout(kctl.command("create --save-config -f %s" % kubernetes_spec), print_output=True)
-    print_green("Created Kubernetes environment %s" % kubernetes_yml)
-  finally:
-    os.unlink(kubernetes_spec)
+  kubernetes_spec = KubernetesSpec(yaml_template).to_file()
+
+  shout(kctl.command("create --save-config -f %s" % kubernetes_spec), print_output=True)
+  print_green("Created Kubernetes environment %s" % yaml_template)
 
 
 @command()
@@ -80,16 +78,14 @@ def k8s_update(context, namespace=None, filename=None, check_branch="master",
         raise HokusaiError("Local branch %s is divergent from %s/%s.  Aborting." % (current_branch, remote, current_branch))
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    if dry_run:
-      shout(kctl.command("apply -f %s --dry-run" % kubernetes_spec), print_output=True)
-      print_green("Updated Kubernetes environment %s (dry run)" % kubernetes_yml)
-    else:
-      shout(kctl.command("apply -f %s" % kubernetes_spec), print_output=True)
-      print_green("Updated Kubernetes environment %s" % kubernetes_yml)
-  finally:
-    os.unlink(kubernetes_spec)
+  kubernetes_spec = KubernetesSpec(yaml_template).to_file()
+
+  if dry_run:
+    shout(kctl.command("apply -f %s --dry-run" % kubernetes_spec), print_output=True)
+    print_green("Updated Kubernetes environment %s (dry run)" % yaml_template)
+  else:
+    shout(kctl.command("apply -f %s" % kubernetes_spec), print_output=True)
+    print_green("Updated Kubernetes environment %s" % yaml_template)
 
 
 @command()
@@ -108,12 +104,11 @@ def k8s_delete(context, namespace=None, filename=None):
     print_green("Deleted configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    shout(kctl.command("delete -f %s" % kubernetes_spec), print_output=True)
-    print_green("Deleted Kubernetes environment %s" % kubernetes_yml)
-  finally:
-    os.unlink(kubernetes_spec)
+  kubernetes_spec = KubernetesSpec(yaml_template).to_file()
+
+  shout(kctl.command("delete -f %s" % kubernetes_spec), print_output=True)
+  print_green("Deleted Kubernetes environment %s" % yaml_template)
+
 
 @command()
 def k8s_status(context, resources, pods, describe, top, namespace=None, filename=None):
@@ -126,28 +121,27 @@ def k8s_status(context, resources, pods, describe, top, namespace=None, filename
     raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    if describe:
-      kctl_cmd = "describe"
-      output = ""
-    else:
-      kctl_cmd = "get"
-      output = " -o wide"
-    if resources:
-      print_green("Resources", newline_before=True)
-      print_green("===========")
-      shout(kctl.command("%s -f %s%s" % (kctl_cmd, kubernetes_spec, output)), print_output=True)
-    if pods:
-      print_green("Pods", newline_before=True)
-      print_green("===========")
-      shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
-    if top:
-      print_green("Top Pods", newline_before=True)
-      print_green("===========")
-      shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
-  finally:
-    os.unlink(kubernetes_spec)
+  kubernetes_spec = KubernetesSpec(yaml_template).to_file()
+
+  if describe:
+    kctl_cmd = "describe"
+    output = ""
+  else:
+    kctl_cmd = "get"
+    output = " -o wide"
+  if resources:
+    print_green("Resources", newline_before=True)
+    print_green("===========")
+    shout(kctl.command("%s -f %s%s" % (kctl_cmd, kubernetes_spec, output)), print_output=True)
+  if pods:
+    print_green("Pods", newline_before=True)
+    print_green("===========")
+    shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
+  if top:
+    print_green("Top Pods", newline_before=True)
+    print_green("===========")
+    shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
+
 
 
 @command()
