@@ -13,7 +13,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 from hokusai.services.ecr import ECR
 
-class KubernetesSpec(object):
+class YamlSpec(object):
   def __init__(self, kubernetes_yaml):
     self.kubernetes_yaml = kubernetes_yaml
     self.ecr = ECR()

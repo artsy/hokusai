@@ -8,12 +8,12 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.common import print_green, clean_string
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR
-from hokusai.services.kubernetes_spec import KubernetesSpec
+from hokusai.services.yaml_spec import YamlSpec
 
 @command()
 def create_new_app_yaml(source_file, app_name):
-  kubernetes_spec = KubernetesSpec(source_file).to_file()
-  with open(kubernetes_spec, 'r') as stream:
+  yaml_spec = YamlSpec(source_file).to_file()
+  with open(yaml_spec, 'r') as stream:
     try:
       yaml_content = list(yaml.load_all(stream))
     except yaml.YAMLError as exc:

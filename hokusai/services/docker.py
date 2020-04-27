@@ -4,7 +4,7 @@ from hokusai import CWD
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, config
 from hokusai.lib.common import shout
 from hokusai.lib.template_selector import TemplateSelector
-from hokusai.services.kubernetes_spec import KubernetesSpec
+from hokusai.services.yaml_spec import YamlSpec
 
 class Docker(object):
   def build(self, filename):
@@ -13,7 +13,7 @@ class Docker(object):
     else:
       yaml_template = TemplateSelector().get(filename)
 
-    docker_compose_yml = KubernetesSpec(yaml_template).to_file()
+    docker_compose_yml = YamlSpec(yaml_template).to_file()
     build_command = "docker-compose -f %s -p hokusai build" % docker_compose_yml
 
     if config.pre_build:

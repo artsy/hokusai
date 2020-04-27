@@ -11,7 +11,7 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.services.ecr import ECR, ClientError
 from hokusai.lib.common import print_green, print_red, print_yellow, shout, shout_concurrent
 from hokusai.services.command_runner import CommandRunner
-from hokusai.services.kubernetes_spec import KubernetesSpec
+from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.constants import YAML_HEADER
 
@@ -69,13 +69,13 @@ class Deployment(object):
     else:
       kubernetes_yml = filename
 
-    kubernetes_spec = KubernetesSpec(kubernetes_yml).to_list()
+    yaml_spec = YamlSpec(kubernetes_yml).to_list()
 
     # If a review app, a canary app or the canonical app while updating config,
     # bust the deployment cache and populate deployments from the yaml file
     if filename or update_config:
       self.cache = []
-      for item in kubernetes_spec:
+      for item in yaml_spec:
         if item['kind'] == 'Deployment':
           self.cache.append(item)
 
@@ -83,7 +83,7 @@ class Deployment(object):
     if update_config:
       print_green("Patching Deployments in spec %s with image digest %s" % (kubernetes_yml, digest), newline_after=True)
       payload = []
-      for item in kubernetes_spec:
+      for item in yaml_spec:
         if item['kind'] == 'Deployment':
           item['spec']['template']['metadata']['labels']['deploymentTimestamp'] = deployment_timestamp
           item['spec']['progressDeadlineSeconds'] = timeout
