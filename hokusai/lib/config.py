@@ -15,6 +15,7 @@ from hokusai.version import VERSION
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_DIR = 'hokusai'
+HOKUSAI_TMP_DIR = os.path.join(CWD, '.hokusai-tmp')
 HOKUSAI_CONFIG_FILE = os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'config.yml')
 BUILD_YAML_FILE = 'build'
 TEST_YML_FILE = 'test'

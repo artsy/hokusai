@@ -3,9 +3,7 @@ import atexit
 
 import yaml
 
-from tempfile import NamedTemporaryFile
-
-from hokusai.lib.config import config
+from hokusai.lib.config import config, HOKUSAI_TMP_DIR
 from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.template_renderer import TemplateRenderer
 
@@ -39,7 +37,7 @@ class YamlSpec(object):
     return rendered_template
 
   def to_file(self):
-    f = NamedTemporaryFile(delete=False)
+    f = open(os.path.join(HOKUSAI_TMP_DIR, os.path.basename(self.kubernetes_yaml)), 'w+b')
     f.write(self.to_string())
     f.close()
     self.tmp_filename = f.name
@@ -49,5 +47,7 @@ class YamlSpec(object):
     return list(yaml.safe_load_all(self.to_string()))
 
   def cleanup(self):
-    if self.tmp_filename is not None:
+    try:
       os.unlink(self.tmp_filename)
+    except:
+      pass
