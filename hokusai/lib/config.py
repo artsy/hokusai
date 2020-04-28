@@ -15,13 +15,17 @@ from hokusai.version import VERSION
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_DIR = 'hokusai'
+HOKUSAI_TMP_DIR = os.path.join(CWD, '.hokusai-tmp')
 HOKUSAI_CONFIG_FILE = os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'config.yml')
-BUILD_YAML_FILE = 'build.yml'
-LEGACY_BUILD_YAML_FILE = 'common.yml'
-TEST_YML_FILE = 'test.yml'
-DEVELOPMENT_YML_FILE = 'development.yml'
+BUILD_YAML_FILE = 'build'
+TEST_YML_FILE = 'test'
+DEVELOPMENT_YML_FILE = 'development'
 
 class HokusaiConfig(object):
+  def __init__(self):
+    if not os.path.isdir(HOKUSAI_TMP_DIR):
+      os.mkdir(HOKUSAI_TMP_DIR)
+
   def create(self, project_name):
     config = OrderedDict([
       ('project-name', project_name)

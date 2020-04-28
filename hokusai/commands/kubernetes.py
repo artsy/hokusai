@@ -4,21 +4,19 @@ from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.lib.common import print_green, shout, returncode
+from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.configmap import ConfigMap
-from hokusai.services.kubernetes_spec import KubernetesSpec
+from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import HokusaiError
 
 @command()
 def k8s_create(context, tag='latest', namespace=None, filename=None, environment=()):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   ecr = ECR()
   if not ecr.project_repo_exists():
@@ -42,24 +40,19 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
     print_green("Created configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    shout(kctl.command("create --save-config -f %s" % kubernetes_spec), print_output=True)
-    print_green("Created Kubernetes environment %s" % kubernetes_yml)
-  finally:
-    os.unlink(kubernetes_spec)
+  yaml_spec = YamlSpec(yaml_template).to_file()
+
+  shout(kctl.command("create --save-config -f %s" % yaml_spec), print_output=True)
+  print_green("Created Kubernetes environment %s" % yaml_template)
 
 
 @command()
 def k8s_update(context, namespace=None, filename=None, check_branch="master",
                 check_remote=None, skip_checks=False, dry_run=False):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   if not skip_checks:
     current_branch = None
@@ -80,27 +73,22 @@ def k8s_update(context, namespace=None, filename=None, check_branch="master",
         raise HokusaiError("Local branch %s is divergent from %s/%s.  Aborting." % (current_branch, remote, current_branch))
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    if dry_run:
-      shout(kctl.command("apply -f %s --dry-run" % kubernetes_spec), print_output=True)
-      print_green("Updated Kubernetes environment %s (dry run)" % kubernetes_yml)
-    else:
-      shout(kctl.command("apply -f %s" % kubernetes_spec), print_output=True)
-      print_green("Updated Kubernetes environment %s" % kubernetes_yml)
-  finally:
-    os.unlink(kubernetes_spec)
+  yaml_spec = YamlSpec(yaml_template).to_file()
+
+  if dry_run:
+    shout(kctl.command("apply -f %s --dry-run" % yaml_spec), print_output=True)
+    print_green("Updated Kubernetes environment %s (dry run)" % yaml_template)
+  else:
+    shout(kctl.command("apply -f %s" % yaml_spec), print_output=True)
+    print_green("Updated Kubernetes environment %s" % yaml_template)
 
 
 @command()
 def k8s_delete(context, namespace=None, filename=None):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   if filename is None:
     configmap = ConfigMap(context, namespace=namespace)
@@ -108,46 +96,41 @@ def k8s_delete(context, namespace=None, filename=None):
     print_green("Deleted configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    shout(kctl.command("delete -f %s" % kubernetes_spec), print_output=True)
-    print_green("Deleted Kubernetes environment %s" % kubernetes_yml)
-  finally:
-    os.unlink(kubernetes_spec)
+  yaml_spec = YamlSpec(yaml_template).to_file()
+
+  shout(kctl.command("delete -f %s" % yaml_spec), print_output=True)
+  print_green("Deleted Kubernetes environment %s" % yaml_template)
+
 
 @command()
 def k8s_status(context, resources, pods, describe, top, namespace=None, filename=None):
   if filename is None:
-    kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % context)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
-    kubernetes_yml = filename
-
-  if not os.path.isfile(kubernetes_yml):
-    raise HokusaiError("Yaml file %s does not exist." % kubernetes_yml)
+    yaml_template = TemplateSelector().get(filename)
 
   kctl = Kubectl(context, namespace=namespace)
-  kubernetes_spec = KubernetesSpec(kubernetes_yml).to_file()
-  try:
-    if describe:
-      kctl_cmd = "describe"
-      output = ""
-    else:
-      kctl_cmd = "get"
-      output = " -o wide"
-    if resources:
-      print_green("Resources", newline_before=True)
-      print_green("===========")
-      shout(kctl.command("%s -f %s%s" % (kctl_cmd, kubernetes_spec, output)), print_output=True)
-    if pods:
-      print_green("Pods", newline_before=True)
-      print_green("===========")
-      shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
-    if top:
-      print_green("Top Pods", newline_before=True)
-      print_green("===========")
-      shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
-  finally:
-    os.unlink(kubernetes_spec)
+  yaml_spec = YamlSpec(yaml_template).to_file()
+
+  if describe:
+    kctl_cmd = "describe"
+    output = ""
+  else:
+    kctl_cmd = "get"
+    output = " -o wide"
+  if resources:
+    print_green("Resources", newline_before=True)
+    print_green("===========")
+    shout(kctl.command("%s -f %s%s" % (kctl_cmd, yaml_spec, output)), print_output=True)
+  if pods:
+    print_green("Pods", newline_before=True)
+    print_green("===========")
+    shout(kctl.command("%s pods --selector app=%s,layer=application%s" % (kctl_cmd, config.project_name, output)), print_output=True)
+  if top:
+    print_green("Top Pods", newline_before=True)
+    print_green("===========")
+    shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
+
 
 
 @command()

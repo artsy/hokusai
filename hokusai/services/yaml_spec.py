@@ -1,10 +1,9 @@
 import os
+import atexit
 
 import yaml
 
-from tempfile import NamedTemporaryFile
-
-from hokusai.lib.config import config
+from hokusai.lib.config import config, HOKUSAI_TMP_DIR
 from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.template_renderer import TemplateRenderer
 
@@ -12,10 +11,12 @@ from hokusai.lib.exceptions import HokusaiError
 
 from hokusai.services.ecr import ECR
 
-class KubernetesSpec(object):
+class YamlSpec(object):
   def __init__(self, kubernetes_yaml):
     self.kubernetes_yaml = kubernetes_yaml
     self.ecr = ECR()
+    self.tmp_filename = None
+    atexit.register(self.cleanup)
 
   def to_string(self):
     template_config = {
@@ -36,10 +37,17 @@ class KubernetesSpec(object):
     return rendered_template
 
   def to_file(self):
-    f = NamedTemporaryFile(delete=False)
+    f = open(os.path.join(HOKUSAI_TMP_DIR, os.path.basename(self.kubernetes_yaml)), 'w+b')
     f.write(self.to_string())
     f.close()
+    self.tmp_filename = f.name
     return f.name
 
   def to_list(self):
     return list(yaml.safe_load_all(self.to_string()))
+
+  def cleanup(self):
+    try:
+      os.unlink(self.tmp_filename)
+    except:
+      pass

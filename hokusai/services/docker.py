@@ -1,25 +1,20 @@
 import os
 
 from hokusai import CWD
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, LEGACY_BUILD_YAML_FILE, config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, config
 from hokusai.lib.common import shout
-from hokusai.lib.exceptions import HokusaiError
+from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.yaml_spec import YamlSpec
 
 class Docker(object):
   def build(self, filename):
     if filename is None:
-      docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE)
-      legacy_docker_compose_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, LEGACY_BUILD_YAML_FILE)
-
-      if not os.path.isfile(docker_compose_yml) and not os.path.isfile(legacy_docker_compose_yml):
-        raise HokusaiError("Yaml files %s / %s do not exist." % (docker_compose_yml, legacy_docker_compose_yml))
-
-      if os.path.isfile(docker_compose_yml):
-        build_command = "docker-compose -f %s -p hokusai build" % docker_compose_yml
-      if os.path.isfile(legacy_docker_compose_yml):
-        build_command = "docker-compose -f %s -p hokusai build" % legacy_docker_compose_yml
+      yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE))
     else:
-      build_command = "docker-compose -f %s -p hokusai build" % filename
+      yaml_template = TemplateSelector().get(filename)
+
+    docker_compose_yml = YamlSpec(yaml_template).to_file()
+    build_command = "docker-compose -f %s -p hokusai build" % docker_compose_yml
 
     if config.pre_build:
       build_command = "%s && %s" % (config.pre_build, build_command)
