@@ -29,12 +29,7 @@ class YamlSpec(object):
         config_loader = ConfigLoader(template_config_file)
         template_config.update(config_loader.load())
 
-    rendered_template = TemplateRenderer(self.kubernetes_yaml, template_config).render()
-
-    if os.environ.get('DEBUG'):
-      print(rendered_template)
-
-    return rendered_template
+    return TemplateRenderer(self.kubernetes_yaml, template_config).render()
 
   def to_file(self):
     f = open(os.path.join(HOKUSAI_TMP_DIR, os.path.basename(self.kubernetes_yaml)), 'w+b')
@@ -47,6 +42,8 @@ class YamlSpec(object):
     return list(yaml.safe_load_all(self.to_string()))
 
   def cleanup(self):
+    if os.environ.get('DEBUG'):
+      return
     try:
       os.unlink(self.tmp_filename)
     except:
