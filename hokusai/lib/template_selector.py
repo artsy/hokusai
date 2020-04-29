@@ -19,3 +19,5 @@ class TemplateSelector(object):
       return path + '.yml.j2'
     if os.path.isfile(path + '.yaml.j2'):
       return path + '.yaml.j2'
+
+    raise HokusaiError("No Yaml or Jinja templates found for %s" % os.path.basename(path))

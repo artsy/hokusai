@@ -44,3 +44,7 @@ class TestTemplateSelector(HokusaiUnitTestCase):
     open(test_file, 'a').close()
     self.assertEqual(TemplateSelector().get(os.path.join(self.template_path, 'test.yml')), test_file)
     os.remove(test_file)
+
+  def test_errors_with_no_template_found(self):
+    with self.assertRaises(HokusaiError):
+      TemplateSelector().get(os.path.join(self.template_path, 'test'))
