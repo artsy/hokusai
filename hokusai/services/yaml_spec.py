@@ -32,7 +32,10 @@ class YamlSpec(object):
     return TemplateRenderer(self.kubernetes_yaml, template_config).render()
 
   def to_file(self):
-    f = open(os.path.join(HOKUSAI_TMP_DIR, os.path.basename(self.kubernetes_yaml)), 'w+b')
+    file_basename = os.path.basename(self.kubernetes_yaml)
+    if file_basename.endswith('.j2'):
+      file_basename.rstrip('.j2')
+    f = open(os.path.join(HOKUSAI_TMP_DIR, file_basename), 'w+b')
     f.write(self.to_string())
     f.close()
     self.tmp_filename = f.name
