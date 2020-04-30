@@ -7,7 +7,7 @@ from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.yaml_spec import YamlSpec
 
 class Docker(object):
-  def build(self, filename):
+  def build(self, filename=None):
     if filename is None:
       yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE))
     else:

@@ -5,4 +5,4 @@ from hokusai.services.docker import Docker
 
 @command()
 def build(filename):
-  Docker().build(filename)
+  Docker().build(filename=filename)

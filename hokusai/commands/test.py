@@ -29,7 +29,7 @@ def test(build, cleanup, filename, service_name):
 
   opts = ' --abort-on-container-exit'
   if build:
-    Docker().build(filename)
+    Docker().build()
 
   if service_name is None:
     service_name = config.project_name

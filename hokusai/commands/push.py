@@ -27,7 +27,7 @@ def push(tag, local_tag, build, filename, force, overwrite, skip_latest=False):
     raise HokusaiError("Tag %s already exists in registry.  Aborting." % tag)
 
   if build:
-    Docker().build(filename)
+    Docker().build()
 
   build_tag = "hokusai_%s:%s" % (config.project_name, local_tag)
 

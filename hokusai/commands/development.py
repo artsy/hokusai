@@ -26,7 +26,7 @@ def dev_start(build, detach, filename):
 
   opts = ''
   if build:
-    Docker().build(filename)
+    Docker().build()
   if detach:
     opts += ' -d'
 
