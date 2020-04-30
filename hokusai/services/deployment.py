@@ -14,6 +14,7 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.constants import YAML_HEADER
+from hokusai.lib.template_selector import TemplateSelector
 
 class Deployment(object):
   def __init__(self, context, deployment_name=None, namespace=None):
@@ -65,11 +66,11 @@ class Deployment(object):
     deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
 
     if filename is None:
-      kubernetes_yml = os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % self.context)
+      yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
     else:
-      kubernetes_yml = filename
+      yaml_template = TemplateSelector().get(filename)
 
-    yaml_spec = YamlSpec(kubernetes_yml).to_list()
+    yaml_spec = YamlSpec(yaml_template).to_list()
 
     # If a review app, a canary app or the canonical app while updating config,
     # bust the deployment cache and populate deployments from the yaml file
@@ -81,7 +82,7 @@ class Deployment(object):
 
     # If updating config, patch the spec and apply
     if update_config:
-      print_green("Patching Deployments in spec %s with image digest %s" % (kubernetes_yml, digest), newline_after=True)
+      print_green("Patching Deployments in spec %s with image digest %s" % (yaml_template, digest), newline_after=True)
       payload = []
       for item in yaml_spec:
         if item['kind'] == 'Deployment':
