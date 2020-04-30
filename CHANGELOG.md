@@ -1,3 +1,22 @@
+## v0.5.9
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.9/README.md)
+
+### Notable changes since v0.5.8
+
+* 2d2ab3f strip .j2 file extensions when rendering templates
+* 59d4eb1 raise HokusaiError if no Yaml file or template found
+* 9562696 leave templates in temp dir if DEBUG rather than printing to stderr
+* b17976d NamedTemporaryFiles use the local hokusai temp directory as well
+* b243069 create a .hokusai-tmp directory for rendered Yaml templates
+* 4071e35 rename KubernetesSpec to YamlSpec
+* f747e2e use TemplateSelector to find Yaml files and j2 templates for all docker-compose and kubernetes files
+* 63eb8b9 Remove legacy docker compose Yaml file hokusai/common.yml
+* 104cffe Add TemplateSelector
+* f8eae5d render KubernetesSpec as template on review app setup
+* 3bd7c85 Update publish-pip make target to run within pipenv
+* e4c5af3 (upstream/pvinis-patch-1) Fix markdown
+
 ## v0.5.8
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.8/README.md)
