@@ -34,7 +34,7 @@ class YamlSpec(object):
   def to_file(self):
     file_basename = os.path.basename(self.kubernetes_yaml)
     if file_basename.endswith('.j2'):
-      file_basename.rstrip('.j2')
+      file_basename = file_basename.rstrip('.j2')
     f = open(os.path.join(HOKUSAI_TMP_DIR, file_basename), 'w+b')
     f.write(self.to_string())
     f.close()
