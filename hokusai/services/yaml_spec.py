@@ -3,10 +3,12 @@ import atexit
 
 import yaml
 
+from botocore.exceptions import NoCredentialsError
+
 from hokusai.lib.config import config, HOKUSAI_TMP_DIR
 from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.template_renderer import TemplateRenderer
-
+from hokusai.lib.common import print_yellow
 from hokusai.lib.exceptions import HokusaiError
 
 from hokusai.services.ecr import ECR
@@ -20,14 +22,21 @@ class YamlSpec(object):
 
   def to_string(self):
     template_config = {
-      "project_name": config.project_name,
-      "project_repo": self.ecr.project_repo
+      "project_name": config.project_name
     }
+
+    try:
+      template_config["project_repo"] = self.ecr.project_repo
+    except NoCredentialsError:
+      print_yellow("WARNING: Could not get template variable project_repo")
 
     if config.template_config_files:
       for template_config_file in config.template_config_files:
-        config_loader = ConfigLoader(template_config_file)
-        template_config.update(config_loader.load())
+        try:
+          config_loader = ConfigLoader(template_config_file)
+          template_config.update(config_loader.load())
+        except NoCredentialsError:
+          print_yellow("WARNING: Could not get template config file %s" % template_config_file)
 
     return TemplateRenderer(self.kubernetes_yaml, template_config).render()
 
