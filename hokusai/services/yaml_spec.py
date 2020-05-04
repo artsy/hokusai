@@ -14,8 +14,8 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.ecr import ECR
 
 class YamlSpec(object):
-  def __init__(self, kubernetes_yaml):
-    self.kubernetes_yaml = kubernetes_yaml
+  def __init__(self, template_file):
+    self.template_file = template_file
     self.ecr = ECR()
     self.tmp_filename = None
     atexit.register(self.cleanup)
@@ -38,16 +38,16 @@ class YamlSpec(object):
         except NoCredentialsError:
           print_yellow("WARNING: Could not get template config file %s" % template_config_file)
 
-    return TemplateRenderer(self.kubernetes_yaml, template_config).render()
+    return TemplateRenderer(self.template_file, template_config).render()
 
   def to_file(self):
-    file_basename = os.path.basename(self.kubernetes_yaml)
+    file_basename = os.path.basename(self.template_file)
     if file_basename.endswith('.j2'):
       file_basename = file_basename.rstrip('.j2')
     f = open(os.path.join(HOKUSAI_TMP_DIR, file_basename), 'w+b')
+    self.tmp_filename = f.name
     f.write(self.to_string())
     f.close()
-    self.tmp_filename = f.name
     return f.name
 
   def to_list(self):
