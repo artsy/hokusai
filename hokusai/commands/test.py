@@ -8,6 +8,7 @@ from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.lib.docker_compose_helpers import follow_extends
 from hokusai.services.yaml_spec import YamlSpec
 
 @command()
@@ -18,6 +19,7 @@ def test(build, cleanup, filename, service_name):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   def on_cleanup(*args):
     shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml)

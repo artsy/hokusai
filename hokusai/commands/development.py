@@ -8,6 +8,7 @@ from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.lib.docker_compose_helpers import follow_extends
 from hokusai.services.yaml_spec import YamlSpec
 
 @command()
@@ -18,6 +19,7 @@ def dev_start(build, detach, filename):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   def cleanup(*args):
     shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
@@ -46,6 +48,7 @@ def dev_stop(filename):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
@@ -57,6 +60,7 @@ def dev_status(filename):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   shout("docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
 
@@ -68,6 +72,7 @@ def dev_logs(follow, tail, filename):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   opts = ''
   if follow:
@@ -85,6 +90,7 @@ def dev_run(command, service_name, stop, filename):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   if service_name is None:
     service_name = config.project_name
@@ -102,6 +108,7 @@ def dev_clean(filename):
     yaml_template = TemplateSelector().get(filename)
 
   docker_compose_yml = YamlSpec(yaml_template).to_file()
+  follow_extends(docker_compose_yml)
 
   shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
   shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml, print_output=True)
