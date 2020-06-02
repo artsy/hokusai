@@ -28,7 +28,7 @@ class TestDockerComposeHelpers(HokusaiUnitTestCase):
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
                             body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
                             content_type="application/x-amz-json-1.1")
-    docker_compose_yml = os.path.join(CWD, 'test/fixtures/project/hokusai/docker-compose-extends.yml')
+    docker_compose_yml = os.path.join(CWD, 'test/fixtures/project/hokusai/docker-compose-extends.yml.j2')
     rendered_templates = docker_compose_helpers.follow_extends(docker_compose_yml)
     self.assertEqual(len(rendered_templates), 1)
 

@@ -16,6 +16,9 @@ def follow_extends(docker_compose_yml):
       if 'extends' not in service_spec or 'file' not in service_spec['extends']:
         continue
       extended_filename = service_spec['extends']['file']
-      extended_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, extended_filename))
+      extended_template_path = os.path.join(CWD, HOKUSAI_CONFIG_DIR, extended_filename)
+      if not os.path.isfile(extended_template_path):
+        extended_template_path = os.path.join(CWD, HOKUSAI_CONFIG_DIR, extended_filename + '.j2')
+      extended_template = TemplateSelector().get(extended_template_path)
       rendered_templates.append(YamlSpec(extended_template).to_file())
     return rendered_templates
