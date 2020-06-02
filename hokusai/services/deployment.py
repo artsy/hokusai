@@ -171,8 +171,8 @@ class Deployment(object):
         while ((not git_tag_sucess) and (attempts < 3)):
           try:
             attempts += 1
-            print_green("Creating Git deployment tags '%s', '%s', and push them to %s..." % (self.context, deployment_tag, remote))
-            print_green("Attempt# %s." %attempts)
+            print_green("Creating Git deployment tags '%s', '%s', and pushing them to %s..." % (self.context, deployment_tag, remote))
+            print_green("Attempt# %s." % attempts)
             shout("git fetch %s --tags" % remote)
             shout("git tag -f %s %s" % (self.context, tag), print_output=True)
             shout("git tag -f %s %s" % (deployment_tag, tag), print_output=True)
@@ -180,13 +180,12 @@ class Deployment(object):
             print_green("Updated Git tag %s -> %s" % (tag, self.context))
             shout("git push -f --no-verify %s refs/tags/%s" % (remote, deployment_tag), print_output=True)
             print_green("Updated Git tag %s -> %s" % (tag, deployment_tag), newline_after=True)
-          except CalledProcessError as e:
-            print_yellow("WARNING: Creating Git deployment tags failed due to the error: '%s'" % str(e), newline_before=True, newline_after=True)
-            # If subprocess.check_output() was called, the actual error is in CalledProcessError's 'output' attribute.
-            print_yellow("WARNING: Additional error information if any: '%s'" % e.output, newline_before=True, newline_after=True)
-            time.sleep(3)
-          else:
             git_tag_sucess = True
+          except CalledProcessError as e:
+            # If subprocess.check_output() was called, the actual error is in CalledProcessError's 'output' attribute.
+            print_yellow("WARNING: Creating Git deployment tags failed due to the error:", newline_before=True, newline_after=True)
+            print_yellow(e.output)
+            time.sleep(3)
 
         if (not git_tag_sucess):
             print_yellow("Failed all attempts at pushing Git deployment tags! Please do it manually.", newline_after=True)
