@@ -1,4 +1,4 @@
-.PHONY: dependencies test test-docker build build-linux-docker image publish-head publish-latest publish-version publish-pip publish-dockerhub publish-head-dockerhub publish-github clean
+.PHONY: dependencies test test-docker build build-linux-docker image publish-beta publish-latest publish-version publish-pip publish-dockerhub publish-beta-dockerhub publish-github clean
 
 AWS ?= $(shell which aws)
 DOCKER_RUN ?= $(shell which docker) run --rm
@@ -52,12 +52,12 @@ image:
 	docker build . \
 	  --tag hokusai
 
-publish-head:
+publish-beta:
 	$(AWS) s3 cp \
 	  --acl public-read \
 	  --recursive \
 	  --exclude "*" \
-	  --include "hokusai-head-*" \
+	  --include "hokusai-beta-*" \
 	  dist/ s3://artsy-provisioning-public/hokusai/
 
 publish-latest:
@@ -98,9 +98,9 @@ publish-dockerhub:
 	  exit 1; \
 	fi
 
-publish-head-dockerhub:
-	docker tag hokusai:latest artsy/hokusai:head
-	docker push artsy/hokusai:head
+publish-beta-dockerhub:
+	docker tag hokusai:latest artsy/hokusai:beta
+	docker push artsy/hokusai:beta
 
 publish-github:
 	$(AWS) s3 cp \
