@@ -1,3 +1,12 @@
+## v0.5.10
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.10/README.md)
+
+### Notable changes since v0.5.9
+
+* 7809787 follow extends in rendered docker compose Yaml files to other templates
+* fd5e3a7 git fetch tags, has been failing intermittently. Print the actual Git error. Retry up to 3 times. Don't fail the build.
+
 ## v0.5.9
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.9/README.md)
