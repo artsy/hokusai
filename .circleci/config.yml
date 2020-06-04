@@ -63,7 +63,7 @@ jobs:
       - run: make dependencies
       - run: make integration
 
-  release_head_linux:
+  release_beta_linux:
     docker:
       - image: python:2
     steps:
@@ -71,8 +71,8 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build VERSION=head
-      - run: make publish-head
+      - run: make build VERSION=beta
+      - run: make publish-beta
 
   release_version_linux:
     docker:
@@ -95,15 +95,15 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  release_head_macos:
+  release_beta_macos:
     macos:
       xcode: "9.0"
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli
       - run: make dependencies
-      - run: make build VERSION=head
-      - run: make publish-head
+      - run: make build VERSION=beta
+      - run: make publish-beta
 
   release_version_macos:
     macos:
@@ -136,7 +136,7 @@ jobs:
       - run: make image
       - run: make publish-dockerhub
 
-  release_head_dockerhub:
+  release_beta_dockerhub:
     docker:
       - image: docker:18.09
     steps:
@@ -145,7 +145,7 @@ jobs:
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: apk add curl make
       - run: make image
-      - run: make publish-head-dockerhub
+      - run: make publish-beta-dockerhub
 
   release_github:
     docker:
@@ -173,7 +173,7 @@ workflows:
           filters:
             branches:
               ignore: release
-      - release_head_linux:
+      - release_beta_linux:
           requires:
             - test_linux
             - test_macos
@@ -181,7 +181,7 @@ workflows:
           filters:
             branches:
               only: master
-      - release_head_macos:
+      - release_beta_macos:
           requires:
             - test_linux
             - test_macos
@@ -189,7 +189,7 @@ workflows:
           filters:
             branches:
               only: master
-      - release_head_dockerhub:
+      - release_beta_dockerhub:
           requires:
             - test_linux
             - test_macos
