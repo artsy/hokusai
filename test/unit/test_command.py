@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 
 from test import HokusaiUnitTestCase
 from test.utils import captured_output

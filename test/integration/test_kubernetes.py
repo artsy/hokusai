@@ -2,7 +2,7 @@ import os
 
 import httpretty
 
-from mock import patch
+from unittest.mock import patch
 
 from test import HokusaiIntegrationTestCase, TEST_KUBE_CONTEXT
 from test.utils import captured_output, mock_verbosity

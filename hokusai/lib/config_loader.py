@@ -2,7 +2,7 @@ import os
 import tempfile
 from shutil import rmtree, copyfile
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import boto3
 import yaml
