@@ -173,7 +173,7 @@ class Deployment(object):
             attempts += 1
             print_green("Creating Git deployment tags '%s', '%s', and pushing them to %s..." % (self.context, deployment_tag, remote))
             print_green("Attempt# %s." % attempts)
-            shout("git fetch %s --tags" % remote)
+            shout("git fetch -f %s --tags" % remote)
             shout("git tag -f %s %s" % (self.context, tag), print_output=True)
             shout("git tag -f %s %s" % (deployment_tag, tag), print_output=True)
             shout("git push -f --no-verify %s refs/tags/%s" % (remote, self.context), print_output=True)
