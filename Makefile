@@ -11,6 +11,7 @@ VERSION ?= $(shell cat hokusai/VERSION)
 MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
+	pip install virtualenv==20.0.20
 	pip install pipenv --quiet --ignore-installed
 	pipenv install --dev
 
