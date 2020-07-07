@@ -1,4 +1,4 @@
-.PHONY: dependencies test test-docker build build-linux-docker image publish-beta publish-latest publish-version publish-pip publish-dockerhub publish-beta-dockerhub publish-github clean
+.PHONY: dependencies test test-docker build build-linux-docker image publish-beta publish-latest publish-version publish-pip publish-dockerhub publish-beta-dockerhub publish-github publish-homebrew clean
 
 AWS ?= $(shell which aws)
 DOCKER_RUN ?= $(shell which docker) run --rm
@@ -116,6 +116,10 @@ publish-github:
 	  --name v$(VERSION) \
 	  --soft \
 	  v$(VERSION) dist/
+
+publish-homebrew:
+	bash release-homebrew.sh
+
 
 clean:
 	sudo $(RM) -r ./dist
