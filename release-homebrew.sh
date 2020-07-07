@@ -42,7 +42,7 @@ class Hokusai < Formula
   homepage 'https://github.com/artsy/hokusai'
   url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-Darwin-x86_64.tar.gz'
   sha256 '$SHA256'
-  versionz '$VERSION'
+  version '$VERSION'
 
   def install
     bin.install 'hokusai'
