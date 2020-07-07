@@ -157,6 +157,12 @@ jobs:
       - run: go get -u github.com/tcnksm/ghr
       - run: make publish-github
 
+  release_homebrew:
+    docker:
+      - image: hokusai:latest
+    steps:
+      - run: make publish-homebrew
+
 workflows:
   version: 2
   build_deploy:
@@ -214,6 +220,13 @@ workflows:
             branches:
               only: release
       - release_github:
+          requires:
+            - release_version_linux
+            - release_version_macos
+          filters:
+            branches:
+              only: release
+      - release_homebrew:
           requires:
             - release_version_linux
             - release_version_macos
