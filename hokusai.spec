@@ -1,11 +1,15 @@
 # -*- mode: python -*-
 
-from PyInstaller.utils.hooks import exec_statement
+import platform
 
-cert_datas = exec_statement("""
-    import ssl
-    print(ssl.get_default_verify_paths().cafile)""").strip().split()
-cert_datas = [(f, 'lib') for f in cert_datas]
+if platform.system() == "Darwin":
+  from PyInstaller.utils.hooks import exec_statement
+  cert_datas = exec_statement("""
+      import ssl
+      print(ssl.get_default_verify_paths().cafile)""").strip().split()
+  cert_datas = [(f, 'lib') for f in cert_datas]
+else:
+  cert_datas = []
 
 block_cipher = None
 
