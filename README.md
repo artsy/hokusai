@@ -59,23 +59,43 @@ Installing Python-2.7.16...
 python-build: use readline from homebrew
 python-build: use zlib from xcode sdk
 
-Installed Python-2.7.16 to /Users/isacpetruzzi/.pyenv/versions/2.7.16
+Installed Python-2.7.16 to $HOME/.pyenv/versions/2.7.16
 ```
 
-2. [Pipenv](https://github.com/pypa/pipenv)
+2. [Virtualenv](https://virtualenv.pypa.io/en/latest/) and [Poetry](https://python-poetry.org/)
 
-It's recommended that you use [`pipenv`](https://pypi.org/project/pipenv/) to install package dependencies.  See [this guide](https://realpython.com/pipenv-guide/) for working with pipenv.
-
-If you use homebrew
+It's recommended that you use [Virtualenv](https://virtualenv.pypa.io/en/latest/) to manage different project dependencies, though this is not required.  See [this guide](https://docs.python-guide.org/dev/virtualenvs/) to get started with virtualenv management.
 
 ```
-brew install pipenv
+pip install virtualenv virtualenvwrapper
+mkvirtualenv hokusai
+workon hokusai
 ```
 
-Install dev dependencies via `pipenv`
+Use [`poetry`](https://python-poetry.org/) to install package dependencies.  See [this guide](https://python-poetry.org/docs/basic-usage/) for working with poetry.
+
+Install poetry:
 
 ```
-pipenv install --dev
+pip install poetry
+```
+
+Install dev dependencies:
+
+```
+poetry install
+```
+
+Update dev / project dependencies:
+
+```
+poetry lock
+```
+
+To install hokusai in "editable" mode, run
+
+```
+pip install -e .
 ```
 
 Other installation methods can be found in the project's repo
@@ -139,22 +159,22 @@ A full command reference can be found in [Command Reference.md](./docs/Command_R
 
 To work on Hokusai itself, set up your local development environment like so:
 
-- As above, install `python`, `pipenv`, `docker`, `docker-compose` and `git`.
+- As above, install `python`, `poetry`, `docker`, `docker-compose` and `git`.
 
 To install the Hokusai package in "editable mode" from a checkout of this repository, you can run `pip install --editable .` This works well in combination with [Virtualenv/Virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) as you can install the project in editable mode within a virtualenv, and from a release in your default system environment.
 
 ## Testing Hokusai
 
-Install pipenv (see above)
+Install poetry (see above)
 
-Install dependencies: `pipenv install --dev`.
+Install dependencies: `poetry install`.
 
-All tests can be run with `pipenv run tests`.
+All tests can be run with `make tests`.
 
-Only run unit tests: `pipenv run unit-tests`
-Only run integration tests: `pipenv run integration-tests`
+Only run unit tests: `make test`
+Only run integration tests: `make integration`
 
-Tests for specific modules, TestClasses, or even methods can be run with `pipenv run test test.unit.test_module.TestClass.test_method`
+Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
 
 Set the `DEBUG=1` environment variable to print boto logging
 
