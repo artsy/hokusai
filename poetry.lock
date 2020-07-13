@@ -1280,8 +1280,8 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "bb6b20f00d6b5cace254d83383eb66941e53292f7ffccded02718d2a99f0dadd"
-python-versions = "2.7.16"
+content-hash = "9b0e190aa200017a4b9d1bc54a9f52f1d2c51898ca493264a7e5b19ab2619309"
+python-versions = "~=2.7"
 
 [metadata.files]
 altgraph = [
