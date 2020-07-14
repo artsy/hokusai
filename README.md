@@ -62,6 +62,8 @@ python-build: use zlib from xcode sdk
 Installed Python-2.7.16 to $HOME/.pyenv/versions/2.7.16
 ```
 
+Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
+
 2. [Virtualenv](https://virtualenv.pypa.io/en/latest/) and [Poetry](https://python-poetry.org/)
 
 It's recommended that you use [Virtualenv](https://virtualenv.pypa.io/en/latest/) to manage different project dependencies, though this is not required.  See [this guide](https://docs.python-guide.org/dev/virtualenvs/) to get started with virtualenv management.
