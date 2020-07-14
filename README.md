@@ -83,10 +83,10 @@ pip install poetry
 Install dev dependencies:
 
 ```
-poetry install
+poetry install --no-root
 ```
 
-Update dev / project dependencies:
+Update dev dependencies:
 
 ```
 poetry lock
@@ -167,7 +167,7 @@ To install the Hokusai package in "editable mode" from a checkout of this reposi
 
 Install poetry (see above)
 
-Install dependencies: `poetry install`.
+Install dependencies: `poetry install --no-root`.
 
 All tests can be run with `make tests`.
 

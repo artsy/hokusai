@@ -12,7 +12,7 @@ MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
 	pip install poetry --quiet --ignore-installed
-	poetry install
+	poetry install --no-root
 
 tests:
 	python -m unittest discover test
