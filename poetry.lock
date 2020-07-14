@@ -262,7 +262,7 @@ python-versions = "*"
 version = "1.1.10"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+"
 marker = "python_version < \"3.3\""
 name = "funcsigs"
@@ -296,7 +296,7 @@ python-versions = ">=2.6, <3"
 version = "3.2.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "HTTP client mock for Python"
 name = "httpretty"
 optional = false
@@ -632,7 +632,7 @@ python-versions = "*"
 version = "0.8.4"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Rolling backport of unittest.mock for all Pythons"
 name = "mock"
 optional = false
@@ -763,7 +763,7 @@ python = "<3.5"
 version = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python Build Reasonableness"
 name = "pbr"
 optional = false
@@ -1280,7 +1280,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "9b0e190aa200017a4b9d1bc54a9f52f1d2c51898ca493264a7e5b19ab2619309"
+content-hash = "bfc1bfece8028dc01ae521b2689f0ededbc9e46b883e02c48e1e6ad44fbf56ae"
 python-versions = "~=2.7"
 
 [metadata.files]
