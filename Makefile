@@ -11,15 +11,17 @@ VERSION ?= $(shell cat hokusai/VERSION)
 MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
-	pip install virtualenv==15.1.0
-	pip install pipenv --quiet --ignore-installed
-	pipenv install --dev
+	pip install poetry --quiet --ignore-installed
+	poetry install --no-root
+
+tests:
+	python -m unittest discover test
 
 test:
-	pipenv run unit-tests
+	python -m unittest discover test.unit
 
 integration:
-	pipenv run integration-tests
+	python -m unittest discover test.integration
 
 test-docker:
 	$(DOCKER_RUN) \
@@ -29,7 +31,7 @@ test-docker:
 
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
-	pipenv run pyinstaller \
+	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
 	  hokusai.spec
@@ -83,8 +85,8 @@ publish-version:
 	fi
 
 publish-pip:
-	pipenv run python setup.py sdist bdist_wheel
-	pipenv run twine upload dist/*
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
 
 publish-dockerhub:
 	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
