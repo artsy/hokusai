@@ -1,8 +1,12 @@
 import os
+import sys
 import tempfile
 from shutil import rmtree, copyfile
 
-from urllib.parse import urlparse
+if sys.version_info[0] >= 3:
+  from urllib.parse import urlparse
+else:
+  from urlparse import urlparse
 
 import boto3
 import yaml

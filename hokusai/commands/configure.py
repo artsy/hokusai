@@ -3,9 +3,14 @@ import platform
 import urllib
 import shutil
 import tempfile
+import sys
 
 from distutils.dir_util import mkpath
-from urllib.parse import urlparse
+
+if sys.version_info[0] >= 3:
+  from urllib.parse import urlparse
+else:
+  from urlparse import urlparse
 
 import boto3
 
