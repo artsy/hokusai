@@ -25,6 +25,7 @@ wheel = "*"
 ipython = "*"
 ipdb = "*"
 jupyter = "*"
+nbformat = "==4.4.0"
 pylint = "*"
 
 [build-system]

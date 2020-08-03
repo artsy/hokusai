@@ -9,7 +9,7 @@ version = "0.17"
 [[package]]
 category = "dev"
 description = "Disable App Nap on OS X 10.9"
-marker = "python_version < \"3.3\" and sys_platform == \"darwin\" or sys_platform == \"darwin\" or python_version == \"2.7\" and sys_platform == \"darwin\" or platform_system == \"Darwin\" or python_version >= \"3.3\" and sys_platform == \"darwin\" or python_version >= \"3.4\" and sys_platform == \"darwin\""
+marker = "python_version == \"2.7\" and sys_platform == \"darwin\" or sys_platform == \"darwin\" or python_version < \"3.3\" and sys_platform == \"darwin\" or python_version >= \"3.4\" and sys_platform == \"darwin\" or platform_system == \"Darwin\" or python_version >= \"3.3\" and sys_platform == \"darwin\""
 name = "appnope"
 optional = false
 python-versions = "*"
@@ -254,7 +254,7 @@ six = "*"
 [[package]]
 category = "dev"
 description = "Cross-platform colored terminal text."
-marker = "python_version >= \"3.3\" and sys_platform == \"win32\" or sys_platform == \"win32\" or python_version >= \"3.4\" and sys_platform == \"win32\""
+marker = "python_version >= \"3.4\" and sys_platform == \"win32\" or sys_platform == \"win32\" or python_version >= \"3.3\" and sys_platform == \"win32\""
 name = "colorama"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -1061,24 +1061,7 @@ description = "The Jupyter Notebook format"
 name = "nbformat"
 optional = false
 python-versions = "*"
-version = "5.0.3"
-
-[package.dependencies]
-ipython-genutils = "*"
-jsonschema = ">=2.4,<2.5.0 || >2.5.0"
-jupyter-core = "*"
-traitlets = ">=4.1"
-
-[package.extras]
-test = ["testpath", "pytest", "pytest-cov"]
-
-[[package]]
-category = "dev"
-description = "The Jupyter Notebook format"
-name = "nbformat"
-optional = false
-python-versions = ">=3.5"
-version = "5.0.7"
+version = "4.4.0"
 
 [package.dependencies]
 ipython-genutils = "*"
@@ -1181,7 +1164,7 @@ testing = ["docopt", "pytest (>=3.0.7)"]
 [[package]]
 category = "dev"
 description = "Object-oriented filesystem paths"
-marker = "python_version in \"2.6 2.7 3.2 3.3\" or python_version < \"3\" or python_version < \"3.3\" and python_version in \"2.6 2.7 3.2 3.3\" or python_version == \"2.7\""
+marker = "python_version in \"2.6 2.7 3.2 3.3\" or python_version == \"2.7\" or python_version < \"3\" or python_version < \"3.3\" and python_version in \"2.6 2.7 3.2 3.3\""
 name = "pathlib2"
 optional = false
 python-versions = "*"
@@ -1216,7 +1199,7 @@ future = "*"
 [[package]]
 category = "dev"
 description = "Pexpect allows easy control of interactive console applications."
-marker = "python_version < \"3.3\" and sys_platform != \"win32\" or sys_platform != \"win32\" or python_version == \"2.7\" and sys_platform != \"win32\" or python_version >= \"3.3\" and sys_platform != \"win32\" or python_version >= \"3.4\" and sys_platform != \"win32\""
+marker = "python_version == \"2.7\" and sys_platform != \"win32\" or sys_platform != \"win32\" or python_version < \"3.3\" and sys_platform != \"win32\" or python_version >= \"3.4\" and sys_platform != \"win32\" or python_version >= \"3.3\" and sys_platform != \"win32\""
 name = "pexpect"
 optional = false
 python-versions = "*"
@@ -1275,7 +1258,7 @@ wcwidth = "*"
 [[package]]
 category = "dev"
 description = "Run a subprocess in a pseudo terminal"
-marker = "sys_platform != \"win32\" or os_name != \"nt\" or python_version < \"3.3\" and sys_platform != \"win32\" or python_version == \"2.7\" and sys_platform != \"win32\" or python_version >= \"3.3\" and sys_platform != \"win32\" or python_version >= \"3.4\" and sys_platform != \"win32\""
+marker = "python_version == \"2.7\" and sys_platform != \"win32\" or sys_platform != \"win32\" or os_name != \"nt\" or python_version < \"3.3\" and sys_platform != \"win32\" or python_version >= \"3.4\" and sys_platform != \"win32\" or python_version >= \"3.3\" and sys_platform != \"win32\""
 name = "ptyprocess"
 optional = false
 python-versions = "*"
@@ -1595,7 +1578,7 @@ version = ">=2.2.0,<4.0.0"
 [[package]]
 category = "dev"
 description = "scandir, a better directory iterator and faster os.walk()"
-marker = "python_version == \"2.7\" or python_version == \"2.7\" or python_version == \"3.3\" or python_version == \"3.3\" or python_version < \"3.3\" and python_version in \"2.6 2.7 3.2 3.3\" and (python_version == \"2.7\" or python_version == \"3.3\") or python_version == \"2.7\" and (python_version == \"2.7\" or python_version == \"3.3\")"
+marker = "python_version == \"2.7\" or python_version == \"3.3\" or python_version == \"2.7\" or python_version == \"3.3\" or python_version == \"2.7\" and (python_version == \"2.7\" or python_version == \"3.3\") or python_version < \"3.3\" and python_version in \"2.6 2.7 3.2 3.3\" and (python_version == \"2.7\" or python_version == \"3.3\")"
 name = "scandir"
 optional = false
 python-versions = "*"
@@ -1792,7 +1775,7 @@ version = "1.4.1"
 [[package]]
 category = "dev"
 description = "Type Hints for Python"
-marker = "python_version >= \"3.3\" and python_version <= \"3.4\" or python_version < \"3.5\" or python_version >= \"3.4\" and python_version <= \"3.4\""
+marker = "python_version >= \"3.4\" and python_version <= \"3.4\" or python_version < \"3.5\" or python_version >= \"3.3\" and python_version <= \"3.4\""
 name = "typing"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -1882,7 +1865,7 @@ notebook = ">=4.4.1"
 [[package]]
 category = "dev"
 description = "Enable Unicode input and display when running Python from Windows console."
-marker = "sys_platform == \"win32\" and python_version < \"3.6\" or sys_platform == \"win32\" and python_version < \"3.3\" or sys_platform == \"win32\" and python_version == \"2.7\" or sys_platform == \"win32\" and python_version < \"3.6\" and python_version >= \"3.3\" or sys_platform == \"win32\" and python_version < \"3.6\" and python_version >= \"3.4\""
+marker = "sys_platform == \"win32\" and python_version < \"3.6\" or sys_platform == \"win32\" and python_version == \"2.7\" or sys_platform == \"win32\" and python_version < \"3.3\" or sys_platform == \"win32\" and python_version < \"3.6\" and python_version >= \"3.4\" or sys_platform == \"win32\" and python_version < \"3.6\" and python_version >= \"3.3\""
 name = "win-unicode-console"
 optional = false
 python-versions = "*"
@@ -1928,7 +1911,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "1e327a5b1d37f25cf924a1817c7074f8196df0ec81a8642129214757ff68dcaa"
+content-hash = "f8c77ac279e3559d56975feed276e6144b27050001a72057f5df5ee3e3b62e2b"
 lock-version = "1.0"
 python-versions = "*"
 
@@ -2347,9 +2330,8 @@ nbconvert = [
     {file = "nbconvert-5.6.1.tar.gz", hash = "sha256:21fb48e700b43e82ba0e3142421a659d7739b65568cc832a13976a77be16b523"},
 ]
 nbformat = [
-    {file = "nbformat-5.0.3-py3-none-any.whl", hash = "sha256:d1407544cf0c53ee88f504b6c732aef6e0f407a0858b405fcf133e0a25bb787b"},
-    {file = "nbformat-5.0.7-py3-none-any.whl", hash = "sha256:ea55c9b817855e2dfcd3f66d74857342612a60b1f09653440f4a5845e6e3523f"},
-    {file = "nbformat-5.0.7.tar.gz", hash = "sha256:54d4d6354835a936bad7e8182dcd003ca3dc0cedfee5a306090e04854343b340"},
+    {file = "nbformat-4.4.0-py2.py3-none-any.whl", hash = "sha256:b9a0dbdbd45bb034f4f8893cafd6f652ea08c8c1674ba83f2dc55d3955743b0b"},
+    {file = "nbformat-4.4.0.tar.gz", hash = "sha256:f7494ef0df60766b7cabe0a3651556345a963b74dbc16bc7c18479041170d402"},
 ]
 notebook = [
     {file = "notebook-5.7.10-py2.py3-none-any.whl", hash = "sha256:26ea725787068cf50a3bf2c8a1c39928500bac3c9af1a66df5e757f63f718bea"},
