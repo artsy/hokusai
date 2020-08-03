@@ -8,9 +8,6 @@ import random
 import json
 import re
 
-if sys.version_info[0] >= 3:
-    unicode = str
-
 from subprocess import call, check_call, check_output, Popen, STDOUT
 
 import yaml
@@ -39,9 +36,13 @@ def smart_str(s, newline_before=False, newline_after=False):
     s = '\n' + s
   if newline_after:
     s = s + '\n'
-  if isinstance(s, unicode):
-      return unicode(s).encode("utf-8")
-  elif isinstance(s, int) or isinstance(s, float):
+  if sys.version_info[0] >= 3:
+    if isinstance(s, bytes):
+      return s.decode('utf-8')
+  else:
+    if isinstance(s, unicode):
+      return s.encode('utf-8')
+  if isinstance(s, int) or isinstance(s, float):
       return str(s)
   return s
 

@@ -2,10 +2,11 @@ import string
 
 import sys
 if sys.version_info[0] >= 3:
-    unicode = str
+  from unittest.mock import patch
+else:
+  from mock import patch
 
 import yaml
-from unittest.mock import patch
 
 from test import HokusaiUnitTestCase
 from test.utils import captured_output, mock_verbosity
@@ -18,12 +19,12 @@ class TestCommon(HokusaiUnitTestCase):
   def test_print_green(self):
     with captured_output() as (out, err):
       print_green(TEST_MESSAGE)
-      self.assertEqual(out.getvalue().strip(), "\x1b[32mb'%s'\x1b[0m" % TEST_MESSAGE)
+      self.assertEqual(out.getvalue().strip(), "\x1b[32m%s\x1b[0m" % TEST_MESSAGE)
 
   def test_print_red(self):
     with captured_output() as (out, err):
       print_red(TEST_MESSAGE)
-      self.assertEqual(out.getvalue().strip(), "\x1b[31mb'%s'\x1b[0m" % TEST_MESSAGE)
+      self.assertEqual(out.getvalue().strip(), "\x1b[31m%s\x1b[0m" % TEST_MESSAGE)
 
   def test_default_output(self):
     from hokusai.lib.common import VERBOSE
@@ -39,13 +40,13 @@ class TestCommon(HokusaiUnitTestCase):
     with mock_verbosity(True):
       with captured_output() as (out, err):
         verbose(TEST_MESSAGE)
-        self.assertEqual(out.getvalue().strip(), "\x1b[33mb'==> hokusai exec `%s`\\n'\x1b[0m" % TEST_MESSAGE)
+        self.assertEqual(out.getvalue().strip(), "\x1b[33m==> hokusai exec `%s`\n\x1b[0m" % TEST_MESSAGE)
 
   def test_masked_verbose_output(self):
     with mock_verbosity(True):
       with captured_output() as (out, err):
         verbose(TEST_MESSAGE, mask=(r'^(\w*).*$', r'\1 ***'))
-        self.assertEqual(out.getvalue().strip(), "\x1b[33mb'==> hokusai exec `%s`\\n'\x1b[0m" % 'Ohai ***')
+        self.assertEqual(out.getvalue().strip(), "\x1b[33m==> hokusai exec `%s`\n\x1b[0m" % 'Ohai ***')
 
   def test_non_verbose_output(self):
     with mock_verbosity(False):
