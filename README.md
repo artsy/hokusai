@@ -48,18 +48,18 @@ For pkg-config to find openssl@1.1 you may need to set:
 Now, when installing pythons (see `.python-version` for the current version to install for Hokusai development) you should see the following output.
 
 ```
-$ pyenv install 2.7.16
+$ pyenv install 3.5.8
 
 python-build: use openssl from homebrew
 python-build: use readline from homebrew
 
-Downloading Python-2.7.16.tar.xz...
--> https://www.python.org/ftp/python/2.7.16/Python-2.7.16.tar.xz
-Installing Python-2.7.16...
+Downloading Python-3.5.8.tar.xz...
+-> https://www.python.org/ftp/python/3.5.8/Python-3.5.8.tar.xz
+Installing Python-3.5.8...
 python-build: use readline from homebrew
 python-build: use zlib from xcode sdk
 
-Installed Python-2.7.16 to $HOME/.pyenv/versions/2.7.16
+Installed Python-3.5.8 to $HOME/.pyenv/versions/3.5.8
 ```
 
 Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
