@@ -1,12 +1,22 @@
 # -*- mode: python -*-
 
-block_cipher = None
+import platform
 
+if platform.system() == "Darwin":
+  from PyInstaller.utils.hooks import exec_statement
+  cert_datas = exec_statement("""
+      import ssl
+      print(ssl.get_default_verify_paths().cafile)""").strip().split()
+  cert_datas = [(f, 'lib') for f in cert_datas]
+else:
+  cert_datas = []
+
+block_cipher = None
 
 a = Analysis(['bin/hokusai'],
              pathex=['.'],
              binaries=[],
-             datas=[('./hokusai/templates/*.j2', 'hokusai/templates/'), ('./hokusai/templates/.dockerignore.j2', 'hokusai/templates/'), ('./hokusai/templates/hokusai/*.j2', 'hokusai/templates/hokusai/'), ('./hokusai/VERSION', 'hokusai/')],
+             datas=[('./hokusai/templates/*.j2', 'hokusai/templates/'), ('./hokusai/templates/.dockerignore.j2', 'hokusai/templates/'), ('./hokusai/templates/hokusai/*.j2', 'hokusai/templates/hokusai/'), ('./hokusai/VERSION', 'hokusai/')] + cert_datas,
              hiddenimports=['ConfigParser'],
              hookspath=[],
              runtime_hooks=[],
