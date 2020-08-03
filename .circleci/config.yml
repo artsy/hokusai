@@ -95,10 +95,9 @@ jobs:
       - run: brew update
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
       - run: pyenv install 3.5.8
-      - run: eval "$(pyenv init -)"
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make test
+      - run: eval "$(pyenv init -)" && pip install --upgrade pip
+      - run: eval "$(pyenv init -)" && make dependencies
+      - run: eval "$(pyenv init -)" && make test
 
   release_beta_macos:
     macos:
@@ -108,11 +107,10 @@ jobs:
       - run: brew update
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
       - run: pyenv install 3.5.8
-      - run: eval "$(pyenv init -)"
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make build VERSION=beta
-      - run: make publish-beta
+      - run: eval "$(pyenv init -)" && pip install --upgrade pip
+      - run: eval "$(pyenv init -)" && make dependencies
+      - run: eval "$(pyenv init -)" && make build VERSION=beta
+      - run: eval "$(pyenv init -)" && make publish-beta
 
   release_version_macos:
     macos:
@@ -122,13 +120,12 @@ jobs:
       - run: brew update
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
       - run: pyenv install 3.5.8
-      - run: eval "$(pyenv init -)"
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make build
-      - run: make build VERSION=latest
-      - run: make publish-version
-      - run: make publish-latest
+      - run: eval "$(pyenv init -)" && pip install --upgrade pip
+      - run: eval "$(pyenv init -)" && make dependencies
+      - run: eval "$(pyenv init -)" && make build
+      - run: eval "$(pyenv init -)" && make build VERSION=latest
+      - run: eval "$(pyenv init -)" && make publish-version
+      - run: eval "$(pyenv init -)" && make publish-latest
 
   release_pip:
     docker:
