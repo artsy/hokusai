@@ -8,6 +8,9 @@ import random
 import json
 import re
 
+if sys.version_info[0] >= 3:
+    unicode = str
+
 from subprocess import call, check_call, check_output, Popen, STDOUT
 
 import yaml
@@ -98,7 +101,7 @@ def shout_concurrent(commands, print_output=False, mask=()):
 def k8s_uuid():
   uuid = []
   for i in range(0,5):
-    uuid.append(random.choice(string.lowercase))
+    uuid.append(random.choice(string.ascii_lowercase))
   return ''.join(uuid)
 
 def clean_string(str):
