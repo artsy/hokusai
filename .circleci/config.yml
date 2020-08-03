@@ -1,7 +1,15 @@
 version: 2
 
 jobs:
-  test_linux:
+  test_linux2:
+    docker:
+      - image: python:2.7.16
+    steps:
+      - checkout
+      - run: make dependencies
+      - run: make test
+
+  test_linux3:
     docker:
       - image: python:3.5.8
     steps:
@@ -177,7 +185,11 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - test_linux:
+      - test_linux2:
+          filters:
+            branches:
+              ignore: release
+      - test_linux3:
           filters:
             branches:
               ignore: release
@@ -191,7 +203,8 @@ workflows:
               ignore: release
       - release_beta_linux:
           requires:
-            - test_linux
+            - test_linux2
+            - test_linux3
             - test_macos
             - test_integration
           filters:
@@ -199,7 +212,8 @@ workflows:
               only: master
       - release_beta_macos:
           requires:
-            - test_linux
+            - test_linux2
+            - test_linux3
             - test_macos
             - test_integration
           filters:
@@ -207,7 +221,8 @@ workflows:
               only: master
       - release_beta_dockerhub:
           requires:
-            - test_linux
+            - test_linux2
+            - test_linux3
             - test_macos
             - test_integration
           filters:
