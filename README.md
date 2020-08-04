@@ -18,7 +18,7 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 
 ## Requirements
 
-1. [Python 2.x](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
+1. [Python 2.7 or 3.5](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
 
 It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.  See [this guide](https://realpython.com/intro-to-pyenv/) for working with pyenv.
 
@@ -74,7 +74,7 @@ mkvirtualenv hokusai
 workon hokusai
 ```
 
-Use [`poetry`](https://python-poetry.org/) to install package dependencies.  See [this guide](https://python-poetry.org/docs/basic-usage/) for working with poetry.
+Use [`poetry`](https://python-poetry.org/) to install development dependencies.  See [this guide](https://python-poetry.org/docs/basic-usage/) for working with poetry.
 
 Install poetry:
 
@@ -94,7 +94,7 @@ Update dev dependencies:
 poetry lock
 ```
 
-To install hokusai in "editable" mode, run
+To install hokusai package dependencies from `setup.py` in "editable" mode, run
 
 ```
 pip install -e .
@@ -167,9 +167,13 @@ To install the Hokusai package in "editable mode" from a checkout of this reposi
 
 ## Testing Hokusai
 
-Install poetry (see above)
+Hokusai is currently tested on Pythons 2.7.16 and 3.5.8.
 
-Install dependencies: `poetry install --no-root`.
+1) Install poetry (see above).
+
+2) Install dependencies: `poetry install --no-root`.
+
+3) Run tests
 
 All tests can be run with `make tests`.
 
