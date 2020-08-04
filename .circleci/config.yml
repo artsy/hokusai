@@ -97,43 +97,43 @@ jobs:
 
   test_macos:
     macos:
-      xcode: "9.0"
+      xcode: "11.6.0"
     steps:
       - checkout
-      - run: brew update
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
       - run: pyenv install 3.5.8
-      - run: eval "$(pyenv init -)" && pip install --upgrade pip
-      - run: eval "$(pyenv init -)" && make dependencies
-      - run: eval "$(pyenv init -)" && make test
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make test
 
   release_beta_macos:
     macos:
-      xcode: "9.0"
+      xcode: "11.6.0"
     steps:
       - checkout
-      - run: brew update
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
       - run: pyenv install 3.5.8
-      - run: eval "$(pyenv init -)" && pip install --upgrade pip
-      - run: eval "$(pyenv init -)" && make dependencies
-      - run: eval "$(pyenv init -)" && make build VERSION=beta
-      - run: eval "$(pyenv init -)" && make publish-beta
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make build VERSION=beta
+      - run: make publish-beta
 
   release_version_macos:
     macos:
-      xcode: "9.0"
+      xcode: "11.6.0"
     steps:
       - checkout
-      - run: brew update
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
       - run: pyenv install 3.5.8
-      - run: eval "$(pyenv init -)" && pip install --upgrade pip
-      - run: eval "$(pyenv init -)" && make dependencies
-      - run: eval "$(pyenv init -)" && make build
-      - run: eval "$(pyenv init -)" && make build VERSION=latest
-      - run: eval "$(pyenv init -)" && make publish-version
-      - run: eval "$(pyenv init -)" && make publish-latest
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make build
+      - run: make build VERSION=latest
+      - run: make publish-version
+      - run: make publish-latest
 
   release_pip:
     docker:
