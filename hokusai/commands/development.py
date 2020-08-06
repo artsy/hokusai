@@ -28,7 +28,7 @@ def dev_start(build, detach, filename):
 
   opts = ''
   if build:
-    Docker().build()
+    Docker().build(filename=yaml_template)
   if detach:
     opts += ' -d'
 
