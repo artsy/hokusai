@@ -73,7 +73,7 @@ jobs:
 
   release_beta_linux:
     docker:
-      - image: python:3.5.8
+      - image: python:2.7
     steps:
       - checkout
       - run: apt-get -qq update
@@ -82,9 +82,20 @@ jobs:
       - run: make build VERSION=beta
       - run: make publish-beta
 
-  release_version_linux:
+  release_beta3_linux:
     docker:
       - image: python:3.5.8
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get -qq install awscli
+      - run: make dependencies
+      - run: make build VERSION=beta3
+      - run: make publish-beta3
+
+  release_version_linux:
+    docker:
+      - image: python:2.7
     steps:
       - checkout
       - run: apt-get -qq update
@@ -96,6 +107,18 @@ jobs:
       - run: make publish-latest
 
   test_macos:
+    macos:
+      xcode: "11.6.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
+      - run: pyenv install 2.7.16
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make test
+
+  test_macos3:
     macos:
       xcode: "11.6.0"
     steps:
@@ -113,12 +136,25 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: pyenv install 3.5.8
+      - run: pyenv install 2.7.16
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build VERSION=beta
       - run: make publish-beta
+
+  release_beta3_macos:
+    macos:
+      xcode: "11.6.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
+      - run: pyenv install 3.5.8
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make build VERSION=beta3
+      - run: make publish-beta3
 
   release_version_macos:
     macos:
@@ -137,7 +173,7 @@ jobs:
 
   release_pip:
     docker:
-      - image: python:3.5.8
+      - image: python:2.7
     steps:
       - checkout
       - run: make dependencies
@@ -197,6 +233,10 @@ workflows:
           filters:
             branches:
               ignore: release
+      - test_macos3:
+          filters:
+            branches:
+              ignore: release
       - test_integration:
           filters:
             branches:
@@ -206,6 +246,17 @@ workflows:
             - test_linux2
             - test_linux3
             - test_macos
+            - test_macos3
+            - test_integration
+          filters:
+            branches:
+              only: master
+      - release_beta3_linux:
+          requires:
+            - test_linux2
+            - test_linux3
+            - test_macos
+            - test_macos3
             - test_integration
           filters:
             branches:
@@ -215,6 +266,17 @@ workflows:
             - test_linux2
             - test_linux3
             - test_macos
+            - test_macos3
+            - test_integration
+          filters:
+            branches:
+              only: master
+      - release_beta3_macos:
+          requires:
+            - test_linux2
+            - test_linux3
+            - test_macos
+            - test_macos3
             - test_integration
           filters:
             branches:
@@ -224,6 +286,7 @@ workflows:
             - test_linux2
             - test_linux3
             - test_macos
+            - test_macos3
             - test_integration
           filters:
             branches:
