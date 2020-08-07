@@ -20,5 +20,8 @@ RUN curl -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/do
 
 COPY . /src
 
+# Workaround pip using dependencies from pyproject.toml https://github.com/python-poetry/poetry/issues/826
+RUN mv pyproject.toml pyproject.toml.bak
+
 # Install Hokusai
 RUN pip install .
