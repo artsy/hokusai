@@ -230,7 +230,7 @@ workflows:
           filters:
             branches:
               ignore: release
-      - test_macos:
+      - test_macos2:
           filters:
             branches:
               ignore: release
