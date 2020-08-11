@@ -40,7 +40,3 @@ backports-abc = "*"
 futures = "*"
 nbformat = "==4.4.0"
 pylint = "*"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
