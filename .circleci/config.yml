@@ -67,7 +67,9 @@ jobs:
             cd /opt/circleci/.pyenv/plugins/python-build/../.. 
             git pull
             cd -
-      - run: pyenv install --skip-existing
+      - run: pyenv install 2.7.16
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pyenv local 2.7.16
       - run: make dependencies
       - run: make integration
 
