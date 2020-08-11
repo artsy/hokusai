@@ -58,7 +58,7 @@ def check():
   try:
     boto3.client('sts', region_name=get_region_name()).get_caller_identity()
     check_ok('Valid AWS credentials')
-  except botoexceptions.ClientError, botoexceptions.NoCredentialsError:
+  except (botoexceptions.ClientError, botoexceptions.NoCredentialsError):
     check_err('Valid AWS credentials')
     return_code += 1
 

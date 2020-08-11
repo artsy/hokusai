@@ -18,7 +18,7 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 
 ## Requirements
 
-1. [Python 2.x](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
+1. [Python 2.7 or 3.5](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
 
 It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.  See [this guide](https://realpython.com/intro-to-pyenv/) for working with pyenv.
 
@@ -48,18 +48,18 @@ For pkg-config to find openssl@1.1 you may need to set:
 Now, when installing pythons (see `.python-version` for the current version to install for Hokusai development) you should see the following output.
 
 ```
-$ pyenv install 2.7.16
+$ pyenv install 3.5.8
 
 python-build: use openssl from homebrew
 python-build: use readline from homebrew
 
-Downloading Python-2.7.16.tar.xz...
--> https://www.python.org/ftp/python/2.7.16/Python-2.7.16.tar.xz
-Installing Python-2.7.16...
+Downloading Python-3.5.8.tar.xz...
+-> https://www.python.org/ftp/python/3.5.8/Python-3.5.8.tar.xz
+Installing Python-3.5.8...
 python-build: use readline from homebrew
 python-build: use zlib from xcode sdk
 
-Installed Python-2.7.16 to $HOME/.pyenv/versions/2.7.16
+Installed Python-3.5.8 to $HOME/.pyenv/versions/3.5.8
 ```
 
 Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
@@ -74,7 +74,7 @@ mkvirtualenv hokusai
 workon hokusai
 ```
 
-Use [`poetry`](https://python-poetry.org/) to install package dependencies.  See [this guide](https://python-poetry.org/docs/basic-usage/) for working with poetry.
+Use [`poetry`](https://python-poetry.org/) to install development dependencies.  See [this guide](https://python-poetry.org/docs/basic-usage/) for working with poetry.
 
 Install poetry:
 
@@ -94,7 +94,7 @@ Update dev dependencies:
 poetry lock
 ```
 
-To install hokusai in "editable" mode, run
+To install hokusai package dependencies from `setup.py` in "editable" mode, run
 
 ```
 pip install -e .
@@ -167,9 +167,13 @@ To install the Hokusai package in "editable mode" from a checkout of this reposi
 
 ## Testing Hokusai
 
-Install poetry (see above)
+Hokusai is currently tested on Pythons 2.7.16 and 3.5.8.
 
-Install dependencies: `poetry install --no-root`.
+1) Install poetry (see above).
+
+2) Install dependencies: `poetry install --no-root`.
+
+3) Run tests
 
 All tests can be run with `make tests`.
 

@@ -1,9 +1,17 @@
 version: 2
 
 jobs:
-  test_linux:
+  test_linux2:
     docker:
-      - image: python:2
+      - image: python:2.7.16
+    steps:
+      - checkout
+      - run: make dependencies
+      - run: make test
+
+  test_linux3:
+    docker:
+      - image: python:3.5.8
     steps:
       - checkout
       - run: make dependencies
@@ -65,7 +73,7 @@ jobs:
 
   release_beta_linux:
     docker:
-      - image: python:2
+      - image: python:2.7
     steps:
       - checkout
       - run: apt-get -qq update
@@ -74,9 +82,20 @@ jobs:
       - run: make build VERSION=beta
       - run: make publish-beta
 
+  release_beta3_linux:
+    docker:
+      - image: python:3.5.8
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get -qq install awscli
+      - run: make dependencies
+      - run: make build VERSION=beta3
+      - run: make publish-beta3
+
   release_version_linux:
     docker:
-      - image: python:2
+      - image: python:2.7
     steps:
       - checkout
       - run: apt-get -qq update
@@ -87,30 +106,66 @@ jobs:
       - run: make publish-version
       - run: make publish-latest
 
-  test_macos:
+  test_macos2:
     macos:
-      xcode: "9.0"
+      xcode: "11.6.0"
     steps:
       - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
+      - run: pyenv install 2.7.16
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: echo '2.7.16' > .python-version
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make test
+
+  test_macos3:
+    macos:
+      xcode: "11.6.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
+      - run: pyenv install 3.5.8
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test
 
   release_beta_macos:
     macos:
-      xcode: "9.0"
+      xcode: "11.6.0"
     steps:
       - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
+      - run: pyenv install 2.7.16
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build VERSION=beta
       - run: make publish-beta
 
-  release_version_macos:
+  release_beta3_macos:
     macos:
-      xcode: "9.0"
+      xcode: "11.6.0"
     steps:
       - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
+      - run: pyenv install 3.5.8
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make build VERSION=beta3
+      - run: make publish-beta3
+
+  release_version_macos:
+    macos:
+      xcode: "11.6.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
+      - run: pyenv install 3.5.8
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build
       - run: make build VERSION=latest
@@ -119,7 +174,7 @@ jobs:
 
   release_pip:
     docker:
-      - image: python:2
+      - image: python:2.7
     steps:
       - checkout
       - run: make dependencies
@@ -167,11 +222,19 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - test_linux:
+      - test_linux2:
           filters:
             branches:
               ignore: release
-      - test_macos:
+      - test_linux3:
+          filters:
+            branches:
+              ignore: release
+      - test_macos2:
+          filters:
+            branches:
+              ignore: release
+      - test_macos3:
           filters:
             branches:
               ignore: release
@@ -181,24 +244,50 @@ workflows:
               ignore: release
       - release_beta_linux:
           requires:
-            - test_linux
-            - test_macos
+            - test_linux2
+            - test_linux3
+            - test_macos2
+            - test_macos3
+            - test_integration
+          filters:
+            branches:
+              only: master
+      - release_beta3_linux:
+          requires:
+            - test_linux2
+            - test_linux3
+            - test_macos2
+            - test_macos3
             - test_integration
           filters:
             branches:
               only: master
       - release_beta_macos:
           requires:
-            - test_linux
-            - test_macos
+            - test_linux2
+            - test_linux3
+            - test_macos2
+            - test_macos3
+            - test_integration
+          filters:
+            branches:
+              only: master
+      - release_beta3_macos:
+          requires:
+            - test_linux2
+            - test_linux3
+            - test_macos2
+            - test_macos3
             - test_integration
           filters:
             branches:
               only: master
       - release_beta_dockerhub:
           requires:
-            - test_linux
-            - test_macos
+            - test_linux2
+            - test_linux3
+            - test_macos2
+            - test_macos3
             - test_integration
           filters:
             branches:

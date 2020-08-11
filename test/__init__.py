@@ -19,7 +19,9 @@ if os.environ.get('DEBUG'):
   boto3.set_stream_logger(name='botocore')
 
 class HokusaiTestCase(unittest.TestCase):
-  pass
+  def fixture(self, filename):
+    with open(os.path.join(os.getcwd(), 'test', 'fixtures', filename), 'r') as f:
+      return f.read()
 
 class HokusaiUnitTestCase(HokusaiTestCase):
   pass

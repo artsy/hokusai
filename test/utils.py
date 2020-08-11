@@ -1,7 +1,11 @@
 import sys
 
 from contextlib import contextmanager
-from StringIO import StringIO
+
+if sys.version_info[0] >= 3:
+  from io import StringIO
+else:
+  from StringIO import StringIO
 
 from hokusai.lib.common import get_verbosity, set_verbosity
 

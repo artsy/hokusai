@@ -12,7 +12,7 @@ def follow_extends(docker_compose_yml):
   with open(docker_compose_yml, 'r') as f:
     rendered_templates = []
     struct = yaml.safe_load(f.read())
-    for service_name, service_spec in struct['services'].iteritems():
+    for service_name, service_spec in struct['services'].items():
       if 'extends' not in service_spec or 'file' not in service_spec['extends']:
         continue
       extended_filename = service_spec['extends']['file']

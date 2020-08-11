@@ -2,7 +2,11 @@ import os
 
 import httpretty
 
-from mock import patch
+import sys
+if sys.version_info[0] >= 3:
+  from unittest.mock import patch
+else:
+  from mock import patch
 
 from test import HokusaiIntegrationTestCase, TEST_KUBE_CONTEXT
 from test.utils import captured_output, mock_verbosity
@@ -31,10 +35,10 @@ class TestKubernetes(HokusaiIntegrationTestCase):
     @patch('hokusai.lib.command.sys.exit')
     def test_00_k8s_create(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
         httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
-                                body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                                body=self.fixture('ecr-repositories-response.json'),
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_create(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml)
@@ -48,10 +52,10 @@ class TestKubernetes(HokusaiIntegrationTestCase):
     @patch('hokusai.lib.command.sys.exit')
     def test_01_k8s_update(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
         httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
-                                body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                                body=self.fixture('ecr-repositories-response.json'),
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_update(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml, skip_checks=True)
@@ -65,10 +69,10 @@ class TestKubernetes(HokusaiIntegrationTestCase):
     @patch('hokusai.lib.command.sys.exit')
     def test_02_k8s_status(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
         httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
-                                body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                                body=self.fixture('ecr-repositories-response.json'),
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_status(TEST_KUBE_CONTEXT, True, False, False, False, filename=self.__class__.kubernetes_yml)
@@ -104,10 +108,10 @@ class TestKubernetes(HokusaiIntegrationTestCase):
     @patch('hokusai.lib.command.sys.exit')
     def test_03_k8s_delete(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
         httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
-                                body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                                body=self.fixture('ecr-repositories-response.json'),
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_delete(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml)

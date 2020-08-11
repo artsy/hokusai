@@ -1,4 +1,4 @@
-.PHONY: dependencies test test-docker build build-linux-docker image publish-beta publish-latest publish-version publish-pip publish-dockerhub publish-beta-dockerhub publish-github publish-homebrew clean
+.PHONY: dependencies test test-docker test-docker3 build build-linux-docker build-linux-docker3 image publish-beta publish-beta3 publish-latest publish-version publish-pip publish-dockerhub publish-beta-dockerhub publish-github publish-homebrew clean
 
 AWS ?= $(shell which aws)
 DOCKER_RUN ?= $(shell which docker) run --rm
@@ -25,9 +25,15 @@ integration:
 
 test-docker:
 	$(DOCKER_RUN) \
-	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
+	  --volume "$(PWD)":"/src/$(PROJECT):rw" \
 	  --workdir "/src/$(PROJECT)" \
-	  python:2 make dependencies test
+	  python:2.7 make dependencies test
+
+test-docker3:
+	$(DOCKER_RUN) \
+	  --volume "$(PWD)":"/src/$(PROJECT):rw" \
+	  --workdir "/src/$(PROJECT)" \
+	  python:3.5 make dependencies test
 
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
@@ -48,7 +54,16 @@ build-linux-docker:
 	  --volume "$(PWD)"/dist:/dist \
 	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
 	  --workdir "/src/$(PROJECT)" \
-	  python:2 make dependencies build
+	  python:2.7 make dependencies build
+
+build-linux-docker3:
+	$(DOCKER_RUN) \
+	  --env VERSION \
+	  --env DIST_DIR=/dist/ \
+	  --volume "$(PWD)"/dist:/dist \
+	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
+	  --workdir "/src/$(PROJECT)" \
+	  python:3.5.8 make dependencies build
 
 image:
 	echo $(VERSION)
@@ -61,6 +76,14 @@ publish-beta:
 	  --recursive \
 	  --exclude "*" \
 	  --include "hokusai-beta-*" \
+	  dist/ s3://artsy-provisioning-public/hokusai/
+
+publish-beta3:
+	$(AWS) s3 cp \
+	  --acl public-read \
+	  --recursive \
+	  --exclude "*" \
+	  --include "hokusai-beta3-*" \
 	  dist/ s3://artsy-provisioning-public/hokusai/
 
 publish-latest:

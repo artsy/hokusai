@@ -1,7 +1,12 @@
 import string
 
+import sys
+if sys.version_info[0] >= 3:
+  from unittest.mock import patch
+else:
+  from mock import patch
+
 import yaml
-from mock import patch
 
 from test import HokusaiUnitTestCase
 from test.utils import captured_output, mock_verbosity
@@ -52,7 +57,7 @@ class TestCommon(HokusaiUnitTestCase):
   def test_k8s_uuid(self):
     self.assertEqual(len(k8s_uuid()), 5)
     for char in list(k8s_uuid()):
-      self.assertIn(char, string.lowercase)
+      self.assertIn(char, string.ascii_lowercase)
 
   @patch('hokusai.lib.common.check_output', return_value='hokusai')
   def test_shout(self, mocked_check_output):

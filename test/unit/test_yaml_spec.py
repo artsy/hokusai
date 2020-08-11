@@ -19,10 +19,10 @@ class TestYamlSpec(HokusaiUnitTestCase):
   @httpretty.activate
   def test_yaml_spec(self):
     httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                            body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
-                            body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                            body=self.fixture('ecr-repositories-response.json'),
                             content_type="application/x-amz-json-1.1")
     yaml_spec = YamlSpec(self.kubernetes_yml).to_list()
     self.assertEqual(yaml_spec[0]['metadata']['name'], 'hello')

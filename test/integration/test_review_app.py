@@ -2,7 +2,11 @@ import os
 
 import httpretty
 
-from mock import patch
+import sys
+if sys.version_info[0] >= 3:
+  from unittest.mock import patch
+else:
+  from mock import patch
 
 from test import HokusaiIntegrationTestCase
 
@@ -14,10 +18,10 @@ class TestReviewApp(HokusaiIntegrationTestCase):
     @httpretty.activate
     def test_create_review_app_yaml_file(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
-                                body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'sts-get-caller-identity-response.xml')).read(),
+                                body=self.fixture('sts-get-caller-identity-response.xml'),
                                 content_type="application/xml")
         httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
-                                body=open(os.path.join(os.getcwd(), 'test', 'fixtures', 'ecr-repositories-response.json')).read(),
+                                body=self.fixture('ecr-repositories-response.json'),
                                 content_type="application/x-amz-json-1.1")
 
         review_app_yaml_file = os.path.join(CWD, 'hokusai', 'a-review-app.yml')

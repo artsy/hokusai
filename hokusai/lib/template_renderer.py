@@ -20,5 +20,5 @@ class TemplateRenderer(object):
   def render(self):
     try:
       return self.load_template().render(**self.template_config)
-    except TemplateError, e:
+    except TemplateError as e:
       raise HokusaiError("Rendering template raised error %s <message '%s'>" % (e.__class__, e.message))
