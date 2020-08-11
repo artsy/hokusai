@@ -19,7 +19,7 @@ class CommandRunner(object):
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
     if os.environ.get('USER') is not None:
-      uuid = "%s-%s" % (os.environ.get('USER'), k8s_uuid())
+      uuid = "%s-%s" % (os.environ.get('USER').lower(), k8s_uuid())
     else:
       uuid = k8s_uuid()
 
