@@ -114,7 +114,6 @@ jobs:
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
       - run: pyenv install 2.7.16
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: echo '2.7.16' > .python-version
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test

@@ -45,7 +45,7 @@ For pkg-config to find openssl@1.1 you may need to set:
   export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
 ```
 
-Now, when installing pythons (see `.python-version` for the current version to install for Hokusai development) you should see the following output.
+Now, when installing pythons you should see the following output.
 
 ```
 $ pyenv install 3.5.8
