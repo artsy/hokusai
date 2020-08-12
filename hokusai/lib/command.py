@@ -28,9 +28,13 @@ def command(config_check=True):
         raise
       except (CalledProcessError, Exception) as e:
         if get_verbosity() or os.environ.get('DEBUG'):
-          print_red(traceback.format_exc(e))
+          print_red(traceback.format_exc())
         else:
           print_red("ERROR: %s" % str(e))
+        if hasattr(e, 'output'):
+          print(e.output.decode('utf-8'))
+        elif hasattr(e, 'message'):
+          print(e.message.decode('utf-8'))
         sys.exit(1)
     return wrapper
   return decorator
