@@ -13,11 +13,17 @@ else:
 
 block_cipher = None
 
+import sys
+if sys.version_info[0] >= 3:
+  hidden_imports = ['configparser']
+else:
+  hidden_imports = ['ConfigParser']
+
 a = Analysis(['bin/hokusai'],
              pathex=['.'],
              binaries=[],
              datas=[('./hokusai/templates/*.j2', 'hokusai/templates/'), ('./hokusai/templates/.dockerignore.j2', 'hokusai/templates/'), ('./hokusai/templates/hokusai/*.j2', 'hokusai/templates/hokusai/'), ('./hokusai/VERSION', 'hokusai/')] + cert_datas,
-             hiddenimports=['ConfigParser'],
+             hiddenimports=hidden_imports,
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
