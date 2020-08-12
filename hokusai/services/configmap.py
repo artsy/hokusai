@@ -46,7 +46,7 @@ class ConfigMap(object):
 
   def load(self):
     payload = shout(self.kctl.command("get configmap %s -o json" % self.name))
-    struct = json.loads(payload)
+    struct = json.loads(payload.decode('utf-8'))
     if 'data' in struct:
       self.struct['data'] = struct['data']
     else:
