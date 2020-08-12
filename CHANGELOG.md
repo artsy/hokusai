@@ -1,3 +1,24 @@
+## v0.5.11
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.11/README.md)
+
+### Notable changes since v0.5.10
+
+* dc8292c Move release homebrew from a sh file in the main repo to a circleci command
+* 9c9ecad refactor circleci workflow so beta releases depend on their test versions
+* ac6ba0d cleanup .hokusai-tmp directory on exit unless DEBUG is set
+* e1ee684 use the test or development yaml template when building in test or dev environments
+* 667d9bb Add get-hokusai.sh
+* 1027b21 Fix pyinstaller hidden imports for Python 2 and 3 compatibility
+* a6955a9 Fix  traceback and exception  handling
+* b0383e6 downcase user when creating a pod name
+* b974c75 Merge pull request #212 from izakp/python-3
+* 212483f replace pipenv with poetry
+* 9bf7f56 fix ssl linking in pyinstaller builds
+* 74f85f6 downgrade virtualenv to 15.1.0
+* 6f15580 for post deployment git tagging, force git to replace local tags.
+* a649dd8 move head builds to beta
+
 ## v0.5.10
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.10/README.md)
