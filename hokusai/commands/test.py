@@ -31,7 +31,7 @@ def test(build, cleanup, filename, service_name):
 
   opts = ' --abort-on-container-exit'
   if build:
-    Docker().build()
+    Docker().build(filename=yaml_template)
 
   if service_name is None:
     service_name = config.project_name
