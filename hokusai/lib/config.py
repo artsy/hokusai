@@ -1,5 +1,7 @@
 import os
 import sys
+import shutil
+import atexit
 
 from collections import OrderedDict
 
@@ -25,6 +27,15 @@ class HokusaiConfig(object):
   def __init__(self):
     if not os.path.isdir(HOKUSAI_TMP_DIR):
       os.mkdir(HOKUSAI_TMP_DIR)
+    atexit.register(self.cleanup)
+
+  def cleanup(self):
+    if os.environ.get('DEBUG'):
+      return
+    try:
+      shutil.rmtree(HOKUSAI_TMP_DIR)
+    except:
+      pass
 
   def create(self, project_name):
     config = OrderedDict([
