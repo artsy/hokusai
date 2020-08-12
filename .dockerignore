@@ -24,5 +24,4 @@ hokusai.spec
 LICENSE.txt
 Makefile
 
-release-homebrew.sh
 get-hokusai.sh
