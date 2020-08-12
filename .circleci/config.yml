@@ -251,38 +251,26 @@ workflows:
       - release_beta_linux:
           requires:
             - test_linux2
-            - test_linux3
-            - test_macos2
-            - test_macos3
             - test_integration
           filters:
             branches:
               only: master
       - release_beta3_linux:
           requires:
-            - test_linux2
             - test_linux3
-            - test_macos2
-            - test_macos3
             - test_integration
           filters:
             branches:
               only: master
       - release_beta_macos:
           requires:
-            - test_linux2
-            - test_linux3
             - test_macos2
-            - test_macos3
             - test_integration
           filters:
             branches:
               only: master
       - release_beta3_macos:
           requires:
-            - test_linux2
-            - test_linux3
-            - test_macos2
             - test_macos3
             - test_integration
           filters:
@@ -291,9 +279,6 @@ workflows:
       - release_beta_dockerhub:
           requires:
             - test_linux2
-            - test_linux3
-            - test_macos2
-            - test_macos3
             - test_integration
           filters:
             branches:
