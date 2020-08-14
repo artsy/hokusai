@@ -220,7 +220,7 @@ jobs:
 
   release_homebrew:
     docker:
-      - image: hokusai:latest
+      - image: artsy/hokusai:latest
     steps:
       - run:
           name: release homebrew
