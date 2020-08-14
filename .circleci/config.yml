@@ -222,24 +222,26 @@ jobs:
     docker:
       - image: artsy/hokusai:latest
     steps:
+      - add_ssh_keys
       - run:
           name: release homebrew
           command: |
-            VERSION=$(cat ./hokusai/VERSION)
+            export VERSION=$(hokusai version | sed 's/\x1B\[[0-9;]\+[A-Za-z]//g')
 
             cd /tmp
 
             wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-Darwin-x86_64.tar.gz
 
-            UNAME=$(uname)
+            export UNAME=$(uname)
             if [ $UNAME == "Darwin" ]; then
-              SHA256=$(shasum -a 256 hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
+              export SHA256=$(shasum -a 256 hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
             fi
 
             if [ $UNAME == "Linux" ]; then
-              SHA256=$(sha256sum hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
+              export SHA256=$(sha256sum hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
             fi
 
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:artsy/homebrew-formulas.git
             cd ./homebrew-formulas
 
@@ -266,7 +268,9 @@ jobs:
             end
             EOF
 
-            git commit --author="Hokusai CI" -a -m "Release Hokusai $VERSION"
+            git config user.name "Hokusai CI"
+            git config user.email "it@artsymail.com"
+            git commit -am "Release Hokusai $VERSION"
             git push origin master
 
             cd /tmp
