@@ -4,3 +4,4 @@ include hokusai/lib/*
 include hokusai/services/*
 include hokusai/templates/*
 include hokusai/templates/hokusai/*
+include hokusai/VERSION

@@ -168,7 +168,7 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: pyenv install 2.7.16
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
       - run: pyenv local 2.7.16
       - run: pip install --upgrade pip
