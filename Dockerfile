@@ -11,7 +11,7 @@ RUN apk add \
       openssh
 
 # Install Docker Compose, AWS CLI
-RUN pip install docker-compose==1.22.0 && \
+RUN pip install docker-compose==1.25.5 && \
       pip install awscli --upgrade
 
 # Install the AWS IAM Authenticator
