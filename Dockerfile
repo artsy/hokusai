@@ -4,6 +4,9 @@ WORKDIR /src
 
 # Install Docker
 RUN apk add \
+      build-base \
+      libffi-dev \
+      openssl-dev \
       bash \
       curl \
       docker \
