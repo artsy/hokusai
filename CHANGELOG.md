@@ -1,3 +1,14 @@
+## v0.5.12
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.12/README.md)
+
+### Notable changes since v0.5.11
+
+* bff8d42 Update build dependencies in Dockerfile
+* 7a1452d Update docker-compose to v1.25.5
+* c4412ee Prefer .yaml.j2 over .yaml for compose files
+* 9c93e50 Fix pip installs, include VERSION in MANIFEST.in
+
 ## v0.5.11
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.11/README.md)
