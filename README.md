@@ -128,6 +128,11 @@ $ pip uninstall hokusai
 $ brew link --overwrite hokusai
 ```
 
+If you are on Linux:
+```
+curl -sSL https://raw.githubusercontent.com/artsy/hokusai/master/get-hokusai.sh | sudo bash
+```
+
 ### Alternate Installation Methods
 
 #### Via pip
