@@ -45,7 +45,7 @@ class YamlSpec(object):
     file_basename = os.path.basename(self.template_file)
     if file_basename.endswith('.j2'):
       file_basename = file_basename.rstrip('.j2')
-    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR)
+    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
     self.tmp_filename = f.name
     f.write(self.to_string())
     f.close()
