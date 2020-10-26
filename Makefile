@@ -11,6 +11,7 @@ VERSION ?= $(shell cat hokusai/VERSION)
 MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
+	pip install --upgrade pip
 	pip install poetry --quiet --ignore-installed
 	poetry install --no-root
 
@@ -108,6 +109,7 @@ publish-version:
 	fi
 
 publish-pip:
+	pip install --upgrade wheel
 	python setup.py sdist bdist_wheel
 	twine upload dist/*
 
