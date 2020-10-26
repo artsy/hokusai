@@ -94,7 +94,7 @@ class Deployment(object):
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
         payload.append(item)
 
-      f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR)
+      f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
       f.write(YAML_HEADER)
       f.write(yaml.safe_dump_all(payload, default_flow_style=False))
       f.close()

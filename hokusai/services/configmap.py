@@ -29,7 +29,7 @@ class ConfigMap(object):
     }
 
   def _to_file(self):
-    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR)
+    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
     f.write(json.dumps(self.struct))
     f.close()
     return f

@@ -31,9 +31,9 @@ def command(config_check=True):
           print_red(traceback.format_exc())
         else:
           print_red("ERROR: %s" % str(e))
-        if hasattr(e, 'output'):
+        if hasattr(e, 'output') and e.output is not None:
           print(e.output.decode('utf-8'))
-        elif hasattr(e, 'message'):
+        elif hasattr(e, 'message') and e.message is not None:
           print(e.message.decode('utf-8'))
         sys.exit(1)
     return wrapper

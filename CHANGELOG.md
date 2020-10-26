@@ -1,3 +1,20 @@
+## v0.5.12
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.12/README.md)
+
+### Notable changes since v0.5.11
+
+* a547787 fix: use write mode for named tempfiles explicitly
+* 2327502 fix: don't remove teh entire hokusai temp directory - another invocation of hokusai may be using it
+* 75c851f chore: add a 1-liner to install Hokusai in README.md
+* 53d6b65 fix: use a NamedTemporaryFile for rendering Yaml specs
+* 65f1759 fix: don't try to print an exception with None as message or output
+* 346a610 prefer .j2 ;)
+* 4f6fa62 bump docker-compose to 1.25.5
+* ad5ad81 fix pip installs - include VERSION in MANIFEST.in
+* 900f2bb --enable-framework when running pyenv install in release_version_macos job
+
+
 ## v0.5.11
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.11/README.md)
