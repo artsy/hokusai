@@ -5,11 +5,12 @@ import botocore.exceptions as botoexceptions
 
 from hokusai import CWD
 from hokusai.lib.command import command
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, TEST_YML_FILE, DEVELOPMENT_YML_FILE, config
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.common import get_region_name, print_red, print_green, shout
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
+from hokusai.lib.template_selector import TemplateSelector
 
 @command()
 def check():
@@ -69,25 +70,25 @@ def check():
     check_err("ECR repository '%s'" % config.project_name)
     return_code += 1
 
-  if not os.path.isfile(os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'build.yml')):
-    if os.path.isfile(os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'common.yml')):
-      check_ok('./hokusai/common.yml')
-    else:
-      check_err('./hokusai/build.yml')
-  else:
-    check_ok('./hokusai/build.yml')
+  try:
+    build_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE))
+    check_ok(HOKUSAI_CONFIG_DIR + '/' + os.path.split(build_template)[-1])
+  except HokusaiError:
+    check_err('hokusai/build.*')
     return_code += 1
 
-  if os.path.isfile(os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'development.yml')):
-    check_ok('./hokusai/development.yml')
-  else:
-    check_err('./hokusai/development.yml')
+  try:
+    development_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
+    check_ok(HOKUSAI_CONFIG_DIR + '/' + os.path.split(development_template)[-1])
+  except HokusaiError:
+    check_err('hokusai/development.*')
     return_code += 1
 
-  if os.path.isfile(os.path.join(CWD, HOKUSAI_CONFIG_DIR, 'test.yml')):
-    check_ok('./hokusai/test.yml')
-  else:
-    check_err('./hokusai/test.yml')
+  try:
+    test_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, TEST_YML_FILE))
+    check_ok(HOKUSAI_CONFIG_DIR + '/' + os.path.split(test_template)[-1])
+  except HokusaiError:
+    check_err('hokusai/test.*')
     return_code += 1
 
   for context in ['staging', 'production']:
@@ -97,14 +98,15 @@ def check():
       else:
         check_err("kubectl context '%s'" % context)
         return_code += 1
-
-      if os.path.isfile(os.path.join(CWD, "hokusai/%s.yml" % context)):
-        check_ok("./hokusai/%s.yml" % context)
-      else:
-        check_err("./hokusai/%s.yml" % context)
-        return_code += 1
     except CalledProcessError:
       check_err('%s context' % context)
+      return_code += 1
+
+    try:
+      context_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
+      check_ok(HOKUSAI_CONFIG_DIR + '/' + os.path.split(context_template)[-1])
+    except HokusaiError:
+      check_err("hokusai/%s.*" % context)
       return_code += 1
 
   return return_code
