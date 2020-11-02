@@ -3,6 +3,7 @@ from hokusai.lib.command import command
 from hokusai.services.configmap import ConfigMap
 from hokusai.lib.common import print_green, print_smart
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.lib.log_configmap_changes import log_configmap_changes
 
 
 @command()
@@ -30,7 +31,7 @@ def set_env(context, environment, namespace=None):
     split = s.split('=', 1)
     configmap.update(split[0], split[1])
   configmap.save()
-
+  log_configmap_changes(context, 'set', environment)
 
 @command()
 def unset_env(context, environment, namespace=None):
@@ -39,3 +40,5 @@ def unset_env(context, environment, namespace=None):
   for s in environment:
     configmap.delete(s)
   configmap.save()
+  log_configmap_changes(context, 'unset', environment)
+
