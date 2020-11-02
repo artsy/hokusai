@@ -31,6 +31,7 @@ def set_env(context, environment, namespace=None):
     split = s.split('=', 1)
     configmap.update(split[0], split[1])
   configmap.save()
+  # TODO: pass to log_configmap_changes only var names, not their values.
   log_configmap_changes(context, 'set', environment)
 
 @command()
