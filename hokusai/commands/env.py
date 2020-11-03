@@ -32,7 +32,7 @@ def set_env(context, environment, namespace=None):
     configmap.update(split[0], split[1])
   configmap.save()
   # TODO: pass to log_configmap_changes only var names, not their values.
-  log_configmap_changes(context, 'set', environment)
+  log_configmap_changes(context, namespace, 'set', environment)
 
 @command()
 def unset_env(context, environment, namespace=None):
@@ -41,5 +41,5 @@ def unset_env(context, environment, namespace=None):
   for s in environment:
     configmap.delete(s)
   configmap.save()
-  log_configmap_changes(context, 'unset', environment)
+  log_configmap_changes(context, namespace, 'unset', environment)
 
