@@ -19,22 +19,34 @@ def command(config_check=True):
           sys.exit(0)
         else:
           sys.exit(result)
-      except HokusaiError as e:
-        print_red(e.message)
-        sys.exit(e.return_code)
       except SystemExit:
         raise
       except KeyboardInterrupt:
         raise
-      except (CalledProcessError, Exception) as e:
+      except HokusaiError as e:
+        print_red("ERROR: %s" % e.message)
+        sys.exit(e.return_code)
+      except CalledProcessError as e:
         if get_verbosity() or os.environ.get('DEBUG'):
           print_red(traceback.format_exc())
         else:
           print_red("ERROR: %s" % str(e))
         if hasattr(e, 'output') and e.output is not None:
-          print(e.output.decode('utf-8'))
-        elif hasattr(e, 'message') and e.message is not None:
-          print(e.message.decode('utf-8'))
+          if str == bytes:
+            # Python 2
+            print_red("ERROR: %s" % e.output)
+          else:
+            # Python 3
+            if type(e.output) == bytes:
+              print_red("ERROR: %s" % e.output.decode('utf-8'))
+            else:
+              print_red("ERROR: %s" % e.output)
+        sys.exit(e.returncode)
+      except Exception as e:
+        if get_verbosity() or os.environ.get('DEBUG'):
+          print_red(traceback.format_exc())
+        else:
+          print_red("ERROR: %s" % str(e))
         sys.exit(1)
     return wrapper
   return decorator
