@@ -20,7 +20,7 @@ def command(config_check=True):
         else:
           sys.exit(result)
       except HokusaiError as e:
-        print_red(e.message)
+        print_red("ERROR: %s" % e.message)
         sys.exit(e.return_code)
       except SystemExit:
         raise

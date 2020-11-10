@@ -17,7 +17,7 @@ from botocore import session as botosession
 from termcolor import cprint
 
 from hokusai.lib.config import config
-from hokusai.lib.exceptions import CalledProcessError
+from hokusai.lib.exceptions import HokusaiError, CalledProcessError
 
 CONTEXT_SETTINGS = {
   'terminal_width': 10000,
@@ -78,10 +78,13 @@ def returncode(command, mask=()):
   return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def shout(command, print_output=False, mask=()):
-  if print_output:
-    return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
-  else:
-    return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+  try:
+    if print_output:
+      return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+    else:
+      return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+  except CalledProcessError as e:
+    raise HokusaiError(str(e), return_code=e.returncode, mask=mask)
 
 def shout_concurrent(commands, print_output=False, mask=()):
   if print_output:
