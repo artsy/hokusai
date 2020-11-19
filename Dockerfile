@@ -11,7 +11,8 @@ RUN apk add \
       curl \
       docker \
       git \
-      openssh
+      openssh \
+      jq
 
 # Install Docker Compose, AWS CLI
 RUN pip install docker-compose==1.25.5 && \

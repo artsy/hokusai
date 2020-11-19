@@ -78,10 +78,36 @@ def returncode(command, mask=()):
   return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def shout(command, print_output=False, mask=()):
-  if print_output:
-    return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
-  else:
-    return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+  try:
+    if print_output:
+      return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+    else:
+      return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+  except CalledProcessError as e:
+    if mask:
+      if hasattr(e, 'cmd') and e.cmd is not None:
+        if str == bytes:
+          # Python 2
+          cmd = re.sub(mask[0], mask[1], e.cmd)
+        else:
+          # Python 3
+          if type(e.cmd) == bytes:
+            cmd = re.sub(mask[0], mask[1], e.cmd.decode('utf-8'))
+          else:
+            cmd = re.sub(mask[0], mask[1], e.cmd)
+        e.cmd = cmd
+      if hasattr(e, 'output') and e.output is not None:
+        if str == bytes:
+          # Python 2
+          output = re.sub(mask[0], mask[1], e.output)
+        else:
+          # Python 3
+          if type(e.output) == bytes:
+            output = re.sub(mask[0], mask[1], e.output.decode('utf-8'))
+          else:
+            output = re.sub(mask[0], mask[1], e.output)
+        e.output = output
+    raise
 
 def shout_concurrent(commands, print_output=False, mask=()):
   if print_output:

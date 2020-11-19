@@ -1,3 +1,15 @@
+## v0.5.13
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.12/README.md)
+
+### Notable changes since v0.5.12
+
+* adfbdfb fix: check command uses TemplateSelector
+* 53e9020 Install JQ in hokusai image as it's required for the new version of slack orb
+* 75b1be4 fix: treat HokusaiError separately from CalledProccessError on exit
+* e2edea5 fix: mask CalledProcessError msg and output attributes
+* 7bc6cc1 hotfix: upgrade pip and wheel dependencies in order to fix pip errors
+
 ## v0.5.12
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.12/README.md)
