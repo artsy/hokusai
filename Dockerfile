@@ -3,20 +3,20 @@ FROM python:2.7-alpine
 WORKDIR /src
 
 # Install Docker
-RUN apk add \
-      build-base \
-      libffi-dev \
-      openssl-dev \
+RUN apk add --no-cache \
       bash \
+      build-base \
       curl \
-      docker \
+      docker-cli \
       git \
+      jq \
+      libffi-dev \
       openssh \
-      jq
+      openssl-dev
 
 # Install Docker Compose, AWS CLI
-RUN pip install docker-compose==1.25.5 && \
-      pip install awscli --upgrade
+RUN pip --no-cache-dir install docker-compose==1.25.5 && \
+      pip --no-cache-dir install awscli --upgrade
 
 # Install the AWS IAM Authenticator
 RUN curl -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.4.0/aws-iam-authenticator_0.4.0_linux_amd64 -o /usr/local/bin/aws-iam-authenticator && \
