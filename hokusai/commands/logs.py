@@ -26,7 +26,7 @@ def logs(context, timestamps, follow, tail, previous, labels, namespace=None):
     selectors.append(l)
 
   pods = kctl.get_objects('pod', selector=(',').join(selectors))
-  pods = filter(lambda pod: pod['status']['phase'] == 'Running', pods)
+  pods = list(filter(lambda pod: pod['status']['phase'] == 'Running', pods))
   containers = []
 
   for pod in pods:
