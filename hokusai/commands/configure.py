@@ -21,7 +21,7 @@ from hokusai.lib.command import command
 from hokusai.lib.common import print_green, get_region_name
 from hokusai.lib.exceptions import HokusaiError
 
-@command()
+@command(config_check=False)
 def configure(kubectl_version, bucket_name, key_name, config_file, install_to, install_config_to):
   if global_config.is_present() and global_config.kubectl_version is not None:
     kubectl_version = global_config.kubectl_version
