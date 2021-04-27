@@ -1,3 +1,14 @@
+## v0.5.14
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.14/README.md)
+
+### Notable changes since v0.5.13
+
+* 9d43922 fix: skip project config check when configuring hokusai (#249)
+* 9c0f660 fix: filter returns iterable and not a list in py3 so cast to list
+* 3c69774 fix: urlretrieve import
+* e16f9b6 feature: Hokusai Lite
+
 ## v0.5.13
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.12/README.md)
