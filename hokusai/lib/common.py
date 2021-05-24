@@ -88,7 +88,10 @@ def shout(command, print_output=False, mask=()):
         return retval
       else:
         # Python 3
-        return retval.decode('utf-8')
+        if type(retval) == bytes:
+          return retval.decode('utf-8')
+        else:
+          return retval
 
   except CalledProcessError as e:
     if mask:
