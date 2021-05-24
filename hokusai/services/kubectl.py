@@ -17,7 +17,7 @@ class Kubectl(object):
   def get_object(self, obj):
     cmd = self.command("get %s -o json" % obj)
     try:
-      return json.loads(shout(cmd).decode('utf-8'))
+      return json.loads(shout(cmd))
     except ValueError:
       return None
 
@@ -27,7 +27,7 @@ class Kubectl(object):
     else:
       cmd = self.command("get %s -o json" % obj)
     try:
-      return json.loads(shout(cmd).decode('utf-8'))['items']
+      return json.loads(shout(cmd))['items']
     except ValueError:
       return []
 
