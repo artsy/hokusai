@@ -34,7 +34,7 @@ test-docker3:
 	$(DOCKER_RUN) \
 	  --volume "$(PWD)":"/src/$(PROJECT):rw" \
 	  --workdir "/src/$(PROJECT)" \
-	  python:3.5 make dependencies test
+	  python:3.7 make dependencies test
 
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
@@ -64,7 +64,7 @@ build-linux-docker3:
 	  --volume "$(PWD)"/dist:/dist \
 	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
 	  --workdir "/src/$(PROJECT)" \
-	  python:3.5.8 make dependencies build
+	  python:3.7 make dependencies build
 
 image:
 	echo $(VERSION)

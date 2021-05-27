@@ -11,7 +11,7 @@ jobs:
 
   test_linux3:
     docker:
-      - image: python:3.5.8
+      - image: python:3.7
     steps:
       - checkout
       - run: make dependencies
@@ -86,7 +86,7 @@ jobs:
 
   release_beta3_linux:
     docker:
-      - image: python:3.5.8
+      - image: python:3.7
     steps:
       - checkout
       - run: apt-get -qq update
@@ -97,7 +97,7 @@ jobs:
 
   release_version_linux:
     docker:
-      - image: python:2.7
+      - image: python:3.7
     steps:
       - checkout
       - run: apt-get -qq update
@@ -170,7 +170,7 @@ jobs:
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
       - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 3.7
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build
