@@ -18,48 +18,59 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 
 ## Requirements
 
-1. [Python 2.7 or 3.5](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
+1. Setting up Python
 
 It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.  See [this guide](https://realpython.com/intro-to-pyenv/) for working with pyenv.
 
 ```
 # Only if you don't already have pyenv installed
 brew install pyenv
-
-pyenv install -s
 ```
 
-Before installing pythons via pyenv, make sure you are using brew-installed libraries `openssl`, `readline` and xcode-installed `zlib` and these libraries are correctly linked.  For example:
+Add the following paths to the bash profile:
 
 ```
-brew install openssl
-
-If you need to have openssl@1.1 first in your PATH run:
-  echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
-
-For compilers to find openssl@1.1 you may need to set:
-  export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
-  export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
-
-For pkg-config to find openssl@1.1 you may need to set:
-  export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
 ```
 
-Now, when installing pythons you should see the following output.
+Make sure you are using brew-installed libraries `openssl`, `readline` and xcode-installed `zlib` and these libraries are correctly linked:
 
 ```
-$ pyenv install 3.5.8
+brew install openssl readline zlib
+```
 
-python-build: use openssl from homebrew
-python-build: use readline from homebrew
+Then update the following paths to your bash profile:
 
-Downloading Python-3.5.8.tar.xz...
--> https://www.python.org/ftp/python/3.5.8/Python-3.5.8.tar.xz
-Installing Python-3.5.8...
-python-build: use readline from homebrew
-python-build: use zlib from xcode sdk
+```
+echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
+echo 'export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"' >> ~/.bash_profile
+echo 'export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"' >> ~/.bash_profile
+echo 'export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"' >> ~/.bash_profile
+```
 
-Installed Python-3.5.8 to $HOME/.pyenv/versions/3.5.8
+Add pyenv init to your shell:
+
+```
+echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+```
+
+Now, install desired version of Python and you should see similar version of the following output:
+
+```
+pyenv install 3.5.8
+
+    python-build: use openssl from homebrew
+    python-build: use readline from homebrew
+
+    Downloading Python-3.5.8.tar.xz...
+    -> https://www.python.org/ftp/python/3.5.8/Python-3.5.8.tar.xz
+    Installing Python-3.5.8...
+    python-build: use readline from homebrew
+    python-build: use zlib from xcode sdk
+
+    Installed Python-3.5.8 to $HOME/.pyenv/versions/3.5.8
 ```
 
 Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
