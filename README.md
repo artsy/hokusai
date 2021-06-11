@@ -16,135 +16,25 @@ At [Artsy](http://www.artsy.net), as we began working with Kubernetes, while imp
 
 Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, and comes with a steep learning curve. We set out to create a Heroku-like CLI that would shepherd the application developer into the ecosystems of Docker and Kubernetes, and while introducing new tooling and concepts, outlining a clear practice for dependency management, local development, testing and CI, image repository structure, deployment and orchestration.
 
-## Requirements
-
-1. [Python 2.7 or 3.5](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/)
-
-It's recommended that you use [`pyenv`](https://github.com/pyenv/pyenv) to install the correct version of python.  See [this guide](https://realpython.com/intro-to-pyenv/) for working with pyenv.
-
-```
-# Only if you don't already have pyenv installed
-brew install pyenv
-
-pyenv install -s
-```
-
-Before installing pythons via pyenv, make sure you are using brew-installed libraries `openssl`, `readline` and xcode-installed `zlib` and these libraries are correctly linked.  For example:
-
-```
-brew install openssl
-
-If you need to have openssl@1.1 first in your PATH run:
-  echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
-
-For compilers to find openssl@1.1 you may need to set:
-  export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
-  export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
-
-For pkg-config to find openssl@1.1 you may need to set:
-  export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
-```
-
-Now, when installing pythons you should see the following output.
-
-```
-$ pyenv install 3.5.8
-
-python-build: use openssl from homebrew
-python-build: use readline from homebrew
-
-Downloading Python-3.5.8.tar.xz...
--> https://www.python.org/ftp/python/3.5.8/Python-3.5.8.tar.xz
-Installing Python-3.5.8...
-python-build: use readline from homebrew
-python-build: use zlib from xcode sdk
-
-Installed Python-3.5.8 to $HOME/.pyenv/versions/3.5.8
-```
-
-Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
-
-2. [Virtualenv](https://virtualenv.pypa.io/en/latest/) and [Poetry](https://python-poetry.org/)
-
-It's recommended that you use [Virtualenv](https://virtualenv.pypa.io/en/latest/) to manage different project dependencies, though this is not required.  See [this guide](https://docs.python-guide.org/dev/virtualenvs/) to get started with virtualenv management.
-
-```
-pip install virtualenv virtualenvwrapper
-mkvirtualenv hokusai
-workon hokusai
-```
-
-Use [`poetry`](https://python-poetry.org/) to install development dependencies.  See [this guide](https://python-poetry.org/docs/basic-usage/) for working with poetry.
-
-Install poetry:
-
-```
-pip install poetry
-```
-
-Install dev dependencies:
-
-```
-poetry install --no-root
-```
-
-Update dev dependencies:
-
-```
-poetry lock
-```
-
-To install hokusai package dependencies from `setup.py` in "editable" mode, run
-
-```
-pip install -e .
-```
-
-Other installation methods can be found in the project's repo
-
-3. [Docker](https://docs.docker.com/)
-
-If you use homebrew on OSX, install Docker for Mac with: `brew tap caskroom/cask && brew cask install docker`
-
-4. [Docker Compose](https://docs.docker.com/compose/)
-
-If you installed Docker for Mac, `docker-compose` is also installed. Otherwise install with: `pip install docker-compose`.
-
-5. [Git](https://git-scm.com/)
-
 ## Installation
 
-If you're on OSX, the preferred installation method is via homebrew:
+MacOS:
 
 ```
 $ brew tap artsy/formulas
 $ brew install hokusai
 ```
 
-If you've previously installed hokusai via an alternate installation method, you may need to force the `link` step. If you installed hokusai via pip, you may also want to cleanup that installation:
+Linux:
 
-```
-$ pip uninstall hokusai
-$ brew link --overwrite hokusai
-```
-
-If you are on Linux:
 ```
 curl -sSL https://raw.githubusercontent.com/artsy/hokusai/master/get-hokusai.sh | sudo bash
 ```
 
-### Alternate Installation Methods
-
-#### Via pip
-
-Note: If installing via pip fails due to pip failing to upgrade your system Python packages, try running `pip install hokusai --ignore-installed`.
-
-#### Via curl
-
-Note: You may need to adjust the target destination to match a directory in your `$PATH`.
+Pip:
 
 ```
-curl --silent https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-latest-$(uname -s)-$(uname -m) -o /usr/local/bin/hokusai && chmod +x /usr/local/bin/hokusai
+pip install hokusai
 ```
 
 ## Setup
@@ -162,38 +52,15 @@ See [Getting Started.md](./docs/Getting_Started.md) to start using Hokusai for y
 
 A full command reference can be found in [Command Reference.md](./docs/Command_Reference.md).
 
-## Developing Hokusai
-
-To work on Hokusai itself, set up your local development environment like so:
-
-- As above, install `python`, `poetry`, `docker`, `docker-compose` and `git`.
-
-To install the Hokusai package in "editable mode" from a checkout of this repository, you can run `pip install --editable .` This works well in combination with [Virtualenv/Virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) as you can install the project in editable mode within a virtualenv, and from a release in your default system environment.
-
-## Testing Hokusai
-
-Hokusai is currently tested on Pythons 2.7.16 and 3.5.8.
-
-1) Install poetry (see above).
-
-2) Install dependencies: `poetry install --no-root`.
-
-3) Run tests
-
-All tests can be run with `make tests`.
-
-Only run unit tests: `make test`
-Only run integration tests: `make integration`
-
-Tests for specific modules, TestClasses, or even methods can be run with `python -m unittest test.unit.test_module.TestClass.test_method`
-
-Set the `DEBUG=1` environment variable to print boto logging
-
 ## Review Apps
 
 Hokusai can be used to simplify the process of spinning up a "review app" instance of your project, based on a feature branch or pull request.
 
 Full details are in the [Review App reference](./docs/Review_Apps.md).
+
+## Developing Hokusai
+
+To develop Hokusai itself, see [Developing Hokusai](./docs/develop.md).
 
 ## Distributing Hokusai
 
