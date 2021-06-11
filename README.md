@@ -40,7 +40,7 @@ Make sure you are using brew-installed libraries `openssl`, `readline` and xcode
 brew install openssl readline zlib
 ```
 
-Then update the following paths to your bash profile:
+Update the following paths to your bash profile:
 
 ```
 echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
@@ -56,7 +56,7 @@ echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
 echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
 ```
 
-Now, install desired version of Python and you should see similar version of the following output:
+Install desired version of Python and you should see similar version of the following output:
 
 ```
 pyenv install 3.5.8
@@ -73,14 +73,34 @@ pyenv install 3.5.8
     Installed Python-3.5.8 to $HOME/.pyenv/versions/3.5.8
 ```
 
+With Python installed, activate the desired version for Python using `pyenv global` command. 
+
+```
+pyenv global 3.5.8
+```
+
 Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
 
 2. [Virtualenv](https://virtualenv.pypa.io/en/latest/) and [Poetry](https://python-poetry.org/)
 
-It's recommended that you use [Virtualenv](https://virtualenv.pypa.io/en/latest/) to manage different project dependencies, though this is not required.  See [this guide](https://docs.python-guide.org/dev/virtualenvs/) to get started with virtualenv management.
+It's recommended that you use [Virtualenv](https://virtualenv.pypa.io/en/latest/) to manage different project dependencies, though this is not required.  See [this guide](https://docs.python-guide.org/dev/virtualenvs/) to get started with virtualenv management. 
 
 ```
 pip install virtualenv virtualenvwrapper
+```
+
+Add the following paths to the bash profile:
+
+```
+echo 'export WORKON_HOME=$HOME/.virtualenvs' >> ~/.bash_profile
+echo 'export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv' >> ~/.bash_profile
+echo 'export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python' >> ~/.bash_profile
+echo 'source '/usr/local/bin/virtualenvwrapper.sh' >> ~/.bash_profile
+```
+
+Create and activate the virtual environment:
+
+```
 mkvirtualenv hokusai
 workon hokusai
 ```
