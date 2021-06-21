@@ -101,7 +101,7 @@ echo 'source '/usr/local/bin/virtualenvwrapper.sh' >> ~/.bash_profile
 Create and activate the virtual environment:
 
 ```
-mkvirtualenv hokusai
+mkvirtualenv -p 3.5.8 hokusai
 workon hokusai
 ```
 
