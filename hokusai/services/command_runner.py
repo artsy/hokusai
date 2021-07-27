@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import pipes
 
@@ -19,7 +20,10 @@ class CommandRunner(object):
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
     if os.environ.get('USER') is not None:
-      uuid = "%s-%s" % (os.environ.get('USER').lower(), k8s_uuid())
+      # The regex used for the  validation of uuid is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')
+      user = re.sub("[^0-9a-z]+", "-", os.environ.get('USER').lower())
+      if user.startswith('-'): user = "user" + user
+      uuid = "%s-%s" % (user, k8s_uuid())
     else:
       uuid = k8s_uuid()
 
