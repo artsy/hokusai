@@ -62,7 +62,9 @@ class TestCommon(HokusaiUnitTestCase):
   @patch('hokusai.lib.common.check_output', return_value='hokusai')
   def test_shout(self, mocked_check_output):
     with captured_output() as (out, err):
-      self.assertEqual(shout('whoami'), 'hokusai')
+      retval = shout('whoami')
+      self.assertEqual(retval, 'hokusai')
+      self.assertEqual(type(retval), str)
       mocked_check_output.assert_called_once_with('whoami', shell=True, stderr=-2)
 
   @patch('hokusai.lib.common.check_call', return_value=0)

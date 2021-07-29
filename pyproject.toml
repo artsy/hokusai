@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hokusai"
-version = "0.5.10"
+version = "0.5.15"
 description = "Hokusai is a Docker + Kubernetes CLI for application developers."
 authors = ["Isac Petruzzi <isac.petruzzi@gmail.com>"]
 

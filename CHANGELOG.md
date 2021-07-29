@@ -1,6 +1,12 @@
-## v0.5.14
+## v0.5.15
 
-[Documentation](https://github.com/artsy/hokusai/blob/v0.5.14/README.md)
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.15/README.md)
+
+### Notable changes since v0.5.14
+* 7930029 fix: python 3 fixes
+* b7cd7d7 documentation updates
+* 19a13b1 fix: replacing invalid character with '-' for the pod name
+* 80fed3b fix: reverted promt-toolkit version due to mismatch with python 3.5
 
 ### Notable changes since v0.5.13
 

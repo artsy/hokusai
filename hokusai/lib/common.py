@@ -82,7 +82,17 @@ def shout(command, print_output=False, mask=()):
     if print_output:
       return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
     else:
-      return check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+      retval = check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+      if str == bytes:
+        # Python 2
+        return retval
+      else:
+        # Python 3
+        if type(retval) == bytes:
+          return retval.decode('utf-8')
+        else:
+          return retval
+
   except CalledProcessError as e:
     if mask:
       if hasattr(e, 'cmd') and e.cmd is not None:
