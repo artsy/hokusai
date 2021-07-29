@@ -28,7 +28,7 @@ setup(name='hokusai',
       install_requires=[
           'click~=6.7',
           'click-repl~=0.1',
-          'prompt-toolkit~=3.0.18',
+          'prompt-toolkit >= 2.0.0',
           'MarkupSafe~=1.0',
           'Jinja2~=2.10',
           'packaging',
