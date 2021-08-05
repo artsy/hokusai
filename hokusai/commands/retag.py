@@ -7,7 +7,7 @@ def retag(tag_to_change, tag_to_match):
   ecr = ECR()
 
   if not ecr.project_repo_exists():
-    raise HokusaiError("Project repo does not exist.  Aborting.")
+    raise HokusaiError("Project repo does not exist. Aborting.")
 
   try:
     ecr.retag(tag_to_match, tag_to_change)
