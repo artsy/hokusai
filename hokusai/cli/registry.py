@@ -47,3 +47,15 @@ def images(tag_exists, reverse_sort, limit, filter_tags, digests, verbose):
   """Print images and tags in the project's registry"""
   set_verbosity(verbose)
   hokusai.images(tag_exists, reverse_sort, limit, filter_tags, digests)
+
+@registry.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('tag1', type=click.Choice(['staging', 'production']))
+@click.argument('tag2', type=click.STRING)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def retag(tag1, tag2, verbose):
+  """
+  On the registry, make tag1 point to the same image pointed to by tag2.\n
+  Tag1 must be either 'staging' or 'production'.
+  """
+  set_verbosity(verbose)
+  hokusai.retag(tag1, tag2)

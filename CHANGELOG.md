@@ -1,3 +1,11 @@
+## v0.5.16
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.16/README.md)
+
+### Notable changes since v0.5.15
+
+* 3c58b49 feat: Introduce 'hokusai registry retag' command. (#262)
+
 ## v0.5.15
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.15/README.md)
@@ -8,6 +16,10 @@
 * 19a13b1 fix: replacing invalid character with '-' for the pod name
 * 80fed3b fix: reverted promt-toolkit version due to mismatch with python 3.5
 
+## v0.5.14
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.14/README.md)
+
 ### Notable changes since v0.5.13
 
 * 9d43922 fix: skip project config check when configuring hokusai (#249)
@@ -17,7 +29,7 @@
 
 ## v0.5.13
 
-[Documentation](https://github.com/artsy/hokusai/blob/v0.5.12/README.md)
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.13/README.md)
 
 ### Notable changes since v0.5.12
 
