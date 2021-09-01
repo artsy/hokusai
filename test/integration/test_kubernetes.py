@@ -16,6 +16,8 @@ from hokusai import CWD
 from hokusai.lib.common import shout
 from hokusai.commands import kubernetes
 from hokusai.services.kubectl import Kubectl
+from hokusai.services.deployment import Deployment
+from hokusai.services.configmap import ConfigMap
 
 
 class TestKubernetes(HokusaiIntegrationTestCase):
@@ -33,7 +35,14 @@ class TestKubernetes(HokusaiIntegrationTestCase):
 
     @httpretty.activate
     @patch('hokusai.lib.command.sys.exit')
-    def test_00_k8s_create(self, mocked_sys_exit):
+    def test_00_k8s_env_create(self, mocked_sys_exit):
+        configmap = ConfigMap(TEST_KUBE_CONTEXT)
+        configmap.create()
+
+
+    @httpretty.activate
+    @patch('hokusai.lib.command.sys.exit')
+    def test_01_k8s_create(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -43,14 +52,15 @@ class TestKubernetes(HokusaiIntegrationTestCase):
         with captured_output() as (out, err):
             kubernetes.k8s_create(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml)
             mocked_sys_exit.assert_called_once_with(0)
-            # self.assertIn('deployment.apps "hello-web" created', out.getvalue().strip())
-            # self.assertIn('service "hello-web" created', out.getvalue().strip())
             self.assertIn('Created Kubernetes environment %s' % self.__class__.kubernetes_yml,
                             out.getvalue().strip())
 
+        deployments = shout(self.kctl.command("get deployments"))
+        self.assertIn("hello-web", deployments)
+
     @httpretty.activate
     @patch('hokusai.lib.command.sys.exit')
-    def test_01_k8s_update(self, mocked_sys_exit):
+    def test_02_k8s_update(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -67,7 +77,7 @@ class TestKubernetes(HokusaiIntegrationTestCase):
 
     @httpretty.activate
     @patch('hokusai.lib.command.sys.exit')
-    def test_02_k8s_status(self, mocked_sys_exit):
+    def test_03_k8s_status(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -104,9 +114,17 @@ class TestKubernetes(HokusaiIntegrationTestCase):
             # TODO enable heapster in minikube to get top pods
             # kubernetes.k8s_status(TEST_KUBE_CONTEXT, False, False, False, True, filename=self.__class__.kubernetes_yml)
 
+
     @httpretty.activate
     @patch('hokusai.lib.command.sys.exit')
-    def test_03_k8s_delete(self, mocked_sys_exit):
+    def test_04_deployment_refresh(self, mocked_sys_exit):
+        deployment = Deployment(TEST_KUBE_CONTEXT)
+        deployment.refresh()
+
+
+    @httpretty.activate
+    @patch('hokusai.lib.command.sys.exit')
+    def test_05_k8s_delete(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -118,3 +136,10 @@ class TestKubernetes(HokusaiIntegrationTestCase):
             mocked_sys_exit.assert_called_once_with(0)
             self.assertIn('Deleted Kubernetes environment %s' % self.__class__.kubernetes_yml,
                             out.getvalue().strip())
+
+    @httpretty.activate
+    @patch('hokusai.lib.command.sys.exit')
+    def test_06_k8s_env_destroy(self, mocked_sys_exit):
+        configmap = ConfigMap(TEST_KUBE_CONTEXT)
+        configmap.destroy()
+
