@@ -38,7 +38,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
     if len(git_repo_and_branch) == 2:
       git_branch = git_repo_and_branch[1]
     else:
-      git_branch = "master"
+      git_branch = "main"
     shout("git clone -b %s --single-branch %s %s" % (git_branch, git_repo, scratch_dir))
 
   custom_template_dir = None
