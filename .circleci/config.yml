@@ -208,7 +208,7 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.8
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.8 
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
       - run: pyenv local 3.5.8
       - run: pip install --upgrade pip
@@ -391,6 +391,9 @@ workflows:
           requires:
             - test_macos_11_1_0_py_2
             - test_integration
+          filters:
+            branches:
+              only: master
       - release_beta_macos_11_python_3:
           requires:
             - test_macos_11_1_0_py_3
