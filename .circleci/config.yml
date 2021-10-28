@@ -134,7 +134,7 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos4:
+  test_macos_11_1:
     macos:
       xcode: "12.5.1"
     steps:
@@ -147,7 +147,7 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos5:
+  test_macos_11_3:
     macos:
       xcode: "13.1"
     steps:
@@ -316,6 +316,14 @@ workflows:
             branches:
               ignore: release
       - test_macos3:
+          filters:
+            branches:
+              ignore: release
+      - test_macos_11_1:
+          filters:
+            branches:
+              ignore: release
+      - test_macos_11_3:
           filters:
             branches:
               ignore: release
