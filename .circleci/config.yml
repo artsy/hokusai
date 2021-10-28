@@ -134,7 +134,7 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos11.1:
+  test_macos4:
     macos:
       xcode: "12.5.1"
     steps:
@@ -147,7 +147,7 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos11.3:
+  test_macos5:
     macos:
       xcode: "13.1"
     steps:
