@@ -108,7 +108,7 @@ jobs:
       - run: make publish-version
       - run: make publish-latest
 
-  test_macos_11_6_py_2:
+  test_macos_10_15_6_py_2:
     macos:
       xcode: "11.6.0"
     steps:
@@ -121,7 +121,7 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  test_macos_11_6_py_3:
+  test_macos_10_15_6_py_3:
     macos:
       xcode: "11.6.0"
     steps:
@@ -311,19 +311,19 @@ workflows:
           filters:
             branches:
               ignore: release
-      - test_macos2:
+      - test_macos_10_15_6_py_2:
           filters:
             branches:
               ignore: release
-      - test_macos3:
+      - test_macos_10_15_6_py_3:
           filters:
             branches:
               ignore: release
-      - test_macos_11_1:
+      - test_macos_11_1_py_2:
           filters:
             branches:
               ignore: release
-      - test_macos_11_3:
+      - test_macos_11_1_py_3:
           filters:
             branches:
               ignore: release
@@ -347,14 +347,25 @@ workflows:
               only: master
       - release_beta_macos:
           requires:
-            - test_macos2
+            - test_macos_10_15_6_py_2
             - test_integration
           filters:
             branches:
               only: master
       - release_beta3_macos:
           requires:
-            - test_macos3
+            - test_macos_10_15_6_py_3
+            - test_integration
+          filters:
+            branches:
+              only: master
+      - release_beta_macos_11_python_2:
+          requires:
+            - test_macos_11_1_0_py_2
+            - test_integration
+      - release_beta_macos_11_python_3:
+          requires:
+            - test_macos_11_1_0_py_3
             - test_integration
           filters:
             branches:
