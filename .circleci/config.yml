@@ -108,7 +108,7 @@ jobs:
       - run: make publish-version
       - run: make publish-latest
 
-  test_macos2:
+  test_macos_11_6_py_2:
     macos:
       xcode: "11.6.0"
     steps:
@@ -121,7 +121,7 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  test_macos3:
+  test_macos_11_6_py_3:
     macos:
       xcode: "11.6.0"
     steps:
@@ -134,22 +134,22 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos_11_1:
+  test_macos_11_1_py_2:
     macos:
       xcode: "12.5.1"
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 3.5.8
+      - run: pyenv install 2.7.16
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.5.8
+      - run: pyenv local 2.7.16
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test
   
-  test_macos_11_3:
+  test_macos_11_1_py_3:
     macos:
-      xcode: "13.1"
+      xcode: "12.5.1"
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
