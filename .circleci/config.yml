@@ -134,7 +134,7 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos_11_1_py_2:
+  test_macos_11_1_0_py_2:
     macos:
       xcode: "12.5.1"
     steps:
@@ -147,7 +147,7 @@ jobs:
       - run: make dependencies
       - run: make test
   
-  test_macos_11_1_py_3:
+  test_macos_11_1_0_py_3:
     macos:
       xcode: "12.5.1"
     steps:
@@ -319,11 +319,11 @@ workflows:
           filters:
             branches:
               ignore: release
-      - test_macos_11_1_py_2:
+      - test_macos_11_1_0_py_2:
           filters:
             branches:
               ignore: release
-      - test_macos_11_1_py_3:
+      - test_macos_11_1_0_py_3:
           filters:
             branches:
               ignore: release
