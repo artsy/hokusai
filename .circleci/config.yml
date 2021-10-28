@@ -347,14 +347,6 @@ workflows:
           filters:
             branches:
               ignore: release
-      - test_macos_11_1_0_py_2:
-          filters:
-            branches:
-              ignore: release
-      - test_macos_11_1_0_py_3:
-          filters:
-            branches:
-              ignore: release
       - test_integration:
           filters:
             branches:
@@ -383,20 +375,6 @@ workflows:
       - release_beta3_macos:
           requires:
             - test_macos_10_15_6_py_3
-            - test_integration
-          filters:
-            branches:
-              only: master
-      - release_beta_macos_11_python_2:
-          requires:
-            - test_macos_11_1_0_py_2
-            - test_integration
-          filters:
-            branches:
-              only: master
-      - release_beta_macos_11_python_3:
-          requires:
-            - test_macos_11_1_0_py_3
             - test_integration
           filters:
             branches:
