@@ -362,3 +362,4 @@ workflows:
           filters:
             branches:
               only: release
+              
