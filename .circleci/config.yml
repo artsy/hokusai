@@ -108,7 +108,7 @@ jobs:
       - run: make publish-version
       - run: make publish-latest
 
-  test_macos_10_15_6_py_2:
+  test_macos2:
     macos:
       xcode: "11.6.0"
     steps:
@@ -121,35 +121,9 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  test_macos_10_15_6_py_3:
+  test_macos3:
     macos:
       xcode: "11.6.0"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 3.5.8
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.5.8
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make test
-  
-  test_macos_11_1_0_py_2:
-    macos:
-      xcode: "12.5.1"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 2.7.16
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make test
-  
-  test_macos_11_1_0_py_3:
-    macos:
-      xcode: "12.5.1"
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
@@ -187,34 +161,6 @@ jobs:
       - run: make dependencies
       - run: make build VERSION=beta3
       - run: make publish-beta3
-  
-  release_beta_macos_11_python_2:
-    macos:
-      xcode: "12.5.1"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make build VERSION=beta3
-      - run: make publish-beta-macos11-python2
-  
-  release_beta_macos_11_python_3:
-    macos:
-      xcode: "12.5.1"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.8 
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.5.8
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make build VERSION=beta3
-      - run: make publish-beta-macos11-python2
 
   release_version_macos:
     macos:
@@ -339,11 +285,11 @@ workflows:
           filters:
             branches:
               ignore: release
-      - test_macos_10_15_6_py_2:
+      - test_macos2:
           filters:
             branches:
               ignore: release
-      - test_macos_10_15_6_py_3:
+      - test_macos3:
           filters:
             branches:
               ignore: release
@@ -367,14 +313,14 @@ workflows:
               only: master
       - release_beta_macos:
           requires:
-            - test_macos_10_15_6_py_2
+            - test_macos2
             - test_integration
           filters:
             branches:
               only: master
       - release_beta3_macos:
           requires:
-            - test_macos_10_15_6_py_3
+            - test_macos3
             - test_integration
           filters:
             branches:
