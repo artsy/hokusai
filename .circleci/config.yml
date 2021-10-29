@@ -121,7 +121,7 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  test_macos_catalina_pyhon3:
+  test_macos_catalina_python3:
     macos:
       xcode: "11.6.0"
     steps:
