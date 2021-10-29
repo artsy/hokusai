@@ -108,7 +108,7 @@ jobs:
       - run: make publish-version
       - run: make publish-latest
 
-  test_macos2:
+  test_macos_catalina_python2:
     macos:
       xcode: "11.6.0"
     steps:
@@ -121,7 +121,7 @@ jobs:
       - run: make dependencies
       - run: make test
 
-  test_macos3:
+  test_macos_catalina_pyhon3:
     macos:
       xcode: "11.6.0"
     steps:
@@ -130,6 +130,32 @@ jobs:
       - run: pyenv install 3.5.8
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
       - run: pyenv local 3.5.8
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make test
+
+  test_macos_bigsur_python2:
+    macos:
+      xcode: "13.1.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
+      - run: pyenv install 2.7.16
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pyenv local 2.7.16
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make test
+
+  test_macos_bigsur_python3:
+    macos:
+      xcode: "13.1.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
+      - run: pyenv install 3.8.8
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pyenv local 3.8.8
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test
@@ -285,11 +311,19 @@ workflows:
           filters:
             branches:
               ignore: release
-      - test_macos2:
+      - test_macos_catalina_python2:
           filters:
             branches:
               ignore: release
-      - test_macos3:
+      - test_macos_catalina_python3:
+          filters:
+            branches:
+              ignore: release
+      - test_macos_bigsur_python2:
+          filters:
+            branches:
+              ignore: release
+      - test_macos_bigsur_python3:
           filters:
             branches:
               ignore: release
@@ -313,14 +347,14 @@ workflows:
               only: master
       - release_beta_macos:
           requires:
-            - test_macos2
+            - test_macos_catalina_python2
             - test_integration
           filters:
             branches:
               only: master
       - release_beta3_macos:
           requires:
-            - test_macos3
+            - test_macos_catalina_python3
             - test_integration
           filters:
             branches:
