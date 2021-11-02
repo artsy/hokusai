@@ -188,7 +188,7 @@ jobs:
 
   release_dockerhub:
     docker:
-      - image: docker:18.09
+      - image: docker:20.10.10
     steps:
       - checkout
       - setup_remote_docker
@@ -347,7 +347,7 @@ workflows:
       - release_dockerhub:
           filters:
             branches:
-              only: release
+              only: check-pyyaml-version
       - release_github:
           requires:
             - release_version_linux
