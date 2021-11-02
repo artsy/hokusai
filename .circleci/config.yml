@@ -188,7 +188,7 @@ jobs:
 
   release_dockerhub:
     docker:
-      - image: docker:20.10.10
+      - image: docker:18.09
     steps:
       - checkout
       - setup_remote_docker
