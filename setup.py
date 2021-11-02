@@ -32,7 +32,7 @@ setup(name='hokusai',
           'MarkupSafe~=1.0',
           'Jinja2~=2.10',
           'packaging',
-          'PyYAML~=3.12',
+          'PyYAML~=6.0',
           'termcolor~=1.1',
           'boto3~=1.4',
           'botocore~=1.12'
