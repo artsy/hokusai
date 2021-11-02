@@ -195,7 +195,7 @@ jobs:
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: apk add curl make
       - run: make image
-      - run: make publish-dockerhub
+      #- run: make publish-dockerhub
 
   release_beta_dockerhub:
     docker:
