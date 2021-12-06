@@ -1,3 +1,11 @@
+## v0.5.17
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.17/README.md)
+
+### Notable changes since v0.5.16
+
+* 126b373 feat: discontinue ecr repository exists test before run a kubectl command #272
+
 ## v0.5.16
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.16/README.md)
