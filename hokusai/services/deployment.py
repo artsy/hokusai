@@ -63,9 +63,6 @@ class Deployment(object):
       if return_code:
         raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
-    # Patch the deployments
-    deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
-
     if filename is None:
       yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
     else:
@@ -87,7 +84,6 @@ class Deployment(object):
       payload = []
       for item in yaml_spec:
         if item['kind'] == 'Deployment':
-          item['spec']['template']['metadata']['labels']['deploymentTimestamp'] = deployment_timestamp
           item['spec']['progressDeadlineSeconds'] = timeout
           for container in item['spec']['template']['spec']['containers']:
             if self.ecr.project_repo in container['image']:
@@ -113,9 +109,6 @@ class Deployment(object):
         patch = {
           "spec": {
             "template": {
-              "metadata": {
-                "labels": {"deploymentTimestamp": deployment_timestamp}
-              },
               "spec": {
                 "containers": deployment_targets
               }
@@ -196,19 +189,9 @@ class Deployment(object):
       raise HokusaiError("One or more post-deploy steps failed!")
 
   def refresh(self):
-    deployment_timestamp = datetime.datetime.utcnow().strftime("%s%f")
     for deployment in self.cache:
-      patch = {
-        "spec": {
-          "template": {
-            "metadata": {
-              "labels": {"deploymentTimestamp": deployment_timestamp}
-            }
-          }
-        }
-      }
       print_green("Refreshing %s..." % deployment['metadata']['name'], newline_after=True)
-      shout(self.kctl.command("patch deployment %s -p '%s'" % (deployment['metadata']['name'], json.dumps(patch))))
+      shout(self.kctl.command("rollout restart deployment/%s" % deployment['metadata']['name']))
 
     print_green("Waiting for refresh to complete...")
 

@@ -16,9 +16,6 @@ class CommandRunner(object):
     self.ecr = ECR()
 
   def run(self, image_tag, cmd, tty=None, env=(), constraint=()):
-    if not self.ecr.project_repo_exists():
-      raise HokusaiError("Project repo does not exist.  Aborting.")
-
     if os.environ.get('USER') is not None:
       # The regex used for the validation of name is '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
       user = re.sub("[^0-9a-z]+", "-", os.environ.get('USER').lower())
