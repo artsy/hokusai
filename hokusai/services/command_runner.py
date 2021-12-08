@@ -15,7 +15,7 @@ class CommandRunner(object):
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
 
-  def run(self, image_tag, cmd, tty=None, env=(), constraint=()):
+  def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     if os.environ.get('USER') is not None:
       # The regex used for the validation of name is '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
       user = re.sub("[^0-9a-z]+", "-", os.environ.get('USER').lower())
@@ -24,7 +24,9 @@ class CommandRunner(object):
       uuid = k8s_uuid()
 
     name = "%s-hokusai-run-%s" % (config.project_name, uuid)
-    image_name = "%s:%s" % (self.ecr.project_repo, image_tag)
+    separator = "@" if ":" in tag_or_digest else ":"
+    image_name = "%s%s%s" % (self.ecr.project_repo, separator, tag_or_digest)
+
     container = {
       "args": cmd.split(' '),
       "name": name,

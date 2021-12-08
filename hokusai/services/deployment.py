@@ -59,7 +59,7 @@ class Deployment(object):
     # Run the pre-deploy hook for the canonical app or a review app
     if config.pre_deploy and (filename is None or (filename and self.namespace)):
       print_green("Running pre-deploy hook '%s'..." % config.pre_deploy, newline_after=True)
-      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.pre_deploy, constraint=constraint, tty=False)
+      return_code = CommandRunner(self.context, namespace=self.namespace).run(digest, config.pre_deploy, constraint=constraint, tty=False)
       if return_code:
         raise HokusaiError("Pre-deploy hook failed with return code %s" % return_code, return_code=return_code)
 
@@ -135,7 +135,7 @@ class Deployment(object):
     # Run the post-deploy hook for the canonical app or a review app
     if config.post_deploy and (filename is None or (filename and self.namespace)):
       print_green("Running post-deploy hook '%s'..." % config.post_deploy, newline_after=True)
-      return_code = CommandRunner(self.context, namespace=self.namespace).run(tag, config.post_deploy, constraint=constraint, tty=False)
+      return_code = CommandRunner(self.context, namespace=self.namespace).run(digest, config.post_deploy, constraint=constraint, tty=False)
       if return_code:
         print_yellow("WARNING: Running the post-deploy hook failed with return code %s" % return_code, newline_before=True, newline_after=True)
         print_yellow("The image digest %s has been rolled out.  However, you should run the post-deploy hook '%s' manually, or re-run this deployment." % (digest, config.post_deploy), newline_after=True)
