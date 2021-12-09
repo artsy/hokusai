@@ -4,7 +4,7 @@ import hokusai
 
 from hokusai.cli.base import base
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
-from hokusai.lib.default_branch import detect_branch
+from hokusai.lib.branch_detection import detect_branch
 
 KUBE_CONTEXT = 'production'
 
