@@ -1,3 +1,11 @@
+## v0.5.18
+
+[Documentation](https://github.com/artsy/hokusai/blob/v0.5.18/README.md)
+
+### Notable changes since v0.5.17
+
+* b804c4d feat: add digest support to CommandRunner:run() (#276)
+
 ## v0.5.17
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.17/README.md)
