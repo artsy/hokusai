@@ -209,7 +209,9 @@ Hokusai is currently tested on Pythons 2.7.16 and 3.5.8.
 
 2) Install dependencies: `poetry install --no-root`.
 
-3) Run tests
+3) make sure you installed minikube with `brew install minikube` and run with `minikube start `
+
+4) Run tests
 
 All tests can be run with `make tests`.
 
