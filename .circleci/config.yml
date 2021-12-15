@@ -271,7 +271,7 @@ jobs:
             git config user.name "Hokusai CI"
             git config user.email "it@artsymail.com"
             git commit -am "Release Hokusai $VERSION"
-            git push origin master
+            git push origin main
 
             cd /tmp
             rm -f hokusai-$VERSION-Darwin-x86_64.tar.gz
@@ -307,35 +307,35 @@ workflows:
             - test_integration
           filters:
             branches:
-              only: master
+              only: main
       - release_beta3_linux:
           requires:
             - test_linux3
             - test_integration
           filters:
             branches:
-              only: master
+              only: main
       - release_beta_macos:
           requires:
             - test_macos2
             - test_integration
           filters:
             branches:
-              only: master
+              only: main
       - release_beta3_macos:
           requires:
             - test_macos3
             - test_integration
           filters:
             branches:
-              only: master
+              only: main
       - release_beta_dockerhub:
           requires:
             - test_linux2
             - test_integration
           filters:
             branches:
-              only: master
+              only: main
       - release_version_linux:
           filters:
             branches:
