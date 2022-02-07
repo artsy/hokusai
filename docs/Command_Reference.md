@@ -134,36 +134,15 @@ Image Pushed At           | Image Tags
 2022-01-27 12:15:21-05:00 | staging--2022-01-27--19-05-54, 9718ddb9334c3e9b2a0a0ffa5d744e1ca91d5cb3, production--2022-01-27--19-43-45, production
 2022-01-26 06:16:16-05:00 | staging--2022-01-26--11-55-47, production--2022-01-26--14-17-47, 84fd6dcd9b115482e2b1d2981c31f4c8bc97a015
 2022-01-25 11:02:42-05:00 | fcf109fa7db52c538755a4eac1b103ecf83dddce, staging--2022-01-25--16-57-31, production--2022-01-25--17-54-15
-2022-01-25 06:21:59-05:00 | staging--2022-01-25--12-03-28, production--2022-01-25--14-24-53, 2db717382fa14af5e4bf9c01b62f75afdb0f04d0
-2022-01-24 11:38:27-05:00 | production--2022-01-24--19-41-44, staging--2022-01-24--17-24-07, a8227694da735dc03c8ba50928325d84e4b2846b
-2022-01-24 04:28:35-05:00 | staging--2022-01-24--09-54-36, production--2022-01-24--13-24-20, 0a5e50afe4abf4bb684a7600ce781ac8b1482d3d
-2022-01-21 06:27:31-05:00 | staging--2022-01-21--11-50-53, production--2022-01-21--16-36-31, a9328fd344a7e0168244b18d38e14364bc6270fb
-2022-01-19 21:14:11-05:00 | staging--2022-01-20--02-45-36, 77c6021a1dc0838b42023bf5ceef06937d10fdfe, production--2022-01-20--13-18-53
-2022-01-17 09:54:35-05:00 | production--2022-01-18--14-33-27, 6e6fa628360df94a9457a5df1bbf0b8d772f02cd, staging--2022-01-17--15-54-39
-2022-01-14 10:46:31-05:00 | staging--2022-01-14--16-18-02, 6576adaf6b668b1ce9f2582120b3ac780bad10ac, production--2022-01-17--13-21-50
-2022-01-12 17:54:19-05:00 | production--2022-01-13--15-46-22, 5ff56d377f58e3a2fae5e496101e11cbeb232025, staging--2022-01-12--23-22-45
-2022-01-12 09:43:28-05:00 | c22af9b552f0b906ec675c87be70413f451b011c, production--2022-01-12--19-57-46, staging--2022-01-12--15-25-18
-2022-01-11 15:37:24-05:00 | production--2022-01-12--13-22-21, staging--2022-01-11--21-08-37, 611a371e6ccce44eebfb7fb1db54a661ed3564b6
-2022-01-10 08:54:49-05:00 | staging--2022-01-10--14-53-55, a4ed90bfa0ff962fb5dc3970945c1b58860145ce, production--2022-01-10--15-17-14
-2022-01-07 12:32:08-05:00 | 59fe678ba18fb2101ff442dea4dc85f9a8209e3c, production--2022-01-10--13-21-20, staging--2022-01-07--18-12-40
-2022-01-05 14:53:52-05:00 | staging--2022-01-05--20-35-15, production--2022-01-05--20-58-02, 6559b22c88bc756dc591238c7c7ffe25a552830d
-2022-01-03 07:11:47-05:00 | 1dff1e54711d7e562a478fa512539efe70f1921d, production--2022-01-03--12-51-09, staging--2022-01-03--12-38-50
-2021-12-27 07:50:58-05:00 | 0a4abbffe1f66164c0275ed1b380bb8963aec443, production--2021-12-27--13-34-19, staging--2021-12-27--13-19-45
-2021-12-22 15:28:05-05:00 | ea0b4414606745bc2216bcb054a5a2bd381781e5, production--2021-12-24--13-19-00, staging--2021-12-22--20-52-01
-2021-12-22 03:05:39-05:00 | production--2021-12-22--13-24-23, f761a4713e9550dc9eceaed1ef10754d26addd33, staging--2021-12-22--08-30-28
+...
 
 81 more images available
 ```
 
 Notice that we filter by the `production` tag with `--filter-tags production`, and that currently image `9718ddb9334c3e9b2a0a0ffa5d744e1ca91d5cb3` is currently in production. Only the current one will have the `production` tag but previous images will have `production-<timestamp>`.
  
-If current production image is causing issues, pick the prior production image, in this case it's right below: `84fd6dcd9b115482e2b1d2981c31f4c8bc97a015` (also tagged as `production--2022-01-26--14-17-47` and `staging--2022-01-26--11-55-47`)
+If current production image is causing issues, pick the prior production image, in this case it's right below tagged as `production--2022-01-26--14-17-47`
 ```bash
 $ # Time to rollback 
-$ hokusai production deploy 84fd6dcd9b115482e2b1d2981c31f4c8bc97a015
-```
-This will also work:
-```bash
-$ # Rollback with a more readable tag
 $ hokusai production deploy production--2022-01-26--14-17-47
 ```
