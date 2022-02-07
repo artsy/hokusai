@@ -122,3 +122,27 @@ When running `hoksuai [staging|production] deploy` or `hokusai pipeline promote`
 ### How to do a rollback
 
 You can use the command `hokusai registry images` to get a list of all images for your current project. They order from most recent to oldest. To do a rollback use `hokusai production deploy [image_tag]` to get back to a particular version. 
+
+For example, to roll back a problematic production deploy to the last image that was deployed to production, you would do the following:
+
+```bash
+$ # List out tags of images pushed to production
+$ hokusai registry images --filter-tags production
+
+Image Pushed At           | Image Tags
+----------------------------------------------------------
+2022-01-27 12:15:21-05:00 | staging--2022-01-27--19-05-54, 9718ddb9334c3e9b2a0a0ffa5d744e1ca91d5cb3, production--2022-01-27--19-43-45, production
+2022-01-26 06:16:16-05:00 | staging--2022-01-26--11-55-47, production--2022-01-26--14-17-47, 84fd6dcd9b115482e2b1d2981c31f4c8bc97a015
+2022-01-25 11:02:42-05:00 | fcf109fa7db52c538755a4eac1b103ecf83dddce, staging--2022-01-25--16-57-31, production--2022-01-25--17-54-15
+...
+
+81 more images available
+```
+
+Notice that we filter by the `production` tag with `--filter-tags production`, and that currently image `9718ddb9334c3e9b2a0a0ffa5d744e1ca91d5cb3` is currently in production. Only the current one will have the `production` tag but previous images will have `production-<timestamp>`.
+ 
+If current production image is causing issues, pick the prior production image, in this case it's right below tagged as `production--2022-01-26--14-17-47`
+```bash
+$ # Time to rollback 
+$ hokusai production deploy production--2022-01-26--14-17-47
+```
