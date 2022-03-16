@@ -65,6 +65,7 @@ jobs:
           name: Update pyenv
           command: |
             cd /opt/circleci/.pyenv/plugins/python-build/../.. 
+            git checkout master
             git pull
             cd -
       - run: pyenv install 2.7.16
