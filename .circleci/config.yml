@@ -19,7 +19,7 @@ jobs:
 
   test_integration:
     machine:
-      image: circleci/classic:201808-01
+      image: ubuntu-2004:202201-02
     environment:
       K8S_VERSION: v1.17.17
       KUBECONFIG: /home/circleci/.kube/config
