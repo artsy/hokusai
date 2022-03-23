@@ -44,7 +44,7 @@ jobs:
       - run:
           name: install conntrack
           command: |
-            apt-get -qq update && apt-get -qq install conntrack
+            sudo apt-get -qq update && sudo apt-get -qq install conntrack
       - run:
           name: start minikube
           command: |
