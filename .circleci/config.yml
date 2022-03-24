@@ -3,7 +3,7 @@ version: 2
 jobs:
   test_linux2:
     docker:
-      - image: python:2.7.16
+      - image: python:2.7
     steps:
       - checkout
       - run: make dependencies
@@ -66,16 +66,6 @@ jobs:
           command: |
             kubectl cluster-info
             kubectl get pods --all-namespaces
-      - run:
-          name: Update pyenv
-          command: |
-            cd /opt/circleci/.pyenv/plugins/python-build/../.. 
-            git checkout master
-            git pull
-            cd -
-      - run: pyenv install 2.7.16
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
       - run: make dependencies
       - run: make integration
 
@@ -120,9 +110,9 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 2.7.16
+      - run: pyenv install 2.7.18
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 2.7.18
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test
@@ -146,9 +136,9 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.18
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 2.7.18
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build VERSION=beta
@@ -174,9 +164,9 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.18
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 2.7.18
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build
