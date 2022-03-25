@@ -3,7 +3,7 @@ version: 2
 jobs:
   test_linux2:
     docker:
-      - image: python:2.7.16
+      - image: python:2.7
     steps:
       - checkout
       - run: make dependencies
@@ -19,9 +19,9 @@ jobs:
 
   test_integration:
     machine:
-      image: circleci/classic:201808-01
+      image: ubuntu-2004:202201-02
     environment:
-      K8S_VERSION: v1.17.17
+      K8S_VERSION: v1.18.10
       KUBECONFIG: /home/circleci/.kube/config
       MINIKUBE_VERSION: v1.22.0
       MINIKUBE_WANTUPDATENOTIFICATION: false
@@ -40,6 +40,11 @@ jobs:
           name: setup minikube
           command: |
             curl -Lo minikube https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+      # required by minikube for k8s v1.18 onwards
+      - run:
+          name: install conntrack
+          command: |
+            sudo apt-get -qq update && sudo apt-get -qq install conntrack
       - run:
           name: start minikube
           command: |
@@ -61,15 +66,6 @@ jobs:
           command: |
             kubectl cluster-info
             kubectl get pods --all-namespaces
-      - run:
-          name: Update pyenv
-          command: |
-            cd /opt/circleci/.pyenv/plugins/python-build/../.. 
-            git pull
-            cd -
-      - run: pyenv install 2.7.16
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
       - run: make dependencies
       - run: make integration
 
@@ -114,9 +110,9 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 2.7.16
+      - run: pyenv install 2.7.18
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 2.7.18
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test
@@ -140,9 +136,9 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.18
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 2.7.18
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build VERSION=beta
@@ -168,9 +164,9 @@ jobs:
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.16
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.18
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.16
+      - run: pyenv local 2.7.18
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build

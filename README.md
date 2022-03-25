@@ -203,7 +203,7 @@ To install the Hokusai package in "editable mode" from a checkout of this reposi
 
 ## Testing Hokusai
 
-Hokusai is currently tested on Pythons 2.7.16 and 3.5.8.
+Hokusai is currently tested on Pythons 2.7.18 and 3.5.8.
 
 1) Install poetry (see above).
 
