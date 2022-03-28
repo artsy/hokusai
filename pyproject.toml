@@ -1,29 +1,31 @@
 [tool.poetry]
 name = "hokusai"
-version = "0.5.17"
+version = "0.5.18"
 description = "Hokusai is a Docker + Kubernetes CLI for application developers."
 authors = ["Isac Petruzzi <isac.petruzzi@gmail.com>"]
 
 [tool.poetry.dependencies]
-boto3 = "==1.9.162"
-botocore = "==1.12.162"
-click = "==6.7"
-click-repl = "==0.1.6"
-termcolor = "==1.1.0"
-MarkupSafe = "==1.1.1"
-Jinja2 = "==2.10.1"
-prompt_toolkit = "==1.0.16"
-PyYAML = "==3.13"
+python = "~3.9.7"
+PyYAML = "^6.0"
+boto3 = "^1.21.28"
+click = "^8.1.0"
+click-repl = "^0.2.0"
+termcolor = "^1.1.0"
+MarkupSafe = "^2.1.1"
+Jinja2 = "^3.1.1"
+prompt-toolkit = "^3.0.28"
 
 [tool.poetry.dev-dependencies]
-pyinstaller = "==3.3.1"
-httpretty = "==0.8.14"
-mock = "==2.0.0"
-packaging = "~18.0"
-twine = "*"
-wheel = "*"
-ipython = "*"
-ipdb = "*"
-jupyter = "*"
-nbformat = "==4.4.0"
-pylint = "*"
+ipdb = "^0.13.9"
+pyinstaller = "^4.10"
+httpretty = "^1.1.4"
+mock = "^4.0.3"
+packaging = "^21.3"
+twine = "^3.8.0"
+wheel = "^0.37.1"
+jupyter = "^1.0.0"
+pylint = "^2.13.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
