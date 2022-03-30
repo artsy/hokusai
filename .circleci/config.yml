@@ -1,19 +1,24 @@
 version: 2
 
 jobs:
-  test_linux2:
+  test_linux:
     docker:
-      - image: python:2.7
+      - image: python:3.9.10
     steps:
       - checkout
       - run: make dependencies
       - run: make test
 
-  test_linux3:
-    docker:
-      - image: python:3.5.8
+  test_macos:
+    macos:
+      xcode: "11.6.0"
     steps:
       - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
+      - run: pyenv install 3.9.10
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pyenv local 3.9.10
+      - run: pip install --upgrade pip
       - run: make dependencies
       - run: make test
 
@@ -69,9 +74,9 @@ jobs:
       - run: make dependencies
       - run: make integration
 
-  release_beta_linux:
+  release_beta_s3_linux:
     docker:
-      - image: python:2.7
+      - image: python:3.9.10
     steps:
       - checkout
       - run: apt-get -qq update
@@ -80,118 +85,19 @@ jobs:
       - run: make build VERSION=beta
       - run: make publish-beta
 
-  release_beta3_linux:
-    docker:
-      - image: python:3.5.8
-    steps:
-      - checkout
-      - run: apt-get -qq update
-      - run: apt-get -qq install awscli
-      - run: make dependencies
-      - run: make build VERSION=beta3
-      - run: make publish-beta3
-
-  release_version_linux:
-    docker:
-      - image: python:2.7
-    steps:
-      - checkout
-      - run: apt-get -qq update
-      - run: apt-get -qq install awscli
-      - run: make dependencies
-      - run: make build
-      - run: make build VERSION=latest
-      - run: make publish-version
-      - run: make publish-latest
-
-  test_macos2:
-    macos:
-      xcode: "11.6.0"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 2.7.18
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.18
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make test
-
-  test_macos3:
-    macos:
-      xcode: "11.6.0"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 3.5.8
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.5.8
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make test
-
-  release_beta_macos:
+  release_beta_s3_macos:
     macos:
       xcode: "11.6.0"
     steps:
       - checkout
       - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.18
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
       - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.18
+      - run: pyenv local 3.9.10
       - run: pip install --upgrade pip
       - run: make dependencies
       - run: make build VERSION=beta
       - run: make publish-beta
-
-  release_beta3_macos:
-    macos:
-      xcode: "11.6.0"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.5.8
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.5.8
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make build VERSION=beta3
-      - run: make publish-beta3
-
-  release_version_macos:
-    macos:
-      xcode: "11.6.0"
-    steps:
-      - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.18
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 2.7.18
-      - run: pip install --upgrade pip
-      - run: make dependencies
-      - run: make build
-      - run: make build VERSION=latest
-      - run: make publish-version
-      - run: make publish-latest
-
-  release_pip:
-    docker:
-      - image: python:2.7
-    steps:
-      - checkout
-      - run: make dependencies
-      - run: make publish-pip
-
-  release_dockerhub:
-    docker:
-      - image: docker:18.09
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-      - run: apk add curl make
-      - run: make image
-      - run: make publish-dockerhub
 
   release_beta_dockerhub:
     docker:
@@ -204,6 +110,46 @@ jobs:
       - run: make image
       - run: make publish-beta-dockerhub
 
+  release_s3_linux:
+    docker:
+      - image: python:3.9.10
+    steps:
+      - checkout
+      - run: apt-get -qq update
+      - run: apt-get -qq install awscli
+      - run: make dependencies
+      - run: make build
+      - run: make build VERSION=latest
+      - run: make publish-version
+      - run: make publish-latest
+
+  release_s3_macos:
+    macos:
+      xcode: "11.6.0"
+    steps:
+      - checkout
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
+      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+      - run: pyenv local 3.9.10
+      - run: pip install --upgrade pip
+      - run: make dependencies
+      - run: make build
+      - run: make build VERSION=latest
+      - run: make publish-version
+      - run: make publish-latest
+
+  release_dockerhub:
+    docker:
+      - image: docker:18.09
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - run: apk add curl make
+      - run: make image
+      - run: make publish-dockerhub
+
   release_github:
     docker:
       - image: golang:1.11
@@ -213,6 +159,14 @@ jobs:
       - run: apt-get -qq install awscli
       - run: go get -u github.com/tcnksm/ghr
       - run: make publish-github
+
+  release_pip:
+    docker:
+      - image: python:3.9.10
+    steps:
+      - checkout
+      - run: make dependencies
+      - run: make publish-pip
 
   release_homebrew:
     docker:
@@ -277,19 +231,11 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - test_linux2:
+      - test_linux:
           filters:
             branches:
               ignore: release
-      - test_linux3:
-          filters:
-            branches:
-              ignore: release
-      - test_macos2:
-          filters:
-            branches:
-              ignore: release
-      - test_macos3:
+      - test_macos:
           filters:
             branches:
               ignore: release
@@ -297,46 +243,32 @@ workflows:
           filters:
             branches:
               ignore: release
-      - release_beta_linux:
+      - release_beta_s3_linux:
           requires:
-            - test_linux2
+            - test_linux
             - test_integration
           filters:
             branches:
               only: main
-      - release_beta3_linux:
+      - release_beta_s3_macos:
           requires:
-            - test_linux3
-            - test_integration
-          filters:
-            branches:
-              only: main
-      - release_beta_macos:
-          requires:
-            - test_macos2
-            - test_integration
-          filters:
-            branches:
-              only: main
-      - release_beta3_macos:
-          requires:
-            - test_macos3
+            - test_macos
             - test_integration
           filters:
             branches:
               only: main
       - release_beta_dockerhub:
           requires:
-            - test_linux2
+            - test_linux
             - test_integration
           filters:
             branches:
               only: main
-      - release_version_linux:
+      - release_s3_linux:
           filters:
             branches:
               only: release
-      - release_version_macos:
+      - release_s3_macos:
           filters:
             branches:
               only: release
@@ -350,15 +282,15 @@ workflows:
               only: release
       - release_github:
           requires:
-            - release_version_linux
-            - release_version_macos
+            - release_s3_linux
+            - release_s3_macos
           filters:
             branches:
               only: release
       - release_homebrew:
           requires:
-            - release_version_linux
-            - release_version_macos
+            - release_s3_linux
+            - release_s3_macos
           filters:
             branches:
               only: release
