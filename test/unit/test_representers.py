@@ -12,7 +12,7 @@ class TestRepresenters(HokusaiUnitTestCase):
       ('spam', {'with': 'eggs'})
     ])
     payload = yaml.safe_dump(obj, default_flow_style=False)
-    deserialized_obj = yaml.load(payload)
+    deserialized_obj = yaml.load(payload, Loader=yaml.FullLoader)
     self.assertEqual(deserialized_obj['foo'], 'bar')
     self.assertEqual(deserialized_obj['baz'], ['hello'])
     self.assertEqual(deserialized_obj['spam']['with'], 'eggs')

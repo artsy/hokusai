@@ -32,4 +32,4 @@ class Kubectl(object):
       return []
 
   def contexts(self):
-    return [context['name'] for context in yaml.load(shout('kubectl config view'))['contexts']]
+    return [context['name'] for context in yaml.load(shout('kubectl config view'), Loader=yaml.FullLoader)['contexts']]
