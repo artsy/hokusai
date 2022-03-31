@@ -91,7 +91,7 @@ class ECR(object):
   def tags(self):
     tgs = []
     for image in self.images:
-      if 'imageTags' not in image.keys():
+      if 'imageTags' not in list(image.keys()):
         continue
       for tag in image['imageTags']:
         tgs.append(tag)
@@ -112,7 +112,7 @@ class ECR(object):
 
   def tag_exists(self, tag):
     for image in self.images:
-      if 'imageTags' not in image.keys():
+      if 'imageTags' not in list(image.keys()):
         continue
       if tag in image['imageTags']:
         return True
