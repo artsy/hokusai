@@ -14,11 +14,17 @@ jobs:
       xcode: "11.6.0"
     steps:
       - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pyenv
-      - run: pyenv install 3.9.10
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.9.10
-      - run: pip install --upgrade pip
+      - run:
+          name: install pyenv
+          command: |
+            brew install pyenv
+            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+      - run:
+          name: install python
+          command: |
+            pyenv install 3.9.10
+            pyenv local 3.9.10
+            pip install --upgrade pip
       - run: make dependencies
       - run: make test
 
@@ -71,6 +77,8 @@ jobs:
           command: |
             kubectl cluster-info
             kubectl get pods --all-namespaces
+      - run: pyenv install 3.9.10
+      - run: pyenv local 3.9.10
       - run: make dependencies
       - run: make integration
 
@@ -90,11 +98,17 @@ jobs:
       xcode: "11.6.0"
     steps:
       - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.9.10
-      - run: pip install --upgrade pip
+      - run:
+          name: install awscli, openssl, pyenv
+          command: |
+            brew install awscli openssl pyenv
+            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+      - run:
+          name: install python
+          command: |
+            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv local 3.9.10
+            pip install --upgrade pip
       - run: make dependencies
       - run: make build VERSION=beta
       - run: make publish-beta
@@ -128,11 +142,17 @@ jobs:
       xcode: "11.6.0"
     steps:
       - checkout
-      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install awscli openssl pyenv
-      - run: PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
-      - run: echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-      - run: pyenv local 3.9.10
-      - run: pip install --upgrade pip
+      - run:
+          name: install awscli, openssl, pyenv
+          command: |
+            brew install awscli openssl pyenv
+            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+      - run:
+          name: install python
+          command: |
+            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv local 3.9.10
+            pip install --upgrade pip
       - run: make dependencies
       - run: make build
       - run: make build VERSION=latest
