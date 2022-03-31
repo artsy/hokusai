@@ -17,10 +17,10 @@ def check():
   return_code = 0
 
   def check_ok(check_item):
-    print_green(u'\u2714 ' + check_item + ' found')
+    print_green('\u2714 ' + check_item + ' found')
 
   def check_err(check_item):
-    print_red(u'\u2718 ' + check_item + ' not found')
+    print_red('\u2718 ' + check_item + ' not found')
 
   try:
     config.project_name
