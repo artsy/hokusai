@@ -99,7 +99,7 @@ class ECR(object):
 
   def deployment_tags(self, context):
     context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)
-    return sorted(list(filter(lambda x: context_re.match(x), self.tags())))
+    return sorted([x for x in self.tags() if context_re.match(x)])
 
   def current_deployment_tag(self, context):
     context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)

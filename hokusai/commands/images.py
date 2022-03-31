@@ -18,9 +18,9 @@ def images(tag_exists, reverse_sort, limit, filter_tags, digests):
 
   images = ecr.images
   sorted_images = sorted(images, key=itemgetter('imagePushedAt'), reverse=not reverse_sort)
-  filtered_images = list(filter(lambda image: 'imageTags' in image.keys(), sorted_images))
+  filtered_images = [image for image in sorted_images if 'imageTags' in image.keys()]
   if filter_tags:
-    filtered_images = list(filter(lambda image: filter_tags in ', '.join(image['imageTags']), filtered_images))
+    filtered_images = [image for image in filtered_images if filter_tags in ', '.join(image['imageTags'])]
 
   if digests:
     print_green('Image Pushed At           | Image Digest                                                            | Image Tags', newline_before=True)
