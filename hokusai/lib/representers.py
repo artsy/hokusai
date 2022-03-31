@@ -28,4 +28,4 @@ def represent_odict(dump, tag, mapping, flow_style=None):
     return node
 
 yaml.SafeDumper.add_representer(OrderedDict,
-    lambda dumper, value: represent_odict(dumper, u'tag:yaml.org,2002:map', value))
+    lambda dumper, value: represent_odict(dumper, 'tag:yaml.org,2002:map', value))
