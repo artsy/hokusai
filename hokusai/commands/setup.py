@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-import urllib
 import tempfile
 
 from shutil import rmtree, copyfile

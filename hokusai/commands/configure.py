@@ -1,18 +1,12 @@
 import os
 import platform
-import urllib
 import shutil
 import tempfile
 import sys
+from urllib.parse import urlparse
+from urllib.request import urlretrieve
 
 from distutils.dir_util import mkpath
-
-if sys.version_info[0] >= 3:
-  from urllib.parse import urlparse
-  from urllib.request import urlretrieve
-else:
-  from urlparse import urlparse
-  from urllib import urlretrieve
 
 import boto3
 
