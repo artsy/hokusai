@@ -36,14 +36,12 @@ def smart_str(s, newline_before=False, newline_after=False):
     s = '\n' + s
   if newline_after:
     s = s + '\n'
-  if sys.version_info[0] >= 3:
-    if isinstance(s, bytes):
-      return s.decode('utf-8')
-  else:
-    if isinstance(s, unicode):
-      return s.encode('utf-8')
+
+  if isinstance(s, bytes):
+    return s.decode('utf-8')
   if isinstance(s, int) or isinstance(s, float):
       return str(s)
+
   return s
 
 def print_smart(msg, newline_before=False, newline_after=False):

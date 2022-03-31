@@ -1,12 +1,7 @@
 import os
-
 import httpretty
-
 import sys
-if sys.version_info[0] >= 3:
-  from unittest.mock import patch
-else:
-  from mock import patch
+from unittest.mock import patch
 
 from test import HokusaiIntegrationTestCase, TEST_KUBE_CONTEXT
 from test.utils import captured_output, mock_verbosity
