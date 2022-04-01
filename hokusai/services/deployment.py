@@ -17,7 +17,7 @@ from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.template_selector import TemplateSelector
 
-class Deployment(object):
+class Deployment:
   def __init__(self, context, deployment_name=None, namespace=None):
     self.context = context
     self.namespace = namespace

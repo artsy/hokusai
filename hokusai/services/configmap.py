@@ -10,7 +10,7 @@ from hokusai.lib.common import print_green, shout
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
-class ConfigMap(object):
+class ConfigMap:
   def __init__(self, context, namespace='default', name=None):
     self.context = context
     self.kctl = Kubectl(context, namespace=namespace)

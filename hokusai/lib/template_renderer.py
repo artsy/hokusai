@@ -5,7 +5,7 @@ from jinja2.exceptions import TemplateError
 
 from hokusai.lib.exceptions import HokusaiError
 
-class TemplateRenderer(object):
+class TemplateRenderer:
   def __init__(self, template_path, template_config):
     self.template_path = template_path
     self.template_config = template_config

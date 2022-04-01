@@ -10,7 +10,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
 
-class ECR(object):
+class ECR:
   def __init__(self):
     self.client = boto3.client('ecr', region_name=get_region_name())
     self.__aws_account_id = None

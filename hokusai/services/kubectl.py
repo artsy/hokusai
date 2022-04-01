@@ -4,7 +4,7 @@ import yaml
 
 from hokusai.lib.common import shout
 
-class Kubectl(object):
+class Kubectl:
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
