@@ -8,6 +8,8 @@ jobs:
       - checkout
       - run: make dependencies
       - run: make test
+      - store_artifacts:
+          path: ./.coverage
 
   test_macos:
     macos:
