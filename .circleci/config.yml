@@ -10,6 +10,13 @@ jobs:
       - run: make test
       - store_artifacts:
           path: ./.coverage
+      - run:
+          name: generate coverage report
+          command: |
+            coverage report
+            coverage html
+    - store_artifacts:
+        path: htmlcov
 
   test_macos:
     macos:
