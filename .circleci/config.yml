@@ -33,6 +33,7 @@ jobs:
             pyenv local 3.9.10
             pip install --upgrade pip
       - run: make dependencies
+      - run: pyenv rehash
       - run: make test
 
   test_integration:
@@ -87,6 +88,7 @@ jobs:
       - run: pyenv install 3.9.10
       - run: pyenv local 3.9.10
       - run: make dependencies
+      - run: pyenv rehash
       - run: make integration
 
   release_beta_s3_linux:
