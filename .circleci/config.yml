@@ -13,8 +13,8 @@ jobs:
           command: |
             coverage report
             coverage html
-    - store_artifacts:
-        path: htmlcov
+      - store_artifacts:
+          path: htmlcov
 
   test_macos:
     macos:
