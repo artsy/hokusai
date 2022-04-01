@@ -35,6 +35,13 @@ jobs:
       - run: make dependencies
       - run: pyenv rehash
       - run: make test
+      - run:
+          name: generate coverage report
+          command: |
+            coverage report
+            coverage html
+      - store_artifacts:
+          path: htmlcov
 
   test_integration:
     machine:
@@ -90,6 +97,13 @@ jobs:
       - run: make dependencies
       - run: pyenv rehash
       - run: make integration
+      - run:
+          name: generate coverage report
+          command: |
+            coverage report
+            coverage html
+      - store_artifacts:
+          path: htmlcov
 
   release_beta_s3_linux:
     docker:
