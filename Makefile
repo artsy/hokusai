@@ -16,13 +16,13 @@ dependencies:
 	poetry install --no-root
 
 tests:
-	coverage run -m unittest discover test
+	coverage run --omit="test/*" -m unittest discover test
 
 test:
-	coverage run -m unittest discover test.unit
+	coverage run --omit="test/*" -m unittest discover test.unit
 
 integration:
-	coverage run -m unittest discover test.integration
+	coverage run --omit="test/*" -m unittest discover test.integration
 
 test-docker:
 	$(DOCKER_RUN) \
