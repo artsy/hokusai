@@ -25,6 +25,7 @@ twine = "^3.8.0"
 wheel = "^0.37.1"
 jupyter = "^1.0.0"
 pylint = "^2.13.2"
+coverage = "^6.3.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
