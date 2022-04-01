@@ -8,8 +8,6 @@ jobs:
       - checkout
       - run: make dependencies
       - run: make test
-      - store_artifacts:
-          path: ./.coverage
       - run:
           name: generate coverage report
           command: |
