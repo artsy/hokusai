@@ -81,39 +81,24 @@ def shout(command, print_output=False, mask=()):
       return check_call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
     else:
       retval = check_output(verbose(command, mask=mask), stderr=STDOUT, shell=True)
-      if str == bytes:
-        # Python 2
-        return retval
+      if type(retval) == bytes:
+        return retval.decode('utf-8')
       else:
-        # Python 3
-        if type(retval) == bytes:
-          return retval.decode('utf-8')
-        else:
-          return retval
+        return retval
 
   except CalledProcessError as e:
     if mask:
       if hasattr(e, 'cmd') and e.cmd is not None:
-        if str == bytes:
-          # Python 2
-          cmd = re.sub(mask[0], mask[1], e.cmd)
+        if type(e.cmd) == bytes:
+          cmd = re.sub(mask[0], mask[1], e.cmd.decode('utf-8'))
         else:
-          # Python 3
-          if type(e.cmd) == bytes:
-            cmd = re.sub(mask[0], mask[1], e.cmd.decode('utf-8'))
-          else:
-            cmd = re.sub(mask[0], mask[1], e.cmd)
+          cmd = re.sub(mask[0], mask[1], e.cmd)
         e.cmd = cmd
       if hasattr(e, 'output') and e.output is not None:
-        if str == bytes:
-          # Python 2
-          output = re.sub(mask[0], mask[1], e.output)
+        if type(e.output) == bytes:
+          output = re.sub(mask[0], mask[1], e.output.decode('utf-8'))
         else:
-          # Python 3
-          if type(e.output) == bytes:
-            output = re.sub(mask[0], mask[1], e.output.decode('utf-8'))
-          else:
-            output = re.sub(mask[0], mask[1], e.output)
+          output = re.sub(mask[0], mask[1], e.output)
         e.output = output
     raise
 
