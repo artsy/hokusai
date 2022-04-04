@@ -802,7 +802,7 @@ test = ["pytest", "coverage", "requests", "nbval", "selenium", "pytest-cov", "re
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1010,7 +1010,7 @@ testutil = ["gitpython (>3)"]
 name = "pyparsing"
 version = "3.0.7"
 description = "Python parsing module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1420,7 +1420,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.10"
-content-hash = "8f4ac795852d6a60ef627af2f1e604830c4941e4138d0e87294075b55b3a09fc"
+content-hash = "c4e979320d2857e578e23bdc51ae9ceab17bcd3abe602f9d8504a58a85e11e27"
 
 [metadata.files]
 altgraph = [

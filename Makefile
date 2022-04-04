@@ -7,8 +7,8 @@ GIT_TAG ?= $(shell which git) tag --sign
 
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-VERSION ?= $(shell cat hokusai/VERSION)
-MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
+VERSION ?= $(shell poetry version --short)
+MINOR_VERSION ?= $(shell poetry version --short | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
 	pip install --upgrade pip
@@ -32,6 +32,7 @@ test-docker:
 
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
+	echo $(VERSION) > hokusai/VERSION
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -86,8 +87,9 @@ publish-version:
 	fi
 
 publish-pip:
+	echo $(VERSION) > hokusai/VERSION
 	pip install --upgrade wheel
-	python setup.py sdist bdist_wheel
+	poetry build
 	twine upload dist/*
 
 publish-dockerhub:

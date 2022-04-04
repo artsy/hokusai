@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "hokusai"
-version = "0.5.18"
-description = "Hokusai is a Docker + Kubernetes CLI for application developers."
-authors = ["Isac Petruzzi <isac.petruzzi@gmail.com>"]
+version = "1.0.0"
+description = "Artsy Docker development toolkit"
+authors = ["Isac Petruzzi <isac@artsymail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "http://github.com/artsy/hokusai"
+include = ["hokusai/VERSION"]
 
 [tool.poetry.dependencies]
 python = "~3.9.10"
@@ -14,13 +18,13 @@ termcolor = "^1.1.0"
 MarkupSafe = "^2.1.1"
 Jinja2 = "^3.1.1"
 prompt-toolkit = "^3.0.28"
+packaging = "^21.3"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"
 pyinstaller = "^4.10"
 httpretty = "^1.1.4"
 mock = "^4.0.3"
-packaging = "^21.3"
 twine = "^3.8.0"
 wheel = "^0.37.1"
 jupyter = "^1.0.0"
@@ -30,3 +34,6 @@ coverage = "^6.3.2"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+hokusai = 'hokusai.command_line:main'
