@@ -16,12 +16,15 @@ dependencies:
 	poetry install --no-root
 
 tests:
+	echo $(VERSION) > hokusai/VERSION
 	coverage run --omit="test/*" -m unittest discover test
 
 test:
+	echo $(VERSION) > hokusai/VERSION
 	coverage run --omit="test/*" -m unittest discover test.unit
 
 integration:
+	echo $(VERSION) > hokusai/VERSION
 	coverage run --omit="test/*" -m unittest discover test.integration
 
 test-docker:
