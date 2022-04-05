@@ -9,7 +9,7 @@ repository = "http://github.com/artsy/hokusai"
 include = ["hokusai/VERSION"]
 
 [tool.poetry.dependencies]
-python = "~3.9.0"
+python = "~3.9"
 PyYAML = "^6.0"
 boto3 = "^1.21.28"
 click = "^8.1.0"
