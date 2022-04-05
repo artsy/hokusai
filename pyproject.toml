@@ -10,15 +10,15 @@ include = ["hokusai/VERSION"]
 
 [tool.poetry.dependencies]
 python = "~3.9"
-PyYAML = "^6.0"
-boto3 = "^1.21.28"
-click = "^8.1.0"
-click-repl = "^0.2.0"
-termcolor = "^1.1.0"
-MarkupSafe = "^2.1.1"
-Jinja2 = "^3.1.1"
-prompt-toolkit = "^3.0.28"
-packaging = "^21.3"
+PyYAML = "==6.0"
+boto3 = "==1.21.28"
+click = "==8.1.0"
+click-repl = "==0.2.0"
+termcolor = "==1.1.0"
+MarkupSafe = "==2.1.1"
+Jinja2 = "==3.1.1"
+prompt-toolkit = "==3.0.28"
+packaging = "==21.3"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"
