@@ -152,7 +152,7 @@ With the desired Python version installed, activate it globally:
 pyenv global 3.9.10
 ```
 
-Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs.  Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
+Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs. Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
 
 ### Virtualenv
 
@@ -194,7 +194,7 @@ poetry lock
 
 ```
 brew install minikube
-minikube start
+minikube start --kubernetes-version=<version of your Kubernetes clusters, example: v1.2.3>
 ```
 
 ### Run tests
