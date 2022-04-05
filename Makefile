@@ -16,15 +16,12 @@ dependencies:
 	poetry install --no-root
 
 tests:
-	echo $(VERSION) > hokusai/VERSION
 	coverage run --omit="test/*" -m unittest discover test
 
 test:
-	echo $(VERSION) > hokusai/VERSION
 	coverage run --omit="test/*" -m unittest discover test.unit
 
 integration:
-	echo $(VERSION) > hokusai/VERSION
 	coverage run --omit="test/*" -m unittest discover test.integration
 
 test-docker:
@@ -35,7 +32,6 @@ test-docker:
 
 build: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build:
-	echo $(VERSION) > hokusai/VERSION
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -90,7 +86,6 @@ publish-version:
 	fi
 
 publish-pip:
-	echo $(VERSION) > hokusai/VERSION
 	pip install --upgrade wheel
 	poetry build
 	twine upload dist/*

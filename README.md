@@ -234,7 +234,7 @@ https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x
 
 https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Linux-x86_64
 
-To create a new release, bump Hokusai version in [pyproject.toml](pyproject.toml), update [CHANGELOG](./CHANGELOG.md), and open a PR to merge `main` into `release` branch.
+To create a new release, bump Hokusai version in [pyproject.toml](pyproject.toml) and [hokusai/VERSION](hokusai/VERSION), update [CHANGELOG](./CHANGELOG.md), and open a PR to merge `main` into `release` branch.
 
 
 ## The Name
