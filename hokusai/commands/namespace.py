@@ -15,7 +15,7 @@ def create_new_app_yaml(source_file, app_name):
   yaml_spec = YamlSpec(source_file).to_file()
   with open(yaml_spec, 'r') as stream:
     try:
-      yaml_content = list(yaml.load_all(stream))
+      yaml_content = list(yaml.load_all(stream, Loader=yaml.FullLoader))
     except yaml.YAMLError as exc:
       raise HokusaiError("Cannot read source yaml file %s." % source_file)
 

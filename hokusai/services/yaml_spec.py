@@ -14,7 +14,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 from hokusai.services.ecr import ECR
 
-class YamlSpec(object):
+class YamlSpec:
   def __init__(self, template_file):
     self.template_file = template_file
     self.ecr = ECR()

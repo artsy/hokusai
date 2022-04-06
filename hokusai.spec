@@ -14,10 +14,7 @@ else:
 block_cipher = None
 
 import sys
-if sys.version_info[0] >= 3:
-  hidden_imports = ['configparser']
-else:
-  hidden_imports = ['ConfigParser']
+hidden_imports = ['configparser']
 
 a = Analysis(['bin/hokusai'],
              pathex=['.'],

@@ -11,7 +11,7 @@ def represent_odict(dump, tag, mapping, flow_style=None):
         dump.represented_objects[dump.alias_key] = node
     best_style = True
     if hasattr(mapping, 'items'):
-        mapping = mapping.items()
+        mapping = list(mapping.items())
     for item_key, item_value in mapping:
         node_key = dump.represent_data(item_key)
         node_value = dump.represent_data(item_value)
@@ -28,4 +28,4 @@ def represent_odict(dump, tag, mapping, flow_style=None):
     return node
 
 yaml.SafeDumper.add_representer(OrderedDict,
-    lambda dumper, value: represent_odict(dumper, u'tag:yaml.org,2002:map', value))
+    lambda dumper, value: represent_odict(dumper, 'tag:yaml.org,2002:map', value))

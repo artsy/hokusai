@@ -32,15 +32,10 @@ def command(config_check=True):
         else:
           print_red("ERROR: %s" % str(e))
         if hasattr(e, 'output') and e.output is not None:
-          if str == bytes:
-            # Python 2
-            print_red("ERROR: %s" % e.output)
+          if type(e.output) == bytes:
+            print_red("ERROR: %s" % e.output.decode('utf-8'))
           else:
-            # Python 3
-            if type(e.output) == bytes:
-              print_red("ERROR: %s" % e.output.decode('utf-8'))
-            else:
-              print_red("ERROR: %s" % e.output)
+            print_red("ERROR: %s" % e.output)
         sys.exit(e.returncode)
       except Exception as e:
         if get_verbosity() or os.environ.get('DEBUG'):

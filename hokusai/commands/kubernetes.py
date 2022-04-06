@@ -25,7 +25,7 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
   if not ecr.tag_exists(tag):
     raise HokusaiError("Image tag %s does not exist... did you run `hokusai registry push`?" % tag)
 
-  if tag is 'latest' and not ecr.tag_exists(context):
+  if tag == 'latest' and not ecr.tag_exists(context):
     ecr.retag(tag, context)
     print_green("Updated tag 'latest' -> %s" % context)
 

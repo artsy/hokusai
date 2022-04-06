@@ -15,7 +15,7 @@ from hokusai.version import VERSION
 
 HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai', 'config.yml')
 
-class HokusaiGlobalConfig(object):
+class HokusaiGlobalConfig:
   def is_present(self):
     return os.path.isfile(HOKUSAI_GLOBAL_CONFIG_FILE)
 

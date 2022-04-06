@@ -23,7 +23,7 @@ BUILD_YAML_FILE = 'build'
 TEST_YML_FILE = 'test'
 DEVELOPMENT_YML_FILE = 'development'
 
-class HokusaiConfig(object):
+class HokusaiConfig:
   def __init__(self):
     if not os.path.isdir(HOKUSAI_TMP_DIR):
       os.mkdir(HOKUSAI_TMP_DIR)
