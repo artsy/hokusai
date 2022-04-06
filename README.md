@@ -64,8 +64,26 @@ Note: If Pip fails at upgrading your system Python packages, try:
 pip install hokusai --ignore-installed
 ```
 
+### Docker
+
+We also maintain [Hokusai Docker images](https://hub.docker.com/r/artsy/hokusai) for running Hokusai in Docker.
+
+### Github
+
+Release artifacts are available on [Github](https://github.com/artsy/hokusai/releases).
+
+### AWS S3
+
+Release artifacts are also available in AWS S3. You can use this [convenience script](get-hokusai.sh) or Curl to fetch them.
+
+### A note on Python 2.x
+
+Hokusai currently supports Python 3.7+ only. The last version that supported Python 2.x was [v0.5.18](https://github.com/artsy/hokusai/tree/v0.5.18).
+
 
 ## Setup
+
+We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Compose set up, and that you have an AWS account. Perform the following steps to setup Hokusai:
 
 1. [Configure AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
 
@@ -158,12 +176,7 @@ Note: If you want to create a PyInstaller distribution (by running `make build`)
 
 We recommended using a virtual environment to isolate Hokusai's dependencies from that of other projects on your local environment.
 
-The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) which can be used to create virtual environments, like so:
-
-```
-pyenv virtualenv <virtual-env-name>
-pyenv activate <virtual-env-name>
-```
+The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) which can be used to create virtual environments.
 
 ### Poetry
 
@@ -191,6 +204,8 @@ poetry lock
 ## Testing
 
 ### Install Minikube
+
+[Minikube](https://minikube.sigs.k8s.io/docs/start/) is used for integration tests.
 
 ```
 brew install minikube
