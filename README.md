@@ -174,7 +174,7 @@ Note: If you want to create a PyInstaller distribution (by running `make build`)
 
 ### Virtualenv
 
-We recommended using a virtual environment to isolate Hokusai's dependencies from that of other projects on your local environment.
+We recommend using a virtual environment to isolate Hokusai's dependencies from that of other projects on your local environment.
 
 The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) which can be used to create virtual environments.
 
