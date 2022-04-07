@@ -16,19 +16,17 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install pyenv
+          name: install openssl, pyenv
           command: |
-            brew install pyenv
+            brew install openssl pyenv
             echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
+            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
-          # awscli is not required for this job. but it is for the other macos jobs.
-          # so might as well test the install here.
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
@@ -37,6 +35,7 @@ jobs:
       - run: pyenv rehash
       - run: make test
       - run: coverage report
+      - run: make build VERSION=beta
 
   test_integration:
     machine:
