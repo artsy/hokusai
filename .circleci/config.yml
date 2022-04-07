@@ -302,6 +302,7 @@ workflows:
       - release_beta_s3_linux:
           requires:
             - test_linux
+            - test_macos
             - test_integration
             - test_docker_build
           filters:
@@ -309,6 +310,7 @@ workflows:
               only: main
       - release_beta_s3_macos:
           requires:
+            - test_linux
             - test_macos
             - test_integration
             - test_docker_build
@@ -318,7 +320,9 @@ workflows:
       - release_beta_dockerhub:
           requires:
             - test_linux
+            - test_macos
             - test_integration
+            - test_docker_build
           filters:
             branches:
               only: main
