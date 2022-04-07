@@ -26,6 +26,13 @@ jobs:
             pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
+      - run:
+          # awscli is not required for this job. but it is for the other macos jobs.
+          # so might as well test the install here.
+          name: install awscli
+          command: |
+            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+            sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: pyenv rehash
       - run: make test
@@ -87,6 +94,15 @@ jobs:
       - run: make integration
       - run: coverage report
 
+  test_docker_build:
+    docker:
+      - image: docker:18.09
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: apk add curl make
+      - run: make image
+
   release_beta_s3_linux:
     docker:
       - image: python:3.9.10
@@ -114,6 +130,11 @@ jobs:
             PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
+      - run:
+          name: install awscli
+          command: |
+            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+            sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: make build VERSION=beta
       - run: make publish-beta
@@ -158,6 +179,11 @@ jobs:
             PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
+      - run:
+          name: install awscli
+          command: |
+            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+            sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: make build
       - run: make build VERSION=latest
@@ -268,10 +294,15 @@ workflows:
           filters:
             branches:
               ignore: release
+      - test_docker_build:
+          filters:
+            branches:
+              ignore: release
       - release_beta_s3_linux:
           requires:
             - test_linux
             - test_integration
+            - test_docker_build
           filters:
             branches:
               only: main
@@ -279,6 +310,7 @@ workflows:
           requires:
             - test_macos
             - test_integration
+            - test_docker_build
           filters:
             branches:
               only: main
