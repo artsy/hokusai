@@ -136,6 +136,7 @@ jobs:
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
+      - run: pyenv rehash
       - run: make build VERSION=beta
       - run: make publish-beta
 
@@ -185,6 +186,7 @@ jobs:
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
+      - run: pyenv rehash
       - run: make build
       - run: make build VERSION=latest
       - run: make publish-version
