@@ -120,9 +120,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install awscli, openssl, pyenv
+          name: install openssl, pyenv
           command: |
-            brew install awscli openssl pyenv
+            brew install openssl pyenv
             echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
@@ -169,9 +169,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install awscli, openssl, pyenv
+          name: install openssl, pyenv
           command: |
-            brew install awscli openssl pyenv
+            brew install openssl pyenv
             echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
