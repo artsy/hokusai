@@ -244,11 +244,13 @@ Tip: Set `DEBUG=1` environment variable to print boto logging
 
 ## Distributing Hokusai
 
-Merges to `main` branch automatically distribute Pyinstaller-built binaries for beta testing. The files are uploaded to:
+Merges to `main` branch automatically distribute Pyinstaller-built binaries for beta testing.
 
-https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x86_64
+The beta binary can be installed by:
 
-https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Linux-x86_64
+```
+curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh beta | sudo bash
+```
 
 To create a new release, bump Hokusai version in [pyproject.toml](pyproject.toml) and [hokusai/VERSION](hokusai/VERSION), update [CHANGELOG](./CHANGELOG.md), and open a PR to merge `main` into `release` branch.
 
