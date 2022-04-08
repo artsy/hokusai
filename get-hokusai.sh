@@ -16,8 +16,5 @@ fi
 
 echo "Installing Hokusai @ $VERSION to $TARGET"
 
-TMPFILE=hokusai-$VERSION-$(uname -s)-x86_64
-
-curl https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-$(uname -s)-x86_64 -o $TMPFILE
-chmod +x $TMPFILE
-sudo mv $TMPFILE $TARGET
+curl https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-$(uname -s)-x86_64 -o $TARGET
+chmod +x $TARGET
