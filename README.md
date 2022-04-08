@@ -249,7 +249,7 @@ Merges to `main` branch automatically distribute Pyinstaller-built binaries for 
 The beta binary can be installed by:
 
 ```
-curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh beta | sudo bash
+curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh | sudo bash -s beta
 ```
 
 To create a new release, bump Hokusai version in [pyproject.toml](pyproject.toml) and [hokusai/VERSION](hokusai/VERSION), update [CHANGELOG](./CHANGELOG.md), and open a PR to merge `main` into `release` branch.
