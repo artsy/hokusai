@@ -24,6 +24,7 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 We recommend installing via Homebrew:
 
 ```
+$ brew update
 $ brew tap artsy/formulas
 $ brew install hokusai
 ```
