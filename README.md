@@ -24,6 +24,7 @@ Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, an
 We recommend installing via Homebrew:
 
 ```
+$ brew update
 $ brew tap artsy/formulas
 $ brew install hokusai
 ```
@@ -174,7 +175,7 @@ Note: If you want to create a PyInstaller distribution (by running `make build`)
 
 ### Virtualenv
 
-We recommended using a virtual environment to isolate Hokusai's dependencies from that of other projects on your local environment.
+We recommend using a virtual environment to isolate Hokusai's dependencies from that of other projects on your local environment.
 
 The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) which can be used to create virtual environments.
 
@@ -243,11 +244,13 @@ Tip: Set `DEBUG=1` environment variable to print boto logging
 
 ## Distributing Hokusai
 
-Merges to `main` branch automatically distribute Pyinstaller-built binaries for beta testing. The files are uploaded to:
+Merges to `main` branch automatically distribute Pyinstaller-built binaries for beta testing.
 
-https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x86_64
+The beta binary can be installed by:
 
-https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Linux-x86_64
+```
+curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh beta | sudo bash
+```
 
 To create a new release, bump Hokusai version in [pyproject.toml](pyproject.toml) and [hokusai/VERSION](hokusai/VERSION), update [CHANGELOG](./CHANGELOG.md), and open a PR to merge `main` into `release` branch.
 
