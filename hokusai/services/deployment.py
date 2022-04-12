@@ -16,6 +16,7 @@ from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.lib.k8s_spec import add_env
 
 class Deployment:
   def __init__(self, context, deployment_name=None, namespace=None):
@@ -78,6 +79,10 @@ class Deployment:
         if item['kind'] == 'Deployment':
           self.cache.append(item)
 
+    # name of the env var that tracks the app's deployed version
+    # we will patch the spec with it, the value will be the deployed image digest
+    app_version_var_name = config.app_version_var_name
+
     # If updating config, patch the spec and apply
     if update_config:
       print_green("Patching Deployments in spec %s with image digest %s" % (yaml_template, digest), newline_after=True)
@@ -88,6 +93,7 @@ class Deployment:
           for container in item['spec']['template']['spec']['containers']:
             if self.ecr.project_repo in container['image']:
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
+              container['env'] = add_env(container, {'name': "%s" % app_version_var_name, 'value': "%s" % digest})
         payload.append(item)
 
       f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
@@ -105,7 +111,14 @@ class Deployment:
     else:
       for deployment in self.cache:
         containers = [(container['name'], container['image']) for container in deployment['spec']['template']['spec']['containers']]
-        deployment_targets = [{"name": name, "image": "%s@%s" % (self.ecr.project_repo, digest)} for name, image in containers if self.ecr.project_repo in image]
+        deployment_targets = [
+          {
+            'name': name,
+            'image': "%s@%s" % (self.ecr.project_repo, digest),
+            'env': [{'name': "%s" % app_version_var_name, 'value': "%s" % digest}]
+          }
+          for name, image in containers if self.ecr.project_repo in image
+        ]
         patch = {
           "spec": {
             "template": {

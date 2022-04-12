@@ -157,4 +157,9 @@ class HokusaiConfig:
   def always_verbose(self):
     return self.get('always-verbose', default=False, use_env=True, _type=bool)
 
+  @property
+  def app_version_var_name(self):
+    # default to Datadog's naming
+    return self.get('app-version-var-name', default='DD_VERSION')
+
 config = HokusaiConfig()
