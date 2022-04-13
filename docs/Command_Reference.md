@@ -78,7 +78,7 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 * `hokusai [staging|production] delete` - Delete the Kubernetes resources defined in the environment config.
 * `hokusai [staging|production] status` - Print the Kubernetes resources status defined in the environment config.
 
-* `hokusai [staging|production] deploy` - Update the project's deployment(s) for a given environment to reference the given image tag and update the tag (staging/production) to reference the same image. Patch each deployment's `app.kubernetes.io/version` label which is used to track the version of the app deployed. Due to Kubernetes' 63 characters limit on a label, only 2nd half of the digest string is used.
+* `hokusai [staging|production] deploy` - Update the project's deployment(s) for a given environment to reference the given image tag and update the tag (staging/production) to reference the same image. Patch each deployment's `app.kubernetes.io/version` label which is used to track the version of the app deployed. Use the digest for the label's value. Due to Kubernetes' 63 characters limit on a label, only 2nd half of the digest string is used.
 * `hokusai [staging|production] [refresh|restart]` - Refresh the project's deployment(s) by recreating the currently running containers.
 
 * `hokusai [staging|production] env` - Interact with the runtime environment for the application
