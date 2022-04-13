@@ -71,7 +71,6 @@ class TestConfig(HokusaiUnitTestCase):
     self.assertEqual(config.config.post_deploy, 'sh -c report.sh')
     self.assertEqual(config.config.git_remote, 'git@github.com:artsy/hokusai.git')
     self.assertEqual(config.config.template_config_files, ['./test/fixtures/template_config.yml'])
-    self.assertEqual(config.config.app_version_var_name, 'DD_VERSION')
 
   def test_config_from_environment(self):
     self.assertEqual(config.config.run_tty, False)

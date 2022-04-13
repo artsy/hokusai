@@ -78,7 +78,7 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 * `hokusai [staging|production] delete` - Delete the Kubernetes resources defined in the environment config.
 * `hokusai [staging|production] status` - Print the Kubernetes resources status defined in the environment config.
 
-* `hokusai [staging|production] deploy` - Update the project's deployment(s) for a given environment to reference the given image tag and update the tag (staging/production) to reference the same image.
+* `hokusai [staging|production] deploy` - Update the project's deployment(s) for a given environment to reference the given image tag and update the tag (staging/production) to reference the same image. Patch each deployment's `app.kubernetes.io/version` label which is used to track the version of the app deployed. Due to Kubernetes' 63 characters limit on a label, only 2nd half of the digest string is used.
 * `hokusai [staging|production] [refresh|restart]` - Refresh the project's deployment(s) by recreating the currently running containers.
 
 * `hokusai [staging|production] env` - Interact with the runtime environment for the application
@@ -104,7 +104,7 @@ See full details in the [Review App reference](Review_Apps.md).
   - `hokusai pipeline gitdiff` - Print a git diff between the tags deployed on production vs staging.
   - `hokusai pipeline gitlog`  - Print a git log comparing the tags deployed on production vs staging, can be used to see what commits are going to be promoted.
   - `hokusai pipeline gitcompare --org-name <your org name in githug>` - Print a git compare url for comparing whats on staging with production.
-  - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image.
+  - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image. Update `app.kubernetes.io/version` label as mentioned for `hokusai [staging|production] deploy`.
 
 ### A note on deployment rollouts
 
