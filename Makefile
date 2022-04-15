@@ -7,8 +7,8 @@ GIT_TAG ?= $(shell which git) tag --sign
 
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-VERSION ?= $(shell poetry version --short)
-MINOR_VERSION ?= $(shell poetry version --short | awk -F"." '{ print $$1"."$$2 }')
+VERSION ?= $(shell cat hokusai/VERSION)
+MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 dependencies:
 	pip install --upgrade pip
@@ -88,7 +88,7 @@ publish-version:
 publish-pip:
 	pip install --upgrade wheel
 	poetry build
-	twine upload dist/*
+	twine upload dist/* --verbose
 
 publish-dockerhub:
 	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
