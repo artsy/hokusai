@@ -9,7 +9,7 @@ from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
-class CommandRunner(object):
+class CommandRunner:
   def __init__(self, context, namespace=None):
     self.context = context
     self.kctl = Kubectl(self.context, namespace=namespace)

@@ -2,7 +2,7 @@ import os
 
 from hokusai.lib.exceptions import HokusaiError
 
-class TemplateSelector(object):
+class TemplateSelector:
   def get(self, path):
     _path_root, _file_ext = os.path.splitext(path)
 

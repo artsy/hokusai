@@ -1,4 +1,4 @@
-FROM python:2.7-alpine
+FROM python:3.9.10-alpine
 
 WORKDIR /src
 
@@ -23,9 +23,6 @@ RUN curl -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/do
       chmod a+x /usr/local/bin/aws-iam-authenticator
 
 COPY . /src
-
-# Workaround pip using dependencies from pyproject.toml https://github.com/python-poetry/poetry/issues/826
-RUN mv pyproject.toml pyproject.toml.bak
 
 # Install Hokusai
 RUN pip install .

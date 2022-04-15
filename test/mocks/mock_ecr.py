@@ -1,4 +1,4 @@
-class MockECR(object):
+class MockECR:
   @property
   def aws_account_id(self):
     return '12345678'

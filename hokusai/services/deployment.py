@@ -17,7 +17,7 @@ from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.template_selector import TemplateSelector
 
-class Deployment(object):
+class Deployment:
   def __init__(self, context, deployment_name=None, namespace=None):
     self.context = context
     self.namespace = namespace
@@ -35,6 +35,7 @@ class Deployment(object):
     digest = self.ecr.image_digest_for_tag(tag)
     if digest is None:
       raise HokusaiError("Could not find an image digest for tag %s.  Aborting." % tag)
+    digest_half = digest[len(digest)//2:]
 
     if self.namespace is None:
       print_green("Deploying %s to %s..." % (digest, self.context), newline_after=True)
@@ -85,6 +86,8 @@ class Deployment(object):
       for item in yaml_spec:
         if item['kind'] == 'Deployment':
           item['spec']['progressDeadlineSeconds'] = timeout
+          item['metadata']['labels']['app.kubernetes.io/version'] = digest_half
+          item['spec']['template']['metadata']['labels']['app.kubernetes.io/version'] = digest_half
           for container in item['spec']['template']['spec']['containers']:
             if self.ecr.project_repo in container['image']:
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
@@ -105,10 +108,26 @@ class Deployment(object):
     else:
       for deployment in self.cache:
         containers = [(container['name'], container['image']) for container in deployment['spec']['template']['spec']['containers']]
-        deployment_targets = [{"name": name, "image": "%s@%s" % (self.ecr.project_repo, digest)} for name, image in containers if self.ecr.project_repo in image]
+        deployment_targets = [
+          {
+            'name': name,
+            'image': "%s@%s" % (self.ecr.project_repo, digest),
+          }
+          for name, image in containers if self.ecr.project_repo in image
+        ]
         patch = {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/version": digest_half
+            }
+          },
           "spec": {
             "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/version": digest_half
+                }
+              },
               "spec": {
                 "containers": deployment_targets
               }

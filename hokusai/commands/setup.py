@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-import urllib
 import tempfile
 
 from shutil import rmtree, copyfile
@@ -38,7 +37,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
     if len(git_repo_and_branch) == 2:
       git_branch = git_repo_and_branch[1]
     else:
-      git_branch = "master"
+      git_branch = "main"
     shout("git clone -b %s --single-branch %s %s" % (git_branch, git_repo, scratch_dir))
 
   custom_template_dir = None
@@ -95,10 +94,10 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
     if custom_template_dir:
       for root, _, files in os.walk(custom_template_dir):
         subpath = os.path.relpath(root, custom_template_dir)
-        if subpath is not '.':
+        if subpath != '.':
           mkpath(os.path.join(CWD, subpath))
         for file in files:
-          if subpath is not '.':
+          if subpath != '.':
             file_path = os.path.join(subpath, file)
           else:
             file_path = file

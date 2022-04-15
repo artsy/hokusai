@@ -10,7 +10,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
 
-class ECR(object):
+class ECR:
   def __init__(self):
     self.client = boto3.client('ecr', region_name=get_region_name())
     self.__aws_account_id = None
@@ -91,7 +91,7 @@ class ECR(object):
   def tags(self):
     tgs = []
     for image in self.images:
-      if 'imageTags' not in image.keys():
+      if 'imageTags' not in list(image.keys()):
         continue
       for tag in image['imageTags']:
         tgs.append(tag)
@@ -99,7 +99,7 @@ class ECR(object):
 
   def deployment_tags(self, context):
     context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)
-    return sorted(list(filter(lambda x: context_re.match(x), self.tags())))
+    return sorted([x for x in self.tags() if context_re.match(x)])
 
   def current_deployment_tag(self, context):
     context_re = re.compile(r"%s--\d\d\d\d-\d\d-\d\d--\d\d\-\d\d-\d\d" % context)
@@ -112,7 +112,7 @@ class ECR(object):
 
   def tag_exists(self, tag):
     for image in self.images:
-      if 'imageTags' not in image.keys():
+      if 'imageTags' not in list(image.keys()):
         continue
       if tag in image['imageTags']:
         return True
