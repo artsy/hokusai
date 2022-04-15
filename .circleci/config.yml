@@ -353,6 +353,7 @@ workflows:
           requires:
             - release_s3_linux
             - release_s3_macos
+            - release_dockerhub
           filters:
             branches:
               only: release
