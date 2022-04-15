@@ -88,7 +88,7 @@ publish-version:
 publish-pip:
 	pip install --upgrade wheel
 	poetry build
-	twine upload dist/*
+	twine upload dist/* --verbose
 
 publish-dockerhub:
 	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
