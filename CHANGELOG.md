@@ -1,3 +1,12 @@
+## v1.0.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.0.0/README.md)
+
+### Notable changes since v0.5.18
+
+* ed3d1ae feat: track deployed project version in a Kubernetes deployment label
+* 3b8a7e6 feat: drop support for Python 2.x, allow installation for Python 3.7+ only
+
 ## v0.5.18
 
 [Documentation](https://github.com/artsy/hokusai/blob/v0.5.18/README.md)
