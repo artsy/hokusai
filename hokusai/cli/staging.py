@@ -9,7 +9,7 @@ from hokusai.lib.branch_detection import detect_branch
 KUBE_CONTEXT = 'staging'
 
 @base.group()
-def staging(context_settings=CONTEXT_SETTINGS):
+def staging():
   """Interact with the staging Kubernetes environment
   defined by the `staging` context in `~/.kube/config` and the 
   Kubernetes resources in `./hokusai/staging.yml`"""
@@ -123,7 +123,7 @@ def restart(deployment, verbose):
 
 
 @staging.group()
-def env(context_settings=CONTEXT_SETTINGS):
+def env():
   """Interact with the runtime environment for the application"""
   pass
 

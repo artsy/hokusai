@@ -7,7 +7,7 @@ import hokusai
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @click.group()
-def base(context_settings=CONTEXT_SETTINGS):
+def base():
   """Hokusai is a CLI for managing application deployments on Kubernetes"""
   pass
 

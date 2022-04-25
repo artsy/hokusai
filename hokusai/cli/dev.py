@@ -7,7 +7,7 @@ from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 from hokusai.lib.config import config
 
 @base.group()
-def dev(context_settings=CONTEXT_SETTINGS):
+def dev():
   """Interact with docker-compose development environment
   defined by ./hokusai/development.yml"""
   pass

@@ -10,7 +10,7 @@ from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 
 @base.group()
-def review_app(context_settings=CONTEXT_SETTINGS):
+def review_app():
   """Create/Manage review apps"""
   pass
 
@@ -131,7 +131,7 @@ def restart(app_name, deployment, verbose):
 
 
 @review_app.group()
-def env(context_settings=CONTEXT_SETTINGS):
+def env():
   """Interact with the runtime environment for the review app"""
   pass
 

@@ -6,7 +6,7 @@ from hokusai.cli.base import base
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @base.group()
-def pipeline(context_settings=CONTEXT_SETTINGS):
+def pipeline():
   """Interact with the project's' staging -> production pipeline"""
   pass
 

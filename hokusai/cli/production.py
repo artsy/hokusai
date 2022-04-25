@@ -9,7 +9,7 @@ from hokusai.lib.branch_detection import detect_branch
 KUBE_CONTEXT = 'production'
 
 @base.group()
-def production(context_settings=CONTEXT_SETTINGS):
+def production():
   """Interact with the production Kubernetes environment
   defined by the `production` context in `~/.kube/config` and the 
   Kubernetes resources in `./hokusai/production.yml`"""
@@ -124,7 +124,7 @@ def restart(deployment, verbose):
 
 
 @production.group()
-def env(context_settings=CONTEXT_SETTINGS):
+def env():
   """Interact with the runtime environment for the application"""
   pass
 
