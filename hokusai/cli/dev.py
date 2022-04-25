@@ -13,7 +13,7 @@ def dev():
   pass
 
 
-@dev.command(context_settings=CONTEXT_SETTINGS)
+@dev.command()
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before starting (default: true)')
 @click.option('-d', '--detach', type=click.BOOL, is_flag=True, help="Run containers in the background")
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default ./hokusai/development.yml.j2)')
@@ -24,7 +24,7 @@ def start(build, detach, filename, verbose):
   hokusai.dev_start(build, detach, filename)
 
 
-@dev.command(context_settings=CONTEXT_SETTINGS)
+@dev.command()
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default ./hokusai/development.yml.j2)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def stop(filename, verbose):
@@ -33,7 +33,7 @@ def stop(filename, verbose):
   hokusai.dev_stop(filename)
 
 
-@dev.command(context_settings=CONTEXT_SETTINGS)
+@dev.command()
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default ./hokusai/development.yml.j2)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def status(filename, verbose):
@@ -42,7 +42,7 @@ def status(filename, verbose):
   hokusai.dev_status(filename)
 
 
-@dev.command(context_settings=CONTEXT_SETTINGS)
+@dev.command()
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help="Follow output")
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
 @click.option('-fi', '--filename', type=click.STRING, help='Use the docker-compose Yaml file (default ./hokusai/development.yml.j2)')
@@ -53,7 +53,7 @@ def logs(follow, tail, filename, verbose):
   hokusai.dev_logs(follow, tail, filename)
 
 
-@dev.command(context_settings=CONTEXT_SETTINGS)
+@dev.command()
 @click.argument('command')
 @click.option('--service-name', type=click.STRING, help="The service name to launch the container as (default: the name 'project-name' in `hokusai/config.yml`)")
 @click.option('--stop', type=click.BOOL, is_flag=True, help='Stop all services after running the command')
@@ -65,7 +65,7 @@ def run(command, service_name, stop, filename, verbose):
   hokusai.dev_run(command, service_name, stop, filename)
 
 
-@dev.command(context_settings=CONTEXT_SETTINGS)
+@dev.command()
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default ./hokusai/development.yml.j2)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def clean(filename, verbose):

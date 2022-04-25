@@ -6,19 +6,19 @@ from click_repl import repl
 import hokusai
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 def base():
   """Hokusai is a CLI for managing application deployments on Kubernetes"""
   pass
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 def console():
     """Start an interactive console session"""
     repl(click.get_current_context())
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 @click.option('--kubectl-version', type=click.STRING, required=False, help='The version of kubectl to install')
 @click.option('--s3-bucket', type=click.STRING, required=False, help="The S3 bucket name containing your org's kubectl config file")
 @click.option('--s3-key', type=click.STRING, required=False, help="The S3 key of your org's kubectl config file")
@@ -33,7 +33,7 @@ def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install
   hokusai.configure(kubectl_version, s3_bucket, s3_key, config_file, install_to, install_config_to)
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 @click.option('--project-name', type=click.STRING, default=os.path.basename(hokusai.CWD), help='The project name (default: name of current directory)')
 @click.option('--template-remote', type=click.STRING, help='Git remote of templates to use - you can specify a branch via <git-remote>#<branch>')
 @click.option('--template-dir', type=click.STRING, help='Directory of templates to use - can be used with --template-remote')
@@ -46,7 +46,7 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
   hokusai.setup(project_name, template_remote, template_dir, var, allow_missing_vars)
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default: ./hokusai/build.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def build(filename, verbose):
@@ -55,7 +55,7 @@ def build(filename, verbose):
   hokusai.build(filename)
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before running the test suite (default: true)')
 @click.option('--cleanup/--no-cleanup', default=False, help='Remove containers on exit / error (default: False)')
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default: ./hokusai/test.yml)')
@@ -69,13 +69,13 @@ def test(build, cleanup, filename, service_name, verbose):
   hokusai.test(build, cleanup, filename, service_name)
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 def check():
   """Check Hokusai dependencies and configuration"""
   hokusai.check()
 
 
-@base.command(context_settings=CONTEXT_SETTINGS)
+@base.command()
 def version():
   """Print Hokusai's version and exit"""
   hokusai.version()

@@ -15,7 +15,7 @@ def production():
   Kubernetes resources in `./hokusai/production.yml`"""
   pass
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/production.yml)')
 @click.option('-e', '--environment', type=click.STRING, multiple=True, help='Create stack with the given environment variables (only applies if --filename is not supplied)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -25,7 +25,7 @@ def create(filename, environment, verbose):
   hokusai.k8s_create(KUBE_CONTEXT, filename=filename, environment=environment)
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def delete(filename, verbose):
@@ -35,7 +35,7 @@ def delete(filename, verbose):
 
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('--check-branch', type=click.STRING, default=detect_branch(), help='Check branch before updating (default: origin default or main)')
 @click.option('--check-remote', type=click.STRING, help='Check remotes before updating (otherwise check all remotes)')
 @click.option('--skip-checks', type=click.BOOL, is_flag=True, help='Skip all checks and update configuration recklessly')
@@ -50,7 +50,7 @@ def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
                       filename=filename, dry_run=dry_run)
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('--resources/--no-resources', default=True, help='Print Kubernetes API objects defined in ./hokusai/production.yml (default: true)')
 @click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
 @click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output for resources and pods")
@@ -63,7 +63,7 @@ def status(resources, pods, describe, top, filename, verbose):
   hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, filename=filename)
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.argument('command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to "production")')
@@ -76,7 +76,7 @@ def run(command, tty, tag, env, constraint, verbose):
   hokusai.run(KUBE_CONTEXT, command, tty, tag, env, constraint)
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('-s', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
@@ -88,7 +88,7 @@ def logs(timestamps, follow, tail, previous, label, verbose):
   set_verbosity(verbose)
   hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, label)
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.argument('tag', type=click.STRING)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
@@ -105,7 +105,7 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
   hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout, update_config=update_config, filename=filename)
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def refresh(deployment, verbose):
@@ -114,7 +114,7 @@ def refresh(deployment, verbose):
   hokusai.refresh(KUBE_CONTEXT, deployment)
 
 
-@production.command(context_settings=CONTEXT_SETTINGS)
+@production.command()
 @click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def restart(deployment, verbose):
@@ -129,7 +129,7 @@ def env():
   pass
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def get(env_vars, verbose):
@@ -138,7 +138,7 @@ def get(env_vars, verbose):
   hokusai.get_env(KUBE_CONTEXT, env_vars)
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def set(env_vars, verbose):
@@ -147,7 +147,7 @@ def set(env_vars, verbose):
   hokusai.set_env(KUBE_CONTEXT, env_vars)
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def unset(env_vars, verbose):

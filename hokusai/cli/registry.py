@@ -11,7 +11,7 @@ def registry():
   pass
 
 
-@registry.command(context_settings=CONTEXT_SETTINGS)
+@registry.command()
 @click.option('--tag', type=click.STRING, help='The remote tag to push to (default: the value of `git rev-parse HEAD`)')
 @click.option('--local-tag', type=click.STRING, default='latest', help='The local tag to push (default: latest)')
 @click.option('--build/--no-build', default=True, help='Force a build of the :latest image before pushing (default: true)')
@@ -26,7 +26,7 @@ def push(tag, local_tag, build, filename, force, overwrite, skip_latest, verbose
   hokusai.push(tag, local_tag, build, filename, force, overwrite, skip_latest)
 
 
-@registry.command(context_settings=CONTEXT_SETTINGS)
+@registry.command()
 @click.option('--tag', type=click.STRING, default='latest', help='The remote tag to pull  (default: latest)')
 @click.option('--local-tag', type=click.STRING, default='latest', help='The local tag to pull to (default: latest)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -36,7 +36,7 @@ def pull(tag, local_tag, verbose):
   hokusai.pull(tag, local_tag)
 
 
-@registry.command(context_settings=CONTEXT_SETTINGS)
+@registry.command()
 @click.option('-e', '--tag-exists', type=click.STRING, help='Exit 0 if the given image tag is found and 1 if not')
 @click.option('-r', '--reverse-sort', type=click.BOOL, is_flag=True, help='Sort oldest to latest')
 @click.option('-l', '--limit', type=click.INT, default=20, help="Limit output to N images")
@@ -48,7 +48,7 @@ def images(tag_exists, reverse_sort, limit, filter_tags, digests, verbose):
   set_verbosity(verbose)
   hokusai.images(tag_exists, reverse_sort, limit, filter_tags, digests)
 
-@registry.command(context_settings=CONTEXT_SETTINGS)
+@registry.command()
 @click.argument('tag1', type=click.Choice(['staging', 'production']))
 @click.argument('tag2', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')

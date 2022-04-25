@@ -14,7 +14,7 @@ def review_app():
   """Create/Manage review apps"""
   pass
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 @click.option('-sf', '--source-file', type=click.STRING, default='hokusai/staging.yml', help="The source yaml file from which to create the new resource file (default: hokusai/staging.yml)")
@@ -24,7 +24,7 @@ def setup(app_name, verbose, source_file):
   hokusai.create_new_app_yaml(source_file, app_name)
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(app_name, verbose):
@@ -32,7 +32,7 @@ def create(app_name, verbose):
   hokusai.k8s_create(KUBE_CONTEXT, tag=app_name, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def delete(app_name, verbose):
@@ -41,7 +41,7 @@ def delete(app_name, verbose):
   hokusai.k8s_delete(KUBE_CONTEXT, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def update(app_name, verbose):
@@ -50,7 +50,7 @@ def update(app_name, verbose):
   hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name), skip_checks=True)
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('--resources/--no-resources', default=True, help='Print Kubernetes API objects defined in ./hokusai/APP_NAME.yml (default: true)')
 @click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
@@ -63,7 +63,7 @@ def status(app_name, resources, pods, describe, top, verbose):
   hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.argument('command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
@@ -79,7 +79,7 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
   hokusai.run(KUBE_CONTEXT, command, tty, tag, env, constraint, namespace=clean_string(app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-s', '--timestamps', type=click.BOOL, is_flag=True, help='Include timestamps')
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
@@ -93,7 +93,7 @@ def logs(app_name, timestamps, follow, tail, previous, label, verbose):
   hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, label, namespace=clean_string(app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.argument('tag', type=click.STRING)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
@@ -110,7 +110,7 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
                   filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -120,7 +120,7 @@ def refresh(app_name, deployment, verbose):
   hokusai.refresh(KUBE_CONTEXT, deployment, namespace=clean_string(app_name))
 
 
-@review_app.command(context_settings=CONTEXT_SETTINGS)
+@review_app.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -136,7 +136,7 @@ def env():
   pass
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('app_name', type=click.STRING)
 @click.option('--configmap', type=click.STRING, help="Copy the given ConfigMap (default: the project's environment ConfigMap)")
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -146,7 +146,7 @@ def copy(app_name, configmap, verbose):
   hokusai.k8s_copy_config(KUBE_CONTEXT, clean_string(app_name), name=configmap)
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('app_name', type=click.STRING)
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -156,7 +156,7 @@ def get(app_name, env_vars, verbose):
   hokusai.get_env(KUBE_CONTEXT, env_vars, namespace=clean_string(app_name))
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('app_name', type=click.STRING)
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
@@ -166,7 +166,7 @@ def set(app_name, env_vars, verbose):
   hokusai.set_env(KUBE_CONTEXT, env_vars, namespace=clean_string(app_name))
 
 
-@env.command(context_settings=CONTEXT_SETTINGS)
+@env.command()
 @click.argument('app_name', type=click.STRING)
 @click.argument('env_vars', type=click.STRING, nargs=-1)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
