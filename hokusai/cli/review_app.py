@@ -9,7 +9,7 @@ from hokusai.cli.staging import KUBE_CONTEXT
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 
-@base.group()
+@base.group('review_app')
 def review_app(context_settings=CONTEXT_SETTINGS):
   """Create/Manage review apps"""
   pass
