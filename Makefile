@@ -20,6 +20,7 @@ tests:
 
 test:
 	coverage run --omit="test/*" -m unittest discover test.unit
+	coverage run --omit="test/*" -m unittest discover test.smoke
 
 integration:
 	coverage run --omit="test/*" -m unittest discover test.integration

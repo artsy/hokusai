@@ -28,3 +28,6 @@ class HokusaiUnitTestCase(HokusaiTestCase):
 
 class HokusaiIntegrationTestCase(HokusaiTestCase):
   pass
+
+class HokusaiSmokeTestCase(HokusaiTestCase):
+  pass
