@@ -9,7 +9,9 @@ from hokusai.cli.staging import KUBE_CONTEXT
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 
-@base.group()
+# Click v7.0+ replaces underscore with dash in the cli for commands.
+# passing 'review_app' to @base.group() forces underscore.
+@base.group('review_app')
 def review_app():
   """Create/Manage review apps"""
   pass

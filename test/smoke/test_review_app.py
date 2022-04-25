@@ -10,4 +10,4 @@ class TestReviewApp(HokusaiSmokeTestCase):
   def test_review_app_with_dash(self):
     runner = CliRunner()
     result = runner.invoke(base, ['review-app'])
-    assert result.exit_code == 0
+    assert result.exit_code != 0
