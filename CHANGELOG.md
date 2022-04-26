@@ -1,3 +1,11 @@
+## v1.0.1
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.0.1/README.md)
+
+### Notable changes since v1.0.0
+
+08df37c fix: click replacing review_app command with review-app (#298)
+
 ## v1.0.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.0.0/README.md)
