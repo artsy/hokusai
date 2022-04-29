@@ -9,6 +9,7 @@ jobs:
       - run: make dependencies
       - run: make test
       - run: coverage report
+      - run: make build-onefile VERSION=beta
 
   test_macos:
     macos:
