@@ -36,7 +36,7 @@ jobs:
       - run: pyenv rehash
       - run: make test
       - run: coverage report
-      - run: make build VERSION=beta
+      - run: make build-onedir VERSION=beta
 
   test_integration:
     machine:
@@ -111,7 +111,7 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build VERSION=beta
+      - run: make build-onefile VERSION=beta
       - run: make publish-beta
 
   release_beta_s3_macos:
@@ -207,8 +207,8 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build
-      - run: make build VERSION=latest
+      - run: make build-onefile
+      - run: make build-onefile VERSION=latest
       - run: make publish-version
       - run: make publish-latest
 
