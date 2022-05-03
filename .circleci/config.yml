@@ -185,7 +185,7 @@ jobs:
               version 'beta'
 
               def install
-                prefix.install Dir["*"]
+                bin.install Dir["*"]
               end
             end
             EOF
@@ -315,7 +315,7 @@ jobs:
               version '$VERSION'
 
               def install
-                prefix.install Dir["*"]
+                bin.install Dir["*"]
               end
             end
             EOF
