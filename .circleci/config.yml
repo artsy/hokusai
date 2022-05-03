@@ -192,7 +192,8 @@ jobs:
 
             git config user.name "Hokusai CI"
             git config user.email "it@artsymail.com"
-            git commit -am "Release Hokusai Beta"
+            git add ./Formula/hokusai-beta.rb
+            git commit -m "Release Hokusai Beta"
             git push origin main
 
             cd /tmp
@@ -321,7 +322,8 @@ jobs:
 
             git config user.name "Hokusai CI"
             git config user.email "it@artsymail.com"
-            git commit -am "Release Hokusai $VERSION"
+            git add ./Formula/hokusai.rb
+            git commit -m "Release Hokusai $VERSION"
             git push origin main
 
             cd /tmp
