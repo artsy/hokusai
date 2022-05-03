@@ -15,6 +15,7 @@ from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, clean_string, shout
+from hokusai.lib.environment import templates_dir_path
 from hokusai.lib.exceptions import HokusaiError
 
 @command(config_check=False)
@@ -56,11 +57,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
     custom_template_dir = os.path.abspath(template_dir)
     env = Environment(loader=FileSystemLoader(os.path.abspath(template_dir)), **environment_kwargs)
   else:
-    try:
-      base_path = sys._MEIPASS
-      env = Environment(loader=FileSystemLoader(os.path.join(base_path, 'hokusai', 'templates')))
-    except:
-      env = Environment(loader=PackageLoader('hokusai', 'templates'))
+    env = Environment(loader=FileSystemLoader(templates_dir_path()))
 
   required_templates = [
     'Dockerfile.j2',
