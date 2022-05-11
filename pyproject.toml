@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hokusai"
-version = "1.0.1"
+version = "1.0.2"
 description = "Artsy Docker development toolkit"
 authors = ["Isac Petruzzi <isac@artsymail.com>"]
 maintainers = ["Jian-Feng Xu <jian-feng@artsymail.com>"]
