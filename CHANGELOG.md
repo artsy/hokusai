@@ -1,3 +1,11 @@
+## v1.0.2
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.0.2/README.md)
+
+### Notable changes since v1.0.1
+
+8a88aef feat: switch macos pyinstaller build to use onedir (#301)
+
 ## v1.0.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.0.1/README.md)

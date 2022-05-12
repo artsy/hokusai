@@ -9,6 +9,7 @@ jobs:
       - run: make dependencies
       - run: make test
       - run: coverage report
+      - run: make build-onefile VERSION=beta
 
   test_macos:
     macos:
@@ -35,7 +36,7 @@ jobs:
       - run: pyenv rehash
       - run: make test
       - run: coverage report
-      - run: make build VERSION=beta
+      - run: make build-onedir VERSION=beta
 
   test_integration:
     machine:
@@ -110,7 +111,7 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build VERSION=beta
+      - run: make build-onefile VERSION=beta
       - run: make publish-beta
 
   release_beta_s3_macos:
@@ -136,7 +137,7 @@ jobs:
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: pyenv rehash
-      - run: make build VERSION=beta
+      - run: make build-onedir VERSION=beta
       - run: make publish-beta
 
   release_beta_dockerhub:
@@ -150,6 +151,55 @@ jobs:
       - run: make image
       - run: make publish-beta-dockerhub
 
+  release_beta_homebrew:
+    docker:
+      - image: artsy/hokusai:beta
+    steps:
+      - add_ssh_keys
+      - run:
+          name: release beta homebrew
+          command: |
+            cd /tmp
+
+            wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x86_64.tar.gz
+
+            export UNAME=$(uname)
+            if [ $UNAME == "Darwin" ]; then
+              export SHA256=$(shasum -a 256 hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
+            fi
+
+            if [ $UNAME == "Linux" ]; then
+              export SHA256=$(sha256sum hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
+            fi
+
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            git clone git@github.com:artsy/homebrew-formulas.git
+            cd ./homebrew-formulas
+
+            cat <<EOF > ./Formula/hokusai-beta.rb
+            class HokusaiBeta < Formula
+              desc 'Hokusai is a Docker + Kubernetes CLI for application developers'
+              homepage 'https://github.com/artsy/hokusai'
+              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x86_64.tar.gz'
+              sha256 '$SHA256'
+              version 'beta'
+
+              def install
+                bin.install Dir["*"]
+              end
+            end
+            EOF
+
+            git config user.name "Hokusai CI"
+            git config user.email "it@artsymail.com"
+            git add ./Formula/hokusai-beta.rb
+            git commit -m "Release Hokusai Beta"
+            git push origin main
+
+            cd /tmp
+            rm -f hokusai-beta-Darwin-x86_64.tar.gz
+            rm -rf ./homebrew-formulas
+
   release_s3_linux:
     docker:
       - image: python:3.9.10
@@ -158,8 +208,8 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build
-      - run: make build VERSION=latest
+      - run: make build-onefile
+      - run: make build-onefile VERSION=latest
       - run: make publish-version
       - run: make publish-latest
 
@@ -186,8 +236,8 @@ jobs:
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: pyenv rehash
-      - run: make build
-      - run: make build VERSION=latest
+      - run: make build-onedir
+      - run: make build-onedir VERSION=latest
       - run: make publish-version
       - run: make publish-latest
 
@@ -265,14 +315,15 @@ jobs:
               version '$VERSION'
 
               def install
-                bin.install 'hokusai'
+                bin.install Dir["*"]
               end
             end
             EOF
 
             git config user.name "Hokusai CI"
             git config user.email "it@artsymail.com"
-            git commit -am "Release Hokusai $VERSION"
+            git add ./Formula/hokusai.rb
+            git commit -m "Release Hokusai $VERSION"
             git push origin main
 
             cd /tmp
@@ -323,6 +374,14 @@ workflows:
             - test_macos
             - test_integration
             - test_docker_build
+          filters:
+            branches:
+              only: main
+      - release_beta_homebrew:
+          requires:
+            - release_beta_s3_linux
+            - release_beta_s3_macos
+            - release_beta_dockerhub
           filters:
             branches:
               only: main
