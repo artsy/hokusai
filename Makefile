@@ -10,6 +10,8 @@ PROJECT = github.com/artsy/hokusai
 VERSION ?= $(shell cat hokusai/VERSION)
 MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
+BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
+
 dependencies:
 	pip install --upgrade pip
 	pip install poetry --quiet --ignore-installed
@@ -31,7 +33,6 @@ test-docker:
 	  --workdir "/src/$(PROJECT)" \
 	  python:3.9.10 make dependencies test
 
-build-onefile: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build-onefile:
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
@@ -43,7 +44,6 @@ build-onefile:
 	rm -rf $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 	mv $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
-build-onedir: BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 build-onedir:
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
