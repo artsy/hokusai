@@ -29,17 +29,17 @@ def test(build, cleanup, filename, service_name):
     for sig in EXIT_SIGNALS:
       signal.signal(sig, on_cleanup)
 
-  opts = ' --abort-on-container-exit'
   if build:
     Docker().build(filename=yaml_template)
 
   if service_name is None:
     service_name = config.project_name
 
+  opts = " --abort-on-container-exit --exit-code-from %s" % service_name
+
   print_green("Starting test environment... Press Ctrl+C to stop.", newline_after=True)
   try:
-    shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
-    return_code = int(shout("docker wait hokusai_%s_1" % service_name))
+    return_code = int(shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True))
   except CalledProcessError:
     if cleanup: on_cleanup()
     raise HokusaiError('Tests Failed')
