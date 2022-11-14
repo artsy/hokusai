@@ -4,7 +4,7 @@ import signal
 from hokusai import CWD
 from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, TEST_YML_FILE, config
-from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
+from hokusai.lib.common import print_green, print_red, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
 from hokusai.lib.template_selector import TemplateSelector
@@ -40,7 +40,8 @@ def test(build, cleanup, filename, service_name):
   print_green("Starting test environment... Press Ctrl+C to stop.", newline_after=True)
   try:
     return_code = int(shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True))
-  except CalledProcessError:
+  except CalledProcessError as e:
+    print_red("CalledProcessError return code: %s" % e.returncode)
     if cleanup: on_cleanup()
     raise HokusaiError('Tests Failed')
 
