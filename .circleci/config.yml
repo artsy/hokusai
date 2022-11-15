@@ -18,19 +18,30 @@ jobs:
       - run:
           name: test1
           command: |
+            echo "### echo SHELL"
             echo $SHELL
+            echo "### cat ~/.bashrc"
             cat ~/.bashrc
+            echo "### cat ~/.bash_profile"
             cat ~/.bash_profile
+            echo "### cat BASH_ENV"
+            cat $BASH_ENV
+            echo "### whoami"
             whoami
+            echo "### pwd"
             pwd
-            echo 'echo "hello world1"' >> ~/.bash_profile
-            echo 'echo "hello world2"' >> ~/.bashrc
-            echo 'echo "hello world3"' >> "$BASH_ENV"
+            echo "### echo hello world..."
+            echo -e '\necho "hello world1"' >> ~/.bashrc
+            echo -e '\necho "hello world2"' >> ~/.bash_profile
+            echo -e '\necho "hello world3"' >> "$BASH_ENV"
       - run:
           name: test2
           command: |
-            cat ~/.bash_profile
+            echo "### cat ~/.bashrc"
             cat ~/.bashrc
+            echo "### cat ~/.bash_profile"
+            cat ~/.bash_profile
+            echo "### cat BASH_ENV"
             cat $BASH_ENV
 
   test_integration:
