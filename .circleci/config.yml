@@ -15,28 +15,19 @@ jobs:
     macos:
       xcode: "11.6.0"
     steps:
-      - checkout
       - run:
-          name: install openssl, pyenv
+          name: test1
           command: |
-            brew install openssl pyenv
-            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+            echo $SHELL
+            cat ~/.bashrc
+            cat ~/.bash_profile
+            whoami
+            pwd
+            echo "# hello world" >> ~/.bash_profile
       - run:
-          name: install python
+          name: test2
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
-            pyenv local 3.9.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
-      - run: pyenv rehash
-      - run: make test
-      - run: coverage report
-      - run: make build-onedir VERSION=beta
+            cat ~/.bash_profile
 
   test_integration:
     machine:
