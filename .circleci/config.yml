@@ -13,14 +13,14 @@ jobs:
 
   test_macos:
     macos:
-      xcode: "11.6.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
           name: install openssl, pyenv
           command: |
             brew install openssl pyenv
-            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
           command: |
@@ -116,14 +116,14 @@ jobs:
 
   release_beta_s3_macos:
     macos:
-      xcode: "11.6.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
           name: install openssl, pyenv
           command: |
             brew install openssl pyenv
-            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
           command: |
@@ -215,14 +215,14 @@ jobs:
 
   release_s3_macos:
     macos:
-      xcode: "11.6.0"
+      xcode: "13.2.1"
     steps:
       - checkout
       - run:
           name: install openssl, pyenv
           command: |
             brew install openssl pyenv
-            echo 'eval "$(pyenv init --path)"' >> ~/.bash_profile
+            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
           command: |
