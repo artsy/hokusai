@@ -23,11 +23,15 @@ jobs:
             cat ~/.bash_profile
             whoami
             pwd
-            echo "# hello world" >> ~/.bash_profile
+            echo 'echo "hello world1"' >> ~/.bash_profile
+            echo 'echo "hello world2"' >> ~/.bashrc
+            echo 'echo "hello world3"' >> "$BASH_ENV"
       - run:
           name: test2
           command: |
             cat ~/.bash_profile
+            cat ~/.bashrc
+            cat $BASH_ENV
 
   test_integration:
     machine:
