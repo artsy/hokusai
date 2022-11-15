@@ -24,8 +24,8 @@ jobs:
             cat ~/.bashrc
             echo "### cat ~/.bash_profile"
             cat ~/.bash_profile
-            echo "### cat BASH_ENV"
-            cat $BASH_ENV
+            echo "### set env foo=bar"
+            export FOO=BAR
             echo "### whoami"
             whoami
             echo "### pwd"
@@ -43,6 +43,8 @@ jobs:
             cat ~/.bash_profile
             echo "### cat BASH_ENV"
             cat $BASH_ENV
+            echo "### get env foo=bar"
+            env | grep FOO
 
   test_integration:
     machine:
