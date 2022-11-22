@@ -254,12 +254,12 @@ jobs:
 
   release_github:
     docker:
-      - image: golang:1.11
+      - image: golang:1.19
     steps:
       - checkout
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
-      - run: go get -u github.com/tcnksm/ghr
+      - run: go install github.com/tcnksm/ghr@latest
       - run: make publish-github
 
   release_pip:
