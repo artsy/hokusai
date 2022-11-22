@@ -1,3 +1,13 @@
+## v1.0.3
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.0.3/README.md)
+
+### Notable changes since v1.0.2
+
+* 345a52b feat: use --exit-code-from to ensure relevant exit code (#311)
+* 9653389 feat: minor update after k8s upgrade (#308)
+* 62f4554 fix: s3 macos release publish version fails because s3 linux release published version (#305)
+
 ## v1.0.2
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.0.2/README.md)
