@@ -102,7 +102,7 @@ publish-pip:
 	twine upload dist/* --verbose
 
 publish-dockerhub:
-	if [ "$(shell curl --silent https://index.docker.io/v1/repositories/artsy/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
+	if [ "$(shell curl --silent https://hub.docker.com/v2/namespaces/artsy/repositories/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
 	  docker tag hokusai:latest artsy/hokusai:$(VERSION) && \
 	  docker push artsy/hokusai:$(VERSION) && \
 	  docker tag hokusai:latest artsy/hokusai:$(MINOR_VERSION) && \
