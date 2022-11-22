@@ -88,7 +88,7 @@ The command will also tag the image as `latest`.  This image tag should not be r
 
 The command aborts if any of the following conditions is met:
 - The working directory is not clean (you have uncommitted changes)
-- The working directory contains any files specified in your `.gitignore` file
+- The working directory contains any files specified in your `.gitignore` file. Running `git status --ignored` will list. 
 - The project registry already contains the specified tag
 
 The reason for these conditional checks is that when building, Docker will copy your _entire_ working directory into the container image, which can produce unexpected results when building images locally, destined for production environments!  Hokusai aborts if it detects the working directory is unclean, or any ignored files or directories are present, as it attempts to prevent any local configuration leaking into container images.
