@@ -98,7 +98,7 @@ Once an image is pushed, you can list the images and tags in the project registr
 
 6) Create the Kubernetes staging environment with `hokusai staging create`
 
-`hokusai staging status` should show all the resources defined in staging.yml. If there's an Ingress, you would have to create a corresponding DNS record on [Cloudflare](https://www.notion.so/artsy/WIP-DNS-Playbook-d5379235983742609a147edc9b8b42f6).
+`hokusai staging status` should show all the resources defined in staging.yml.
 
 Get logs by running `hokusai staging logs`
 
