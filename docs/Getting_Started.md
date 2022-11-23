@@ -98,7 +98,7 @@ Once an image is pushed, you can list the images and tags in the project registr
 
 6) Create the Kubernetes staging environment with `hokusai staging create`
 
-`hokusai staging status` should eventually (once Kubernetes creates a load balancer for your project), output the ELB's DNS record.
+`hokusai staging status` should show all the resources defined in staging.yml.
 
 Get logs by running `hokusai staging logs`
 
