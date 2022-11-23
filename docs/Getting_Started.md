@@ -149,4 +149,4 @@ Deploy the new commit to staging with `hokusai production deploy {TAG}` where TA
 hokusai pipeline promote
 ```
 
-For those wishing to configure automatic deployments through Github and CircleCI, [these instructions](https://github.com/artsy/README/blob/main/playbooks/deployments.md#setting-up-a-project-in-circleci).
+For those wishing to configure automatic deployments through Github and CircleCI, see [these instructions](https://github.com/artsy/README/blob/main/playbooks/deployments.md#setting-up-a-project-in-circleci).
