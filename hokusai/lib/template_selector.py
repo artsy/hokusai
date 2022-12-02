@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from hokusai.lib.exceptions import HokusaiError
 
@@ -21,3 +22,9 @@ class TemplateSelector:
       return path + '.yaml'
 
     raise HokusaiError("No Yaml or Jinja templates found for %s" % os.path.basename(path))
+
+  def get_all(self, path):
+    files = []
+    for path in Path(path).rglob('*.yml'):
+      files.append(path)
+    return files
