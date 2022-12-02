@@ -51,6 +51,13 @@ class YamlSpec:
     f.close()
     return f.name
 
+  def to_file_in_place(self):
+    """render yaml file in place"""
+    rendered = self.to_string()
+    f = open(self.template_file, 'w')
+    f.write(rendered)
+    f.close()
+
   def to_list(self):
     return list(yaml.safe_load_all(self.to_string()))
 
