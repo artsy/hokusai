@@ -18,5 +18,6 @@ from hokusai.commands.namespace import create_new_app_yaml
 from hokusai.commands.retag import retag
 from hokusai.commands.test import test
 from hokusai.commands.version import version
+from hokusai.commands.render import fetch_base
 from hokusai.commands.render import render
 from hokusai.commands.render import kustomize

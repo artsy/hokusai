@@ -155,3 +155,16 @@ def unset(env_vars, verbose):
   set_verbosity(verbose)
   hokusai.unset_env(KUBE_CONTEXT, env_vars)
 
+@production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def render(verbose):
+  """jinja render YAMLs"""
+  set_verbosity(verbose)
+  hokusai.render(KUBE_CONTEXT)
+
+@production.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def kustomize(verbose):
+  """kustomize build YAMLs"""
+  set_verbosity(verbose)
+  hokusai.kustomize(KUBE_CONTEXT)
