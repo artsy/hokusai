@@ -17,9 +17,28 @@ def render(context):
   yamls = TemplateSelector().get_all(tempdir)
   for yaml in yamls:
     YamlSpec(yaml).to_file_in_place()
+
+  # fetch base
+  fetch_base(context, tempdir)
+
   return tempdir
+
+def fetch_base(context, dir):
+  """obtain base specs from artsy-hokusai-templates repo and store in dir/bases"""
+  git_repo = 'git@github.com:artsy/artsy-hokusai-templates.git'
+  git_branch = 'artsyjian/kustomize'
+  tempdir = TemporaryDirectory().name
+  print("cloning remote base into dir: %s" %tempdir)
+  shout("git clone -b %s --single-branch %s %s" % (git_branch, git_repo, tempdir))
+  cloned_base = os.path.join(tempdir, 'kustomize/base_per_resource')
+  copytree(cloned_base, dir + '/base')
+
+  yamls = TemplateSelector().get_all(dir + '/base')
+  for yaml in yamls:
+    YamlSpec(yaml).to_file_in_place()
 
 def kustomize(context):
   # jinja render the files first
   tempdir = render(context)
+  print("running kustomize on dir: %s" %tempdir)
   shout("kustomize build %s" %tempdir, print_output=True)
