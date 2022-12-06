@@ -21,9 +21,10 @@ class YamlSpec:
     self.tmp_filename = None
     atexit.register(self.cleanup)
 
-  def to_string(self):
+  def to_string(self, environment=''):
     template_config = {
-      "project_name": config.project_name
+      "project_name": config.project_name,
+      "environment": environment
     }
 
     try:
@@ -51,9 +52,9 @@ class YamlSpec:
     f.close()
     return f.name
 
-  def to_file_in_place(self):
+  def to_file_in_place(self, context):
     """render yaml file in place"""
-    rendered = self.to_string()
+    rendered = self.to_string(context)
     f = open(self.template_file, 'w')
     f.write(rendered)
     f.close()

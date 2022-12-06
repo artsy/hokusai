@@ -16,7 +16,7 @@ def render(context):
   # list out all template files in tempdir
   yamls = TemplateSelector().get_all(tempdir)
   for yaml in yamls:
-    YamlSpec(yaml).to_file_in_place()
+    YamlSpec(yaml).to_file_in_place(context)
 
   # fetch base
   fetch_base(context, tempdir)
@@ -35,7 +35,7 @@ def fetch_base(context, dir):
 
   yamls = TemplateSelector().get_all(dir + '/base')
   for yaml in yamls:
-    YamlSpec(yaml).to_file_in_place()
+    YamlSpec(yaml).to_file_in_place(context)
 
 def kustomize(context):
   # jinja render the files first
