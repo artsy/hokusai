@@ -4,6 +4,9 @@ jobs:
   test_linux:
     docker:
       - image: python:3.9.10
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run: make dependencies
@@ -97,6 +100,9 @@ jobs:
   test_docker_build:
     docker:
       - image: docker:18.09
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - setup_remote_docker
@@ -106,6 +112,9 @@ jobs:
   release_beta_s3_linux:
     docker:
       - image: python:3.9.10
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run: apt-get -qq update
@@ -143,6 +152,9 @@ jobs:
   release_beta_dockerhub:
     docker:
       - image: docker:18.09
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - setup_remote_docker
@@ -154,6 +166,9 @@ jobs:
   release_beta_homebrew:
     docker:
       - image: artsy/hokusai:beta
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - add_ssh_keys
       - run:
@@ -203,6 +218,9 @@ jobs:
   release_s3_linux:
     docker:
       - image: python:3.9.10
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run: apt-get -qq update
@@ -244,6 +262,9 @@ jobs:
   release_dockerhub:
     docker:
       - image: docker:18.09
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - setup_remote_docker
@@ -255,6 +276,9 @@ jobs:
   release_github:
     docker:
       - image: golang:1.19
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run: apt-get -qq update
@@ -265,6 +289,9 @@ jobs:
   release_pip:
     docker:
       - image: python:3.9.10
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run: make dependencies
@@ -273,6 +300,9 @@ jobs:
   release_homebrew:
     docker:
       - image: artsy/hokusai:latest
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - add_ssh_keys
       - run:
@@ -335,6 +365,8 @@ workflows:
   build_deploy:
     jobs:
       - test_linux:
+          context:
+            - docker
           filters:
             branches:
               ignore: release
@@ -347,10 +379,14 @@ workflows:
             branches:
               ignore: release
       - test_docker_build:
+          context:
+            - docker
           filters:
             branches:
               ignore: release
       - release_beta_s3_linux:
+          context:
+            - docker
           requires:
             - test_linux
             - test_macos
@@ -369,6 +405,8 @@ workflows:
             branches:
               only: main
       - release_beta_dockerhub:
+          context:
+            - docker
           requires:
             - test_linux
             - test_macos
@@ -378,6 +416,8 @@ workflows:
             branches:
               only: main
       - release_beta_homebrew:
+          context:
+            - docker
           requires:
             - release_beta_s3_linux
             - release_beta_s3_macos
@@ -386,6 +426,8 @@ workflows:
             branches:
               only: main
       - release_s3_linux:
+          context:
+            - docker
           filters:
             branches:
               only: release
@@ -394,14 +436,20 @@ workflows:
             branches:
               only: release
       - release_pip:
+          context:
+            - docker
           filters:
             branches:
               only: release
       - release_dockerhub:
+          context:
+            - docker
           filters:
             branches:
               only: release
       - release_github:
+          context:
+            - docker
           requires:
             - release_s3_linux
             - release_s3_macos
@@ -409,6 +457,8 @@ workflows:
             branches:
               only: release
       - release_homebrew:
+          context:
+            - docker
           requires:
             - release_s3_linux
             - release_s3_macos
