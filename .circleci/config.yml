@@ -24,7 +24,7 @@ jobs:
       - run:
           name: install python
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
@@ -127,7 +127,7 @@ jobs:
       - run:
           name: install python
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
@@ -226,7 +226,7 @@ jobs:
       - run:
           name: install python
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
