@@ -2,7 +2,7 @@
 
 <a href="https://en.wikipedia.org/wiki/Hokusai"><img height="300" src="hokusai.jpg"></a>
 
-Hokusai is a Docker + Kubernetes CLI for application developers..
+Hokusai is a Docker + Kubernetes CLI for application developers.
 
 Hokusai "dockerizes" applications and manages their lifecycle throughout development, testing, and release cycles.
 

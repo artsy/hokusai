@@ -15,7 +15,7 @@ BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 dependencies:
 	pip install --upgrade pip
 	pip install poetry --quiet --ignore-installed
-	poetry install --no-root
+	poetry -vvv install --no-root
 
 tests:
 	coverage run --omit="test/*" -m unittest discover test
