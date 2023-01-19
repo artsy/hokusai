@@ -13,6 +13,7 @@ MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 
 dependencies:
+	python -c "import shutil; print(shutil.get_terminal_size())"
 	pip install --upgrade pip
 	pip install poetry --quiet --ignore-installed
 	poetry -vvv install --no-root
