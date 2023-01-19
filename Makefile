@@ -14,7 +14,7 @@ BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 
 dependencies:
 	pip install --upgrade pip
-	pip install poetry==1.3.0 --quiet --ignore-installed
+	pip install poetry==1.2.2 --quiet --ignore-installed
 	poetry --version
 	poetry install --no-root
 
