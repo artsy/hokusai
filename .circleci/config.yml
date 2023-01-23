@@ -146,7 +146,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: apk add curl make
       - run: make image
       - run: make publish-beta-dockerhub
@@ -247,7 +247,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: apk add curl make
       - run: make image
       - run: make publish-dockerhub
@@ -331,13 +331,17 @@ jobs:
             rm -rf ./homebrew-formulas
 
 only_main: &only_main
-  context: hokusai
+  context:
+  - hokusai
+  - docker
   filters:
     branches:
       only: main
 
 only_release: &only_release
-  context: hokusai
+  context:
+  - hokusai
+  - docker
   filters:
     branches:
       only: release
