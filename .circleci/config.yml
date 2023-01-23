@@ -363,28 +363,28 @@ workflows:
             branches:
               ignore: release
       - release_beta_s3_linux:
-          <<: *only_remain
+          <<: *only_main
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
       - release_beta_s3_macos:
-          <<: *only_remain
+          <<: *only_main
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
       - release_beta_dockerhub:
-          <<: *only_remain
+          <<: *only_main
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
       - release_beta_homebrew:
-          <<: *only_remain
+          <<: *only_main
           requires:
             - release_beta_s3_linux
             - release_beta_s3_macos
