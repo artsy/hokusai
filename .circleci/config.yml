@@ -331,13 +331,17 @@ jobs:
             rm -rf ./homebrew-formulas
 
 only_main: &only_main
-  context: hokusai
+  context:
+  - hokusai
+  - docker
   filters:
     branches:
       only: main
 
 only_release: &only_release
-  context: hokusai
+  context:
+  - hokusai
+  - docker
   filters:
     branches:
       only: release
