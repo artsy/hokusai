@@ -330,6 +330,18 @@ jobs:
             rm -f hokusai-$VERSION-Darwin-x86_64.tar.gz
             rm -rf ./homebrew-formulas
 
+only_main: &only_main
+  context: hokusai
+  filters:
+    branches:
+      only: main
+
+only_release: &only_release
+  context: hokusai
+  filters:
+    branches:
+      only: release
+
 workflows:
   version: 2
   build_deploy:
@@ -351,68 +363,48 @@ workflows:
             branches:
               ignore: release
       - release_beta_s3_linux:
+          <<: *only_remain
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
-          filters:
-            branches:
-              only: main
       - release_beta_s3_macos:
+          <<: *only_remain
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
-          filters:
-            branches:
-              only: main
       - release_beta_dockerhub:
+          <<: *only_remain
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
-          filters:
-            branches:
-              only: main
       - release_beta_homebrew:
+          <<: *only_remain
           requires:
             - release_beta_s3_linux
             - release_beta_s3_macos
             - release_beta_dockerhub
-          filters:
-            branches:
-              only: main
       - release_s3_linux:
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_s3_macos:
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_pip:
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_dockerhub:
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_github:
+          <<: *only_release
           requires:
             - release_s3_linux
             - release_s3_macos
-          filters:
-            branches:
-              only: release
       - release_homebrew:
+          <<: *only_release
           requires:
             - release_s3_linux
             - release_s3_macos
             - release_dockerhub
-          filters:
-            branches:
-              only: release
