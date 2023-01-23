@@ -27,7 +27,7 @@ jobs:
       - run:
           name: install python
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
@@ -136,7 +136,7 @@ jobs:
       - run:
           name: install python
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
@@ -244,7 +244,7 @@ jobs:
       - run:
           name: install python
           command: |
-            PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.9.10
+            pyenv install 3.9.10
             pyenv local 3.9.10
             pip install --upgrade pip
       - run:
@@ -360,13 +360,27 @@ jobs:
             rm -f hokusai-$VERSION-Darwin-x86_64.tar.gz
             rm -rf ./homebrew-formulas
 
+only_main: &only_main
+  context:
+    - hokusai
+    - docker
+  filters:
+    branches:
+      only: main
+
+only_release: &only_release
+  context:
+    - hokusai
+    - docker
+  filters:
+    branches:
+      only: release
+
 workflows:
   version: 2
   build_deploy:
     jobs:
       - test_linux:
-          context:
-            - docker
           filters:
             branches:
               ignore: release
@@ -379,90 +393,52 @@ workflows:
             branches:
               ignore: release
       - test_docker_build:
-          context:
-            - docker
           filters:
             branches:
               ignore: release
       - release_beta_s3_linux:
-          context:
-            - docker
+          <<: *only_main
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
-          filters:
-            branches:
-              only: main
       - release_beta_s3_macos:
+          <<: *only_main
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
-          filters:
-            branches:
-              only: main
       - release_beta_dockerhub:
-          context:
-            - docker
+          <<: *only_main
           requires:
             - test_linux
             - test_macos
             - test_integration
             - test_docker_build
-          filters:
-            branches:
-              only: main
       - release_beta_homebrew:
-          context:
-            - docker
+          <<: *only_main
           requires:
             - release_beta_s3_linux
             - release_beta_s3_macos
             - release_beta_dockerhub
-          filters:
-            branches:
-              only: main
       - release_s3_linux:
-          context:
-            - docker
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_s3_macos:
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_pip:
-          context:
-            - docker
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_dockerhub:
-          context:
-            - docker
-          filters:
-            branches:
-              only: release
+          <<: *only_release
       - release_github:
-          context:
-            - docker
+          <<: *only_release
           requires:
             - release_s3_linux
             - release_s3_macos
-          filters:
-            branches:
-              only: release
       - release_homebrew:
-          context:
-            - docker
+          <<: *only_release
           requires:
             - release_s3_linux
             - release_s3_macos
             - release_dockerhub
-          filters:
-            branches:
-              only: release
