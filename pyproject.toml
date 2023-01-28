@@ -10,30 +10,30 @@ repository = "http://github.com/artsy/hokusai"
 include = ["hokusai/VERSION"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-PyYAML = "==6.0"
 boto3 = "==1.21.28"
 click = "==8.1.0"
 click-repl = "==0.2.0"
-termcolor = "==1.1.0"
-MarkupSafe = "==2.1.1"
 Jinja2 = "==3.1.1"
-prompt-toolkit = "==3.0.28"
+MarkupSafe = "==2.1.1"
 packaging = "==21.3"
+prompt-toolkit = "==3.0.28"
+python = "^3.7"
+PyYAML = "==6.0"
+termcolor = "==1.1.0"
 
 [tool.poetry.dev-dependencies]
-ipdb = "^0.13.9"
-pyinstaller = "^4.5.1"
+coverage = "^6.3.2"
 httpretty = "^1.1.4"
+ipdb = "^0.13.9"
 mock = "^4.0.3"
+pyinstaller = "^4.5.1"
+pylint = "^2.13.2"
 twine = "^3.8.0"
 wheel = "^0.37.1"
-pylint = "^2.13.2"
-coverage = "^6.3.2"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
 
 [tool.poetry.scripts]
 hokusai = 'hokusai.command_line:main'
