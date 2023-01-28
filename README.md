@@ -251,6 +251,8 @@ The beta can be installed by:
 ### MacOS
 
 ```
+$ brew uninstall hokusai
+$ brew uninstall hokusai-beta
 $ brew update
 $ brew tap artsy/formulas
 $ brew install hokusai-beta
