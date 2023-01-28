@@ -63,6 +63,8 @@ class TestConfigSetup(HokusaiUnitTestCase):
     self.assertFalse(self.config._check_required_version('===1.0+trololo', '1.0+tralala'))
     self.assertTrue(self.config._check_required_version('>0.0.1,~=0.2,!=0.2.3', '0.2.2'))
     self.assertFalse(self.config._check_required_version('>0.0.1,~=0.2,!=0.2.3', '0.2.3'))
+    self.assertTrue(self.config._check_required_version('>0.1', '0.2b1'))
+    self.assertFalse(self.config._check_required_version('>0.2', '0.2b1'))
 
 class TestConfig(HokusaiUnitTestCase):
   def test_config_from_file(self):
