@@ -22,7 +22,6 @@ packaging = "==21.3"
 prompt-toolkit = "==3.0.28"
 python = "^3.7"
 PyYAML = "==6.0"
-setuptools-scm = "^7.1.0"
 termcolor = "==1.1.0"
 
 [tool.poetry.dev-dependencies]
@@ -32,6 +31,7 @@ ipdb = "^0.13.9"
 mock = "^4.0.3"
 pyinstaller = "^4.5.1"
 pylint = "^2.13.2"
+setuptools-scm = "^7.1.0"
 twine = "^3.8.0"
 wheel = "^0.37.1"
 
@@ -43,3 +43,4 @@ requires = ["poetry-core>=1.0.0", "setuptools>=45", "setuptools_scm[toml]>=6.2"]
 hokusai = 'hokusai.command_line:main'
 
 [tool.setuptools_scm]
+write_to = "hokusai/_version.py"

@@ -1,3 +1,3 @@
-from setuptools_scm import get_version
+from ._version import version
 
-VERSION = get_version(root='..', relative_to=__file__)
+VERSION = version
