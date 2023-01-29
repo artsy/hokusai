@@ -3,6 +3,7 @@ dynamic = ["version"]
 
 [tool.poetry]
 name = "hokusai"
+version = "0.0.0"
 description = "Artsy Docker development toolkit"
 authors = ["Isac Petruzzi <isac@artsymail.com>"]
 maintainers = ["Jian-Feng Xu <jian-feng@artsymail.com>"]
@@ -21,6 +22,7 @@ packaging = "==21.3"
 prompt-toolkit = "==3.0.28"
 python = "^3.7"
 PyYAML = "==6.0"
+setuptools-scm = "^7.1.0"
 termcolor = "==1.1.0"
 
 [tool.poetry.dev-dependencies]
