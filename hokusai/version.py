@@ -1,6 +1,3 @@
-import os
+from importlib.metadata import version
 
-from hokusai.lib.environment import version_file_path
-
-with open(version_file_path()) as f:
-  VERSION = f.read().strip()
+VERSION = version("hokusai")

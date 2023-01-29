@@ -1,6 +1,8 @@
+[project]
+dynamic = ["version"]
+
 [tool.poetry]
 name = "hokusai"
-version = "1.0.4b1"
 description = "Artsy Docker development toolkit"
 authors = ["Isac Petruzzi <isac@artsymail.com>"]
 maintainers = ["Jian-Feng Xu <jian-feng@artsymail.com>"]
@@ -33,7 +35,9 @@ wheel = "^0.37.1"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "setuptools>=45", "setuptools_scm[toml]>=6.2"]
 
 [tool.poetry.scripts]
 hokusai = 'hokusai.command_line:main'
+
+[tool.setuptools_scm]
