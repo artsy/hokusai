@@ -1,3 +1,7 @@
-from ._version import version
+VERSION = 'v0.0.0'
 
-VERSION = version
+try:
+  from ._version import version
+  VERSION = version
+except ImportError:
+  pass
