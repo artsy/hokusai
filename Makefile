@@ -7,7 +7,7 @@ GIT_TAG ?= $(shell which git) tag --sign
 
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-VERSION ?= $(shell python -m setuptools_scm)
+VERSION ?= $(shell cat hokusai/VERSION)
 MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)

@@ -266,9 +266,7 @@ curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh | 
 
 To create a new release, perform the following:
 
-- bump Hokusai version in these files:
-  - [pyproject.toml](pyproject.toml)
-  - [hokusai/VERSION](hokusai/VERSION)
+- bump Hokusai version in [VERSION](VERSION) file
 - update [CHANGELOG](./CHANGELOG.md)
 - open a PR to merge `main` into `release` branch.
 
