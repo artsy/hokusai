@@ -1,3 +1,3 @@
-from importlib.metadata import version
+from setuptools_scm import get_version
 
-VERSION = version("hokusai")
+VERSION = get_version(root='..', relative_to=__file__)
