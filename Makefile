@@ -7,8 +7,8 @@ GIT_TAG ?= $(shell which git) tag --sign
 
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-VERSION ?= $(shell cat hokusai/VERSION)
-MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
+VERSION ?= $(shell cat VERSION)
+MINOR_VERSION ?= $(shell cat VERSION | awk -F"." '{ print $$1"."$$2 }')
 
 BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
 
@@ -36,6 +36,7 @@ test-docker:
 	  python:3.9.10 make dependencies test
 
 build-onefile:
+	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -47,6 +48,7 @@ build-onefile:
 	mv $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
 build-onedir:
+	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -65,6 +67,7 @@ build-linux-docker:
 	  python:3.9.10 make dependencies build
 
 image:
+	python -m setuptools_scm
 	echo $(VERSION)
 	docker build . \
 	  --tag hokusai
