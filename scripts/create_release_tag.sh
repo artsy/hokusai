@@ -1,9 +1,26 @@
 #!/usr/bin/env bash
 
-RELEASE_VERSION=$(cat VERSION)
+# This script is to be run within CircleCI only for 'release' branch builds.
+# It reads the new release version from RELEASE_VERSION file and creates a Git tag for it (locally in CircleCI).
+# See 'hokusai/version.py' file for more info.
 
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-echo "On branch: $CURRENT_BRANCH"
+RELEASE_VERSION=v$(cat RELEASE_VERSION)
+
+# fail if not run in circleci
+if [ -z "$CIRCLE_BRANCH" ]
+then
+  echo "Error: CIRCLE_BRANCH env var not set, is this CircleCI environment?"
+  exit 1
+fi
+
+echo "On branch: $CIRCLE_BRANCH"
+
+# fail if not 'release' branch
+if [[ "$CIRCLE_BRANCH" != 'release' ]]
+then
+  echo "Error: not on release branch"
+  exit 1
+fi
 
 # fail if RELEASE_VERSION tag already exists
 release_version_tag=$(git tag -l $RELEASE_VERSION)
