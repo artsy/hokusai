@@ -208,6 +208,8 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
+      - command: |
+          ./scripts/create_release_tag.sh
       - run: make build-onefile
       - run: make build-onefile VERSION=latest
       - run: make publish-version
@@ -236,6 +238,8 @@ jobs:
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: pyenv rehash
+      - command: |
+          ./scripts/create_release_tag.sh
       - run: make build-onedir
       - run: make build-onedir VERSION=latest
       - run: make publish-version
@@ -249,6 +253,8 @@ jobs:
       - setup_remote_docker
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: apk add curl make
+      - command: |
+          ./scripts/create_release_tag.sh
       - run: make image
       - run: make publish-dockerhub
 
