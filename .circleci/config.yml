@@ -96,11 +96,12 @@ jobs:
 
   test_docker_build:
     docker:
-      - image: docker:18.09
+      - image: python:3.9.10-alpine
     steps:
       - checkout
       - setup_remote_docker
-      - run: apk add curl make
+      - run: apk add curl docker-cli git make
+      - run: pip install setuptools_scm
       - run: make build-docker-image
 
   release_beta_s3_linux:
@@ -142,13 +143,14 @@ jobs:
 
   release_beta_dockerhub:
     docker:
-      - image: docker:18.09
+      - image: python:3.9.10-alpine
     steps:
       - checkout
       - setup_remote_docker
-      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-      - run: apk add curl make
+      - run: apk add curl docker-cli git make
+      - run: pip install setuptools_scm
       - run: make build-docker-image
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: make publish-to-dockerhub-beta
 
   release_beta_homebrew:
@@ -245,14 +247,15 @@ jobs:
 
   release_dockerhub:
     docker:
-      - image: docker:18.09
+      - image: python:3.9.10-alpine
     steps:
       - checkout
       - setup_remote_docker
-      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-      - run: apk add curl make
+      - run: apk add curl docker-cli git make
+      - run: pip install setuptools_scm
       - run: scripts/create_release_tag.sh
       - run: make build-docker-image
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: make publish-to-dockerhub-canonical-and-latest ARTIFACT_LABEL=$(cat RELEASE_VERSION)
 
   release_github:
