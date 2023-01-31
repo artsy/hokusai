@@ -4,8 +4,8 @@ try:
   # The file is created by 'python -m setuptools_scm' (see Makefile) during builds and bundled into artifacts.
   # The file is not version controlled.
   #
-  # 'version' is a version guessed by 'setuptools_scm',based on local Git state (latest tag, commits since that tag, the branch checked out).
-  # Say the latest tag is v1.0.3, and the branch has one or more commits ahead of that tag, likely the case for 'main' branch,
+  # 'version' is a version guessed by 'setuptools_scm', based on local Git metadata (latest tag, commits since that tag, the branch checked out).
+  # Suppose the latest tag is v1.0.3, and the branch has one or more commits ahead of that tag, which is likely the case for 'main' branch,
   # 'setuptools_scm' will guess a dev version preceding the next canonical release, such as '1.0.4.dev30+gdf56449'.
   # The 'df56449' portion is the abbrviated Git commit hash, useful for associating a beta release to its commit.
   #

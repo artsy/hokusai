@@ -4,8 +4,9 @@
 AWS ?= $(shell which aws)
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-ARTIFACT_LABEL ?= $(shell python -m setuptools_scm)
+RELEASE_VERSION ?= $(shell cat RELEASE_VERSION)
 RELEASE_MINOR_VERSION ?= $(shell cat RELEASE_VERSION | awk -F"." '{ print $$1"."$$2 }')
+ARTIFACT_LABEL ?= $(shell python -m setuptools_scm)
 BINARY_SUFFIX ?= -$(ARTIFACT_LABEL)-$(shell uname -s)-$(shell uname -m)
 
 dependencies:
@@ -25,8 +26,7 @@ integration:
 tests:
 	coverage run --omit="test/*" -m unittest discover test
 
-# for linux
-pyinstaller-build-onefile:
+pyinstaller-build-onefile: # for linux
 	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
@@ -49,8 +49,7 @@ pyinstaller-build-onedir:
 	tar cfvz $(DIST_DIR)hokusai$(BINARY_SUFFIX).tar.gz -C $(DIST_DIR)hokusai$(BINARY_SUFFIX) .
 	rm -rf $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
-# for 'beta' and 'latest'
-publish-to-s3:
+publish-to-s3: # for 'beta' and 'latest'
 	$(AWS) s3 cp \
 	  --acl public-read \
 	  --recursive \
@@ -96,6 +95,7 @@ publish-to-dockerhub-canonical-and-latest:
 publish-to-pip:
 	python -m setuptools_scm
 	pip install --upgrade wheel
+	poetry version $(RELEASE_VERSION) # bump version in pyproject.toml
 	poetry build
 	twine upload dist/* --verbose
 

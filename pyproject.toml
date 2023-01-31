@@ -10,6 +10,7 @@ maintainers = ["Jian-Feng Xu <jian-feng@artsymail.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "http://github.com/artsy/hokusai"
+include = ["hokusai/_version.py"]
 
 [tool.poetry.dependencies]
 boto3 = "==1.21.28"
