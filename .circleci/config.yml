@@ -9,7 +9,7 @@ jobs:
       - run: make dependencies
       - run: make test
       - run: coverage report
-      - run: make build-onefile VERSION=beta
+      - run: make pyinstaller-build-onefile ARTIFACT_LABEL=beta
 
   test_macos:
     macos:
@@ -36,7 +36,7 @@ jobs:
       - run: pyenv rehash
       - run: make test
       - run: coverage report
-      - run: make build-onedir VERSION=beta
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
 
   test_integration:
     machine:
@@ -96,12 +96,13 @@ jobs:
 
   test_docker_build:
     docker:
-      - image: docker:18.09
+      - image: python:3.9.10-alpine
     steps:
       - checkout
       - setup_remote_docker
-      - run: apk add curl make
-      - run: make image
+      - run: apk add curl docker-cli git make
+      - run: pip install setuptools_scm
+      - run: make build-docker-image
 
   release_beta_s3_linux:
     docker:
@@ -111,8 +112,8 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build-onefile VERSION=beta
-      - run: make publish-beta
+      - run: make pyinstaller-build-onefile ARTIFACT_LABEL=beta
+      - run: make publish-to-s3 ARTIFACT_LABEL=beta
 
   release_beta_s3_macos:
     macos:
@@ -137,19 +138,20 @@ jobs:
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: pyenv rehash
-      - run: make build-onedir VERSION=beta
-      - run: make publish-beta
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
+      - run: make publish-to-s3 ARTIFACT_LABEL=beta
 
   release_beta_dockerhub:
     docker:
-      - image: docker:18.09
+      - image: python:3.9.10-alpine
     steps:
       - checkout
       - setup_remote_docker
+      - run: apk add curl docker-cli git make
+      - run: pip install setuptools_scm
+      - run: make build-docker-image
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-      - run: apk add curl make
-      - run: make image
-      - run: make publish-beta-dockerhub
+      - run: make publish-to-dockerhub-beta
 
   release_beta_homebrew:
     docker:
@@ -208,10 +210,11 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: make dependencies
-      - run: make build-onefile
-      - run: make build-onefile VERSION=latest
-      - run: make publish-version
-      - run: make publish-latest
+      - run: scripts/create_release_tag.sh
+      - run: make pyinstaller-build-onefile ARTIFACT_LABEL=$(cat RELEASE_VERSION)
+      - run: make pyinstaller-build-onefile ARTIFACT_LABEL=latest
+      - run: make publish-to-s3-canonical ARTIFACT_LABEL=$(cat RELEASE_VERSION)
+      - run: make publish-to-s3 ARTIFACT_LABEL=latest
 
   release_s3_macos:
     macos:
@@ -236,21 +239,24 @@ jobs:
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make dependencies
       - run: pyenv rehash
-      - run: make build-onedir
-      - run: make build-onedir VERSION=latest
-      - run: make publish-version
-      - run: make publish-latest
+      - run: scripts/create_release_tag.sh
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=$(cat RELEASE_VERSION)
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=latest
+      - run: make publish-to-s3-canonical ARTIFACT_LABEL=$(cat RELEASE_VERSION)
+      - run: make publish-to-s3 ARTIFACT_LABEL=latest
 
   release_dockerhub:
     docker:
-      - image: docker:18.09
+      - image: python:3.9.10-alpine
     steps:
       - checkout
       - setup_remote_docker
+      - run: apk add curl docker-cli git make
+      - run: pip install setuptools_scm
+      - run: scripts/create_release_tag.sh
+      - run: make build-docker-image
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-      - run: apk add curl make
-      - run: make image
-      - run: make publish-dockerhub
+      - run: make publish-to-dockerhub-canonical-and-latest ARTIFACT_LABEL=$(cat RELEASE_VERSION)
 
   release_github:
     docker:
@@ -260,7 +266,7 @@ jobs:
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
       - run: go install github.com/tcnksm/ghr@latest
-      - run: make publish-github
+      - run: make publish-to-github ARTIFACT_LABEL=$(cat RELEASE_VERSION)
 
   release_pip:
     docker:
@@ -268,7 +274,7 @@ jobs:
     steps:
       - checkout
       - run: make dependencies
-      - run: make publish-pip
+      - run: make publish-to-pip
 
   release_homebrew:
     docker:

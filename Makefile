@@ -1,16 +1,13 @@
-.PHONY: dependencies test test-docker build-onefile build-onedir build-linux-docker image publish-beta publish-latest publish-version publish-pip publish-dockerhub publish-beta-dockerhub publish-github clean
+.PHONY: dependencies test integration tests pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
 
+# a var passed in as an argument to 'make' command moots its ?= assgiment
 AWS ?= $(shell which aws)
-DOCKER_RUN ?= $(shell which docker) run --rm
-GIT_PUSH ?= $(shell which git) push
-GIT_TAG ?= $(shell which git) tag --sign
-
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-VERSION ?= $(shell cat hokusai/VERSION)
-MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
-
-BINARY_SUFFIX ?= -$(VERSION)-$(shell uname -s)-$(shell uname -m)
+RELEASE_VERSION ?= $(shell cat RELEASE_VERSION)
+RELEASE_MINOR_VERSION ?= $(shell cat RELEASE_VERSION | awk -F"." '{ print $$1"."$$2 }')
+ARTIFACT_LABEL ?= $(shell python -m setuptools_scm)
+BINARY_SUFFIX ?= -$(ARTIFACT_LABEL)-$(shell uname -s)-$(shell uname -m)
 
 dependencies:
 	pip install --upgrade pip
@@ -19,9 +16,6 @@ dependencies:
 	poetry --version
 	poetry install --no-root
 
-tests:
-	coverage run --omit="test/*" -m unittest discover test
-
 test:
 	coverage run --omit="test/*" -m unittest discover test.unit
 	coverage run --omit="test/*" -m unittest discover test.smoke
@@ -29,13 +23,11 @@ test:
 integration:
 	coverage run --omit="test/*" -m unittest discover test.integration
 
-test-docker:
-	$(DOCKER_RUN) \
-	  --volume "$(PWD)":"/src/$(PROJECT):rw" \
-	  --workdir "/src/$(PROJECT)" \
-	  python:3.9.10 make dependencies test
+tests:
+	coverage run --omit="test/*" -m unittest discover test
 
-build-onefile:
+pyinstaller-build-onefile: # for linux
+	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -46,7 +38,9 @@ build-onefile:
 	rm -rf $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 	mv $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
-build-onedir:
+# for mac (because build-onefile's binary runs too slow on mac)
+pyinstaller-build-onedir:
+	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -55,84 +49,69 @@ build-onedir:
 	tar cfvz $(DIST_DIR)hokusai$(BINARY_SUFFIX).tar.gz -C $(DIST_DIR)hokusai$(BINARY_SUFFIX) .
 	rm -rf $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
-build-linux-docker:
-	$(DOCKER_RUN) \
-	  --env VERSION \
-	  --env DIST_DIR=/dist/ \
-	  --volume "$(PWD)"/dist:/dist \
-	  --volume "$(PWD)":"/src/$(PROJECT):ro" \
-	  --workdir "/src/$(PROJECT)" \
-	  python:3.9.10 make dependencies build
-
-image:
-	echo $(VERSION)
-	docker build . \
-	  --tag hokusai
-
-publish-beta:
+publish-to-s3: # for 'beta' and 'latest'
 	$(AWS) s3 cp \
 	  --acl public-read \
 	  --recursive \
 	  --exclude "*" \
-	  --include "hokusai-beta-*" \
+	  --include "hokusai-$(ARTIFACT_LABEL)-*" \
 	  dist/ s3://artsy-provisioning-public/hokusai/
 
-publish-latest:
-	$(AWS) s3 cp \
-	  --acl public-read \
-	  --recursive \
-	  --exclude "*" \
-	  --include "hokusai-latest-*" \
-	  dist/ s3://artsy-provisioning-public/hokusai/
-
-publish-version:
+publish-to-s3-canonical:
 	if [ "$(shell curl -I --silent https://s3.amazonaws.com/artsy-provisioning-public/hokusai/hokusai-$(BINARY_SUFFIX) --output /dev/null --write-out %{http_code})" -eq 403 ]; then \
 	  $(AWS) s3 cp \
 	    --acl public-read \
 	    --recursive \
 	    --exclude "*" \
-	    --include "hokusai-$(VERSION)-*" \
+	    --include "hokusai-$(ARTIFACT_LABEL)-*" \
 	    dist/ s3://artsy-provisioning-public/hokusai/; \
 	else \
-	  echo "Version $(VERSION) already published"; \
+	  echo "Version $(ARTIFACT_LABEL) already published"; \
 	  exit 1; \
 	fi
 
-publish-pip:
-	pip install --upgrade wheel
-	poetry build
-	twine upload dist/* --verbose
+build-docker-image:
+	python -m setuptools_scm
+	docker build . \
+	  --tag hokusai
 
-publish-dockerhub:
-	if [ "$(shell curl --silent https://hub.docker.com/v2/namespaces/artsy/repositories/hokusai/tags/$(VERSION) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
-	  docker tag hokusai:latest artsy/hokusai:$(VERSION) && \
-	  docker push artsy/hokusai:$(VERSION) && \
-	  docker tag hokusai:latest artsy/hokusai:$(MINOR_VERSION) && \
-	  docker push artsy/hokusai:$(MINOR_VERSION) && \
-	  docker tag hokusai:latest artsy/hokusai:latest && \
-	  docker push artsy/hokusai:latest; \
-	else \
-	  echo "Version $(VERSION) already published"; \
-	  exit 1; \
-	fi
-
-publish-beta-dockerhub:
+publish-to-dockerhub-beta:
 	docker tag hokusai:latest artsy/hokusai:beta
 	docker push artsy/hokusai:beta
 
-publish-github:
+publish-to-dockerhub-canonical-and-latest:
+	if [ "$(shell curl --silent https://hub.docker.com/v2/namespaces/artsy/repositories/hokusai/tags/$(ARTIFACT_LABEL) --output /dev/null --write-out %{http_code})" -eq 404 ]; then \
+	  docker tag hokusai:latest artsy/hokusai:$(ARTIFACT_LABEL) && \
+	  docker push artsy/hokusai:$(ARTIFACT_LABEL) && \
+	  docker tag hokusai:latest artsy/hokusai:$(RELEASE_MINOR_VERSION) && \
+	  docker push artsy/hokusai:$(RELEASE_MINOR_VERSION) && \
+	  docker tag hokusai:latest artsy/hokusai:latest && \
+	  docker push artsy/hokusai:latest; \
+	else \
+	  echo "Version $(ARTIFACT_LABEL) already published"; \
+	  exit 1; \
+	fi
+
+publish-to-pip:
+	python -m setuptools_scm
+	pip install --upgrade wheel
+	poetry version $(RELEASE_VERSION) # bump version in pyproject.toml
+	poetry build
+	twine upload dist/* --verbose
+
+publish-to-github:
 	$(AWS) s3 cp \
 	  --acl public-read \
 	  --recursive \
 	  --exclude "*" \
-	  --include "hokusai-$(VERSION)-*" \
+	  --include "hokusai-$(ARTIFACT_LABEL)-*" \
 	  s3://artsy-provisioning-public/hokusai/ dist/; \
 	ghr \
 	  --username artsy \
 	  --repository hokusai \
-	  --name v$(VERSION) \
+	  --name v$(ARTIFACT_LABEL) \
 	  --soft \
-	  v$(VERSION) dist/
+	  v$(ARTIFACT_LABEL) dist/
 
 clean:
 	sudo $(RM) -r ./dist

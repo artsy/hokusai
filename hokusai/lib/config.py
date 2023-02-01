@@ -51,7 +51,7 @@ class HokusaiConfig:
     if required_version is None:
       return True
     try:
-      match_versions = SpecifierSet(required_version)
+      match_versions = SpecifierSet(required_version, prereleases=True)
     except InvalidSpecifier:
       raise HokusaiError("Could not parse '%s' as a valid version specifier. See https://www.python.org/dev/peps/pep-0440/#version-specifiers" % required_version)
     try:
