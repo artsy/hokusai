@@ -54,7 +54,7 @@ def images(tag_exists, reverse_sort, limit, filter_tags, digests, verbose):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def retag(tag1, tag2, verbose):
   """
-  On the registry, make tag1 point to the same image pointed to by tag2.\n
+  On the registry, make tag1 point to the same image pointed to by tag2.
   Tag1 must be either 'staging' or 'production'.
   """
   set_verbosity(verbose)
