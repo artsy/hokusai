@@ -5,19 +5,17 @@ def print_command_tree(click_command):
   """Print a tree of Click commands rooted at the given click_command"""
   tree = {}
   tree.update(build_tree(click_command))
-  print_tree(tree)
+  print_tree(tree, level=0)
 
-def print_tree(tree):
+def print_tree(tree, level):
   """Print Click command tree"""
   for cmdname, subtree in tree.items():
-    if isinstance(tree[cmdname]['command'], click.core.Group):
-      print_tree(tree[cmdname]['children'])
-    else:
-      print_command(tree[cmdname]['command'])
+    print_command(tree[cmdname]['command'], indent=level)
+    print_tree(tree[cmdname]['children'], level + 1)
 
-def print_command(click_command):
+def print_command(click_command, indent):
   """Print Click command name and its docstring"""
-  print(f'{click_command.name} - {click_command.__doc__}')
+  print(f'{" " * indent}{click_command.name} - {click_command.__doc__}')
 
 def build_tree(click_command):
   """
