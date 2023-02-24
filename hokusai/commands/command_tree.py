@@ -1,21 +1,32 @@
 import click
 import pdb
+from textwrap import dedent, wrap, fill, shorten, indent
 
 def print_command_tree(click_command):
   """Print a tree of Click commands rooted at the given click_command"""
   tree = {}
   tree.update(build_tree(click_command))
-  print_tree(tree, level=0)
+  print_tree(tree, level=1)
 
 def print_tree(tree, level):
   """Print Click command tree"""
-  for cmdname, subtree in tree.items():
-    print_command(tree[cmdname]['command'], indent=level)
-    print_tree(tree[cmdname]['children'], level + 1)
+  num_items = len(tree)
+  for i, (cmdname, _) in enumerate(sorted(tree.items())):
+    if i == num_items - 1:
+      print_command(tree[cmdname]['command'], indent=level, last=True)
+    else:
+      print_command(tree[cmdname]['command'], indent=level, last=False)
+    print_tree(tree[cmdname]['children'], level=level+1)
 
-def print_command(click_command, indent):
+def print_command(command, indent, last):
   """Print Click command name and its docstring"""
-  print(f'{" " * indent}{click_command.name} - {click_command.__doc__}')
+  if last:
+    padding = '      ' * (indent-1) + '└────'
+  else:
+    padding = '      ' * (indent-1) + '├────'
+
+  print(padding, command.name, "-", end=' ')
+  print(shorten(command.help, 100, placeholder='...'))
 
 def build_tree(click_command):
   """
