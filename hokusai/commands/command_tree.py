@@ -8,10 +8,6 @@ class CommandTreeNode():
     self.click_command = click_command
     self.children = []
 
-    @property
-    def name(self):
-      return self.click_command.name
-
 def build_tree(click_command):
   """Build a tree of CommandTreeNode starting from the given click_command"""
   node = CommandTreeNode(click_command)
