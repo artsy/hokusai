@@ -5,9 +5,27 @@ import click
 def build_tree(click_command):
   """
   Return a tree of Click commands rooted at the given click_command.
-  The tree is represented by a Dict. Each element of the Dict uses:
-  - the name of the Click command/group as key
-  - the Click command object as value, or in case of a Click group, a sub-Dict.
+  The tree is represented by a multi-level Dict.
+  Each item at a level tracks the following information for a Click command or group:
+  - name of the Click command/group
+  - the associated Click object
+  - in case of a group, it's sub-commands
+  Example:
+  {
+    'group1': {
+      'command': obj,
+      'children': {
+        'sub_command1': {
+          'command': obj,
+          'children': {}
+        },
+        'sub_command2': {
+          'command': obj,
+          'children': {}
+        }
+      }
+    }
+  }
   """
   cmdname = click_command.name
   tree = {}
