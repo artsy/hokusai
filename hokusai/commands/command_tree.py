@@ -1,16 +1,16 @@
-from textwrap import shorten
+import textwrap
 
 import click
 
 class CommandTreeNode():
   """Represent a node in a tree of Click commands"""
-  def __init__(self, command):
-    self.command = command
+  def __init__(self, click_command):
+    self.click_command = click_command
     self.children = []
 
     @property
     def name(self):
-      return self.command.name
+      return self.click_command.name
 
 def build_tree(click_command):
   """Build a tree of CommandTreeNode starting from the given click_command"""
@@ -27,7 +27,7 @@ def print_command_in_tree(click_command, last=False, prefix=''):
     hanger = '├──'
   line = prefix + hanger + " " + click_command.name
   if click_command.help:
-    line += " - " + shorten(click_command.help, 100, placeholder='...')
+    line += " - " + textwrap.shorten(click_command.help, 100, placeholder='...')
   print(line)
 
 def print_command_tree(click_command):
@@ -45,5 +45,5 @@ def print_tree(start_node, level, prefix=''):
     else:
       last = False
       next_level_prefix = prefix + '│   '
-    print_command_in_tree(node.command, last=last, prefix=prefix)
+    print_command_in_tree(node.click_command, last=last, prefix=prefix)
     print_tree(node, level=level+1, prefix=next_level_prefix)
