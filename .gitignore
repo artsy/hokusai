@@ -83,3 +83,5 @@ ENV/
 
 # Pyenv version
 .python-version
+
+*.swp
