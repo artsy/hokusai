@@ -2,70 +2,48 @@ from textwrap import shorten
 
 import click
 
-def build_tree(click_command):
-  """
-  Return a tree of Click commands rooted at the given click_command.
-  The tree is represented by a multi-level Dict.
-  Each item at a level tracks the following information for a Click command or group:
-  - name of the Click command/group
-  - the associated Click object
-  - in case of a group, it's sub-commands
-  Example:
-  {
-    'group1': {
-      'command': obj,
-      'children': {
-        'sub_command1': {
-          'command': obj,
-          'children': {}
-        },
-        'sub_command2': {
-          'command': obj,
-          'children': {}
-        }
-      }
-    }
-  }
-  """
-  cmdname = click_command.name
-  tree = {}
-  tree[cmdname] = {}
-  if isinstance(click_command, click.core.Group):
-    tree[cmdname]['command'] = click_command
-    tree[cmdname]['children'] = {}
-    for cmd in click_command.commands.values():
-      tree[cmdname]['children'].update(build_tree(cmd))
-  else:
-    tree[cmdname]['command'] = click_command
-    tree[cmdname]['children'] = {}
-  return tree
+class CommandTreeNode():
+  """Represent a node in a tree of Click commands"""
+  def __init__(self, command):
+    self.command = command
+    self.children = []
 
-def print_command(click_command, last=False, prefix=''):
-  """Print the name and docstring of the given Click command object"""
+    @property
+    def name(self):
+      return self.command.name
+
+def build_tree(click_command):
+  """Build a tree of CommandTreeNode starting from the given click_command"""
+  node = CommandTreeNode(click_command)
+  if isinstance(click_command, click.core.Group):
+    node.children = [build_tree(cmd) for _, cmd in sorted(click_command.commands.items())]
+  return node
+
+def print_command_in_tree(click_command, last=False, prefix=''):
+  """Print the name and docstring of the given Click command, as part of a tree output"""
   if last:
     hanger = '└──'
   else:
     hanger = '├──'
-  line = prefix + hanger + " " + click_command.name + " - " + shorten(click_command.help, 100, placeholder='...')
+  line = prefix + hanger + " " + click_command.name
+  if click_command.help:
+    line += " - " + shorten(click_command.help, 100, placeholder='...')
   print(line)
 
 def print_command_tree(click_command):
-  """Build and print a tree of Click commands rooted at the given click_command"""
-  tree = {}
-  tree.update(build_tree(click_command))
-  print_tree(tree, level=1)
+  """Print all sub-commands of the given click_command, as a tree"""
+  root = build_tree(click_command)
+  print_tree(root, level=1)
 
-def print_tree(tree, level, prefix=''):
-  """Print the given tree of Click commands"""
-  num_items = len(tree)
-  for i, cmdname in enumerate(sorted(tree.keys())):
-    cmdobj = tree[cmdname]['command']
-    children = tree[cmdname]['children']
-    if i == num_items - 1:
+def print_tree(start_node, level, prefix=''):
+  """Print CommandTreeNode tree from the given start_node"""
+  num_children = len(start_node.children)
+  for i, node in enumerate(start_node.children):
+    if i == num_children - 1:
       last = True
       next_level_prefix = prefix + '    '
     else:
       last = False
       next_level_prefix = prefix + '│   '
-    print_command(cmdobj, last=last, prefix=prefix)
-    print_tree(children, level=level+1, prefix=next_level_prefix)
+    print_command_in_tree(node.command, last=last, prefix=prefix)
+    print_tree(node, level=level+1, prefix=next_level_prefix)
