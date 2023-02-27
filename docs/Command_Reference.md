@@ -4,6 +4,7 @@ For any command, you can access the help documentation via the CLI:
 
 ```bash
 hokusai --help
+hokusai tree
 hokusai {command} --help
 ```
 
