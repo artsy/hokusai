@@ -17,7 +17,7 @@ dependencies:
 	poetry install --no-root
 
 test:
-	coverage run --omit="test/*" -m unittest discover test.unit
+	coverage run -m pytest test/unit
 	coverage run --omit="test/*" -m unittest discover test.smoke
 
 integration:
