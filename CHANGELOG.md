@@ -1,3 +1,18 @@
+## v1.0.4
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.0.4/README.md)
+
+### Notable changes since v1.0.3
+
+* b3b2dbd feat: add tree command [#FF] (#334)
+* 428e88f feat: make the app aware when it is a beta version (#330)
+* c9f4899 fix: ci reference to dockerhub username (#326)
+* d6c6491 feat: let main/release builds pull in circleci hokusai context (#325)
+* 0877aad fix: CI build failures related to Poetry and Python install. (#324)
+* e9c4bea feat: remove dependency on jupyter (#320)
+* 76fd07c fix: ghr install for release github step (#316)
+* 72e656c fix: Makefile curl on dockerhub api which has changed (#315)
+
 ## v1.0.3
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.0.3/README.md)
