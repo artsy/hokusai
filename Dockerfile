@@ -25,4 +25,4 @@ RUN curl -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/do
 COPY . /src
 
 # Install Hokusai
-RUN pip install .
+RUN pip install --no-cache-dir .

@@ -11,6 +11,11 @@ def base(context_settings=CONTEXT_SETTINGS):
   """Hokusai is a CLI for managing application deployments on Kubernetes"""
   pass
 
+@base.command(context_settings=CONTEXT_SETTINGS)
+@click.pass_context
+def tree(ctx):
+  """Print a tree of available commands"""
+  hokusai.print_command_tree(ctx.find_root().command)
 
 @base.command(context_settings=CONTEXT_SETTINGS)
 def console():

@@ -1,3 +1,11 @@
+.coverage
+.github
+*pytest*
+*.spec
+*.lock
+*.swp
+**/*pycache*
+
 .circleci
 .hokusai-tmp
 .idea

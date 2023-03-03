@@ -16,7 +16,6 @@ At [Artsy](http://www.artsy.net), as we began working with Kubernetes, while imp
 
 Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, and comes with a steep learning curve. We set out to create a Heroku-like CLI that would shepherd the application developer into the ecosystems of Docker and Kubernetes, and while introducing new tooling and concepts, outlining a clear practice for dependency management, local development, testing and CI, image repository structure, deployment and orchestration.
 
-
 ## Installation
 
 ### MacOS
@@ -81,7 +80,6 @@ Release artifacts are also available in AWS S3. You can use this [convenience sc
 
 Hokusai currently supports Python 3.7+ only. The last version that supported Python 2.x was [v0.5.18](https://github.com/artsy/hokusai/tree/v0.5.18).
 
-
 ## Setup
 
 We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Compose set up, and that you have an AWS account. Perform the following steps to setup Hokusai:
@@ -106,23 +104,19 @@ We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Comp
     eval "$(_HOKUSAI_COMPLETE=source hokusai)"
     ```
 
-
 ## Getting Started
 
 See [Getting Started](./docs/Getting_Started.md) to start using Hokusai for your project.
 
-
 ## Command Reference
 
 A full command reference can be found in [Command Reference](./docs/Command_Reference.md).
-
 
 ## Review Apps
 
 Hokusai can be used to simplify the process of spinning up a "review app" instance of your project, based on a feature branch or pull request.
 
 Full details are in the [Review App reference](./docs/Review_Apps.md).
-
 
 ## Developing Hokusai
 
@@ -171,7 +165,7 @@ With the desired Python version installed, activate it globally:
 pyenv global 3.9.10
 ```
 
-Note: If you want to create a PyInstaller distribution (by running `make build`) you need to install Python with development dylibs. Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
+Note: If you want to create a PyInstaller distribution, Python must be installed with development libraries. Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
 
 ### Virtualenv
 
@@ -200,7 +194,6 @@ To update dependencies:
 ```
 poetry lock
 ```
-
 
 ## Testing
 
@@ -244,37 +237,42 @@ Tip: Set `DEBUG=1` environment variable to print boto logging
 
 ## Distributing Hokusai
 
-Merges to `main` branch automatically create Hokusai beta version for testing.
+### Beta Release
 
-The beta can be installed by:
+Merging a branch into `main` automatically creates a beta version useful for testing.
 
-### MacOS
+To install the beta:
+
+#### MacOS
 
 ```
+$ brew uninstall hokusai
+$ brew uninstall hokusai-beta
 $ brew update
 $ brew tap artsy/formulas
 $ brew install hokusai-beta
 ```
 
-### Linux
+#### Linux
 
 ```
 curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh | sudo bash -s beta
 ```
 
-To create a new release, perform the following:
+### Official Release
 
-- bump Hokusai version in these files:
-  - [pyproject.toml](pyproject.toml)
-  - [hokusai/VERSION](hokusai/VERSION)
-- update [CHANGELOG](./CHANGELOG.md)
-- open a PR to merge `main` into `release` branch.
+To create an official release, such as `v1.2.3`, perform the following:
 
+- Create a branch named `prepare-v1.2.3` and make the following changes:
+  - Bump version in [RELEASE_VERSION](./RELEASE_VERSION) file.
+  - Upate [CHANGELOG](./CHANGELOG.md).
+  - Open a PR to merge into `main`. Please see [past PRs](https://github.com/artsy/hokusai/pulls?q=is%3Apr+Release+is%3Aclosed+%22prepare+version%22) for example.
+
+- Open a PR to merge `main` into `release`. Please see [past PRs](https://github.com/artsy/hokusai/pulls?q=is%3Apr+is%3Aclosed+%22release+version%22) for example.
 
 ## The Name
 
 The project is named for the great Japanese artist [Katsushika Hokusai](https://www.artsy.net/article/artsy-editorial-7-things-hokusai-creator-great-wave) (1760-1849).
-
 
 ## About Artsy
 

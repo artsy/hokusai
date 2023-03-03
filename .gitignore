@@ -23,6 +23,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+_version.py
 
 # Installer logs
 pip-log.txt
@@ -82,3 +83,5 @@ ENV/
 
 # Pyenv version
 .python-version
+
+*.swp
