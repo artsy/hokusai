@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # This script is to be run within CircleCI only for 'release' branch builds.
 # It reads the new release version from RELEASE_VERSION file and creates a Git tag for it (locally in CircleCI).
