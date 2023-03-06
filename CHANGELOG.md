@@ -1,3 +1,11 @@
+## v1.0.5
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.0.5/README.md)
+
+### Notable changes since v1.0.4
+
+* 4d4ed55 fix: release build failures (#341)
+
 ## v1.0.4
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.0.4/README.md)
