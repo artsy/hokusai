@@ -274,6 +274,7 @@ jobs:
     steps:
       - checkout
       - run: make dependencies
+      - run: scripts/create_release_tag.sh
       - run: make publish-to-pip
 
   release_homebrew:
