@@ -9,10 +9,10 @@ from hokusai.services.docker import Docker
 
 @command()
 def push(tag, local_tag, build, filename, force, overwrite, skip_latest=False):
-  if force is None and shout('git status --porcelain'):
+  if not force and shout('git status --porcelain'):
     raise HokusaiError("Working directory is not clean.  Aborting.")
 
-  if force is None and shout('git status --porcelain --ignored'):
+  if not force and shout('git status --porcelain --ignored'):
     raise HokusaiError("Working directory contains ignored files and/or directories.  Aborting.")
 
   ecr = ECR()
