@@ -18,18 +18,18 @@ def ecr_check():
   return ecr
 
 def git_status_check():
-  git_unclean_files = shout('git status --porcelain --ignored')
-  if git_unclean_files:
+  git_status_files = shout('git status --porcelain --ignored')
+  if git_status_files:
     print_red("The following files/directories are either changed, untracked, or Git ignored.")
     print_red("If they are not excluded by .dockerignore, they may get copied into the resulting Docker image.")
-    print(git_unclean_files)
+    print(git_status_files)
     raise HokusaiError("Aborting. Re-run command with --force flag, if you are confident.")
 
 @command()
-def push(tag, local_tag, build, filename, force, overwrite, skip_latest=False):
+def push(remote_tag, local_tag, build, filename, force, overwrite, skip_latest=False):
   force or git_status_check()
   ecr = ecr_check()
-  remote_tag = remote_tag_check(tag, overwrite, ecr)
+  remote_tag = remote_tag_check(remote_tag, overwrite, ecr)
   if build:
     build_and_push(remote_tag, local_tag, filename, ecr, skip_latest)
   else:
