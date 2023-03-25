@@ -26,7 +26,7 @@ def git_status_check():
     raise HokusaiError("Aborting. Re-run command with --force flag, if you are confident.")
 
 @command()
-def push(remote_tag, local_tag, build, filename, force, overwrite, skip_latest=False):
+def push_image(remote_tag, local_tag, build, filename, force, overwrite, skip_latest=False):
   force or git_status_check()
   ecr = ecr_check()
   remote_tag = remote_tag_check(remote_tag, overwrite, ecr)
