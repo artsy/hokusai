@@ -23,7 +23,7 @@ def ecr_check():
 def git_status_check():
   git_unclean_files = shout('git status --porcelain --ignored')
   if git_unclean_files:
-    print_red("The following files/directories are either changed, untracked, or ignored.")
+    print_red("The following files/directories are either changed, untracked, or Git ignored.")
     print_red("If they are not excluded by .dockerignore, they may get copied into the resulting Docker image.")
     print(git_unclean_files)
     raise HokusaiError("Aborting. Re-run command with --force flag, if you are confident.")
@@ -40,7 +40,8 @@ def remote_tag_check(remote_tag, overwrite, ecr):
   if remote_tag is None:
     remote_tag = shout('git rev-parse HEAD').strip()
   if not overwrite and ecr.tag_exists(remote_tag):
-    raise HokusaiError("Tag %s already exists in registry.  Aborting." % remote_tag)
+    print_red("Tag %s already exists in registry." % remote_tag)
+    raise HokusaiError("Aborting. Re-run command with --overwrite, if it's okay to overwrite tag in registry")
   return remote_tag
 
 def tag_and_push(local_repo, local_tag, remote_repo, remote_tag):
