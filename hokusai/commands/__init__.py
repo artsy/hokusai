@@ -10,11 +10,7 @@ from hokusai.commands.gitcompare import gitcompare
 from hokusai.commands.env import get_env, set_env, unset_env
 from hokusai.commands.images import images
 from hokusai.commands.logs import logs
-from hokusai.commands.push import build_and_push
-from hokusai.commands.push import ecr_check
-from hokusai.commands.push import git_status_check
 from hokusai.commands.push import push
-from hokusai.commands.push import remote_tag_check
 from hokusai.commands.pull import pull
 from hokusai.commands.run import run
 from hokusai.commands.setup import setup

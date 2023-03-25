@@ -23,13 +23,7 @@ def registry(context_settings=CONTEXT_SETTINGS):
 def push(tag, local_tag, build, filename, force, overwrite, skip_latest, verbose):
   """Build and push an image to the project's registry tagged as the git SHA1 of HEAD"""
   set_verbosity(verbose)
-  force or hokusai.git_status_check()
-  ecr = hokusai.ecr_check()
-  remote_tag = hokusai.remote_tag_check(tag, overwrite, ecr)
-  if build:
-    hokusai.build_and_push(remote_tag, local_tag, filename, ecr, skip_latest)
-  else:
-    hokusai.push(remote_tag, local_tag, ecr, skip_latest)
+  hokusai.push(tag, local_tag, build, filename, force, overwrite, skip_latest)
 
 
 @registry.command(context_settings=CONTEXT_SETTINGS)

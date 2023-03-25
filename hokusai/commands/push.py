@@ -1,5 +1,4 @@
 import os
-import pdb
 
 from hokusai.lib.command import command
 from hokusai.lib.config import config
@@ -8,10 +7,9 @@ from hokusai.lib.common import print_green, print_red, shout
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.docker import Docker
 
-@command()
 def build_and_push(remote_tag, local_tag, filename, ecr, skip_latest=False):
   Docker().build(filename)
-  push(remote_tag, local_tag, ecr, skip_latest)
+  push_only(remote_tag, local_tag, ecr, skip_latest)
 
 def ecr_check():
   ecr = ECR()
@@ -19,7 +17,6 @@ def ecr_check():
     raise HokusaiError("ECR repo %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
   return ecr
 
-@command()
 def git_status_check():
   git_unclean_files = shout('git status --porcelain --ignored')
   if git_unclean_files:
@@ -29,7 +26,16 @@ def git_status_check():
     raise HokusaiError("Aborting. Re-run command with --force flag, if you are confident.")
 
 @command()
-def push(remote_tag, local_tag, ecr, skip_latest=False):
+def push(tag, local_tag, build, filename, force, overwrite, skip_latest=False):
+  force or git_status_check()
+  ecr = ecr_check()
+  remote_tag = remote_tag_check(tag, overwrite, ecr)
+  if build:
+    build_and_push(remote_tag, local_tag, filename, ecr, skip_latest)
+  else:
+    push_only(remote_tag, local_tag, ecr, skip_latest)
+
+def push_only(remote_tag, local_tag, ecr, skip_latest=False):
   shout(ecr.get_login(), mask=(r'^(docker login -u) .+ (-p) .+ (.+)$', r'\1 ****** \2 ***** \3'))
   docker_compose_repo = "hokusai_" + config.project_name
   tag_and_push(docker_compose_repo, local_tag, ecr.project_repo, remote_tag)
