@@ -14,7 +14,10 @@ class Docker:
       yaml_template = TemplateSelector().get(filename)
 
     docker_compose_yml = YamlSpec(yaml_template).to_file()
-    build_command = "docker-compose -f %s -p hokusai build" % docker_compose_yml
+
+    # docker-compose v2 switched to using '-' as separator in image name, resulting in 'hokusai-<project>'
+    # COMPOSE_COMPATIBILITY=true forces v2 to use '_', resulting in 'hokusai_<project>', matching v1
+    build_command = "COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai build" % docker_compose_yml
 
     if config.pre_build:
       build_command = "%s && %s" % (config.pre_build, build_command)
