@@ -1,3 +1,15 @@
+## v1.1.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.1.0/README.md)
+
+### Notable changes since v1.0.5
+
+* 89af1e9 feat: force x86_64 (amd64) when building docker image (#348)
+* 3b86834 feat: use COMPOSE_COMPATIBILITY=true when building image (#347)
+* b2103c5 fix: push command not interpreting --force flag properly [#FF] (#346)
+* d5f2cd3 feat: use 'main' as default for check-branch params [#FF] (#345)
+* 0b36b5d fix: create release tag script not compatible with sh (#344)
+
 ## v1.0.5
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.0.5/README.md)
