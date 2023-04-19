@@ -16,7 +16,7 @@ fi
 echo "On branch: $CIRCLE_BRANCH"
 
 # fail if not 'release' branch
-if [[ "$CIRCLE_BRANCH" != 'release' ]]
+if [ "$CIRCLE_BRANCH" != 'release' ]
 then
   echo "Error: not on release branch"
   exit 1

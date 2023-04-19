@@ -4,7 +4,6 @@ import hokusai
 
 from hokusai.cli.base import base
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
-from hokusai.lib.branch_detection import detect_branch
 
 KUBE_CONTEXT = 'production'
 
@@ -36,7 +35,7 @@ def delete(filename, verbose):
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--check-branch', type=click.STRING, default=detect_branch(), help='Check branch before updating (default: origin default or main)')
+@click.option('--check-branch', type=click.STRING, default="main", help='Check branch before updating (default: main)')
 @click.option('--check-remote', type=click.STRING, help='Check remotes before updating (otherwise check all remotes)')
 @click.option('--skip-checks', type=click.BOOL, is_flag=True, help='Skip all checks and update configuration recklessly')
 @click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/production.yml)')
