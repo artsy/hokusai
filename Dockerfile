@@ -15,7 +15,7 @@ RUN apk add --no-cache \
       openssl-dev
 
 # Install Docker Compose, AWS CLI
-RUN pip --no-cache-dir install docker-compose==1.25.5 && \
+RUN pip --no-cache-dir install docker-compose==2.17.2 && \
       pip --no-cache-dir install awscli --upgrade
 
 # Install the AWS IAM Authenticator
