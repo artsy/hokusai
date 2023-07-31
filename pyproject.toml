@@ -21,7 +21,7 @@ MarkupSafe = "==2.1.1"
 packaging = "==21.3"
 prompt-toolkit = "==3.0.28"
 python = "^3.7"
-PyYAML = "==6.0"
+PyYAML = "==6.0.1"
 termcolor = "==1.1.0"
 
 [tool.poetry.dev-dependencies]
