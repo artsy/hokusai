@@ -1,3 +1,13 @@
+## v1.2.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.2.0/README.md)
+
+### Notable changes since v1.1.0
+
+* fe85f73 chore: bump Xcode test version to 13.4.1 for CircleCI support (#361)
+* a65fd73 fix: avoid verbose BuildKit output (#354)
+* 2a45e9f feat: bump docker-compose version for multi-stage builds (#353)
+
 ## v1.1.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.1.0/README.md)
