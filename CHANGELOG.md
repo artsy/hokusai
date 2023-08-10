@@ -1,6 +1,6 @@
 ## v1.2.1
 
-[Documentation](https://github.com/artsy/hokusai/blob/v1.3.0/README.md)
+[Documentation](https://github.com/artsy/hokusai/blob/v1.2.1/README.md)
 
 ### Notable changes since v1.2.0
 
