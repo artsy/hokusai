@@ -1,3 +1,12 @@
+## v1.2.1
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.3.0/README.md)
+
+### Notable changes since v1.2.0
+
+* a8daedb fix: compatibility by relaxing python version constraints (#366)
+* f477865 fix: use COMPOSE_COMPATIBILITY for all docker-compose calls (#365)
+
 ## v1.2.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.2.0/README.md)

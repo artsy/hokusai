@@ -268,7 +268,7 @@ To create an official release, such as `v1.2.3`, perform the following:
   - Upate [CHANGELOG](./CHANGELOG.md).
   - Open a PR to merge into `main`. Please see [past PRs](https://github.com/artsy/hokusai/pulls?q=is%3Apr+Release+is%3Aclosed+%22prepare+version%22) for example.
 
-- Open a PR to merge `main` into `release`. Please see [past PRs](https://github.com/artsy/hokusai/pulls?q=is%3Apr+is%3Aclosed+%22release+version%22) for example.
+- [Open a PR](https://github.com/artsy/hokusai/compare/release...main?expand=1) to merge `main` into `release`. Please see [past PRs](https://github.com/artsy/hokusai/pulls?q=is%3Apr+is%3Aclosed+%22release+version%22) for example.
 
 ## The Name
 
