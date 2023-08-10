@@ -22,8 +22,8 @@ def test(build, cleanup, filename, service_name):
   follow_extends(docker_compose_yml)
 
   def on_cleanup(*args):
-    shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml)
-    shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml)
+    shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml)
+    shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai rm --force" % docker_compose_yml)
 
   if cleanup:
     for sig in EXIT_SIGNALS:
@@ -39,7 +39,7 @@ def test(build, cleanup, filename, service_name):
 
   print_green("Starting test environment... Press Ctrl+C to stop.", newline_after=True)
   try:
-    return_code = int(shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True))
+    return_code = int(shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True))
   except CalledProcessError as e:
     print_red("CalledProcessError return code: %s" % e.returncode)
     if cleanup: on_cleanup()
