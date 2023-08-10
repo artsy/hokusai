@@ -20,7 +20,7 @@ Jinja2 = "==3.1.1"
 MarkupSafe = "==2.1.1"
 packaging = "==21.3"
 prompt-toolkit = "==3.0.28"
-python = "==3.9.10"
+python = ">=3.9,<3.11"
 PyYAML = "==6.0.1"
 termcolor = "==1.1.0"
 

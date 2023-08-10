@@ -22,7 +22,7 @@ def dev_start(build, detach, filename):
   follow_extends(docker_compose_yml)
 
   def cleanup(*args):
-    shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
+    shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
   for sig in EXIT_SIGNALS:
     signal.signal(sig, cleanup)
 
@@ -35,7 +35,7 @@ def dev_start(build, detach, filename):
   if not detach:
     print_green("Starting development environment... Press Ctrl+C to stop.")
 
-  shout("docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai up%s" % (docker_compose_yml, opts), print_output=True)
 
   if detach:
     print_green("Run `hokousai dev stop` to shut down, or `hokusai dev logs --follow` to tail output.")
@@ -50,7 +50,7 @@ def dev_stop(filename):
   docker_compose_yml = YamlSpec(yaml_template).to_file()
   follow_extends(docker_compose_yml)
 
-  shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
 @command()
 def dev_status(filename):
@@ -62,7 +62,7 @@ def dev_status(filename):
   docker_compose_yml = YamlSpec(yaml_template).to_file()
   follow_extends(docker_compose_yml)
 
-  shout("docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
 
 @command()
 def dev_logs(follow, tail, filename):
@@ -80,7 +80,7 @@ def dev_logs(follow, tail, filename):
   if tail:
     opts += " --tail=%i" % tail
 
-  shout("docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
 
 @command()
 def dev_run(command, service_name, stop, filename):
@@ -95,10 +95,10 @@ def dev_run(command, service_name, stop, filename):
   if service_name is None:
     service_name = config.project_name
 
-  shout("docker-compose -f %s -p hokusai run %s %s" % (docker_compose_yml, service_name, command), print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai run %s %s" % (docker_compose_yml, service_name, command), print_output=True)
 
   if stop:
-    shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
+    shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
 @command()
 def dev_clean(filename):
@@ -110,5 +110,5 @@ def dev_clean(filename):
   docker_compose_yml = YamlSpec(yaml_template).to_file()
   follow_extends(docker_compose_yml)
 
-  shout("docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
-  shout("docker-compose -f %s -p hokusai rm --force" % docker_compose_yml, print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai rm --force" % docker_compose_yml, print_output=True)
