@@ -50,5 +50,8 @@ class HokusaiGlobalConfig:
   def kubectl_config_file(self):
     return self.get('kubectl-config-file')
 
+  @property
+  def kubectl_path(self):
+    return self.get('kubectl-path')
 
 global_config = HokusaiGlobalConfig()

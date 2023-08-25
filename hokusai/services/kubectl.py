@@ -3,16 +3,19 @@ import json
 import yaml
 
 from hokusai.lib.common import shout
+from hokusai.lib.global_config import global_config
+
 
 class Kubectl:
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
+    self.kubectl = global_config.kubectl_path
 
   def command(self, cmd):
     if self.namespace is None:
-      return "kubectl --context %s %s" % (self.context, cmd)
-    return "kubectl --context %s --namespace %s %s" % (self.context, self.namespace, cmd)
+      return "%s --context %s %s" % (self.kubectl, self.context, cmd)
+    return "%s --context %s --namespace %s %s" % (self.kubectl, self.context, self.namespace, cmd)
 
   def get_object(self, obj):
     cmd = self.command("get %s -o json" % obj)
@@ -32,4 +35,4 @@ class Kubectl:
       return []
 
   def contexts(self):
-    return [context['name'] for context in yaml.load(shout('kubectl config view'), Loader=yaml.FullLoader)['contexts']]
+    return [context['name'] for context in yaml.load(shout('%s config view', self.kubectl), Loader=yaml.FullLoader)['contexts']]
