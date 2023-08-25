@@ -1,16 +1,18 @@
 import json
+import os
 
 import yaml
 
 from hokusai.lib.common import shout
-from hokusai.lib.global_config import global_config
+from hokusai.lib.global_config import get_global_config
 
 
 class Kubectl:
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
-    self.kubectl = global_config.config['kubectl-path']
+    global_config = get_global_config()
+    self.kubectl = os.path.join(global_config['bin-dir'], 'kubectl')
 
   def command(self, cmd):
     if self.namespace is None:
