@@ -10,7 +10,7 @@ class Kubectl:
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
-    self.kubectl = global_config.config['kubectl_path']
+    self.kubectl = global_config.config['kubectl-path']
 
   def command(self, cmd):
     if self.namespace is None:
