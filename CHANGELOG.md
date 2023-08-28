@@ -1,3 +1,12 @@
+## v1.3.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.3.0/README.md)
+
+### Notable changes since v1.2.1
+
+* 85525df feat: bump docker-compose 2.17.2 -> 2.20.3 (#371)
+* 4843eac feat: label review app namespaces (#370)
+
 ## v1.2.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.2.1/README.md)
