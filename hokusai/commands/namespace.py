@@ -25,7 +25,10 @@ def create_new_app_yaml(source_file, app_name):
       ('apiVersion', 'v1'),
       ('kind', 'Namespace'),
       ('metadata', {
-        'name': clean_string(app_name)
+        'name': clean_string(app_name),
+        'labels': {
+          'app-phase': 'review'
+        }
       })
     ])
   yaml_content = [new_namespace] + yaml_content
