@@ -24,18 +24,15 @@ def console():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--kubectl-version', type=click.STRING, required=False, help='The version of kubectl to install')
-@click.option('--s3-bucket', type=click.STRING, required=False, help="The S3 bucket name containing your org's kubectl config file")
-@click.option('--s3-key', type=click.STRING, required=False, help="The S3 key of your org's kubectl config file")
-@click.option('--config_file', type=click.STRING, required=False, help="Your org's kubectl config file")
-@click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS (default: darwin)')
-@click.option('--install-to', type=click.STRING, default='/usr/local/bin', help='Install kubectl to (default: /usr/local/bin)')
-@click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to (default: ~/.kube)')
+@click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS')
+@click.option('--install-to', type=click.STRING, default='~/.local/bin/', help='Install kubectl to')
+@click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to, verbose):
+@click.argument('s3_location_of_org_hokusai_config', type=click.STRING)
+def configure(platform, install_to, install_config_to, verbose, s3_location_of_org_hokusai_config):
   """Install and configure kubectl"""
   set_verbosity(verbose)
-  hokusai.configure(kubectl_version, s3_bucket, s3_key, config_file, install_to, install_config_to)
+  hokusai.configure(install_to, install_config_to, platform, s3_location_of_org_hokusai_config)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
