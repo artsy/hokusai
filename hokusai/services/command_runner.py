@@ -119,14 +119,13 @@ class CommandRunner:
     overrides.update(spec)
     return overrides
 
-  def _run_tty(self, tag_or_digest, cmd, overrides):
+  def _run_tty(self, cmd, image_name, overrides):
     ''' run command with tty '''
     overrides['spec']['containers'][0].update({
       "stdin": True,
       "stdinOnce": True,
       "tty": True
     })
-    image_name = self._image_name(tag_or_digest)
     shout(
       self.kctl.command(
         f"run {self.pod_name} -t -i --image={image_name} --restart=Never " +
@@ -135,9 +134,8 @@ class CommandRunner:
       print_output=True
     )
 
-  def _run_no_tty(self, tag_or_digest, cmd, overrides):
+  def _run_no_tty(self, cmd, image_name, overrides):
     ''' run command without tty '''
-    image_name = self._image_name(tag_or_digest)
     return returncode(
       self.kctl.command(
         f"run {self.pod_name} --attach --image={image_name} " +
@@ -152,7 +150,8 @@ class CommandRunner:
     overrides = self._overrrides(
       cmd, constraint, env, tag_or_digest
     )
+    image_name = self._image_name(tag_or_digest)
     if run_tty:
-      self._run_tty(tag_or_digest, cmd, overrides)
+      self._run_tty(cmd, image_name, overrides)
     else:
-      self._run_no_tty(tag_or_digest, cmd, overrides)
+      self._run_no_tty(cmd, image_name, overrides)
