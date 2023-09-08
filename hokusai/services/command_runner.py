@@ -18,24 +18,29 @@ class CommandRunner:
   def _name(self):
     ''' generate container name '''
     if os.environ.get('USER') is not None:
-      # The regex used for the validation of name is '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
-      user = re.sub("[^0-9a-z]+", "-", os.environ.get('USER').lower())
-      uuid = "%s-%s" % (user, k8s_uuid())
+      # The regex used for the validation of name is
+      # '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
+      user = re.sub(
+        "[^0-9a-z]+", "-", os.environ.get('USER').lower()
+      )
+      uuid = "{user}-{k8s_uuid()}"
     else:
       uuid = k8s_uuid()
-    name = "%s-hokusai-run-%s" % (config.project_name, uuid)
+    name = "{config.project_name}-hokusai-run-{uuid}"
     return name
 
   def _image_name(self, tag_or_digest):
     ''' generate docker image name '''
     separator = "@" if ":" in tag_or_digest else ":"
-    image_name = "%s%s%s" % (self.ecr.project_repo, separator, tag_or_digest)
+    image_name = f"{self.ecr.project_repo}{separator}{tag_or_digest}"
     return image_name
 
   def _validate_env(self, kv):
-    ''' ensurer kv is in KEY=VALUE form '''
+    ''' ensure kv is in KEY=VALUE form '''
     if '=' not in s:
-      raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
+      raise HokusaiError(
+        "Error: environment variables must be of the form 'KEY=VALUE'"
+      )
 
   def _append_env(self, container_spec, env):
     ''' append env to given container spec '''
@@ -43,21 +48,12 @@ class CommandRunner:
     for kv in env:
       self._validate_env(kv)
       split = kv.split('=', 1)
-      container_spec['env'].append({'name': split[0], 'value': split[1]})
-
-  def _append_constraints(containers_spec, constraint):
-    ''' append constraints to given containers spec '''
-    constraints = constraint or config.run_constraints
-    if constraints:
-      containers_spec['nodeSelector'] = {}
-      for label in constraints:
-        if '=' not in label:
-          raise HokusaiError("Error: Node selectors must of the form 'key=value'")
-        split = label.split('=', 1)
-        containters_spec['nodeSelector'][split[0]] = split[1]
-    return containers_spec
+      container_spec['env'].append(
+        {'name': split[0], 'value': split[1]}
+      )
 
   def _append_envfrom(container_spec):
+    ''' append envFrrom to given container spec '''
     container_spec = container_spec.update(
       {
         'envFrom': [
@@ -76,6 +72,20 @@ class CommandRunner:
       }
     )
 
+  def _append_constraints(containers_spec, constraint):
+    ''' append constraints to given containers spec '''
+    constraints = constraint or config.run_constraints
+    if constraints:
+      containers_spec['nodeSelector'] = {}
+      for label in constraints:
+        if '=' not in label:
+          raise HokusaiError(
+            "Error: Node selectors must of the form 'key=value'"
+          )
+        split = label.split('=', 1)
+        containters_spec['nodeSelector'][split[0]] = split[1]
+    return containers_spec
+
   def _overrides_spec_containers_container(self, cmd, env, tag_or_digest):
     ''' generate container spec '''
     container_spec = {
@@ -89,26 +99,33 @@ class CommandRunner:
     return container_spec
 
   def _overrrides_spec_containers(self, cmd, env, tag_or_digest):
+    ''' generate containers spec '''
     containers_spec = {}
-    container_spec = self._overrides_spec_containers_container(cmd, env, tag_or_digest)
+    container_spec = self._overrides_spec_containers_container(
+      cmd, env, tag_or_digest
+    )
     containers_spec = { "containers": [container_spec] }
     return containers_spec
 
   def _overrides_spec(self, cmd, env, tag_or_digest, constraint):
+    ''' generate spec spec '''
     spec = {}
-    containers_spec = self._overrrides_spec_containers(cmd, env, tag_or_digest)
+    containers_spec = self._overrrides_spec_containers(
+      cmd, env, tag_or_digest
+    )
     spec.update(containers_spec)
     spec = self._append_constraints(spec, constraint)
     return spec
 
   def _overrides(self, cmd, env, tag_or_digest, constraint):
-    ''' compile overrides spec for kubectl run '''
+    ''' generate overrides spec '''
     overrides = { "apiVersion": "v1", "spec": spec }
     spec = self._overrides_spec(cmd, env, tag_or_digest_constraint)
     overrides.update(spec)
     return overrides
 
   def _run_tty(tag_or_digest, overrides):
+    ''' run command with tty '''
     overrides['spec']['containers'][0].update({
       "stdin": True,
       "stdinOnce": True,
@@ -125,6 +142,7 @@ class CommandRunner:
     )
 
   def _run_no_tty(tag_or_digest, overrides):
+    ''' run command without tty '''
     name = self._name()
     image_name = self._image_name(tag_or_digest)
     return returncode(
@@ -136,8 +154,11 @@ class CommandRunner:
     )
 
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
+    ''' run command '''
     run_tty = tty if tty is not None else config.run_tty
-    overrides = self._overrrides(cmd, env, tag_or_digest, constraint)
+    overrides = self._overrrides(
+      cmd, env, tag_or_digest, constraint
+    )
     if run_tty:
       self._run_tty(tag_or_digest, overrides)
     else:
