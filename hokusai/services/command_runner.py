@@ -107,7 +107,7 @@ class CommandRunner:
     containers_spec = { "containers": [container_spec] }
     return containers_spec
 
-  def _overrides_spec(self, cmd, env, tag_or_digest, constraint):
+  def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
     ''' generate spec spec '''
     spec = {}
     containers_spec = self._overrrides_spec_containers(
@@ -117,14 +117,14 @@ class CommandRunner:
     spec = self._append_constraints(spec, constraint)
     return spec
 
-  def _overrides(self, cmd, env, tag_or_digest, constraint):
+  def _overrides(self, cmd, constraint, env, tag_or_digest):
     ''' generate overrides spec '''
     overrides = { "apiVersion": "v1", "spec": spec }
-    spec = self._overrides_spec(cmd, env, tag_or_digest_constraint)
+    spec = self._overrides_spec(cmd, constraint, env, tag_or_digest)
     overrides.update(spec)
     return overrides
 
-  def _run_tty(self, tag_or_digest, overrides):
+  def _run_tty(self, tag_or_digest, cmd, overrides):
     ''' run command with tty '''
     overrides['spec']['containers'][0].update({
       "stdin": True,
@@ -141,7 +141,7 @@ class CommandRunner:
       print_output=True
     )
 
-  def _run_no_tty(self, tag_or_digest, overrides):
+  def _run_no_tty(self, tag_or_digest, cmd, overrides):
     ''' run command without tty '''
     name = self._name()
     image_name = self._image_name(tag_or_digest)
@@ -157,9 +157,9 @@ class CommandRunner:
     ''' run command '''
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrrides(
-      cmd, env, tag_or_digest, constraint
+      cmd, constraint, env, tag_or_digest
     )
     if run_tty:
-      self._run_tty(tag_or_digest, overrides)
+      self._run_tty(tag_or_digest, cmd, overrides)
     else:
-      self._run_no_tty(tag_or_digest, overrides)
+      self._run_no_tty(tag_or_digest, cmd, overrides)
