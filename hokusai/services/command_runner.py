@@ -52,7 +52,7 @@ class CommandRunner:
         {'name': split[0], 'value': split[1]}
       )
 
-  def _append_envfrom(container_spec):
+  def _append_envfrom(self, container_spec):
     ''' append envFrrom to given container spec '''
     container_spec = container_spec.update(
       {
@@ -72,7 +72,7 @@ class CommandRunner:
       }
     )
 
-  def _append_constraints(containers_spec, constraint):
+  def _append_constraints(self, containers_spec, constraint):
     ''' append constraints to given containers spec '''
     constraints = constraint or config.run_constraints
     if constraints:
@@ -124,7 +124,7 @@ class CommandRunner:
     overrides.update(spec)
     return overrides
 
-  def _run_tty(tag_or_digest, overrides):
+  def _run_tty(self, tag_or_digest, overrides):
     ''' run command with tty '''
     overrides['spec']['containers'][0].update({
       "stdin": True,
@@ -141,7 +141,7 @@ class CommandRunner:
       print_output=True
     )
 
-  def _run_no_tty(tag_or_digest, overrides):
+  def _run_no_tty(self, tag_or_digest, overrides):
     ''' run command without tty '''
     name = self._name()
     image_name = self._image_name(tag_or_digest)
