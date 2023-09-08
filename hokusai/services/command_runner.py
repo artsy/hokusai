@@ -15,59 +15,8 @@ class CommandRunner:
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
 
-  def validate_env(s):
-    if '=' not in s:
-      raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
-
-  def append_env(container, env):
-    container['env'] = []
-    for s in env:
-      validate_env(s)
-      split = s.split('=', 1)
-      container['env'].append({'name': split[0], 'value': split[1]})
-
-  def append_constraints(container, constraint):
-    constraints = constraint or config.run_constraints
-    if constraints:
-      spec['nodeSelector'] = {}
-      for label in constraints:
-        if '=' not in label:
-          raise HokusaiError("Error: Node selectors must of the form 'key=value'")
-        split = label.split('=', 1)
-        spec['nodeSelector'][split[0]] = split[1]
-
-  def append_envfrom(container):
-    container +=
-      {
-      'envFrom': [
-        {
-          'configMapRef': {
-            'name': f'{config.project_name}-environment'
-          }
-        },
-        {
-          'secretRef': {
-            'name': f'{config.project_name}',
-            'optional': True
-          }
-        }
-      ]
-
-  def create_overrides(self):
-    ''' compile overrides spec for kubectl run '''
-    container = {
-      "args": cmd.split(' '),
-      "name": self.container_name(),
-      "image": self.image_name(),
-      "imagePullPolicy": "Always",
-    }
-    container = append_envfrom(container)
-    container = append_env(container, env)
-    container = append_constraints(container, constraint)
-    spec = { "containers": [container] }
-    overrides = { "apiVersion": "v1", "spec": spec }
-
-  def container_name():
+  def _name(self):
+    ''' generate container name '''
     if os.environ.get('USER') is not None:
       # The regex used for the validation of name is '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
       user = re.sub("[^0-9a-z]+", "-", os.environ.get('USER').lower())
@@ -77,28 +26,119 @@ class CommandRunner:
     name = "%s-hokusai-run-%s" % (config.project_name, uuid)
     return name
 
-  def image_name():
+  def _image_name(self, tag_or_digest):
+    ''' generate docker image name '''
     separator = "@" if ":" in tag_or_digest else ":"
     image_name = "%s%s%s" % (self.ecr.project_repo, separator, tag_or_digest)
     return image_name
 
-  def run_tty(overrides):
-    container.update({
+  def _validate_env(self, kv):
+    ''' ensurer kv is in KEY=VALUE form '''
+    if '=' not in s:
+      raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
+
+  def _append_env(self, container_spec, env):
+    ''' append env to given container spec '''
+    container_spec['env'] = []
+    for kv in env:
+      self._validate_env(kv)
+      split = kv.split('=', 1)
+      container_spec['env'].append({'name': split[0], 'value': split[1]})
+
+  def _append_constraints(containers_spec, constraint):
+    ''' append constraints to given containers spec '''
+    constraints = constraint or config.run_constraints
+    if constraints:
+      containers_spec['nodeSelector'] = {}
+      for label in constraints:
+        if '=' not in label:
+          raise HokusaiError("Error: Node selectors must of the form 'key=value'")
+        split = label.split('=', 1)
+        containters_spec['nodeSelector'][split[0]] = split[1]
+    return containers_spec
+
+  def _append_envfrom(container_spec):
+    container_spec = container_spec.update(
+      {
+        'envFrom': [
+          {
+            'configMapRef': {
+              'name': f'{config.project_name}-environment'
+            }
+          },
+          {
+            'secretRef': {
+              'name': f'{config.project_name}',
+              'optional': True
+            }
+          }
+        ]
+      }
+    )
+
+  def _overrides_spec_containers_container(self, cmd, env, tag_or_digest):
+    ''' generate container spec '''
+    container_spec = {
+      "args": cmd.split(' '),
+      "name": self.container_name(),
+      "image": self._image_name(tag_or_digest),
+      "imagePullPolicy": "Always",
+    }
+    container = self._append_env(container_spec, env)
+    container = self._append_envfrom(container_spec)
+    return container_spec
+
+  def _overrrides_spec_containers(self, cmd, env, tag_or_digest):
+    containers_spec = {}
+    container_spec = self._overrides_spec_containers_container(cmd, env, tag_or_digest)
+    containers_spec = { "containers": [container_spec] }
+    return containers_spec
+
+  def _overrides_spec(self, cmd, env, tag_or_digest, constraint):
+    spec = {}
+    containers_spec = self._overrrides_spec_containers(cmd, env, tag_or_digest)
+    spec.update(containers_spec)
+    spec = self._append_constraints(spec, constraint)
+    return spec
+
+  def _overrides(self, cmd, env, tag_or_digest, constraint):
+    ''' compile overrides spec for kubectl run '''
+    overrides = { "apiVersion": "v1", "spec": spec }
+    spec = self._overrides_spec(cmd, env, tag_or_digest_constraint)
+    overrides.update(spec)
+    return overrides
+
+  def _run_tty(tag_or_digest, overrides):
+    overrides['spec']['containers'][0].update({
       "stdin": True,
       "stdinOnce": True,
       "tty": True
     })
-    shout(self.kctl.command("run %s -t -i --image=%s --restart=Never --overrides=%s --rm" %
-                   (name, image_name, pipes.quote(json.dumps(overrides)))), print_output=True)
+    name = self._name()
+    image_name = self._image_name(tag_or_digest)
+    shout(
+      self.kctl.command(
+        f"run {name} -t -i --image={image_name} --restart=Never " +
+        f"--overrides={pipes.quote(json.dumps(overrides))} --rm"
+      ),
+      print_output=True
+    )
 
-  def run_no_tty(overrides):
-    return returncode(self.kctl.command("run %s --attach --image=%s --overrides=%s --restart=Never --rm" %
-                                      (name, image_name, pipes.quote(json.dumps(overrides)))))
+  def _run_no_tty(tag_or_digest, overrides):
+    name = self._name()
+    image_name = self._image_name(tag_or_digest)
+    return returncode(
+      self.kctl.command(
+        f"run {self._name()} --attach --image={image_name} " +
+        f"--overrides={pipes.quote(json.dumps(overrides))} " +
+        f"--restart=Never --rm"
+      )
+    )
 
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     run_tty = tty if tty is not None else config.run_tty
-    overrides = self.creat_overrrides()
+    overrides = self._overrrides(cmd, env, tag_or_digest, constraint)
     if run_tty:
-      self.run_tty(overrides)
-    else run_no_tty():
-      self.run_no_tty(overrides):
+      self._run_tty(tag_or_digest, overrides)
+    else:
+      self._run_no_tty(tag_or_digest, overrides)
