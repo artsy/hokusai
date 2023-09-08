@@ -15,21 +15,30 @@ class CommandRunner:
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
 
-  def check_env(env):
+  def validate_env(s):
+    if '=' not in s:
+      raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
+
+  def append_env(container, env):
     container['env'] = []
     for s in env:
-      if '=' not in s:
-        raise HokusaiError("Error: environment variables must be of the form 'KEY=VALUE'")
+      validate_env(s)
       split = s.split('=', 1)
       container['env'].append({'name': split[0], 'value': split[1]})
 
-  def create_overrides(self):
-    ''' compile overrides spec for kubectl run '''
-    container = {
-      "args": cmd.split(' '),
-      "name": name,
-      "image": image_name,
-      "imagePullPolicy": "Always",
+  def append_constraints(container, constraint):
+    constraints = constraint or config.run_constraints
+    if constraints:
+      spec['nodeSelector'] = {}
+      for label in constraints:
+        if '=' not in label:
+          raise HokusaiError("Error: Node selectors must of the form 'key=value'")
+        split = label.split('=', 1)
+        spec['nodeSelector'][split[0]] = split[1]
+
+  def append_envfrom(container):
+    container +=
+      {
       'envFrom': [
         {
           'configMapRef': {
@@ -43,16 +52,19 @@ class CommandRunner:
           }
         }
       ]
+
+  def create_overrides(self):
+    ''' compile overrides spec for kubectl run '''
+    container = {
+      "args": cmd.split(' '),
+      "name": self.container_name(),
+      "image": self.image_name(),
+      "imagePullPolicy": "Always",
     }
+    container = append_envfrom(container)
+    container = append_env(container, env)
+    container = append_constraints(container, constraint)
     spec = { "containers": [container] }
-    constraints = constraint or config.run_constraints
-    if constraints:
-      spec['nodeSelector'] = {}
-      for label in constraints:
-        if '=' not in label:
-          raise HokusaiError("Error: Node selectors must of the form 'key=value'")
-        split = label.split('=', 1)
-        spec['nodeSelector'][split[0]] = split[1]
     overrides = { "apiVersion": "v1", "spec": spec }
 
   def container_name():
@@ -63,10 +75,12 @@ class CommandRunner:
     else:
       uuid = k8s_uuid()
     name = "%s-hokusai-run-%s" % (config.project_name, uuid)
-    separator = "@" if ":" in tag_or_digest else ":"
+    return name
 
   def image_name():
+    separator = "@" if ":" in tag_or_digest else ":"
     image_name = "%s%s%s" % (self.ecr.project_repo, separator, tag_or_digest)
+    return image_name
 
   def run_tty(overrides):
     container.update({
