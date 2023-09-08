@@ -14,10 +14,11 @@ class CommandRunner:
     self.context = context
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
-    self.name = self._name()
+    self.pod_name = self._name()
+    self.container_name = self._name()
 
   def _name(self):
-    ''' generate container name '''
+    ''' generate name for pod and container '''
     if os.environ.get('USER') is not None:
       # The regex used for the validation of name is
       # '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
@@ -91,7 +92,7 @@ class CommandRunner:
     ''' generate container spec '''
     container_spec = {
       "args": cmd.split(' '),
-      "name": self.name,
+      "name": self.container_name,
       "image": self._image_name(tag_or_digest),
       "imagePullPolicy": "Always",
     }
@@ -135,7 +136,7 @@ class CommandRunner:
     image_name = self._image_name(tag_or_digest)
     shout(
       self.kctl.command(
-        f"run {self.name} -t -i --image={image_name} --restart=Never " +
+        f"run {self.pod_name} -t -i --image={image_name} --restart=Never " +
         f"--overrides={pipes.quote(json.dumps(overrides))} --rm"
       ),
       print_output=True
@@ -146,7 +147,7 @@ class CommandRunner:
     image_name = self._image_name(tag_or_digest)
     return returncode(
       self.kctl.command(
-        f"run {self.name} --attach --image={image_name} " +
+        f"run {self.pod_name} --attach --image={image_name} " +
         f"--overrides={pipes.quote(json.dumps(overrides))} " +
         f"--restart=Never --rm"
       )
