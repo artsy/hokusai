@@ -14,6 +14,7 @@ class CommandRunner:
     self.context = context
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
+    self.name = self._name()
 
   def _name(self):
     ''' generate container name '''
@@ -90,7 +91,7 @@ class CommandRunner:
     ''' generate container spec '''
     container_spec = {
       "args": cmd.split(' '),
-      "name": self.container_name(),
+      "name": self.name,
       "image": self._image_name(tag_or_digest),
       "imagePullPolicy": "Always",
     }
@@ -131,11 +132,10 @@ class CommandRunner:
       "stdinOnce": True,
       "tty": True
     })
-    name = self._name()
     image_name = self._image_name(tag_or_digest)
     shout(
       self.kctl.command(
-        f"run {name} -t -i --image={image_name} --restart=Never " +
+        f"run {self.name} -t -i --image={image_name} --restart=Never " +
         f"--overrides={pipes.quote(json.dumps(overrides))} --rm"
       ),
       print_output=True
@@ -143,11 +143,10 @@ class CommandRunner:
 
   def _run_no_tty(self, tag_or_digest, cmd, overrides):
     ''' run command without tty '''
-    name = self._name()
     image_name = self._image_name(tag_or_digest)
     return returncode(
       self.kctl.command(
-        f"run {self._name()} --attach --image={image_name} " +
+        f"run {self.name} --attach --image={image_name} " +
         f"--overrides={pipes.quote(json.dumps(overrides))} " +
         f"--restart=Never --rm"
       )
