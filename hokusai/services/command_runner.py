@@ -81,8 +81,8 @@ class CommandRunner:
         containters_spec['nodeSelector'][split[0]] = split[1]
     return containers_spec
 
-  def _overrides_spec_containers_container(self, cmd, env, tag_or_digest):
-    ''' generate container spec '''
+  def _overrides_container(self, cmd, env, tag_or_digest):
+    ''' generate overrides['spec']['containers'][0] spec '''
     container_spec = {
       "args": cmd.split(' '),
       "name": self.container_name,
@@ -93,19 +93,19 @@ class CommandRunner:
     container = self._append_envfrom(container_spec)
     return container_spec
 
-  def _overrrides_spec_containers(self, cmd, env, tag_or_digest):
-    ''' generate containers spec '''
+  def _overrrides_containers(self, cmd, env, tag_or_digest):
+    ''' generate overrides['spec']['containers'] spec '''
     containers_spec = {}
-    container_spec = self._overrides_spec_containers_container(
+    container_spec = self._overrides_container(
       cmd, env, tag_or_digest
     )
     containers_spec = { "containers": [container_spec] }
     return containers_spec
 
   def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
-    ''' generate spec spec '''
+    ''' generate overrides['spec'] spec '''
     spec = {}
-    containers_spec = self._overrrides_spec_containers(
+    containers_spec = self._overrrides_containers(
       cmd, env, tag_or_digest
     )
     spec.update(containers_spec)
@@ -113,11 +113,21 @@ class CommandRunner:
     return spec
 
   def _overrides(self, cmd, constraint, env, tag_or_digest):
-    ''' generate overrides spec '''
+    ''' generate overrides '''
     overrides = { "apiVersion": "v1", "spec": spec }
     spec = self._overrides_spec(cmd, constraint, env, tag_or_digest)
     overrides.update(spec)
     return overrides
+
+  def _run_no_tty(self, cmd, image_name, overrides):
+    ''' run command without tty '''
+    return returncode(
+      self.kctl.command(
+        f"run {self.pod_name} --attach --image={image_name} " +
+        f"--overrides={pipes.quote(json.dumps(overrides))} " +
+        f"--restart=Never --rm"
+      )
+    )
 
   def _run_tty(self, cmd, image_name, overrides):
     ''' run command with tty '''
@@ -132,16 +142,6 @@ class CommandRunner:
         f"--overrides={pipes.quote(json.dumps(overrides))} --rm"
       ),
       print_output=True
-    )
-
-  def _run_no_tty(self, cmd, image_name, overrides):
-    ''' run command without tty '''
-    return returncode(
-      self.kctl.command(
-        f"run {self.pod_name} --attach --image={image_name} " +
-        f"--overrides={pipes.quote(json.dumps(overrides))} " +
-        f"--restart=Never --rm"
-      )
     )
 
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
