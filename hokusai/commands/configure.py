@@ -24,7 +24,12 @@ def configure(install_to, install_config_to, platform, s3_location_of_org_config
   org_config = parse_org_config(s3_location_of_org_config)
   validate_org_config(org_config)
 
-  user_config = create_user_config(org_config, install_to, install_config_to, platform)
+  user_config = create_user_config(
+    org_config,
+    install_to,
+    install_config_to,
+    platform
+  )
 
   install_kubectl(
     user_config['kubectl_version'],
