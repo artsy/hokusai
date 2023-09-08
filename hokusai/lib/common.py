@@ -17,7 +17,7 @@ from botocore import session as botosession
 from termcolor import cprint
 
 from hokusai.lib.config import config
-from hokusai.lib.exceptions import CalledProcessError
+from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 CONTEXT_SETTINGS = {
   'terminal_width': 10000,
@@ -142,3 +142,10 @@ def pick_yes():
 
 def pick_no():
   return random.choice(["Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"])
+
+def validate_env_var(var):
+  ''' raise if env var is NOT of the form KEY=VALUE '''
+  if '=' not in var:
+    raise HokusaiError(
+      "Error: environment variables must be of the form 'KEY=VALUE'"
+    )

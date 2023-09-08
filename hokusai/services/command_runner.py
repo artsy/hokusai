@@ -4,7 +4,7 @@ import json
 import pipes
 
 from hokusai.lib.config import config
-from hokusai.lib.common import shout, returncode, k8s_uuid
+from hokusai.lib.common import shout, returncode, k8s_uuid, validate_env_var
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
@@ -37,19 +37,12 @@ class CommandRunner:
     image_name = f"{self.ecr.project_repo}{separator}{tag_or_digest}"
     return image_name
 
-  def _validate_env(self, kv):
-    ''' ensure kv is in KEY=VALUE form '''
-    if '=' not in s:
-      raise HokusaiError(
-        "Error: environment variables must be of the form 'KEY=VALUE'"
-      )
-
   def _append_env(self, container_spec, env):
     ''' append env to given container spec '''
     container_spec['env'] = []
-    for kv in env:
-      self._validate_env(kv)
-      split = kv.split('=', 1)
+    for var in env:
+      validate_env_var(var)
+      split = var.split('=', 1)
       container_spec['env'].append(
         {'name': split[0], 'value': split[1]}
       )
