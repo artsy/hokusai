@@ -32,7 +32,19 @@ class CommandRunner:
       "name": name,
       "image": image_name,
       "imagePullPolicy": "Always",
-      'envFrom': [{'configMapRef': {'name': "%s-environment" % config.project_name}}]
+      'envFrom': [
+        {
+          'configMapRef': {
+            'name': f'{config.project_name}-environment'
+          }
+        },
+        {
+          'secretRef': {
+            'name': f'{config.project_name}',
+            'optional': True
+          }
+        }
+      ]
     }
 
     run_tty = tty if tty is not None else config.run_tty
