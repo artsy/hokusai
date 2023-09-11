@@ -143,6 +143,17 @@ def pick_yes():
 def pick_no():
   return random.choice(["Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"])
 
+def user():
+  ''' obtain user name from environment '''
+  user = None
+  if os.environ.get('USER') is not None:
+    # The regex used for the validation of name is
+    # '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
+    user = re.sub(
+      "[^0-9a-z]+", "-", os.environ.get('USER').lower()
+    )
+  return user
+
 def validate_env_var(var):
   ''' raise if env var is NOT of the form KEY=VALUE '''
   if '=' not in var:

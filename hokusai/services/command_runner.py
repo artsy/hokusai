@@ -4,7 +4,7 @@ import json
 import pipes
 
 from hokusai.lib.config import config
-from hokusai.lib.common import shout, returncode, k8s_uuid, validate_env_var
+from hokusai.lib.common import shout, returncode, k8s_uuid, user, validate_env_var
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
@@ -19,19 +19,12 @@ class CommandRunner:
 
   def _name(self):
     ''' generate name for pod and container '''
-    user = None
-    if os.environ.get('USER') is not None:
-      # The regex used for the validation of name is
-      # '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
-      user = re.sub(
-        "[^0-9a-z]+", "-", os.environ.get('USER').lower()
-      )
     name = '-'.join(
       filter(
         None,
         [
           f"{config.project_name}-hokusai-run",
-          user,
+          user(),
           k8s_uuid()
         ]
       )
