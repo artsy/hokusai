@@ -4,6 +4,7 @@ import hokusai.services.command_runner
 
 from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
+from test.unit.test_services.fixtures.ecr import mock_ecr_class
 
 def describe_command_runner():
   def describe_init():
@@ -23,20 +24,12 @@ def describe_command_runner():
       assert spy.call_count == 1
   def describe_image_name():
     def describe_separator_is_at_sign():
-      def it_does_not_add_at_sign(mocker):
-        class mock_ECR:
-          def __init__(self):
-            self.project_repo = 'foo'
-            pass
-        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ECR
+      def it_does_not_add_at_sign(mocker, mock_ecr_class):
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
         assert runner._image_name('123') == 'foo:123'
     def describe_separator_is_colon():
-      def it_adds_at_sign(mocker):
-        class mock_ECR:
-          def __init__(self):
-            self.project_repo = 'foo'
-            pass
-        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ECR
+      def it_adds_at_sign(mocker, mock_ecr_class):
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
         assert runner._image_name('123:456') == 'foo@123:456'
