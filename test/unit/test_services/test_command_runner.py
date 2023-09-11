@@ -91,5 +91,26 @@ def describe_command_runner():
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
-      spec = runner._overrides_container('foocmd', (), 'footag')
+      spec = runner._overrides_container('foocmd', ('foo=bar',), 'footag')
+      assert spec == mock_spec['spec']['containers'][0]
+  def describe_overrrides_containers():
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+      runner = CommandRunner('staging')
+      spec = runner._overrrides_containers('foocmd', ('foo=bar',), 'footag')
+      assert spec == mock_spec['spec']['containers']
+  def describe_overrides_spec():
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+      runner = CommandRunner('staging')
+      spec = runner._overrides_spec('foocmd', ('fooconstraint=bar',), ('foo=bar',), 'footag')
+      assert spec == mock_spec['spec']
+  def describe_overrides():
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+      runner = CommandRunner('staging')
+      spec = runner._overrides('foocmd', ('fooconstraint=bar',), ('foo=bar',), 'footag')
       assert spec == mock_spec

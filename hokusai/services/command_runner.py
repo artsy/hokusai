@@ -102,7 +102,7 @@ class CommandRunner:
     container_spec = self._overrides_container(
       cmd, env, tag_or_digest
     )
-    spec = { 'containers': [container_spec] }
+    spec = [container_spec]
     return spec
 
   def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
@@ -111,15 +111,14 @@ class CommandRunner:
     containers_spec = self._overrrides_containers(
       cmd, env, tag_or_digest
     )
-    spec.update(containers_spec)
+    spec.update({'containers': containers_spec})
     spec = self._set_constraint(spec, constraint)
     return spec
 
   def _overrides(self, cmd, constraint, env, tag_or_digest):
     ''' generate overrides '''
-    overrides = { 'apiVersion': 'v1', 'spec': spec }
     spec = self._overrides_spec(cmd, constraint, env, tag_or_digest)
-    overrides.update(spec)
+    overrides = { 'apiVersion': 'v1', 'spec': spec }
     return overrides
 
   def _run_no_tty(self, cmd, image_name, overrides):

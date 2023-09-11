@@ -3,18 +3,26 @@ import pytest
 @pytest.fixture
 def mock_spec():
   return {
-    'args': ['foocmd'],
-    'name': 'hello-hokusai-run-jxu-abcde',
-    'image': 'foo:footag',
-    'imagePullPolicy': 'Always',
-    'env': [],
-    'envFrom':
-      [
+    'apiVersion': 'v1',
+    'spec': {
+      'containers': [
         {
-          'configMapRef': {'name': 'hello-environment'}
-        },
-        {
-          'secretRef': {'name': 'hello', 'optional': True}
+          'args': ['foocmd'],
+          'name': 'hello-hokusai-run-jxu-abcde',
+          'image': 'foo:footag',
+          'imagePullPolicy': 'Always',
+          'env': [{'name': 'foo', 'value': 'bar'}],
+          'envFrom':
+            [
+              {
+                'configMapRef': {'name': 'hello-environment'}
+              },
+              {
+                'secretRef': {'name': 'hello', 'optional': True}
+              }
+            ]
         }
-      ]
+      ],
+      'nodeSelector': {'fooconstraint': 'bar'}
+    }
   }
