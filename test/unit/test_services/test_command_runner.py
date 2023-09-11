@@ -24,6 +24,7 @@ def describe_command_runner():
       assert type(runner.ecr) == ECR
       assert runner.pod_name == 'hello-hokusai-run-foo-abcde'
       assert runner.container_name == 'hello-hokusai-run-foo-abcde'
+
   def describe_name():
     def it_returns_name(mocker, monkeypatch):
       monkeypatch.setenv('USER', 'foo')
@@ -32,17 +33,19 @@ def describe_command_runner():
       spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
       assert runner._name() == 'hello-hokusai-run-foo-abcde'
       assert spy.call_count == 1
+
   def describe_image_name():
-    def describe_separator_is_at_sign():
-      def it_does_not_add_at_sign(mocker, mock_ecr_class):
+    def describe_tag_has_no_colon():
+      def it_uses_colon_as_separator(mocker, mock_ecr_class):
         mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
         assert runner._image_name('123') == 'foo:123'
-    def describe_separator_is_colon():
-      def it_adds_at_sign(mocker, mock_ecr_class):
+    def describe_tag_has_colon():
+      def it_uses_at_sign_as_separator(mocker, mock_ecr_class):
         mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
         assert runner._image_name('123:456') == 'foo@123:456'
+
   def describe_set_env():
     def it_sets():
       runner = CommandRunner('staging')
@@ -77,6 +80,7 @@ def describe_command_runner():
           }
         ]
       }
+
   def describe_set_constraint():
     def it_sets():
       runner = CommandRunner('staging')
@@ -91,6 +95,7 @@ def describe_command_runner():
       with pytest.raises(HokusaiError):
         runner = CommandRunner('staging')
         runner._set_constraint({}, ('foo bar',))
+
   def describe_overrides_container():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
@@ -98,6 +103,7 @@ def describe_command_runner():
       runner = CommandRunner('staging')
       spec = runner._overrides_container('foocmd', ('foo=bar',), 'footag')
       assert spec == mock_spec['spec']['containers'][0]
+
   def describe_overrrides_containers():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
@@ -105,6 +111,7 @@ def describe_command_runner():
       runner = CommandRunner('staging')
       spec = runner._overrrides_containers('foocmd', ('foo=bar',), 'footag')
       assert spec == mock_spec['spec']['containers']
+
   def describe_overrides_spec():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
@@ -112,6 +119,7 @@ def describe_command_runner():
       runner = CommandRunner('staging')
       spec = runner._overrides_spec('foocmd', ('fooconstraint=bar',), ('foo=bar',), 'footag')
       assert spec == mock_spec['spec']
+
   def describe_overrides():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
@@ -119,6 +127,7 @@ def describe_command_runner():
       runner = CommandRunner('staging')
       spec = runner._overrides('foocmd', ('fooconstraint=bar',), ('foo=bar',), 'footag')
       assert spec == mock_spec
+
   def describe_run_no_tty():
     def it_runs(mocker, mock_ecr_class, mock_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foo')
@@ -135,6 +144,7 @@ def describe_command_runner():
           '--restart=Never --rm'
         )
       ])
+
   def describe_run_tty():
     def it_runs(mocker, mock_ecr_class, mock_tty_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foo')
@@ -152,6 +162,7 @@ def describe_command_runner():
           f'--rm'
         )
       ])
+
   def describe_run():
     def describe_tty():
       def it_runs(mocker, mock_ecr_class, mock_spec):
