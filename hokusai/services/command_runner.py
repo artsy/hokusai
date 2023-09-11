@@ -39,8 +39,8 @@ class CommandRunner:
     image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
     return image_name
 
-  def _append_env(self, container_spec, env):
-    ''' append env to given container spec '''
+  def _set_env(self, container_spec, env):
+    ''' set env field of given container spec '''
     spec = copy.deepcopy(container_spec)
     spec['env'] = []
     for var in env:
@@ -51,8 +51,8 @@ class CommandRunner:
       )
     return spec
 
-  def _append_envfrom(self, container_spec):
-    ''' append envFrom to given container spec '''
+  def _set_envfrom(self, container_spec):
+    ''' set envFrom field of given container spec '''
     spec = copy.deepcopy(container_spec)
     spec.update(
       {
@@ -96,8 +96,8 @@ class CommandRunner:
       'image': self._image_name(tag_or_digest),
       'imagePullPolicy': 'Always',
     }
-    spec = self._append_env(spec, env)
-    spec = self._append_envfrom(spec)
+    spec = self._set_env(spec, env)
+    spec = self._set_envfrom(spec)
     return spec
 
   def _overrrides_containers(self, cmd, env, tag_or_digest):

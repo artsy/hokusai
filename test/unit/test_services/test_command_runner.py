@@ -33,3 +33,13 @@ def describe_command_runner():
         mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
         assert runner._image_name('123:456') == 'foo@123:456'
+  def describe_set_env():
+    def it_sets():
+      runner = CommandRunner('staging')
+      spec = runner._set_env({}, ('foo=bar',))
+      assert spec == {'env': [{'name': 'foo', 'value': 'bar'}]}
+    def it_overwrites():
+      runner = CommandRunner('staging')
+      spec = {'env': [{'name': 'foo', 'value': 'bar'}]}
+      spec = runner._set_env(spec, ('bar=foo',))
+      assert spec == {'env': [{'name': 'bar', 'value': 'foo'}]}
