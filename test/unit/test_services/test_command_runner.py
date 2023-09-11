@@ -1,4 +1,6 @@
+import json
 import os
+import pipes
 import pytest
 
 import hokusai.services.command_runner
@@ -114,3 +116,19 @@ def describe_command_runner():
       runner = CommandRunner('staging')
       spec = runner._overrides('foocmd', ('fooconstraint=bar',), ('foo=bar',), 'footag')
       assert spec == mock_spec
+  def describe_run_no_tty():
+    def it_runs(mocker, mock_ecr_class, mock_spec, monkeypatch):
+      monkeypatch.setenv('USER', 'foo')
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+      mocker.patch('hokusai.services.command_runner.returncode', return_value=0)
+      runner = CommandRunner('staging')
+      spy = mocker.spy(runner.kctl, 'command')
+      runner._run_no_tty('foocmd', 'imagex', mock_spec)
+      spy.assert_has_calls([
+        mocker.call(
+          f'run hello-hokusai-run-foo-abcde --attach --image=imagex ' +
+          f'--overrides={pipes.quote(json.dumps(mock_spec))} ' +
+          '--restart=Never --rm'
+        )
+      ])
