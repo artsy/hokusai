@@ -11,17 +11,17 @@ def describe_user():
       assert user() == None
   def describe_user_set_in_env():
     def it_returns_what_is_set(monkeypatch):
-      monkeypatch.settenv('USER', 'foo')
+      monkeypatch.setenv('USER', 'foo')
       assert user() == 'foo'
-      monkeypatch.settenv('USER', '')
+      monkeypatch.setenv('USER', '')
       assert user() == ''
-    def it_replaces_upper_case_with_lower_case():
-      monkeypatch.settenv('USER', 'foo')
+    def it_replaces_upper_case_with_lower_case(monkeypatch):
+      monkeypatch.setenv('USER', 'foo')
       assert user() == 'foo'
-    def it_replaces_non_alpha_numeric_char_with_dash():
-      monkeypatch.settenv('USER', 'foo.bar')
+    def it_replaces_non_alpha_numeric_char_with_dash(monkeypatch):
+      monkeypatch.setenv('USER', 'foo.bar')
       assert user() == 'foo-bar'
-      monkeypatch.settenv('USER', 'foo_bar')
+      monkeypatch.setenv('USER', 'foo_bar')
       assert user() == 'foo-bar'
 
 def describe_validate_env_var():
