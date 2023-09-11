@@ -103,7 +103,7 @@ class CommandRunner:
       cmd, env, tag_or_digest
     )
     spec = { 'containers': [container_spec] }
-    return containers_spec
+    return spec
 
   def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
     ''' generate overrides['spec'] spec '''
