@@ -11,19 +11,21 @@ from test.unit.test_services.fixtures.command_runner import mock_spec
 
 def describe_command_runner():
   def describe_init():
-    def it_inits(monkeypatch):
+    def it_inits(mocker, monkeypatch):
       monkeypatch.setenv('USER', 'foo')
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
       assert runner.context == 'staging'
       assert type(runner.ecr) == ECR
-      assert '-hokusai-run-foo' in runner.pod_name
-      assert '-hokusai-run-foo' in runner.container_name
+      assert runner.pod_name == 'hello-hokusai-run-foo-abcde'
+      assert runner.container_name == 'hello-hokusai-run-foo-abcde'
   def describe_name():
     def it_returns_name(mocker, monkeypatch):
       monkeypatch.setenv('USER', 'foo')
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
       spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
-      assert 'hello-hokusai-run-foo-' in runner._name()
+      assert runner._name() == 'hello-hokusai-run-foo-abcde'
       assert spy.call_count == 1
   def describe_image_name():
     def describe_separator_is_at_sign():
