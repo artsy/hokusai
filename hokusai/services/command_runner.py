@@ -126,12 +126,17 @@ class CommandRunner:
 
   def _run_no_tty(self, cmd, image_name, overrides):
     ''' run command without tty '''
+    args = ' '.join(
+      "run",
+      self.pod_name,
+      "--attach",
+      f"--image={image_name}",
+      f"--overrides={pipes.quote(json.dumps(overrides))}",
+      "--restart=Never",
+      "--rm"
+    )
     return returncode(
-      self.kctl.command(
-        f"run {self.pod_name} --attach --image={image_name} " +
-        f"--overrides={pipes.quote(json.dumps(overrides))} " +
-        f"--restart=Never --rm"
-      )
+      self.kctl.command(args)
     )
 
   def _run_tty(self, cmd, image_name, overrides):
@@ -141,11 +146,18 @@ class CommandRunner:
       "stdinOnce": True,
       "tty": True
     })
+    args = ' '.join(
+      "run",
+      self.pod_name,
+      "-t",
+      "-i",
+      f"--image={image_name}",
+      "--restart=Never",
+      f"--overrides={pipes.quote(json.dumps(overrides))}",
+      "--rm"
+    )
     shout(
-      self.kctl.command(
-        f"run {self.pod_name} -t -i --image={image_name} --restart=Never " +
-        f"--overrides={pipes.quote(json.dumps(overrides))} --rm"
-      ),
+      self.kctl.command(args),
       print_output=True
     )
 
