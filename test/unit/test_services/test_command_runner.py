@@ -152,3 +152,36 @@ def describe_command_runner():
           f'--rm'
         )
       ])
+  def describe_run():
+    def describe_tty():
+      def it_runs(mocker, mock_ecr_class, mock_spec):
+        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+        runner = CommandRunner('staging')
+        mocker.patch.object(runner, '_run_tty')
+        spy = mocker.spy(runner, '_run_tty')
+        runner.run('footag', 'foocmd', tty=True, env=('foo=bar',), constraint=('fooconstraint=bar',))
+        assert spy.call_count == 1
+        spy.assert_has_calls([
+          mocker.call(
+            'foocmd',
+            'foo:footag',
+            mock_spec
+          )
+        ])
+    def describe_no_tty():
+      def it_runs(mocker, mock_ecr_class, mock_spec):
+        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+        runner = CommandRunner('staging')
+        mocker.patch.object(runner, '_run_no_tty')
+        spy = mocker.spy(runner, '_run_no_tty')
+        runner.run('footag', 'foocmd', tty=False, env=('foo=bar',), constraint=('fooconstraint=bar',))
+        assert spy.call_count == 1
+        spy.assert_has_calls([
+          mocker.call(
+            'foocmd',
+            'foo:footag',
+            mock_spec
+          )
+        ])
