@@ -17,7 +17,7 @@ class CommandRunner:
     self.kctl = Kubectl(self.context, namespace=namespace)
     self.ecr = ECR()
     self.pod_name = self._name()
-    self.container_name = self._name()
+    self.container_name = self.pod_name
 
   def _name(self):
     ''' generate name for pod and container '''
