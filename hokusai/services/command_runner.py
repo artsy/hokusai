@@ -3,6 +3,8 @@ import json
 import pipes
 import re
 
+import pdb
+
 from hokusai.lib.common import (
   k8s_uuid, returncode, shout, user, validate_key_value
 )
@@ -165,7 +167,7 @@ class CommandRunner:
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     ''' run command '''
     run_tty = tty if tty is not None else config.run_tty
-    overrides = self._overrrides(
+    overrides = self._overrides(
       cmd, constraint, env, tag_or_digest
     )
     image_name = self._image_name(tag_or_digest)
