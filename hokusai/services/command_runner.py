@@ -4,7 +4,7 @@ import pipes
 import re
 
 from hokusai.lib.common import (
-  shout, returncode, k8s_uuid, user, validate_env_var
+  k8s_uuid, returncode, shout, user, validate_env_var
 )
 from hokusai.lib.config import config
 from hokusai.lib.exceptions import HokusaiError
