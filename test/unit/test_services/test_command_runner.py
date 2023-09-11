@@ -7,6 +7,7 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
 from test.unit.test_services.fixtures.ecr import mock_ecr_class
+from test.unit.test_services.fixtures.command_runner import mock_spec
 
 def describe_command_runner():
   def describe_init():
@@ -83,3 +84,10 @@ def describe_command_runner():
       with pytest.raises(HokusaiError):
         runner = CommandRunner('staging')
         runner._set_constraint({}, ('foo bar',))
+  def describe_overrides_container():
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+      runner = CommandRunner('staging')
+      spec = runner._overrides_container('foocmd', (), 'footag')
+      assert spec == mock_spec
