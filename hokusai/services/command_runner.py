@@ -1,5 +1,4 @@
 import copy
-import os
 import re
 import json
 import pipes
