@@ -101,11 +101,10 @@ class CommandRunner:
 
   def _overrrides_containers(self, cmd, env, tag_or_digest):
     ''' generate overrides['spec']['containers'] spec '''
-    containers_spec = {}
     container_spec = self._overrides_container(
       cmd, env, tag_or_digest
     )
-    containers_spec = { "containers": [container_spec] }
+    spec = { "containers": [container_spec] }
     return containers_spec
 
   def _overrides_spec(self, cmd, constraints, env, tag_or_digest):
