@@ -52,7 +52,7 @@ class CommandRunner:
     return spec
 
   def _append_envfrom(self, container_spec):
-    ''' append envFrrom to given container spec '''
+    ''' append envFrom to given container spec '''
     spec = copy.deepcopy(container_spec)
     spec.update(
       {
