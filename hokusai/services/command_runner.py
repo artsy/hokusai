@@ -52,7 +52,8 @@ class CommandRunner:
 
   def _append_envfrom(self, container_spec):
     ''' append envFrrom to given container spec '''
-    container_spec = container_spec.update(
+    spec = copy.deepcopy(container_spec)
+    spec.update(
       {
         'envFrom': [
           {
@@ -69,6 +70,7 @@ class CommandRunner:
         ]
       }
     )
+    return spec
 
   def _append_constraints(self, containers_spec, constraint):
     ''' append constraints to given containers spec '''
