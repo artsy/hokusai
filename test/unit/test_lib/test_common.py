@@ -1,6 +1,8 @@
 import os
+import pytest
 
-from hokusai.lib.common import user
+from hokusai.lib.common import user, validate_env_var
+from hokusai.lib.exceptions import HokusaiError
 
 def describe_user():
   def describe_user_not_set_in_env():
@@ -21,3 +23,12 @@ def describe_user():
       assert user() == 'foo-bar'
       os.environ['USER'] = 'foo_bar'
       assert user() == 'foo-bar'
+
+def describe_validate_env_var():
+  def describe_form_good():
+    def it_does_not_error():
+      validate_env_var('foo=bar')
+  def describe_form_bad():
+    def it_errors():
+      with pytest.raises(HokusaiError):
+        validate_env_var('foobar')
