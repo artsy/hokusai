@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from hokusai.lib.common import user, validate_env_var
+from hokusai.lib.common import user, validate_key_value
 from hokusai.lib.exceptions import HokusaiError
 
 def describe_user():
@@ -24,11 +24,11 @@ def describe_user():
       monkeypatch.setenv('USER', 'foo_bar')
       assert user() == 'foo-bar'
 
-def describe_validate_env_var():
+def describe_validate_key_value():
   def describe_form_good():
     def it_does_not_error():
-      validate_env_var('foo=bar')
+      validate_key_value('foo=bar')
   def describe_form_bad():
     def it_errors():
       with pytest.raises(HokusaiError):
-        validate_env_var('foobar')
+        validate_key_value('foobar')

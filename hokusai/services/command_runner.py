@@ -4,7 +4,7 @@ import pipes
 import re
 
 from hokusai.lib.common import (
-  k8s_uuid, returncode, shout, user, validate_env_var
+  k8s_uuid, returncode, shout, user, validate_key_value
 )
 from hokusai.lib.config import config
 from hokusai.lib.exceptions import HokusaiError
@@ -44,7 +44,7 @@ class CommandRunner:
     spec = copy.deepcopy(container_spec)
     spec['env'] = []
     for var in env:
-      validate_env_var(var)
+      validate_key_value(var)
       split = var.split('=', 1)
       spec['env'].append(
         {'name': split[0], 'value': split[1]}
@@ -80,10 +80,7 @@ class CommandRunner:
     if constraint:
       spec['nodeSelector'] = {}
       for label in constraint:
-        if '=' not in label:
-          raise HokusaiError(
-            "Error: Node selectors must of the form 'key=value'"
-          )
+        validate_key_value(label)
         split = label.split('=', 1)
         spec['nodeSelector'][split[0]] = split[1]
     return spec

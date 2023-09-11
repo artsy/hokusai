@@ -1,7 +1,9 @@
 import os
+import pytest
 
 import hokusai.services.command_runner
 
+from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
 from test.unit.test_services.fixtures.ecr import mock_ecr_class
@@ -43,6 +45,11 @@ def describe_command_runner():
       spec = {'env': [{'name': 'foo', 'value': 'bar'}]}
       spec = runner._set_env(spec, ('bar=foo',))
       assert spec == {'env': [{'name': 'bar', 'value': 'foo'}]}
+    def it_raises_on_bad_form():
+      with pytest.raises(HokusaiError):
+        runner = CommandRunner('staging')
+        runner._set_env({}, ('foo bar',))
+
   def describe_set_envfrom():
     def it_sets():
       runner = CommandRunner('staging')
@@ -72,3 +79,7 @@ def describe_command_runner():
       spec = {'nodeSelector': {'foo': 'bar'}}
       spec = runner._set_constraint(spec, ('bar=foo',))
       assert spec == {'nodeSelector': {'bar': 'foo'}}
+    def it_raises_on_bad_form():
+      with pytest.raises(HokusaiError):
+        runner = CommandRunner('staging')
+        runner._set_constraint({}, ('foo bar',))

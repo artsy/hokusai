@@ -154,9 +154,9 @@ def user():
     )
   return user
 
-def validate_env_var(var):
-  ''' raise if env var is NOT of the form KEY=VALUE '''
-  if '=' not in var:
+def validate_key_value(key_value):
+  ''' raise if key_value is NOT of the form KEY=VALUE '''
+  if '=' not in key_value:
     raise HokusaiError(
-      "Error: environment variables must be of the form 'KEY=VALUE'"
+      "Error: key/value pair must be of the form 'KEY=VALUE'"
     )
