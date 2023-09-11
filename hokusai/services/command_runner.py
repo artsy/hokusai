@@ -73,8 +73,8 @@ class CommandRunner:
     )
     return spec
 
-  def _append_constraint(self, containers_spec, constraint):
-    ''' append node constraint to given containers spec '''
+  def _set_constraint(self, containers_spec, constraint):
+    ''' set nodeSelector field of given containers spec '''
     spec = copy.deepcopy(containers_spec)
     constraint = constraint or config.run_constraints
     if constraint:
@@ -115,7 +115,7 @@ class CommandRunner:
       cmd, env, tag_or_digest
     )
     spec.update(containers_spec)
-    spec = self._append_constraint(spec, constraint)
+    spec = self._set_constraint(spec, constraint)
     return spec
 
   def _overrides(self, cmd, constraint, env, tag_or_digest):

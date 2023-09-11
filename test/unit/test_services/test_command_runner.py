@@ -62,13 +62,13 @@ def describe_command_runner():
           }
         ]
       }
-  def describe_append_constraint():
+  def describe_set_constraint():
     def it_sets():
       runner = CommandRunner('staging')
-      spec = runner._append_constraint({}, ('foo=bar',))
+      spec = runner._set_constraint({}, ('foo=bar',))
       assert spec == {'nodeSelector': {'foo': 'bar'}}
     def it_overwrites():
       runner = CommandRunner('staging')
       spec = {'nodeSelector': {'foo': 'bar'}}
-      spec = runner._append_constraint(spec, ('bar=foo',))
+      spec = runner._set_constraint(spec, ('bar=foo',))
       assert spec == {'nodeSelector': {'bar': 'foo'}}
