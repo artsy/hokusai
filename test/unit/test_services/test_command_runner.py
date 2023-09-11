@@ -9,7 +9,10 @@ from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
 from test.unit.test_services.fixtures.ecr import mock_ecr_class
-from test.unit.test_services.fixtures.command_runner import mock_spec
+from test.unit.test_services.fixtures.command_runner import (
+  mock_spec,
+  mock_tty_spec
+)
 
 def describe_command_runner():
   def describe_init():
@@ -130,5 +133,22 @@ def describe_command_runner():
           f'run hello-hokusai-run-foo-abcde --attach --image=imagex ' +
           f'--overrides={pipes.quote(json.dumps(mock_spec))} ' +
           '--restart=Never --rm'
+        )
+      ])
+  def describe_run_tty():
+    def it_runs(mocker, mock_ecr_class, mock_tty_spec, monkeypatch):
+      monkeypatch.setenv('USER', 'foo')
+      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+      mocker.patch('hokusai.services.command_runner.shout', return_value=0)
+      runner = CommandRunner('staging')
+      spy = mocker.spy(runner.kctl, 'command')
+      runner._run_tty('foocmd', 'imagex', mock_tty_spec)
+      spy.assert_has_calls([
+        mocker.call(
+          f'run hello-hokusai-run-foo-abcde -t -i --image=imagex ' +
+          f'--restart=Never ' +
+          f'--overrides={pipes.quote(json.dumps(mock_tty_spec))} ' +
+          f'--rm'
         )
       ])
