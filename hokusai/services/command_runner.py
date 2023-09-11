@@ -72,19 +72,20 @@ class CommandRunner:
     )
     return spec
 
-  def _append_constraints(self, containers_spec, constraint):
-    ''' append constraints to given containers spec '''
-    constraints = constraint or config.run_constraints
+  def _append_constraints(self, containers_spec, constraints):
+    ''' append node constraints to given containers spec '''
+    spec = copy.deepcopy(containers_spec)
+    constraints = constraints or config.run_constraints
     if constraints:
-      containers_spec['nodeSelector'] = {}
+      spec['nodeSelector'] = {}
       for label in constraints:
         if '=' not in label:
           raise HokusaiError(
             "Error: Node selectors must of the form 'key=value'"
           )
         split = label.split('=', 1)
-        containters_spec['nodeSelector'][split[0]] = split[1]
-    return containers_spec
+        spec['nodeSelector'][split[0]] = split[1]
+    return spec
 
   def _overrides_container(self, cmd, env, tag_or_digest):
     ''' generate overrides['spec']['containers'][0] spec '''
@@ -107,14 +108,14 @@ class CommandRunner:
     containers_spec = { "containers": [container_spec] }
     return containers_spec
 
-  def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
+  def _overrides_spec(self, cmd, constraints, env, tag_or_digest):
     ''' generate overrides['spec'] spec '''
     spec = {}
     containers_spec = self._overrrides_containers(
       cmd, env, tag_or_digest
     )
     spec.update(containers_spec)
-    spec = self._append_constraints(spec, constraint)
+    spec = self._append_constraints(spec, constraints)
     return spec
 
   def _overrides(self, cmd, constraint, env, tag_or_digest):
