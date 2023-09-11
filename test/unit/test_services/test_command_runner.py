@@ -43,3 +43,22 @@ def describe_command_runner():
       spec = {'env': [{'name': 'foo', 'value': 'bar'}]}
       spec = runner._set_env(spec, ('bar=foo',))
       assert spec == {'env': [{'name': 'bar', 'value': 'foo'}]}
+  def describe_set_envfrom():
+    def it_sets():
+      runner = CommandRunner('staging')
+      spec = runner._set_envfrom({})
+      assert spec == {
+        'envFrom': [
+          {
+            'configMapRef': {
+              'name': 'hello-environment'
+            }
+          },
+          {
+            'secretRef': {
+              'name': 'hello',
+              'optional': True
+            }
+          }
+        ]
+      }
