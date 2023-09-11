@@ -21,3 +21,22 @@ def describe_command_runner():
       spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
       assert 'hello-hokusai-run-foo-' in runner._name()
       assert spy.call_count == 1
+  def describe_image_name():
+    def describe_separator_is_at_sign():
+      def it_does_not_add_at_sign(mocker):
+        class mock_ECR:
+          def __init__(self):
+            self.project_repo = 'foo'
+            pass
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ECR
+        runner = CommandRunner('staging')
+        assert runner._image_name('123') == 'foo:123'
+    def describe_separator_is_colon():
+      def it_adds_at_sign(mocker):
+        class mock_ECR:
+          def __init__(self):
+            self.project_repo = 'foo'
+            pass
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ECR
+        runner = CommandRunner('staging')
+        assert runner._image_name('123:456') == 'foo@123:456'
