@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import json
@@ -39,13 +40,15 @@ class CommandRunner:
 
   def _append_env(self, container_spec, env):
     ''' append env to given container spec '''
-    container_spec['env'] = []
+    spec = copy.deepcopy(container_spec)
+    spec['env'] = []
     for var in env:
       validate_env_var(var)
       split = var.split('=', 1)
-      container_spec['env'].append(
+      spec['env'].append(
         {'name': split[0], 'value': split[1]}
       )
+    return spec
 
   def _append_envfrom(self, container_spec):
     ''' append envFrrom to given container spec '''
@@ -83,15 +86,15 @@ class CommandRunner:
 
   def _overrides_container(self, cmd, env, tag_or_digest):
     ''' generate overrides['spec']['containers'][0] spec '''
-    container_spec = {
+    spec = {
       "args": cmd.split(' '),
       "name": self.container_name,
       "image": self._image_name(tag_or_digest),
       "imagePullPolicy": "Always",
     }
-    container = self._append_env(container_spec, env)
-    container = self._append_envfrom(container_spec)
-    return container_spec
+    spec = self._append_env(spec, env)
+    spec = self._append_envfrom(spec)
+    return spec
 
   def _overrrides_containers(self, cmd, env, tag_or_digest):
     ''' generate overrides['spec']['containers'] spec '''
