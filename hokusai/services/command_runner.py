@@ -124,13 +124,15 @@ class CommandRunner:
   def _run_no_tty(self, cmd, image_name, overrides):
     ''' run command without tty '''
     args = ' '.join(
-      'run',
-      self.pod_name,
-      '--attach',
-      f'--image={image_name}',
-      f'--overrides={pipes.quote(json.dumps(overrides))}',
-      '--restart=Never',
-      '--rm'
+      [
+        'run',
+        self.pod_name,
+        '--attach',
+        f'--image={image_name}',
+        f'--overrides={pipes.quote(json.dumps(overrides))}',
+        '--restart=Never',
+        '--rm'
+      ]
     )
     return returncode(
       self.kctl.command(args)
