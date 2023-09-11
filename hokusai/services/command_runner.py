@@ -1,15 +1,15 @@
 import copy
-import re
 import json
 import pipes
+import re
 
-from hokusai.lib.config import config
 from hokusai.lib.common import (
   shout, returncode, k8s_uuid, user, validate_env_var
 )
+from hokusai.lib.config import config
+from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
-from hokusai.lib.exceptions import HokusaiError
 
 class CommandRunner:
   def __init__(self, context, namespace=None):
