@@ -6,22 +6,22 @@ from hokusai.lib.exceptions import HokusaiError
 
 def describe_user():
   def describe_user_not_set_in_env():
-    def it_returns_none():
-      del os.environ['USER']
+    def it_returns_none(monkeypatch):
+      monkeypatch.delenv('USER')
       assert user() == None
   def describe_user_set_in_env():
-    def it_returns_what_is_set():
-      os.environ['USER'] = 'foo'
+    def it_returns_what_is_set(monkeypatch):
+      monkeypatch.settenv('USER', 'foo')
       assert user() == 'foo'
-      os.environ['USER'] = ''
+      monkeypatch.settenv('USER', '')
       assert user() == ''
     def it_replaces_upper_case_with_lower_case():
-      os.environ['USER'] = 'FOO'
+      monkeypatch.settenv('USER', 'foo')
       assert user() == 'foo'
     def it_replaces_non_alpha_numeric_char_with_dash():
-      os.environ['USER'] = 'foo.bar'
+      monkeypatch.settenv('USER', 'foo.bar')
       assert user() == 'foo-bar'
-      os.environ['USER'] = 'foo_bar'
+      monkeypatch.settenv('USER', 'foo_bar')
       assert user() == 'foo-bar'
 
 def describe_validate_env_var():
