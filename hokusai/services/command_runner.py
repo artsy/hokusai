@@ -146,14 +146,16 @@ class CommandRunner:
       'tty': True
     })
     args = ' '.join(
-      'run',
-      self.pod_name,
-      '-t',
-      '-i',
-      f'--image={image_name}',
-      '--restart=Never',
-      f'--overrides={pipes.quote(json.dumps(overrides))}',
-      '--rm'
+      [
+        'run',
+        self.pod_name,
+        '-t',
+        '-i',
+        f'--image={image_name}',
+        '--restart=Never',
+        f'--overrides={pipes.quote(json.dumps(overrides))}',
+        '--rm'
+      ]
     )
     shout(
       self.kctl.command(args),
