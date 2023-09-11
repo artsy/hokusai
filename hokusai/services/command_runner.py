@@ -19,16 +19,23 @@ class CommandRunner:
 
   def _name(self):
     ''' generate name for pod and container '''
+    user = None
     if os.environ.get('USER') is not None:
       # The regex used for the validation of name is
       # '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
       user = re.sub(
         "[^0-9a-z]+", "-", os.environ.get('USER').lower()
       )
-      uuid = "{user}-{k8s_uuid()}"
-    else:
-      uuid = k8s_uuid()
-    name = "{config.project_name}-hokusai-run-{uuid}"
+    name = '-'.join(
+      filter(
+        None,
+        [
+          f"{config.project_name}-hokusai-run",
+          user,
+          k8s_uuid()
+        ]
+      )
+    )
     return name
 
   def _image_name(self, tag_or_digest):
