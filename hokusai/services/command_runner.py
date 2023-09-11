@@ -23,7 +23,7 @@ class CommandRunner:
       filter(
         None,
         [
-          f"{config.project_name}-hokusai-run",
+          f'{config.project_name}-hokusai-run',
           user(),
           k8s_uuid()
         ]
@@ -33,8 +33,8 @@ class CommandRunner:
 
   def _image_name(self, tag_or_digest):
     ''' generate docker image name '''
-    separator = "@" if ":" in tag_or_digest else ":"
-    image_name = f"{self.ecr.project_repo}{separator}{tag_or_digest}"
+    separator = '@' if ':' in tag_or_digest else ':'
+    image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
     return image_name
 
   def _append_env(self, container_spec, env):
@@ -89,10 +89,10 @@ class CommandRunner:
   def _overrides_container(self, cmd, env, tag_or_digest):
     ''' generate overrides['spec']['containers'][0] spec '''
     spec = {
-      "args": cmd.split(' '),
-      "name": self.container_name,
-      "image": self._image_name(tag_or_digest),
-      "imagePullPolicy": "Always",
+      'args': cmd.split(' '),
+      'name': self.container_name,
+      'image': self._image_name(tag_or_digest),
+      'imagePullPolicy': 'Always',
     }
     spec = self._append_env(spec, env)
     spec = self._append_envfrom(spec)
@@ -103,7 +103,7 @@ class CommandRunner:
     container_spec = self._overrides_container(
       cmd, env, tag_or_digest
     )
-    spec = { "containers": [container_spec] }
+    spec = { 'containers': [container_spec] }
     return containers_spec
 
   def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
@@ -118,7 +118,7 @@ class CommandRunner:
 
   def _overrides(self, cmd, constraint, env, tag_or_digest):
     ''' generate overrides '''
-    overrides = { "apiVersion": "v1", "spec": spec }
+    overrides = { 'apiVersion': 'v1', 'spec': spec }
     spec = self._overrides_spec(cmd, constraint, env, tag_or_digest)
     overrides.update(spec)
     return overrides
@@ -126,13 +126,13 @@ class CommandRunner:
   def _run_no_tty(self, cmd, image_name, overrides):
     ''' run command without tty '''
     args = ' '.join(
-      "run",
+      'run',
       self.pod_name,
-      "--attach",
-      f"--image={image_name}",
-      f"--overrides={pipes.quote(json.dumps(overrides))}",
-      "--restart=Never",
-      "--rm"
+      '--attach',
+      f'--image={image_name}',
+      f'--overrides={pipes.quote(json.dumps(overrides))}',
+      '--restart=Never',
+      '--rm'
     )
     return returncode(
       self.kctl.command(args)
@@ -141,19 +141,19 @@ class CommandRunner:
   def _run_tty(self, cmd, image_name, overrides):
     ''' run command with tty '''
     overrides['spec']['containers'][0].update({
-      "stdin": True,
-      "stdinOnce": True,
-      "tty": True
+      'stdin': True,
+      'stdinOnce': True,
+      'tty': True
     })
     args = ' '.join(
-      "run",
+      'run',
       self.pod_name,
-      "-t",
-      "-i",
-      f"--image={image_name}",
-      "--restart=Never",
-      f"--overrides={pipes.quote(json.dumps(overrides))}",
-      "--rm"
+      '-t',
+      '-i',
+      f'--image={image_name}',
+      '--restart=Never',
+      f'--overrides={pipes.quote(json.dumps(overrides))}',
+      '--rm'
     )
     shout(
       self.kctl.command(args),
