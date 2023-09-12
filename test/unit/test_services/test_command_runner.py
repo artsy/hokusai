@@ -26,13 +26,22 @@ def describe_command_runner():
       assert runner.container_name == 'hello-hokusai-run-foo-abcde'
 
   def describe_name():
-    def it_returns_name(mocker, monkeypatch):
-      monkeypatch.setenv('USER', 'foo')
-      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
-      runner = CommandRunner('staging')
-      spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
-      assert runner._name() == 'hello-hokusai-run-foo-abcde'
-      assert spy.call_count == 1
+    def describe_user_set_in_env():
+      def it_returns_name(mocker, monkeypatch):
+        monkeypatch.setenv('USER', 'foo')
+        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+        runner = CommandRunner('staging')
+        spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
+        assert runner._name() == 'hello-hokusai-run-foo-abcde'
+        assert spy.call_count == 1
+    def describe_user_unset_in_env():
+      def it_returns_name(mocker, monkeypatch):
+        monkeypatch.delenv('USER')
+        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+        runner = CommandRunner('staging')
+        spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
+        assert runner._name() == 'hello-hokusai-run-abcde'
+        assert spy.call_count == 1
 
   def describe_image_name():
     def describe_tag_has_no_colon():
