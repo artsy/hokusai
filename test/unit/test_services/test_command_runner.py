@@ -106,7 +106,7 @@ def describe_command_runner():
         runner._set_constraint({}, ('foo bar',))
 
   def describe_overrides_container():
-    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
@@ -115,7 +115,7 @@ def describe_command_runner():
       assert spec == mock_spec['spec']['containers'][0]
 
   def describe_overrrides_containers():
-    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
@@ -124,7 +124,7 @@ def describe_command_runner():
       assert spec == mock_spec['spec']['containers']
 
   def describe_overrides_spec():
-    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
@@ -133,7 +133,7 @@ def describe_command_runner():
       assert spec == mock_spec['spec']
 
   def describe_overrides():
-    def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+    def it_generates_spec(mocker, mock_ecr_class, mock_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
@@ -178,7 +178,8 @@ def describe_command_runner():
 
   def describe_run():
     def describe_tty():
-      def it_runs(mocker, mock_ecr_class, mock_spec):
+      def it_runs(mocker, mock_ecr_class, mock_spec, monkeypatch):
+        monkeypatch.setenv('USER', 'foouser')
         mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
         mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
@@ -194,7 +195,8 @@ def describe_command_runner():
           )
         ])
     def describe_no_tty():
-      def it_runs(mocker, mock_ecr_class, mock_spec):
+      def it_runs(mocker, mock_ecr_class, mock_spec, monkeypatch):
+        monkeypatch.setenv('USER', 'foouser')
         mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
         mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
