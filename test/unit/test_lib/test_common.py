@@ -16,7 +16,7 @@ def describe_user():
       monkeypatch.setenv('USER', '')
       assert user() == ''
     def it_replaces_upper_case_with_lower_case(monkeypatch):
-      monkeypatch.setenv('USER', 'foo')
+      monkeypatch.setenv('USER', 'FOO')
       assert user() == 'foo'
     def it_replaces_non_alpha_numeric_char_with_dash(monkeypatch):
       monkeypatch.setenv('USER', 'foo.bar')
