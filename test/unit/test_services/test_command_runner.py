@@ -36,7 +36,7 @@ def describe_command_runner():
         assert spy.call_count == 1
     def describe_user_unset_in_env():
       def it_returns_name(mocker, monkeypatch):
-        monkeypatch.delenv('USER')
+        monkeypatch.delenv('USER', raising=False)
         mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
         runner = CommandRunner('staging')
         spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')

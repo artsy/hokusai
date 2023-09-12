@@ -7,7 +7,7 @@ from hokusai.lib.exceptions import HokusaiError
 def describe_user():
   def describe_user_not_set_in_env():
     def it_returns_none(monkeypatch):
-      monkeypatch.delenv('USER')
+      monkeypatch.delenv('USER', raising=False)
       assert user() == None
   def describe_user_set_in_env():
     def it_returns_what_is_set(monkeypatch):
