@@ -17,22 +17,22 @@ from test.unit.test_services.fixtures.command_runner import (
 def describe_command_runner():
   def describe_init():
     def it_inits(mocker, monkeypatch):
-      monkeypatch.setenv('USER', 'foo')
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
       assert runner.context == 'staging'
       assert type(runner.ecr) == ECR
-      assert runner.pod_name == 'hello-hokusai-run-foo-abcde'
-      assert runner.container_name == 'hello-hokusai-run-foo-abcde'
+      assert runner.pod_name == 'hello-hokusai-run-foouser-abcde'
+      assert runner.container_name == 'hello-hokusai-run-foouser-abcde'
 
   def describe_name():
     def describe_user_set_in_env():
       def it_returns_name(mocker, monkeypatch):
-        monkeypatch.setenv('USER', 'foo')
+        monkeypatch.setenv('USER', 'foouser')
         mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
         runner = CommandRunner('staging')
         spy = mocker.spy(hokusai.services.command_runner, 'k8s_uuid')
-        assert runner._name() == 'hello-hokusai-run-foo-abcde'
+        assert runner._name() == 'hello-hokusai-run-foouser-abcde'
         assert spy.call_count == 1
     def describe_user_unset_in_env():
       def it_returns_name(mocker, monkeypatch):
@@ -107,6 +107,7 @@ def describe_command_runner():
 
   def describe_overrides_container():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
@@ -115,6 +116,7 @@ def describe_command_runner():
 
   def describe_overrrides_containers():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
@@ -123,6 +125,7 @@ def describe_command_runner():
 
   def describe_overrides_spec():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
@@ -131,6 +134,7 @@ def describe_command_runner():
 
   def describe_overrides():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec):
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       runner = CommandRunner('staging')
@@ -139,7 +143,7 @@ def describe_command_runner():
 
   def describe_run_no_tty():
     def it_runs(mocker, mock_ecr_class, mock_spec, monkeypatch):
-      monkeypatch.setenv('USER', 'foo')
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.returncode', return_value=0)
@@ -148,7 +152,7 @@ def describe_command_runner():
       runner._run_no_tty('foocmd', 'imagex', mock_spec)
       spy.assert_has_calls([
         mocker.call(
-          f'run hello-hokusai-run-foo-abcde --attach --image=imagex ' +
+          f'run hello-hokusai-run-foouser-abcde --attach --image=imagex ' +
           f'--overrides={pipes.quote(json.dumps(mock_spec))} ' +
           '--restart=Never --rm'
         )
@@ -156,7 +160,7 @@ def describe_command_runner():
 
   def describe_run_tty():
     def it_runs(mocker, mock_ecr_class, mock_tty_spec, monkeypatch):
-      monkeypatch.setenv('USER', 'foo')
+      monkeypatch.setenv('USER', 'foouser')
       mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
       mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
       mocker.patch('hokusai.services.command_runner.shout', return_value=0)
@@ -165,7 +169,7 @@ def describe_command_runner():
       runner._run_tty('foocmd', 'imagex', mock_tty_spec)
       spy.assert_has_calls([
         mocker.call(
-          f'run hello-hokusai-run-foo-abcde -t -i --image=imagex ' +
+          f'run hello-hokusai-run-foouser-abcde -t -i --image=imagex ' +
           f'--restart=Never ' +
           f'--overrides={pipes.quote(json.dumps(mock_tty_spec))} ' +
           f'--rm'

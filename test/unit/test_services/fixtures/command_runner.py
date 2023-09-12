@@ -8,7 +8,7 @@ def mock_spec():
       'containers': [
         {
           'args': ['foocmd'],
-          'name': 'hello-hokusai-run-jxu-abcde',
+          'name': 'hello-hokusai-run-foouser-abcde',
           'image': 'foo:footag',
           'imagePullPolicy': 'Always',
           'env': [{'name': 'foo', 'value': 'bar'}],
@@ -35,7 +35,7 @@ def mock_tty_spec():
       'containers': [
         {
           'args': ['foocmd'],
-          'name': 'hello-hokusai-run-jxu-abcde',
+          'name': 'hello-hokusai-run-foouser-abcde',
           'image': 'foo:footag',
           'imagePullPolicy': 'Always',
           'env': [{'name': 'foo', 'value': 'bar'}],
