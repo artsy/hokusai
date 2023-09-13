@@ -99,21 +99,13 @@ class CommandRunner:
     spec = self._set_envfrom(spec)
     return spec
 
-  def _overrides_containers(self, cmd, env, tag_or_digest):
-    ''' generate overrides['spec']['containers'] spec '''
-    container_spec = self._overrides_container(
-      cmd, env, tag_or_digest
-    )
-    spec = [container_spec]
-    return spec
-
   def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
     ''' generate overrides['spec'] spec '''
     spec = {}
-    containers_spec = self._overrides_containers(
+    container_spec = self._overrides_container(
       cmd, env, tag_or_digest
     )
-    spec.update({'containers': containers_spec})
+    spec.update({'containers': [container_spec]})
     spec = self._set_constraint(spec, constraint)
     return spec
 

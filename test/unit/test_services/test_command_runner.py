@@ -114,15 +114,6 @@ def describe_command_runner():
       spec = runner._overrides_container('foocmd', ('foo=bar',), 'footag')
       assert spec == mock_spec['spec']['containers'][0]
 
-  def describe_overrides_containers():
-    def it_generates_spec(mocker, mock_ecr_class, mock_spec, monkeypatch):
-      monkeypatch.setenv('USER', 'foouser')
-      mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
-      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
-      runner = CommandRunner('staging')
-      spec = runner._overrides_containers('foocmd', ('foo=bar',), 'footag')
-      assert spec == mock_spec['spec']['containers']
-
   def describe_overrides_spec():
     def it_generates_spec(mocker, mock_ecr_class, mock_spec, monkeypatch):
       monkeypatch.setenv('USER', 'foouser')
