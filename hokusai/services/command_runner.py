@@ -3,8 +3,6 @@ import json
 import pipes
 import re
 
-import pdb
-
 from hokusai.lib.common import (
   k8s_uuid, returncode, shout, user, validate_key_value
 )
