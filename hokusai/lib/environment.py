@@ -11,8 +11,6 @@ def frozen():
 def cert_file_path():
   if frozen():
     return sys._MEIPASS + '/lib/cert.pem'
-  else:
-    return ''
 
 def templates_dir_path():
   if frozen():
