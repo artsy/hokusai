@@ -28,11 +28,11 @@ def console():
 @click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to')
 @click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-@click.argument('s3_location_of_org_hokusai_config', type=click.STRING)
-def configure(platform, install_to, install_config_to, verbose, s3_location_of_org_hokusai_config):
+@click.argument('org_config_path', type=click.STRING)
+def configure(platform, install_to, install_config_to, verbose, org_config_path):
   """Install and configure kubectl"""
   set_verbosity(verbose)
-  hokusai.configure(install_to, install_config_to, platform, s3_location_of_org_hokusai_config)
+  hokusai.configure(install_to, install_config_to, platform, org_config_path)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
