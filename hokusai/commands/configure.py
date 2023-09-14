@@ -92,7 +92,7 @@ def install_kubectl(kubectl_version, kubectl_dir):
   )
   shutil.rmtree(tmpdir)
 
-def install_kubeconfig(kubeconfig_dir, bucket_name, key_name):
+def install_kubeconfig(bucket_name, key_name, kubeconfig_dir):
   print_green("Setting up kubeconfig file...", newline_after=True)
   if not os.path.isdir(kubeconfig_dir):
     mkpath(kubeconfig_dir)
@@ -115,9 +115,9 @@ def configure(org_config_path, kubectl_dir, kubeconfig_dir):
   )
 
   install_kubeconfig(
-    user_config['kubeconfig_dir'],
     user_config['kubeconfig_s3_bucket'],
-    user_config['k8s/config-dev']
+    user_config['kubeconfig_s3_key'],
+    user_config['kubeconfig_dir']
   )
 
   save_user_config(user_config)
