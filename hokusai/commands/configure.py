@@ -16,8 +16,6 @@ from hokusai.lib.common import print_green, print_red, get_region_name
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
-import pdb
-
 def get_platform():
   return platform.system().lower()
 
@@ -66,7 +64,6 @@ def create_user_config(org_config, kubectl_path, kubeconfig_path):
   user_config = org_config
   user_config['kubectl_path'] = kubectl_path
   user_config['kubeconfig_path'] = kubeconfig_path
-  user_config['platform'] = get_platform()
   return user_config
 
 def save_user_config(user_config):
@@ -82,16 +79,16 @@ def save_user_config(user_config):
 def install_kubectl(kubectl_version, kubectl_path):
   print_green("Downloading and installing kubectl...", newline_before=True, newline_after=True)
   tmpdir = tempfile.mkdtemp()
-  urlretrieve(
+  url = (
     f"https://storage.googleapis.com/kubernetes-release/release/v" +
     f"{kubectl_version}" +
-    f"/bin/{get_platform()}/amd64/kubectl" +
-    os.path.join(tmpdir, 'kubectl')
+    f"/bin/{get_platform()}/amd64/kubectl"
   )
+  urlretrieve(url, os.path.join(tmpdir, 'kubectl'))
   os.chmod(os.path.join(tmpdir, 'kubectl'), 0o755)
   shutil.move(
     os.path.join(tmpdir, 'kubectl'),
-    os.path.join(kubectl_path, 'kubectl')
+    os.path.join(kubectl_path)
   )
   shutil.rmtree(tmpdir)
 
