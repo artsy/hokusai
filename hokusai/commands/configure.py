@@ -16,10 +16,11 @@ from hokusai.lib.common import print_green, print_red, get_region_name
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
+import pdb
 
-def download_org_config_from_s3(bucket_name, key_name, dir1):
+def download_org_config_from_s3(bucket_name, key_name, file_path):
   client = boto3.client('s3', region_name=get_region_name())
-  client.download_file(bucket_name, key_name, dir1)
+  client.download_file(bucket_name, key_name.lstrip('/'), file_path)
 
 def read_org_config_from_file(file_path):
   ''' read org config file '''
@@ -39,7 +40,7 @@ def validate_org_config(org_config):
   ]
   for var in required_vars:
     if not org_config[var]:
-      print_red(f'Error: {var} must be set in org Hokusai config')
+      print_red(f'Error: {var} must be set in org-wide Hokusai config')
 
 def read_org_config(org_config_path):
   uri = urlparse(org_config_path)
@@ -47,8 +48,9 @@ def read_org_config(org_config_path):
     bucket_name = uri.netloc
     key_name = uri.path
     with tempfile.TemporaryDirectory() as tmpdirname:
-      download_org_config_from_s3(bucket_name, key_name, tmpdirname)
-      org_config = read_org_config_from_file(os.path.join(tmpdirname, 'config.yml'))
+      file_path = os.path.join(tmpdirname, 'hokusai-org-config.yml')
+      download_org_config_from_s3(bucket_name, key_name, file_path)
+      org_config = read_org_config_from_file(file_path)
   elif uri.scheme == 'file':
     file_path = uri.path
     org_config = read_org_config_from_file(file_path)
