@@ -36,8 +36,8 @@ def read_org_config_from_file(file_path):
 def validate_org_config(org_config):
   required_vars = [
     'kubectl_version',
-    's3_bucket',
-    's3_key'
+    'kubeconfig_s3_bucket',
+    'kubeconfig_s3_key'
   ]
   for var in required_vars:
     if not org_config[var]:
@@ -97,7 +97,7 @@ def install_kubeconfig(kubeconfig_path, bucket_name, key_name):
   if not os.path.isdir(kubeconfig_path):
     mkpath(kubeconfig_path)
   client = boto3.client('s3', region_name=get_region_name())
-  client.download_file(bucket_name, key_name.lstrip('/'), os.path.join(kubeconfig_path, 'config'))
+  client.download_file(bucket_name, key_name.lstrip('/'), kubeconfig_path)
 
 @command(config_check=False)
 def configure(org_config_path, kubectl_path, kubeconfig_path):
@@ -116,8 +116,8 @@ def configure(org_config_path, kubectl_path, kubeconfig_path):
 
   install_kubeconfig(
     user_config['kubeconfig_path'],
-    user_config['bucket_name'],
-    user_config['key_name']
+    user_config['kubeconfig_s3_bucket'],
+    user_config['k8s/config-dev']
   )
 
   save_user_config(user_config)
