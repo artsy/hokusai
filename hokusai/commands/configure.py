@@ -47,10 +47,10 @@ def read_org_config(org_config_path):
     key_name = uri.path
     with tempfile.TemporaryDirectory() as tmpdirname:
       download_org_config_from_s3(bucket_name, key_name, tmpdirname)
-      org_config = read_org_config_from_file(os.path.join(tmpdirname, 'config.yml')
+      org_config = read_org_config_from_file(os.path.join(tmpdirname, 'config.yml'))
   if uri.scheme == 'file':
     file_path = uri.path
-    org_config = read_org_config_file((file_path)
+    org_config = read_org_config_file(file_path)
   validate_org_config(org_config)
   return org_config
 
