@@ -16,6 +16,7 @@ from hokusai.lib.common import print_green, print_red, get_region_name
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
+
 def download_org_config_from_s3(bucket_name, key_name, dir1):
   client = boto3.client('s3', region_name=get_region_name())
   client.download_file(bucket_name, key_name, dir1)
@@ -26,7 +27,7 @@ def read_org_config_from_file(file_path):
     with open(file_path, 'r') as org_config:
       org_config = yaml.safe_load(org_config.read())
   except:
-    print_red(f'Error: Not able to read org config file')
+    print_red(f'Error: Not able to read org-wide Hokusai config file')
     raise
   return org_config
 
@@ -48,9 +49,11 @@ def read_org_config(org_config_path):
     with tempfile.TemporaryDirectory() as tmpdirname:
       download_org_config_from_s3(bucket_name, key_name, tmpdirname)
       org_config = read_org_config_from_file(os.path.join(tmpdirname, 'config.yml'))
-  if uri.scheme == 'file':
+  elif uri.scheme == 'file':
     file_path = uri.path
-    org_config = read_org_config_file(file_path)
+    org_config = read_org_config_from_file(file_path)
+  else:
+    raise HokusaiError("The path to org-wide Hokusai config must have a scheme of 'file:///' or 's3://'")
   validate_org_config(org_config)
   return org_config
 
