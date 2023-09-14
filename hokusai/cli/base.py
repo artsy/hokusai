@@ -24,15 +24,15 @@ def console():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--install-to', type=click.STRING, default='~/.local/bin/', help='Install kubectl to')
-@click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to')
-@click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-@click.argument('org_config_path', type=click.STRING)
+@click.option('--org-config-path', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.hokusai_org.conf'), help='Path to org-wide Hokusai config. Can be local file (e.g. file://path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai_org.conf)')
+@click.option('--kubectl-path', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.local', 'bin'), help='Path to install kubectl to. (default: ~/.local/bin/kubectl)')
+@click.option('--kubeconfig-path', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Path to download kubeconfig to. (default: ~/.kube/config)')
+@click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help="Machine's platform.")
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')
 def configure(platform, install_to, install_config_to, verbose, org_config_path):
-  """Install and configure kubectl"""
+  """Fetch org-wide Hokusai config, install kubectl, download kubeconfig, create and save user Hokusai config"""
   set_verbosity(verbose)
-  hokusai.configure(install_to, install_config_to, platform, org_config_path)
+  hokusai.configure(org_config_path, kubectl_path, kubeconfig_path, platform)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
