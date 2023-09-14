@@ -25,13 +25,13 @@ def console():
 
 @base.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--org-config-path', type=click.STRING, default=f"file:///{os.path.join(os.environ.get('HOME'), '.hokusai_org.conf').lstrip('/')}", help='Path to org-wide Hokusai config. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai_org.conf)')
-@click.option('--kubectl-path', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.local', 'bin'), help='Path to install kubectl to. (default: ~/.local/bin/kubectl)')
-@click.option('--kubeconfig-path', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Path to download kubeconfig to. (default: ~/.kube/config)')
+@click.option('--kubectl-dir', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.local', 'bin'), help='Directory to install kubectl into. (default: ~/.local/bin)')
+@click.option('--kubeconfig-dir', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Directory to install kubeconfig into. (default: ~/.kube)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')
-def configure(org_config_path, kubectl_path, kubeconfig_path, verbose):
+def configure(org_config_path, kubectl_dir, kubeconfig_dir, verbose):
   """Fetch org-wide Hokusai config, install kubectl, download kubeconfig, create and save user Hokusai config"""
   set_verbosity(verbose)
-  hokusai.configure(org_config_path, kubectl_path, kubeconfig_path)
+  hokusai.configure(org_config_path, kubectl_dir, kubeconfig_dir)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
