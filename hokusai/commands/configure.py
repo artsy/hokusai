@@ -17,14 +17,16 @@ from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
 def get_platform():
+  ''' get the platform (e.g. darwin, linux) of the machine '''
   return platform.system().lower()
 
 def download_org_config_from_s3(bucket_name, key_name, file_path):
+  ''' download org-wide Hokusai config from S3 '''
   client = boto3.client('s3', region_name=get_region_name())
   client.download_file(bucket_name, key_name.lstrip('/'), file_path)
 
 def read_org_config_from_file(file_path):
-  ''' read org config file '''
+  ''' read org-wide Hokusai config from file '''
   try:
     with open(file_path, 'r') as org_config:
       org_config = yaml.safe_load(org_config.read())
@@ -34,6 +36,7 @@ def read_org_config_from_file(file_path):
   return org_config
 
 def validate_org_config(org_config):
+  ''' sanity check org-wide Hokusai config '''
   required_vars = [
     'kubectl_version',
     'kubeconfig_s3_bucket',
@@ -44,6 +47,7 @@ def validate_org_config(org_config):
       print_red(f'Error: {var} must be set in org-wide Hokusai config')
 
 def read_org_config(org_config_path):
+  ''' read org-wide Hokusai config from S3 or local file '''
   uri = urlparse(org_config_path)
   if uri.scheme == 's3':
     bucket_name = uri.netloc
@@ -61,12 +65,14 @@ def read_org_config(org_config_path):
   return org_config
 
 def create_user_config(org_config, kubectl_dir, kubeconfig_dir):
+  ''' create user Hokusai config '''
   user_config = org_config
   user_config['kubectl_dir'] = kubectl_dir
   user_config['kubeconfig_dir'] = kubeconfig_dir
   return user_config
 
 def save_user_config(user_config):
+  ''' save user Hokusai config to ~/.hokusai.conf '''
   CONFIG_FILE = os.path.join(os.environ.get('HOME'), '.hokusai.conf')
   try:
     with open(CONFIG_FILE, 'w') as output:
@@ -77,6 +83,7 @@ def save_user_config(user_config):
     raise
 
 def install_kubectl(kubectl_version, kubectl_dir):
+  ''' download and install kubectl '''
   print_green("Downloading and installing kubectl...", newline_before=True, newline_after=True)
   tmpdir = tempfile.mkdtemp()
   url = (
@@ -93,6 +100,7 @@ def install_kubectl(kubectl_version, kubectl_dir):
   shutil.rmtree(tmpdir)
 
 def install_kubeconfig(bucket_name, key_name, kubeconfig_dir):
+  ''' download and install kubeconfig, name the file "config" in the given dir '''
   print_green("Setting up kubeconfig file...", newline_after=True)
   if not os.path.isdir(kubeconfig_dir):
     mkpath(kubeconfig_dir)
@@ -101,6 +109,7 @@ def install_kubeconfig(bucket_name, key_name, kubeconfig_dir):
 
 @command(config_check=False)
 def configure(org_config_path, kubectl_dir, kubeconfig_dir):
+  ''' configure Hokusai '''
   org_config = read_org_config(org_config_path)
 
   user_config = create_user_config(
