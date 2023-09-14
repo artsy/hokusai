@@ -18,6 +18,9 @@ from hokusai.lib.exceptions import HokusaiError
 
 import pdb
 
+def get_platform():
+  return platform.system().lower()
+
 def download_org_config_from_s3(bucket_name, key_name, file_path):
   client = boto3.client('s3', region_name=get_region_name())
   client.download_file(bucket_name, key_name.lstrip('/'), file_path)
@@ -59,11 +62,11 @@ def read_org_config(org_config_path):
   validate_org_config(org_config)
   return org_config
 
-def create_user_config(org_config, kubectl_path, kubeconfig_path, platform):
+def create_user_config(org_config, kubectl_path, kubeconfig_path):
   user_config = org_config
   user_config['kubectl_path'] = kubectl_path
   user_config['kubeconfig_path'] = kubeconfig_path
-  user_config['platform'] = platform
+  user_config['platform'] = get_platform()
   return user_config
 
 def save_user_config(user_config):
@@ -76,13 +79,13 @@ def save_user_config(user_config):
     print_red(f'Error: Not able to write user Hokusai configuration file {CONFIG_FILE}')
     raise
 
-def install_kubectl(kubectl_version, platform, kubectl_path):
+def install_kubectl(kubectl_version, kubectl_path):
   print_green("Downloading and installing kubectl...", newline_before=True, newline_after=True)
   tmpdir = tempfile.mkdtemp()
   urlretrieve(
     f"https://storage.googleapis.com/kubernetes-release/release/v" +
     f"{kubectl_version}" +
-    f"/bin/{platform.system().lower()}/amd64/kubectl" +
+    f"/bin/{get_platform()}/amd64/kubectl" +
     os.path.join(tmpdir, 'kubectl')
   )
   os.chmod(os.path.join(tmpdir, 'kubectl'), 0o755)
@@ -100,19 +103,17 @@ def install_kubeconfig(kubeconfig_path, bucket_name, key_name):
   client.download_file(bucket_name, key_name.lstrip('/'), os.path.join(kubeconfig_path, 'config'))
 
 @command(config_check=False)
-def configure(org_config_path, kubectl_path, kubeconfig_path, platform):
+def configure(org_config_path, kubectl_path, kubeconfig_path):
   org_config = read_org_config(org_config_path)
 
   user_config = create_user_config(
     org_config,
     kubectl_path,
     kubeconfig_path,
-    platform
   )
 
   install_kubectl(
     user_config['kubectl_version'],
-    user_config['platform'],
     user_config['kubectl_path']
   )
 
