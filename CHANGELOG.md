@@ -1,3 +1,11 @@
+## v1.4.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v1.4.0/README.md)
+
+### Notable changes since v1.3.0
+
+* 9b61a18 feat: CommandRunner to load project's k8s secret if it exists (#376)
+
 ## v1.3.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.3.0/README.md)
