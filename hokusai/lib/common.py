@@ -17,7 +17,7 @@ from botocore import session as botosession
 from termcolor import cprint
 
 from hokusai.lib.config import config
-from hokusai.lib.exceptions import CalledProcessError
+from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 
 CONTEXT_SETTINGS = {
   'terminal_width': 10000,
@@ -142,3 +142,21 @@ def pick_yes():
 
 def pick_no():
   return random.choice(["Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"])
+
+def user():
+  ''' obtain user name from environment '''
+  user = None
+  if os.environ.get('USER') is not None:
+    # The regex used for the validation of name is
+    # '[a-z0-9]([-a-z0-9]*[a-z0-9])?'
+    user = re.sub(
+      "[^0-9a-z]+", "-", os.environ.get('USER').lower()
+    )
+  return user
+
+def validate_key_value(key_value):
+  ''' raise if key_value is NOT of the form KEY=VALUE '''
+  if '=' not in key_value:
+    raise HokusaiError(
+      "Error: key/value pair must be of the form 'KEY=VALUE'"
+    )
