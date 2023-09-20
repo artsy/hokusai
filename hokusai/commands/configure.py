@@ -95,7 +95,7 @@ def install_kubectl(kubectl_version, kubectl_dir):
   os.chmod(os.path.join(tmpdir, 'kubectl'), 0o755)
   shutil.move(
     os.path.join(tmpdir, 'kubectl'),
-    os.path.join(kubectl_dir)
+    os.path.join(kubectl_dir, 'kubectl')
   )
   shutil.rmtree(tmpdir)
 
