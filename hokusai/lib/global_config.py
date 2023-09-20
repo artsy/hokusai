@@ -3,7 +3,7 @@ import yaml
 
 from hokusai.lib.common import print_red
 
-HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai', 'config.yml')
+HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai.conf')
 
 def get_global_config():
   try:

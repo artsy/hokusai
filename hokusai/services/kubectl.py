@@ -12,7 +12,7 @@ class Kubectl:
     self.context = context
     self.namespace = namespace
     global_config = get_global_config()
-    self.kubectl = os.path.join(global_config['bin-dir'], 'kubectl')
+    self.kubectl = os.path.join(global_config['kubectl_dir'], 'kubectl')
 
   def command(self, cmd):
     if self.namespace is None:
