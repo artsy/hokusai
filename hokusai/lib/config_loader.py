@@ -12,14 +12,16 @@ from botocore.exceptions import ClientError
 from hokusai.lib.common import get_region_name
 from hokusai.lib.exceptions import HokusaiError
 
-from hokusai.lib.common import print_red, s3_path, print_green
+from hokusai.lib.common import print_red, s3_path, verbose_print_green
+
+from hokusai.lib.common import print_red, get_verbosity
 
 class ConfigLoader:
   def __init__(self, uri):
     self.uri = uri
 
   def load_from_s3(self, uri, tmp_configfile):
-    print_green(f'Downloading {uri} to {tmp_configfile} ...', newline_after=True)
+    verbose_print_green(f'Downloading {uri} to {tmp_configfile} ...', newline_after=True)
     client = boto3.client('s3', region_name=get_region_name())
     bucket_name = uri.netloc
     key_name = uri.path.lstrip('/')
