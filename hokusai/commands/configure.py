@@ -44,9 +44,8 @@ def install_kubeconfig(bucket_name, key_name, kubeconfig_dir):
   client.download_file(bucket_name, key_name.lstrip('/'), os.path.join(kubeconfig_dir, 'config'))
 
 @command(config_check=False)
-def configure(config_path, kubectl_dir, kubeconfig_dir):
+def configure(config_path, kubectl_dir, kubeconfig_dir, skip_kubeconfig, skip_kubectl):
   ''' configure Hokusai '''
-
   if config_path:
     # override global_config with config_path config
     global_config.load_config(config_path)
@@ -56,13 +55,15 @@ def configure(config_path, kubectl_dir, kubeconfig_dir):
     kubectl_dir=kubectl_dir,
     kubeconfig_dir=kubeconfig_dir,
   )
-  install_kubectl(
-    global_config.kubectl_version,
-    global_config.kubectl_dir
-  )
-  install_kubeconfig(
-    global_config.kubeconfig_s3_bucket,
-    global_config.kubeconfig_s3_key,
-    global_config.kubeconfig_dir
-  )
+  if not skip_kubectl:
+    install_kubectl(
+      global_config.kubectl_version,
+      global_config.kubectl_dir
+    )
+  if not skip_kubeconfig:
+    install_kubeconfig(
+      global_config.kubeconfig_s3_bucket,
+      global_config.kubeconfig_s3_key,
+      global_config.kubeconfig_dir
+    )
   global_config.save()
