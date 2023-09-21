@@ -2,23 +2,21 @@
 
 import os
 import platform
-import sys
+import random
+import re
+import shutil
 import signal
 import string
-import random
-import json
-import re
-
-from subprocess import call, check_call, check_output, Popen, STDOUT
-
-import yaml
 
 from botocore import session as botosession
-
+from subprocess import call, check_call, check_output, Popen, STDOUT
 from termcolor import cprint
+from urllib.parse import urlparse
 
 from hokusai.lib.config import config
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
+from hokusai.services.s3 import s3_interface
+
 
 CONTEXT_SETTINGS = {
   'terminal_width': 10000,
@@ -171,9 +169,21 @@ def get_platform():
   ''' get the platform (e.g. darwin, linux) of the machine '''
   return platform.system().lower()
 
-def s3_path(bucket_name, key_name):
+def uri_to_local(uri, local_file_path):
   '''
-  given bucket_name (e.g. foo_bucket) and key_name (e.g. /foo/bar),
-  return full s3 path (e.g. s3://foo_bucket/foo/bar)
+  given a uri of a file, copy file to local_file_path
+  uri currently supported: s3://, file://
   '''
-  return f"s3://{bucket_name}/{key_name.lstrip('/')}"
+  parsed_uri = urlparse(uri)
+
+  try:
+    if parsed_uri.scheme == 's3':
+      s3_interface.download(uri, local_file_path)
+    elif parsed_uri.scheme == 'file':
+      if parsed_uri.path != local_file_path:
+        shutil.copy(parsed_uri.path, local_file_path)
+    else:
+      raise HokusaiError("uri must have a scheme of 'file:///' or 's3://'")
+  except:
+    print_red(f'Error: failed to copy {uri} to {local_file_path}')
+    raise

@@ -1,20 +1,10 @@
 import os
-import sys
-
-from collections import OrderedDict
-
 import yaml
 
-from packaging.specifiers import SpecifierSet, InvalidSpecifier
-from packaging.version import Version, InvalidVersion
-
-from hokusai import CWD
 from hokusai.lib.common import print_red
-from hokusai.lib.constants import YAML_HEADER
-from hokusai.lib.exceptions import HokusaiError
-from hokusai.version import VERSION
-
 from hokusai.lib.config_loader import ConfigLoader
+from hokusai.lib.constants import YAML_HEADER
+
 
 HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai_config.yml')
 
@@ -39,8 +29,7 @@ class HokusaiGlobalConfig:
     ''' sanity check config '''
     required_vars = [
       'kubectl_version',
-      'kubeconfig_s3_bucket',
-      'kubeconfig_s3_key'
+      'kubeconfig_source_uri'
     ]
     for var in required_vars:
       if not config[var]:
@@ -65,12 +54,8 @@ class HokusaiGlobalConfig:
     return self.config['kubectl_dir']
 
   @property
-  def kubeconfig_s3_bucket(self):
-    return self.config['kubeconfig_s3_bucket']
-
-  @property
-  def kubeconfig_s3_key(self):
-    return self.config['kubeconfig_s3_key']
+  def kubeconfig_source_uri(self):
+    return self.config['kubeconfig_source_uri']
 
   @property
   def kubeconfig_dir(self):
