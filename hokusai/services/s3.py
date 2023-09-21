@@ -1,6 +1,7 @@
 import boto3
 
-from hokusai.lib.common import get_region_name, print_red, verbose_print_green
+from hokusai.lib.common import print_red, verbose_print_green
+from hokusai.services.aws import get_region_name
 
 
 class S3Interface:
