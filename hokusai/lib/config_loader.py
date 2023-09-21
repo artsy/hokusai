@@ -16,14 +16,13 @@ from hokusai.lib.common import print_red, s3_path, verbose_print_green
 
 from hokusai.lib.common import print_red, get_verbosity
 
+from hokusai.services.s3 import s3_interface
+
 class ConfigLoader:
   def __init__(self, uri):
     self.uri = uri
 
   def load_from_s3(self, bucket_name, key_name, tmp_configfile):
-    verbose_print_green(f'Downloading {s3_path(bucket_name, key_name)} to {tmp_configfile} ...', newline_after=True)
-    client = boto3.client('s3', region_name=get_region_name())
-    client.download_file(bucket_name, key_name.lstrip('/'), tmp_configfile)
     return self.load_from_file(tmp_configfile)
 
   def load_from_file(self, file_path):
@@ -47,8 +46,9 @@ class ConfigLoader:
     try:
       if parsed_uri.scheme == 's3':
         bucket_name = parsed_uri.netloc
-        key_name = parsed_uri.path
-        config = self.load_from_s3(bucket_name, key_name, tmp_configfile)
+        key_name = parsed_uri.path.lstrip('/')
+        s3_interface.download(bucket_name, key_name, tmp_configfile)
+        config = self.load_from_file(tmp_configfile)
       elif parsed_uri.scheme == 'file':
         config = self.load_from_file(parsed_uri.path)
       else:
