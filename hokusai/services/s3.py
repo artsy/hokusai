@@ -1,6 +1,7 @@
 import boto3
 
-from hokusai.lib.common import print_red, verbose_print_green
+import hokusai.lib.common as common
+
 from hokusai.services.aws import get_region_name
 
 
@@ -14,11 +15,11 @@ class S3Interface:
     parsed_uri = urlparse(uri)
     bucket_name = parsed_uri.netloc
     key_name = parsed_uri.path.lstrip('/')
-    verbose_print_green(f'Downloading {uri} to {target_file} ...', newline_after=True)
+    common.verbose_print_green(f'Downloading {uri} to {target_file} ...', newline_after=True)
     try:
       self.client.download_file(bucket_name, key_name, target_file)
     except:
-      print_red(f'Error: Failed to download {uri} to {target_file}')
+      common.print_red(f'Error: Failed to download {uri} to {target_file}')
       raise
 
 s3_interface = S3Interface()
