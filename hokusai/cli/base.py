@@ -27,11 +27,13 @@ def console():
 @click.option('--config-path', type=click.STRING, default=None, help='Path to Hokusai config file. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai.conf)')
 @click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. (default: None)')
 @click.option('--kubeconfig-dir', type=click.STRING, default=None, help='Directory to install kubeconfig into. (default: None)')
+@click.option('--skip-kubectl', type=click.BOOL, is_flag=True, help='Skip kubectl install.')
+@click.option('--skip-kubeconfig', type=click.BOOL, is_flag=True, help='Skip kubeconfig install.')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')
-def configure(config_path, kubectl_dir, kubeconfig_dir, verbose):
+def configure(config_path, kubectl_dir, kubeconfig_dir, skip_kubeconfig, skip_kubectl, verbose):
   """Read Hokusai config from file or S3, install kubectl, download kubeconfig, save Hokusai config to ~/.hokusai.conf"""
   set_verbosity(verbose)
-  hokusai.configure(config_path, kubectl_dir, kubeconfig_dir)
+  hokusai.configure(config_path, kubectl_dir, kubeconfig_dir, skip_kubeconfig, skip_kubectl)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
