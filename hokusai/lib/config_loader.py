@@ -20,12 +20,10 @@ class ConfigLoader:
   def __init__(self, uri):
     self.uri = uri
 
-  def load_from_s3(self, uri, tmp_configfile):
-    verbose_print_green(f'Downloading {uri} to {tmp_configfile} ...', newline_after=True)
+  def load_from_s3(self, bucket_name, key_name, tmp_configfile):
+    verbose_print_green(f'Downloading {s3_path(bucket_name, key_name)} to {tmp_configfile} ...', newline_after=True)
     client = boto3.client('s3', region_name=get_region_name())
-    bucket_name = uri.netloc
-    key_name = uri.path.lstrip('/')
-    client.download_file(uri.netloc, uri.path.lstrip('/'), tmp_configfile)
+    client.download_file(bucket_name, key_name.lstrip('/'), tmp_configfile)
     return self.load_from_file(tmp_configfile)
 
   def load_from_file(self, file_path):
@@ -39,18 +37,20 @@ class ConfigLoader:
     path can be 'file:///path/to/file',
     or 's3://bucket/key
     '''
-    uri = urlparse(self.uri)
-    if not uri.path.endswith('yaml') and not uri.path.endswith('yml'):
+    parsed_uri = urlparse(self.uri)
+    if not parsed_uri.path.endswith('yaml') and not parsed_uri.path.endswith('yml'):
       raise HokusaiError('Uri must be of Yaml file type')
 
     tmpdir = tempfile.mkdtemp()
     tmp_configfile = os.path.join(tmpdir, 'hokusai_config.yml')
 
     try:
-      if uri.scheme == 's3':
-        config = self.load_from_s3(uri, tmp_configfile)
-      elif uri.scheme == 'file':
-        config = self.load_from_file(uri.path)
+      if parsed_uri.scheme == 's3':
+        bucket_name = parsed_uri.netloc
+        key_name = parsed_uri.path
+        config = self.load_from_s3(bucket_name, key_name, tmp_configfile)
+      elif parsed_uri.scheme == 'file':
+        config = self.load_from_file(parsed_uri.path)
       else:
         raise HokusaiError("Hokusai config file path must have a scheme of 'file:///' or 's3://'")
       return config
