@@ -1,5 +1,7 @@
 import boto3
 
+from urllib.parse import urlparse
+
 import hokusai.lib.common as common
 
 from hokusai.services.aws import get_region_name

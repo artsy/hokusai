@@ -4,7 +4,7 @@ import yaml
 
 from shutil import rmtree
 
-from hokusai.lib.common import print_red
+from hokusai.lib.common import print_red, uri_to_local
 from hokusai.lib.exceptions import HokusaiError
 
 

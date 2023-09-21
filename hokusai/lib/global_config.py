@@ -4,6 +4,7 @@ import yaml
 from hokusai.lib.common import print_red
 from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.constants import YAML_HEADER
+from hokusai.lib.exceptions import HokusaiError
 
 
 HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai_config.yml')
@@ -32,8 +33,8 @@ class HokusaiGlobalConfig:
       'kubeconfig_source_uri'
     ]
     for var in required_vars:
-      if not config[var]:
-        print_red(f'Error: {var} is missing in Hokusai config')
+      if not var in config:
+        raise HokusaiError(f'{var} is missing in Hokusai config')
 
   def save(self):
     ''' save config to ~/.hokusai.conf '''

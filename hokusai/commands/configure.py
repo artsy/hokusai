@@ -6,7 +6,7 @@ from distutils.dir_util import mkpath
 from urllib.request import urlretrieve
 
 from hokusai.lib.command import command
-from hokusai.lib.common import print_green, get_platform
+from hokusai.lib.common import print_green, get_platform, uri_to_local
 from hokusai.lib.global_config import global_config
 
 
