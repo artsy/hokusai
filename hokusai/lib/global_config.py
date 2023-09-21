@@ -14,48 +14,66 @@ from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
 
+from hokusai.lib.config_loader import ConfigLoader
 
-HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai.conf')
+HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai_config.yml')
 
 class HokusaiGlobalConfig:
-  def is_present(self):
-    return os.path.isfile(HOKUSAI_GLOBAL_CONFIG_FILE)
+  def __init__(self):
+    # load config from default config file
+    self.load_config(f'file://{HOKUSAI_GLOBAL_CONFIG_FILE}')
 
-  def get(self, key, default=None, use_env=False, _type=str):
-    value = self._config_value_for(key, _type)
-    if value is not None:
-      return value
+  def load_config(self, config_path):
+    ''' load config from specified path '''
+    config = ConfigLoader(config_path).load()
+    self.validate_config(config)
+    self.config = config
 
-    return default
+  def merge(self, **kwargs):
+    ''' merge params into config '''
+    for k,v in kwargs.items():
+      if v is not None:
+        self.config[k] = v
 
+  def validate_config(self, config):
+    ''' sanity check config '''
+    required_vars = [
+      'kubectl_version',
+      'kubeconfig_s3_bucket',
+      'kubeconfig_s3_key'
+    ]
+    for var in required_vars:
+      if not config[var]:
+        print_red(f'Error: {var} is missing in Hokusai config')
 
-  def _config_value_for(self, key, _type):
+  def save(self):
+    ''' save config to ~/.hokusai.conf '''
     try:
-      with open(HOKUSAI_GLOBAL_CONFIG_FILE, 'r') as config_file:
-        config_struct = yaml.safe_load(config_file.read())
-        try:
-          val = config_struct[key]
-        except KeyError:
-          return None
-        if not isinstance(val, _type):
-          raise HokusaiError("Config key %s is not of %s" % (key, _type))
-        return val
-    except IOError:
-      print_red(f'Error: Not able to read global configuration file {HOKUSAI_GLOBAL_CONFIG_FILE}')
-      return None
-
+      with open(HOKUSAI_GLOBAL_CONFIG_FILE, 'w') as output:
+        output.write(YAML_HEADER)
+        yaml.safe_dump(self.config, output, default_flow_style=False)
+    except:
+      print_red(f'Error: Not able to write Hokusai config to {file_path}')
+      raise
 
   @property
   def kubectl_version(self):
-    return self.get('kubectl-version')
-
-  @property
-  def kubectl_config_file(self):
-    return self.get('kubectl-config-file')
+    return self.config['kubectl_version']
 
   @property
   def kubectl_dir(self):
-    return self.get('kubectl_dir')
+    return self.config['kubectl_dir']
 
+  @property
+  def kubeconfig_s3_bucket(self):
+    return self.config['kubeconfig_s3_bucket']
+
+  @property
+  def kubeconfig_s3_key(self):
+    return self.config['kubeconfig_s3_key']
+
+  @property
+  def kubeconfig_dir(self):
+    return self.config['kubeconfig_dir']
 
 global_config = HokusaiGlobalConfig()

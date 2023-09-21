@@ -24,7 +24,7 @@ def console():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--config-path', type=click.STRING, default=f"file:///{os.path.join(os.environ.get('HOME'), '.hokusai.conf').lstrip('/')}", help='Path to Hokusai config file. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai.conf)')
+@click.option('--config-path', type=click.STRING, default=None, help='Path to Hokusai config file. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai.conf)')
 @click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. (default: None)')
 @click.option('--kubeconfig-dir', type=click.STRING, default=None, help='Directory to install kubeconfig into. (default: None)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')

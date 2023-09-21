@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import platform
 import sys
 import signal
 import string
@@ -160,3 +161,14 @@ def validate_key_value(key_value):
     raise HokusaiError(
       "Error: key/value pair must be of the form 'KEY=VALUE'"
     )
+
+def get_platform():
+  ''' get the platform (e.g. darwin, linux) of the machine '''
+  return platform.system().lower()
+
+def s3_path(bucket_name, key_name):
+  '''
+  given bucket_name (e.g. foo_bucket) and key_name (e.g. /foo/bar),
+  return full s3 path (e.g. s3://foo_bucket/foo/bar)
+  '''
+  return f"s3://{bucket_name}/{key_name.lstrip('/')}"
