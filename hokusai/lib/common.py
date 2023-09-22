@@ -8,6 +8,7 @@ import shutil
 import signal
 import string
 
+from botocore import session as botosession
 from subprocess import call, check_call, check_output, Popen, STDOUT
 from termcolor import cprint
 from urllib.parse import urlparse
@@ -124,6 +125,16 @@ def k8s_uuid():
 
 def clean_string(str):
   return str.lower().replace('_', '-')
+
+def get_region_name():
+  # boto3 autodiscovery
+  _region = botosession.get_session().get_config_variable('region')
+  if _region:
+    return _region
+  # boto2 compatibility
+  if os.environ.get('AWS_REGION'):
+    return os.environ.get('AWS_REGION')
+  return AWS_DEFAULT_REGION
 
 def pick_yes():
   return random.choice(["Yep", "Si", "да", "Da", "Aane", "हाँ", "Ja", "はい", "Jā", "так", "بله", "Tak", "Wi", "Oui", "יאָ", "예", "是", "Sim"])

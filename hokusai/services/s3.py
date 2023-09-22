@@ -5,13 +5,11 @@ from urllib.parse import urlparse
 # blanket import to avoid circular import error
 import hokusai.lib.common as common
 
-from hokusai.services.aws import get_region_name
-
 
 class S3Interface:
   ''' interface with AWS S3 '''
   def __init__(self):
-    self._client = boto3.client('s3', region_name=get_region_name())
+    self._client = boto3.client('s3', region_name=common.get_region_name())
 
   def download(self, uri, target_file):
     ''' download s3://bucket/foo/bar to target_file '''

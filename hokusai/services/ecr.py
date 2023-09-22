@@ -4,9 +4,9 @@ import re
 
 from botocore.exceptions import BotoCoreError, ClientError
 
+from hokusai.lib.common import get_region_name
 from hokusai.lib.config import config
 from hokusai.lib.exceptions import HokusaiError
-from hokusai.services.aws import get_region_name
 
 SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
 
