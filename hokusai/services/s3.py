@@ -2,6 +2,7 @@ import boto3
 
 from urllib.parse import urlparse
 
+# blanket import to avoid circular import error
 import hokusai.lib.common as common
 
 from hokusai.services.aws import get_region_name
@@ -17,7 +18,8 @@ class S3Interface:
     parsed_uri = urlparse(uri)
     bucket_name = parsed_uri.netloc
     key_name = parsed_uri.path.lstrip('/')
-    common.verbose_print_green(f'Downloading {uri} to {target_file} ...', newline_after=True)
+    if common.get_verbosity():
+      common.print_green(f'Downloading {uri} to {target_file} ...', newline_after=True)
     try:
       self.client.download_file(bucket_name, key_name, target_file)
     except:

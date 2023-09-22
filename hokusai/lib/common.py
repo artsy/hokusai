@@ -54,11 +54,6 @@ def print_red(msg, newline_before=False, newline_after=False):
 def print_yellow(msg, newline_before=False, newline_after=False):
   cprint(smart_str(msg, newline_before, newline_after), 'yellow')
 
-def verbose_print_green(msg, newline_before=False, newline_after=False):
-  ''' print_green only if verbose '''
-  if VERBOSE:
-    print_green(msg, newline_before=False, newline_after=False)
-
 def set_verbosity(v):
   global VERBOSE
   VERBOSE = v or config.always_verbose
