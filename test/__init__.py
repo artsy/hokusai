@@ -2,7 +2,12 @@ import os
 import unittest
 import boto3
 
+# these must be set before importing any hokusai module
+os.environ['AWS_DEFAULT_REGION'] = 'foo-aws-region'
+os.environ['HOME'] = os.path.join(os.getcwd(), 'test/fixtures/user')
+
 from hokusai import CWD
+
 from hokusai.lib import config
 
 TEST_KUBE_CONTEXT = os.environ.get('HOKUSAI_TEST_KUBE_CTX', 'minikube')
