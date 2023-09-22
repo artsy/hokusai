@@ -55,7 +55,10 @@ def configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kub
   save global config,
   install kubeconfig and kubectl
   '''
-  global_config = HokusaiGlobalConfig(config_path=new_config)
+  if new_config:
+    global_config = HokusaiGlobalConfig(uri=new_config)
+  else:
+    global_config = HokusaiGlobalConfig()
   # override global config with cmdline options
   global_config.merge(
     kubectl_dir=kubectl_dir,
