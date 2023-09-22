@@ -13,15 +13,29 @@ class Kubectl:
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
-    self.kubectl = os.path.join(global_config.kubectl_dir, 'kubectl')
+    self.kubectl = os.path.join(
+      global_config.kubectl_dir, 'kubectl'
+    )
 
   def command(self, cmd):
     if self.namespace is None:
-      return "%s --context %s %s" % (self.kubectl, self.context, cmd)
-    return "%s --context %s --namespace %s %s" % (self.kubectl, self.context, self.namespace, cmd)
+      return f'{self.kubectl} --context {self.context} {cmd}'
+    return (
+      f'{self.kubectl} --context {self.context} ' +
+      f'--namespace {self.namespace} {cmd}'
+    )
+
+  def contexts(self):
+    return [
+      context['name'] for context in
+      yaml.load(
+        shout(f'{self.kubectl} config view'),
+        Loader=yaml.FullLoader
+      )['contexts']
+    ]
 
   def get_object(self, obj):
-    cmd = self.command("get %s -o json" % obj)
+    cmd = self.command(f'get {obj} -o json)')
     try:
       return json.loads(shout(cmd))
     except ValueError:
@@ -29,13 +43,12 @@ class Kubectl:
 
   def get_objects(self, obj, selector=None):
     if selector is not None:
-      cmd = self.command("get %s --selector %s -o json" % (obj, selector))
+      cmd = self.command(
+        f'get {obj} --selector {selector} -o json'
+      )
     else:
-      cmd = self.command("get %s -o json" % obj)
+      cmd = self.command(f'get {obj} -o json')
     try:
       return json.loads(shout(cmd))['items']
     except ValueError:
       return []
-
-  def contexts(self):
-    return [context['name'] for context in yaml.load(shout('%s config view', self.kubectl), Loader=yaml.FullLoader)['contexts']]
