@@ -10,16 +10,11 @@ from hokusai.lib.exceptions import HokusaiError
 HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai.yml')
 
 class HokusaiGlobalConfig:
-  def __init__(self):
-    # load config from local config file
-    self.config = {}
-    self.load_config(f'file://{HOKUSAI_GLOBAL_CONFIG_FILE}')
-
-  def load_config(self, config_path):
-    ''' load config from specified path '''
-    config = ConfigLoader(config_path).load()
-    self.validate_config(config)
-    self.config = config
+  def __init__(self, config_path=None):
+    if config_path is None:
+      config_path = f'file://{HOKUSAI_GLOBAL_CONFIG_FILE}'
+    self.config = ConfigLoader(config_path).load()
+    self.validate_config()
 
   def merge(self, **kwargs):
     ''' merge params into config '''
@@ -37,14 +32,14 @@ class HokusaiGlobalConfig:
       print_red(f'Error: Not able to write Hokusai config to {file_path}')
       raise
 
-  def validate_config(self, config):
+  def validate_config(self):
     ''' sanity check config '''
     required_vars = [
       'kubectl_version',
       'kubeconfig_source_uri'
     ]
     for var in required_vars:
-      if not var in config:
+      if not var in self.config:
         raise HokusaiError(f'{var} is missing in Hokusai global config')
 
   @property
@@ -62,5 +57,3 @@ class HokusaiGlobalConfig:
   @property
   def kubectl_version(self):
     return self.config['kubectl_version']
-
-global_config = HokusaiGlobalConfig()

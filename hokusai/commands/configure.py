@@ -7,7 +7,7 @@ from urllib.request import urlretrieve
 
 from hokusai.lib.command import command
 from hokusai.lib.common import print_green, get_platform, uri_to_local
-from hokusai.lib.global_config import global_config
+from hokusai.lib.global_config import HokusaiGlobalConfig
 
 
 def install_kubectl(kubectl_version, kubectl_dir):
@@ -35,31 +35,31 @@ def install_kubeconfig(kubeconfig_source_uri, kubeconfig_dir):
   print_green(f'Downloading kubeconfig from {kubeconfig_source_uri} to {kubeconfig_dir} ...', newline_after=True)
   uri_to_local(kubeconfig_source_uri, os.path.join(kubeconfig_dir, 'config'))
 
-@command(config_check=False)
-def configure(config_path, kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl):
-  '''
-  read hokusai global config,
-  download kubeconfig,
-  install kubectl,
-  save final hokusai config locally
-  '''
-  if config_path:
-    # override global_config with config_path config
-    global_config.load_config(config_path)
-
-  # options take precedence over config file
-  global_config.merge(
-    kubectl_dir=kubectl_dir,
-    kubeconfig_dir=kubeconfig_dir,
-  )
-  if not skip_kubectl:
-    install_kubectl(
-      global_config.kubectl_version,
-      global_config.kubectl_dir
-    )
+def install(global_config, skip_kubeconfig, skip_kubectl):
+  ''' install kubeconfig and kubectl '''
   if not skip_kubeconfig:
     install_kubeconfig(
       global_config.kubeconfig_source_uri,
       global_config.kubeconfig_dir
     )
+  if not skip_kubectl:
+    install_kubectl(
+      global_config.kubectl_version,
+      global_config.kubectl_dir
+    )
+
+@command(config_check=False)
+def configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl):
+  '''
+  read new global config,
+  save global config,
+  install kubeconfig and kubectl
+  '''
+  global_config = HokusaiGlobalConfig(config_path=new_config)
+  # override global config with cmdline options
+  global_config.merge(
+    kubectl_dir=kubectl_dir,
+    kubeconfig_dir=kubeconfig_dir,
+  )
   global_config.save()
+  install(global_config, skip_kubeconfig, skip_kubectl)
