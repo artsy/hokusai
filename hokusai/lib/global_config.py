@@ -35,8 +35,10 @@ class HokusaiGlobalConfig:
   def validate_config(self):
     ''' sanity check config '''
     required_vars = [
-      'kubectl_version',
-      'kubeconfig_source_uri'
+      'kubectl-version',
+      'kubeconfig-dir',
+      'kubeconfig-source-uri',
+      'kubectl-dir'
     ]
     for var in required_vars:
       if not var in self.config:
@@ -44,16 +46,16 @@ class HokusaiGlobalConfig:
 
   @property
   def kubeconfig_dir(self):
-    return self.config['kubeconfig_dir']
+    return self.config['kubeconfig-dir']
 
   @property
   def kubeconfig_source_uri(self):
-    return self.config['kubeconfig_source_uri']
+    return self.config['kubeconfig-source-uri']
 
   @property
   def kubectl_dir(self):
-    return self.config['kubectl_dir']
+    return self.config['kubectl-dir']
 
   @property
   def kubectl_version(self):
-    return self.config['kubectl_version']
+    return self.config['kubectl-version']
