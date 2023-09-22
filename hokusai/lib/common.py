@@ -156,10 +156,9 @@ def get_platform():
 def uri_to_local(uri, local_file_path):
   '''
   given a uri of a file, copy file to local_file_path
-  uri currently supported: s3://, file://
+  currently supported uri schemes: s3://, file://
   '''
   parsed_uri = urlparse(uri)
-
   try:
     if parsed_uri.scheme == 's3':
       s3_interface.download(uri, local_file_path)
@@ -167,7 +166,7 @@ def uri_to_local(uri, local_file_path):
       if parsed_uri.path != local_file_path:
         shutil.copy(parsed_uri.path, local_file_path)
     else:
-      raise HokusaiError("uri must have a scheme of 'file:///' or 's3://'")
+      raise HokusaiError("uri must have a scheme of 'file://' or 's3://'")
   except:
     print_red(f'Error: failed to copy {uri} to {local_file_path}')
     raise

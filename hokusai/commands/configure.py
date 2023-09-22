@@ -36,8 +36,13 @@ def install_kubeconfig(kubeconfig_source_uri, kubeconfig_dir):
   uri_to_local(kubeconfig_source_uri, os.path.join(kubeconfig_dir, 'config'))
 
 @command(config_check=False)
-def configure(config_path, kubectl_dir, kubeconfig_dir, skip_kubeconfig, skip_kubectl):
-  ''' configure Hokusai '''
+def configure(config_path, kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl):
+  '''
+  read hokusai global config,
+  download kubeconfig,
+  install kubectl,
+  save final hokusai config locally
+  '''
   if config_path:
     # override global_config with config_path config
     global_config.load_config(config_path)

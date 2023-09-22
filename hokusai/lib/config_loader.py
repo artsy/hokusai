@@ -12,22 +12,13 @@ class ConfigLoader:
   def __init__(self, uri):
     self.uri = uri
 
-  def load_from_file(self, file_path):
-    with open(file_path, 'r') as f:
-      struct = yaml.safe_load(f.read())
-      return struct
-
   def load(self):
-    '''
-    load config from path
-    path can be 'file:///path/to/file',
-    or 's3://bucket/key
-    '''
+    ''' load config from uri '''
     if not self.uri.endswith('yaml') and not self.uri.endswith('yml'):
       raise HokusaiError('Config file must be of Yaml file type')
 
     tmpdir = tempfile.mkdtemp()
-    tmp_configfile = os.path.join(tmpdir, 'hokusai_config.yml')
+    tmp_configfile = os.path.join(tmpdir, 'hokusai.yml')
 
     try:
       uri_to_local(self.uri, tmp_configfile)
@@ -38,3 +29,9 @@ class ConfigLoader:
       raise
     finally:
       rmtree(tmpdir)
+
+  def load_from_file(self, file_path):
+    ''' load config from file '''
+    with open(file_path, 'r') as f:
+      struct = yaml.safe_load(f.read())
+      return struct

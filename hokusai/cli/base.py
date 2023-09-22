@@ -24,16 +24,16 @@ def console():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--config-path', type=click.STRING, default=None, help='Path to Hokusai config file. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai.conf)')
-@click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. (default: None)')
+@click.option('--config-path', type=click.STRING, default=None, help='Path to Hokusai global config. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). (default: ~/.hokusai.yml)')
 @click.option('--kubeconfig-dir', type=click.STRING, default=None, help='Directory to install kubeconfig into. (default: None)')
-@click.option('--skip-kubectl', type=click.BOOL, is_flag=True, help='Skip kubectl install.')
+@click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. (default: None)')
 @click.option('--skip-kubeconfig', type=click.BOOL, is_flag=True, help='Skip kubeconfig install.')
+@click.option('--skip-kubectl', type=click.BOOL, is_flag=True, help='Skip kubectl install.')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')
-def configure(config_path, kubectl_dir, kubeconfig_dir, skip_kubeconfig, skip_kubectl, verbose):
-  """Read Hokusai config from file or S3, install kubectl, download kubeconfig, save Hokusai config to ~/.hokusai.conf"""
+def configure(config_path, kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, verbose):
+  """Read Hokusai global config, download kubeconfig, install kubectl, save final Hokusai config to ~/.hokusai.yml"""
   set_verbosity(verbose)
-  hokusai.configure(config_path, kubectl_dir, kubeconfig_dir, skip_kubeconfig, skip_kubectl)
+  hokusai.configure(config_path, kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

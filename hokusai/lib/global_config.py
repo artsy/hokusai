@@ -7,11 +7,12 @@ from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
 
-HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai_config.yml')
+HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai.yml')
 
 class HokusaiGlobalConfig:
   def __init__(self):
-    # load config from default config file
+    # load config from local config file
+    self.config = {}
     self.load_config(f'file://{HOKUSAI_GLOBAL_CONFIG_FILE}')
 
   def load_config(self, config_path):
@@ -26,18 +27,8 @@ class HokusaiGlobalConfig:
       if v is not None:
         self.config[k] = v
 
-  def validate_config(self, config):
-    ''' sanity check config '''
-    required_vars = [
-      'kubectl_version',
-      'kubeconfig_source_uri'
-    ]
-    for var in required_vars:
-      if not var in config:
-        raise HokusaiError(f'{var} is missing in Hokusai config')
-
   def save(self):
-    ''' save config to ~/.hokusai.conf '''
+    ''' save config to local config file '''
     try:
       with open(HOKUSAI_GLOBAL_CONFIG_FILE, 'w') as output:
         output.write(YAML_HEADER)
@@ -46,20 +37,30 @@ class HokusaiGlobalConfig:
       print_red(f'Error: Not able to write Hokusai config to {file_path}')
       raise
 
-  @property
-  def kubectl_version(self):
-    return self.config['kubectl_version']
+  def validate_config(self, config):
+    ''' sanity check config '''
+    required_vars = [
+      'kubectl_version',
+      'kubeconfig_source_uri'
+    ]
+    for var in required_vars:
+      if not var in config:
+        raise HokusaiError(f'{var} is missing in Hokusai global config')
 
   @property
-  def kubectl_dir(self):
-    return self.config['kubectl_dir']
+  def kubeconfig_dir(self):
+    return self.config['kubeconfig_dir']
 
   @property
   def kubeconfig_source_uri(self):
     return self.config['kubeconfig_source_uri']
 
   @property
-  def kubeconfig_dir(self):
-    return self.config['kubeconfig_dir']
+  def kubectl_dir(self):
+    return self.config['kubectl_dir']
+
+  @property
+  def kubectl_version(self):
+    return self.config['kubectl_version']
 
 global_config = HokusaiGlobalConfig()
