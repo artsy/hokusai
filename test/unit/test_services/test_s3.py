@@ -9,7 +9,7 @@ def describe_s3_interface():
   def describe_init():
     def it_instantiates(mocker, mock_s3_client):
       mocker.patch('hokusai.services.s3.boto3.client', return_value=mock_s3_client)
-      mocker.patch('hokusai.services.s3.get_region_name', return_value='fooregion')
+      mocker.patch('hokusai.services.s3.common.get_region_name', return_value='fooregion')
       spy = mocker.spy(hokusai.services.s3.boto3, 'client')
       obj = S3Interface()
       assert obj._client is mock_s3_client

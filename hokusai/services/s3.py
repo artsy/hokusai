@@ -23,5 +23,3 @@ class S3Interface:
     except:
       common.print_red(f'Error: Failed to download {uri} to {target_file}')
       raise
-
-s3_interface = S3Interface()

@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 
 from hokusai.lib.config import config
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
-from hokusai.services.s3 import s3_interface
+from hokusai.services.s3 import S3Interface
 
 
 CONTEXT_SETTINGS = {
@@ -172,6 +172,7 @@ def uri_to_local(uri, local_file_path):
   parsed_uri = urlparse(uri)
   try:
     if parsed_uri.scheme == 's3':
+      s3_interface = S3Interface()
       s3_interface.download(uri, local_file_path)
     elif parsed_uri.scheme == 'file':
       if parsed_uri.path != local_file_path:
