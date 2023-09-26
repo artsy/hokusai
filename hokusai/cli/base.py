@@ -24,8 +24,8 @@ def console():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--kubeconfig-dir', type=click.STRING, default=None, help='Directory to install kubeconfig into. (default: None)')
-@click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. (default: None)')
+@click.option('--kubeconfig-dir', type=click.STRING, default=None, help='Directory to install kubeconfig into. The kubeconfig file will be named "config". (default: None)')
+@click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. The executable will be named "kubectl". (default: None)')
 @click.option('--new-config', type=click.STRING, default=None, help='Path to new Hokusai global config. Can be local file (e.g. file:///path/to/file) or AWS S3 location (e.g. s3://bucket/prefix/to/file). New config will overwrite an existing ~/.hokusai.yml')
 @click.option('--skip-kubeconfig', type=click.BOOL, is_flag=True, help='Skip kubeconfig install.')
 @click.option('--skip-kubectl', type=click.BOOL, is_flag=True, help='Skip kubectl install.')
