@@ -174,8 +174,12 @@ def utc_yyyymmdd():
   '''
   return datetime.utcnow().strftime("%Y%m%d")
 
-def local_to_local(source_path, target_dir, target_file, create_target_dir=True):
-  ''' copy source file to target dir/file '''
+def local_to_local(source_path, target_dir, target_file, create_target_dir=True, mode=0o660):
+  '''
+  copy source file to target dir/file
+  optionally create target dir, set target file mode as desired
+  0o660 = rw-rw---- (read/write by file owner or group owner)
+  '''
   target_path = os.path.join(target_dir, target_file)
   target_path_obj = Path(target_path)
 
@@ -195,6 +199,7 @@ def local_to_local(source_path, target_dir, target_file, create_target_dir=True)
     target_dir_obj.mkdir(parents=True, exist_ok=True)
 
   shutil.copyfile(source_path, target_path)
+  os.chmod(target_path, mode)
 
 def uri_to_local(uri, target_dir, target_file):
   '''

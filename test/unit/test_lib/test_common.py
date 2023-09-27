@@ -52,7 +52,7 @@ def describe_local_to_local():
             assert bpath.is_file()
     def describe_target_does_not_exist():
       def describe_target_dir_exists():
-        def it_copies():
+        def it_copies_and_sets_default_mode():
           with tempfile.TemporaryDirectory() as tmpdir:
             source = os.path.join(tmpdir, 'a.yml')
             spath = Path(source)
@@ -61,6 +61,17 @@ def describe_local_to_local():
             local_to_local(source, tmpdir, 'b.yml')
             tpath = Path(target)
             assert tpath.is_file()
+            assert os.stat(target).st_mode == int(0o100660) # the leading 10 means regular file
+        def it_copies_and_sets_custom_mode():
+          with tempfile.TemporaryDirectory() as tmpdir:
+            source = os.path.join(tmpdir, 'a.yml')
+            spath = Path(source)
+            spath.touch()
+            target = os.path.join(tmpdir, 'b.yml')
+            local_to_local(source, tmpdir, 'b.yml', mode=0o111)
+            tpath = Path(target)
+            assert tpath.is_file()
+            assert os.stat(target).st_mode == int(0o100111) # the leading 10 means regular file
       def describe_target_dir_missing():
         def describe_create_target_dir_true():
           def it_copies():
