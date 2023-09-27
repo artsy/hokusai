@@ -31,7 +31,7 @@ def console():
 @click.option('--skip-kubectl', type=click.BOOL, is_flag=True, help='Skip kubectl install.')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')
 def configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl, verbose):
-  """Read Hokusai global config, download kubeconfig, install kubectl, save final Hokusai config to ~/.hokusai.yml"""
+  """Pull new Hokusai global config, download kubeconfig, install kubectl, save final global config to ~/.hokusai.yml"""
   set_verbosity(verbose)
   hokusai.configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl)
 
