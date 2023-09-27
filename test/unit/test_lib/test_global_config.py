@@ -8,6 +8,7 @@ import hokusai.lib.global_config
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.global_config import HokusaiGlobalConfig
 
+
 def describe_hokusai_global_config():
   def describe_init():
     def it_inits():

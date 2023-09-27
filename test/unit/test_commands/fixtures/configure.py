@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
 def mock_global_config():
   class MockGlobalConfig():
