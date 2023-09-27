@@ -10,6 +10,7 @@ from hokusai.lib.exceptions import HokusaiError
 HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai.yml')
 HOKUSAI_GLOBAL_CONFIG_URI = f'file://{HOKUSAI_GLOBAL_CONFIG_FILE}'
 
+
 class HokusaiGlobalConfig:
   def __init__(self, uri=HOKUSAI_GLOBAL_CONFIG_URI):
     self._config = ConfigLoader(uri).load()
@@ -19,7 +20,7 @@ class HokusaiGlobalConfig:
     ''' merge params into config '''
     for k,v in kwargs.items():
       if v is not None:
-        self._config[k] = v
+        self._config[k.replace('_', '-')] = v
 
   def save(self):
     ''' save config to local config file '''
