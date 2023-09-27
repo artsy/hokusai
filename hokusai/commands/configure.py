@@ -5,27 +5,29 @@ import tempfile
 from urllib.request import urlretrieve
 
 from hokusai.lib.command import command
-from hokusai.lib.common import print_green, get_platform, uri_to_local
+from hokusai.lib.common import print_green, print_red, get_platform, local_to_local, uri_to_local
 from hokusai.lib.global_config import HokusaiGlobalConfig
 
 
 def install_kubectl(kubectl_version, kubectl_dir):
   ''' download and install kubectl '''
   tmpdir = tempfile.mkdtemp()
-  url = (
-    f"https://storage.googleapis.com/kubernetes-release/release/v" +
-    f"{kubectl_version}" +
-    f"/bin/{get_platform()}/amd64/kubectl"
-  )
-  print_green(f'Downloading kubectl from {url} ...', newline_after=True)
-  urlretrieve(url, os.path.join(tmpdir, 'kubectl'))
-  os.chmod(os.path.join(tmpdir, 'kubectl'), 0o755)
-  print_green(f'Installing kubectl into {kubectl_dir} ...', newline_after=True)
-  shutil.move(
-    os.path.join(tmpdir, 'kubectl'),
-    os.path.join(kubectl_dir, 'kubectl')
-  )
-  shutil.rmtree(tmpdir)
+  try:
+    url = (
+      f"https://storage.googleapis.com/kubernetes-release/release/v" +
+      f"{kubectl_version}" +
+      f"/bin/{get_platform()}/amd64/kubectl"
+    )
+    download_to = os.path.join(tmpdir, 'kubectl')
+    print_green(f'Downloading kubectl from {url} ...', newline_after=True)
+    urlretrieve(url, download_to)
+    print_green(f'Installing kubectl into {kubectl_dir} ...', newline_after=True)
+    local_to_local(download_to, kubectl_dir, 'kubectl', mode=0o770)
+  except:
+    print_red(f'Error: Failed to install kubectl')
+    raise
+  finally:
+    shutil.rmtree(tmpdir)
 
 def install(global_config, skip_kubeconfig, skip_kubectl):
   ''' install kubeconfig and kubectl '''
