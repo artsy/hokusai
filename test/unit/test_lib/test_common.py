@@ -99,7 +99,7 @@ def describe_local_to_local():
           local_to_local(source, tmpdir, 'b.yml')
 
 def describe_uri_to_local():
-  def describe_s3_uri():
+  def describe_s3_scheme():
     def it_calls_s3_interface_download(mocker, mock_s3_interface_class):
       mocker.patch('hokusai.lib.common.S3Interface').side_effect = mock_s3_interface_class
       s3_spy = mocker.spy(test.unit.test_lib.fixtures.common, 'download_for_spy')
@@ -121,14 +121,14 @@ def describe_uri_to_local():
             'file.txt'
           )
         ])
-  def describe_file_uri():
+  def describe_no_scheme():
     def it_calls_local_to_local(mocker):
       mocker.patch('hokusai.lib.common.local_to_local')
       spy = mocker.spy(hokusai.lib.common, 'local_to_local')
-      uri_to_local('file:///foodir/source.txt', '/target_dir', 'target_file')
+      uri_to_local('./foodir/source.txt', '/target_dir', 'target_file')
       spy.assert_has_calls([
         mocker.call(
-          '/foodir/source.txt',
+          './foodir/source.txt',
           '/target_dir',
           'target_file'
         )
@@ -137,7 +137,7 @@ def describe_uri_to_local():
       mocker.patch('hokusai.lib.common.local_to_local').side_effect = mock_local_to_local_raise
       with pytest.raises(Exception):
         uri_to_local('file:///foodir/source.txt', '/target_dir', 'target_file')
-  def describe_unsupported_uri():
+  def describe_unsupported_scheme():
     def it_errors():
       with pytest.raises(HokusaiError):
         uri_to_local('foo://foodir/source.txt', '/target_dir', 'target_file')

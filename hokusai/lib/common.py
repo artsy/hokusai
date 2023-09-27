@@ -204,7 +204,8 @@ def local_to_local(source_path, target_dir, target_file, create_target_dir=True,
 def uri_to_local(uri, target_dir, target_file):
   '''
   copy file from uri to target_dir/target_file
-  support uri schemes: s3://, file://
+  support s3 scheme uri: s3://bucket/key
+  support no scheme uri (i.e. local file): /path/to/file, ./path/to/file
   '''
   parsed_uri = urlparse(uri)
   tmpdir = tempfile.mkdtemp()
@@ -215,10 +216,10 @@ def uri_to_local(uri, target_dir, target_file):
       file_path = os.path.join(tmpdir, filename)
       s3_interface.download(uri, file_path)
       local_to_local(file_path, target_dir, target_file)
-    elif parsed_uri.scheme == 'file':
+    elif parsed_uri.scheme == '':
       local_to_local(parsed_uri.path, target_dir, target_file)
     else:
-      raise HokusaiError("uri must have a scheme of 'file://' or 's3://'")
+      raise HokusaiError(f'URI {uri} has unsupported scheme. Only "s3://" and file paths are supported.')
   except:
     print_red(
       f'Error: failed to copy {uri} to {os.path.join(target_dir, target_file)}'

@@ -8,11 +8,9 @@ from hokusai.lib.exceptions import HokusaiError
 
 
 HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai.yml')
-HOKUSAI_GLOBAL_CONFIG_URI = f'file://{HOKUSAI_GLOBAL_CONFIG_FILE}'
-
 
 class HokusaiGlobalConfig:
-  def __init__(self, uri=HOKUSAI_GLOBAL_CONFIG_URI):
+  def __init__(self, uri=HOKUSAI_GLOBAL_CONFIG_FILE):
     self._config = ConfigLoader(uri).load()
     self.validate_config()
 
