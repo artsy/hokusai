@@ -61,7 +61,7 @@ def describe_kubectl():
         def describe_no_error():
           def it_returns_data(mocker):
             obj = Kubectl('staging')
-            mock_return = { 
+            mock_return = {
               'items': {
                   'foo': 'bar'
               }
@@ -78,7 +78,7 @@ def describe_kubectl():
         def describe_no_error():
           def it_returns_data(mocker):
             obj = Kubectl('staging')
-            mock_return = { 
+            mock_return = {
               'items': {
                   'foo': 'bar'
               }
