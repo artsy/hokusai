@@ -2,7 +2,6 @@ import os
 import shutil
 import tempfile
 
-from distutils.dir_util import mkpath
 from urllib.request import urlretrieve
 
 from hokusai.lib.command import command
@@ -28,18 +27,21 @@ def install_kubectl(kubectl_version, kubectl_dir):
   )
   shutil.rmtree(tmpdir)
 
-def install_kubeconfig(kubeconfig_source_uri, kubeconfig_dir):
-  ''' download and install kubeconfig, name the file "config" in the given dir '''
-  print_green(f'Downloading kubeconfig from {kubeconfig_source_uri} to {kubeconfig_dir} ...', newline_after=True)
-  uri_to_local(kubeconfig_source_uri, kubeconfig_dir, 'config')
-
 def install(global_config, skip_kubeconfig, skip_kubectl):
   ''' install kubeconfig and kubectl '''
   if not skip_kubeconfig:
-    install_kubeconfig(
-      global_config.kubeconfig_source_uri,
-      global_config.kubeconfig_dir
+    print_green(
+      f'Downloading kubeconfig from ' +
+      f'{global_config.kubeconfig_source_uri} ' +
+      f'to {global_config.kubeconfig_dir} ...',
+      newline_after=True
     )
+    uri_to_local(
+      global_config.kubeconfig_source_uri,
+      global_config.kubeconfig_dir,
+      'config'
+    )
+
   if not skip_kubectl:
     install_kubectl(
       global_config.kubectl_version,
