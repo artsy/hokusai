@@ -12,6 +12,12 @@ class ConfigLoader:
   def __init__(self, uri):
     self.uri = uri
 
+  def _load_from_file(self, file_path):
+    ''' load config from file '''
+    with open(file_path, 'r') as f:
+      struct = yaml.safe_load(f.read())
+      return struct
+
   def load(self):
     ''' load config from uri '''
     if not self.uri.endswith('yaml') and not self.uri.endswith('yml'):
@@ -23,16 +29,10 @@ class ConfigLoader:
 
     try:
       uri_to_local(self.uri, tmpdir, filename)
-      config = self.load_from_file(tmp_configfile)
+      config = self._load_from_file(tmp_configfile)
       return config
     except:
       print_red(f'Error: Not able to load config from {self.uri}')
       raise
     finally:
       rmtree(tmpdir)
-
-  def load_from_file(self, file_path):
-    ''' load config from file '''
-    with open(file_path, 'r') as f:
-      struct = yaml.safe_load(f.read())
-      return struct
