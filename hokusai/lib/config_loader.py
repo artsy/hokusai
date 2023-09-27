@@ -9,6 +9,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 
 class ConfigLoader:
+  ''' load Hokusai config from Yaml files '''
   def __init__(self, uri):
     self.uri = uri
 

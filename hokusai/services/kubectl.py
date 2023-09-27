@@ -10,6 +10,7 @@ from hokusai.lib.global_config import HokusaiGlobalConfig
 global_config = HokusaiGlobalConfig()
 
 class Kubectl:
+  ''' run kubectl commands '''
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
@@ -18,6 +19,7 @@ class Kubectl:
     )
 
   def command(self, cmd):
+    ''' generate kubectl command '''
     if self.namespace is None:
       return f'{self.kubectl} --context {self.context} {cmd}'
     return (
@@ -26,6 +28,7 @@ class Kubectl:
     )
 
   def contexts(self):
+    ''' return all k8s contexts found in kubeconfig '''
     return [
       context['name'] for context in
       yaml.load(
@@ -35,6 +38,7 @@ class Kubectl:
     ]
 
   def get_object(self, obj):
+    ''' run kubectl get <object> '''
     cmd = self.command(f'get {obj} -o json)')
     try:
       return json.loads(shout(cmd))
@@ -42,6 +46,7 @@ class Kubectl:
       return None
 
   def get_objects(self, obj, selector=None):
+    ''' run kubectl get <object> with selectors '''
     if selector is not None:
       cmd = self.command(
         f'get {obj} --selector {selector} -o json'
