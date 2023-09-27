@@ -1,7 +1,7 @@
 from hokusai.commands.build import build
 from hokusai.commands.check import check
 from hokusai.commands.command_tree import print_command_tree
-from hokusai.commands.configure import configure
+from hokusai.commands.configure import hokusai_configure
 from hokusai.commands.deployment import update, refresh, promote
 from hokusai.commands.development import dev_start, dev_stop, dev_status, dev_logs, dev_run, dev_clean
 from hokusai.commands.gitdiff import gitdiff

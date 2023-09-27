@@ -51,7 +51,7 @@ def install(global_config, skip_kubeconfig, skip_kubectl):
     )
 
 @command(config_check=False)
-def configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl):
+def hokusai_configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl):
   '''
   read new global config,
   save global config,

@@ -33,7 +33,7 @@ def console():
 def configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl, verbose):
   """Pull new Hokusai global config, download kubeconfig, install kubectl, save final global config to ~/.hokusai.yml"""
   set_verbosity(verbose)
-  hokusai.configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl)
+  hokusai.hokusai_configure(kubeconfig_dir, kubectl_dir, new_config, skip_kubeconfig, skip_kubectl)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
