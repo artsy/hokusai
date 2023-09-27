@@ -7,8 +7,11 @@ import re
 import shutil
 import signal
 import string
+import tempfile
 
 from botocore import session as botosession
+from datetime import datetime
+from pathlib import Path
 from subprocess import call, check_call, check_output, Popen, STDOUT
 from termcolor import cprint
 from urllib.parse import urlparse
@@ -164,21 +167,57 @@ def get_platform():
   ''' get the platform (e.g. darwin, linux) of the machine '''
   return platform.system().lower()
 
-def uri_to_local(uri, local_file_path):
+def utc_yyyymmdd():
   '''
-  given a uri of a file, copy file to local_file_path
-  currently supported uri schemes: s3://, file://
+  return utc yymmdd, example:
+  for January 15th, 1999, return 19990115
+  '''
+  return datetime.utcnow().strftime("%Y%m%d")
+
+def local_to_local(source_path, target_dir, target_file, create_target_dir=True):
+  ''' copy source file to target dir/file '''
+  target_path = os.path.join(target_dir, target_file)
+  target_path_obj = Path(target_path)
+
+  # raise if target exists and is a dir
+  if target_path_obj.is_dir():
+    raise HokusaiError(f'Target {target_path} is an existing directory!')
+
+  # if target exists and is a file, back it up
+  if target_path_obj.is_file():
+    backup_path = f'{target_path}.backup.{utc_yyyymmdd()}'
+    shutil.copyfile(target_path, backup_path)
+
+  # if target dir does not exist, create it if desired
+  if create_target_dir:
+    target_dir_obj = Path(target_dir)
+    # noop if dir exists, error if what exists is a file
+    target_dir_obj.mkdir(parents=True, exist_ok=True)
+
+  shutil.copyfile(source_path, target_path)
+
+def uri_to_local(uri, target_dir, target_file):
+  '''
+  copy file from uri to target_dir/target_file
+  support uri schemes: s3://, file://
   '''
   parsed_uri = urlparse(uri)
+  tmpdir = tempfile.mkdtemp()
   try:
     if parsed_uri.scheme == 's3':
       s3_interface = S3Interface()
-      s3_interface.download(uri, local_file_path)
+      filename = 'downloaded_file'
+      file_path = os.path.join(tmpdir, filename)
+      s3_interface.download(uri, file_path)
+      local_to_local(file_path, target_dir, target_file)
     elif parsed_uri.scheme == 'file':
-      if parsed_uri.path != local_file_path:
-        shutil.copy(parsed_uri.path, local_file_path)
+      local_to_local(parsed_uri.path, target_dir, target_file)
     else:
       raise HokusaiError("uri must have a scheme of 'file://' or 's3://'")
   except:
-    print_red(f'Error: failed to copy {uri} to {local_file_path}')
+    print_red(
+      f'Error: failed to copy {uri} to {os.path.join(target_dir, target_file)}'
+    )
     raise
+  finally:
+    shutil.rmtree(tmpdir)

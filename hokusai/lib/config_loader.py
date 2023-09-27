@@ -18,10 +18,11 @@ class ConfigLoader:
       raise HokusaiError('Config file must be of Yaml file type')
 
     tmpdir = tempfile.mkdtemp()
-    tmp_configfile = os.path.join(tmpdir, 'hokusai.yml')
+    filename = 'hokusai.yml'
+    tmp_configfile = os.path.join(tmpdir, filename)
 
     try:
-      uri_to_local(self.uri, tmp_configfile)
+      uri_to_local(self.uri, tmpdir, filename)
       config = self.load_from_file(tmp_configfile)
       return config
     except:

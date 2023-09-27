@@ -30,10 +30,8 @@ def install_kubectl(kubectl_version, kubectl_dir):
 
 def install_kubeconfig(kubeconfig_source_uri, kubeconfig_dir):
   ''' download and install kubeconfig, name the file "config" in the given dir '''
-  if not os.path.isdir(kubeconfig_dir):
-    mkpath(kubeconfig_dir)
   print_green(f'Downloading kubeconfig from {kubeconfig_source_uri} to {kubeconfig_dir} ...', newline_after=True)
-  uri_to_local(kubeconfig_source_uri, os.path.join(kubeconfig_dir, 'config'))
+  uri_to_local(kubeconfig_source_uri, kubeconfig_dir, 'config')
 
 def install(global_config, skip_kubeconfig, skip_kubectl):
   ''' install kubeconfig and kubectl '''
