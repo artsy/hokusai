@@ -25,7 +25,7 @@ def describe_hokusai_global_config():
         kubeconfig_source_uri=None
       )
       assert config_obj._config['kubeconfig-dir'] == 'foodir'
-      assert config_obj._config['kubeconfig-source-uri'] == 's3://foobucket/k8s/config'
+      assert config_obj._config['kubeconfig-source-uri'] == '/fake/path/to/kube/config'
 
   def describe_save():
     def it_saves(monkeypatch):
