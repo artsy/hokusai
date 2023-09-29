@@ -5,6 +5,7 @@ import tempfile
 import hokusai.commands.configure
 
 from hokusai.commands.configure import hokusai_configure, install, install_kubectl
+from hokusai.lib.common import get_platform
 from test.unit.test_commands.fixtures.configure import mock_global_config, mock_urlretrieve_raise
 
 
@@ -81,7 +82,7 @@ def describe_install_kubectl():
     with tempfile.TemporaryDirectory() as tmpdir:
       mocker.patch('hokusai.commands.configure.tempfile.mkdtemp', return_value=tmpdir)
       install_kubectl('fooversion', 'foodir')
-      url = 'https://storage.googleapis.com/kubernetes-release/release/vfooversion/bin/darwin/amd64/kubectl'
+      url = f'https://storage.googleapis.com/kubernetes-release/release/vfooversion/bin/{get_platform()}/amd64/kubectl'
       download_to = os.path.join(tmpdir, 'kubectl')
       retrieve_spy.assert_has_calls([
         mocker.call(
