@@ -27,50 +27,46 @@ Hokusai provides an interactive console:
 In the console, use TAB to autocomplete Hokusai commands and `:help` for console help.
 
 
-## Configuring Hokusai for your organization
+## Global commands
 
-* `hokusai configure` - installs and configures kubectl
-
-Required options:
- - `--kubectl-version`: The version of your Kubernetes clusters
- - `--s3-bucket`: The S3 bucket containing your organization's kubectl config file
- - `--s3-key`: The S3 key of your organization's kubectl config file
-
-Hokusai uses `kubectl` to connect to Kubernetes and the [boto3](https://github.com/boto/boto3) library to interact with AWS ECR.
-
-Make sure you have set the environment variables `$AWS_ACCESS_KEY_ID` and `$AWS_SECRET_ACCESS_KEY` in your shell / `~/.bash_profile`.
-
-`hokusai configure` provides basic setup for installing and configuring kubectl:
-
-```
-hokusai configure --help
-```
-
-The recommended approach is to upload your `kubectl` config to S3 and use following command to install it:
-
-```
-hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
-```
+These commands are global, as in, they are not specific to a project. They can be run in any directory on user's local.
 
 
-## Setting up a project
+### Configuring Hokusai for your organization
 
-* `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
+* `hokusai configure` - installs and configures kubectl, as instructed by global config, overrides global config with any command line options specified by user, save the effective global config to `~/.hokusai.yml`. See [Hokusai Files](./hokusai_files.md#hokusaiyml) configuration variables read from the file.
 
-The files files are a starting point for development, and you are expected to customize them. If your org has templates for these files on Github, say for a Rails project, you can pull them down by:
+  By default, Hokusai reads global config from `~/.hokusai.yml`. If the file doesn't exist, or there has been changes to org-wide configs (e.g. kubectl version), user should use `HOKUSAI_GLOBAL_CONFIG` env var to bootstrap a new config file:
 
-```
-hokusai setup --template-remote git@github.com:org/hokusai-templates.git --template-dir rails
-```
+  For example, if org admin [has prepared a new config file](./Administering_Hokusai.md#create-an-org-wide-hokusai-global-config-file)at `s3://acme/hokusai.yml`, user can run: 
 
-When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define configuration for a staging / production Kubernetes context that you are assumed to have available, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
+  ```
+  HOKUSAI_GLOBAL_CONFIG=s3://acme/hokusai.yml hokusai configure
+  ```
 
-Note: `hokusai staging` `hokusai production` subcommands such as `create`, `update`, `env`, `deploy` and `logs` reference the respective environment YAML file and interacts with the respective Kubernetes context.
+## Project-scoped commands
+
+These commands are project-specific. They should be run from a project's Git repo root. Directories mentioned below are all relative to the root dir.
+
+
+### Setting up a project
+
+* `hokusai setup` - Writes hokusai project config to `(project-repo)/hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
+
+  The files files are a starting point for development, and you are expected to customize them. If your org has templates for these files on Github, say for a Rails project, you can pull them down by:
+
+  ```
+  hokusai setup --template-remote git@github.com:org/hokusai-templates.git --template-dir rails
+  ```
+
+  When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define configuration for a staging / production Kubernetes context that you are assumed to have available, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
+
+  Note: `hokusai staging` `hokusai production` subcommands such as `create`, `update`, `env`, `deploy` and `logs` reference the respective environment YAML file and interacts with the respective Kubernetes context.
 
 * `hokusai check` - Checks that Hokusai dependencies are correctly installed and configured for the current project.
 
 
-## Local development
+### Local development
 
 * `hokusai dev` - Interact with docker-compose targeting the development environment defined in ./hokusai/development.yml
  - `hokusai dev start` - Start the development environment defined in `./hokusai/development.yml`.
@@ -81,32 +77,31 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
  - `hokusai dev clean` - Stop and remove all containers in the environment.
 
 
-## Testing and building images
+### Testing and building images
 
 * `hokusai test` - Start the testing environment defined `hokusai/test.yml` and exit with the return code of the test command.
 * `hokusai build` - Build the docker image defined in ./hokusai/build.yml.
 
 
-## Managing images in the registry
+### Managing images in the registry
 
 * `hokusai registry` - Interact with the project registry.
  - `hokusai registry push` - Build and push an image to the project registry.
+    It will build and push an image to ECR. By default, it tags the image as the SHA1 of the HEAD of your current git branch (by calling `git rev-parse HEAD`). You can override this behavior with the `--tag` option, although this is not recommended as creating builds matched to the SHA1 of Git tags gives you a clean view of your ECR project repository and deployment history.
 
-It will build and push an image to ECR. By default, it tags the image as the SHA1 of the HEAD of your current git branch (by calling `git rev-parse HEAD`). You can override this behavior with the `--tag` option, although this is not recommended as creating builds matched to the SHA1 of Git tags gives you a clean view of your ECR project repository and deployment history.
+    The command will also tag the image as `latest`. This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes environment.
 
-The command will also tag the image as `latest`. This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes environment.
+    The command aborts if any of the following conditions is met:
+    - The working directory is not clean (you have uncommitted changes)
+    - The working directory contains any files specified in your `.gitignore` file. Running `git status --ignored` will list.
+    - The project registry already contains the specified tag
 
-The command aborts if any of the following conditions is met:
-- The working directory is not clean (you have uncommitted changes)
-- The working directory contains any files specified in your `.gitignore` file. Running `git status --ignored` will list.
-- The project registry already contains the specified tag
-
-The reason for these conditional checks is that when building, Docker will copy your _entire_ working directory into the container image, which can produce unexpected results when building images locally, destined for production environments! Hokusai aborts if it detects the working directory is unclean, or any ignored files or directories are present, as it attempts to prevent any local configuration leaking into container images.
+    The reason for these conditional checks is that when building, Docker will copy your _entire_ working directory into the container image, which can produce unexpected results when building images locally, destined for production environments! Hokusai aborts if it detects the working directory is unclean, or any ignored files or directories are present, as it attempts to prevent any local configuration leaking into container images.
 
  - `hokusai registry images` - Print image builds and tags in the project registry.
 
 
-## Working with remotely deployed Kubernetes environments
+### Working with remotely deployed Kubernetes environments
 
 * `hokusai [staging|production]` - Interact with remote Kubernetes resources.
 
@@ -130,14 +125,14 @@ The reason for these conditional checks is that when building, Docker will copy 
 * `hokusai [staging|production] logs` - Print the logs from your application containers
 
 
-## Working with review apps
+### Working with review apps
 
 Review apps can be created and managed with `hokusai review_app`.
 
 See full details in the [Review App reference](Review_Apps.md).
 
 
-## Working with the Staging -> Production pipeline
+### Working with the Staging -> Production pipeline
 
 * `hokusai pipeline` - Interact with the project's' staging -> production pipeline
  - `hokusai pipeline gitdiff` - Print a git diff between the tags deployed on production vs staging.
@@ -146,7 +141,7 @@ See full details in the [Review App reference](Review_Apps.md).
  - `hokusai pipeline promote` - Update the project's deployment(s) on production with the image tag currently deployed on staging and update the production tag to reference the same image. Update `app.kubernetes.io/version` label as mentioned for `hokusai [staging|production] deploy`.
 
 
-## A note on deployment rollouts
+### A note on deployment rollouts
 
 When running `hoksuai [staging|production] deploy` or `hokusai pipeline promote`, Hokusai takes the following steps:
 1) Selects all the project's deployments (those matching the label selectors "app={project_name},layer=application").
@@ -160,7 +155,7 @@ When running `hoksuai [staging|production] deploy` or `hokusai pipeline promote`
 9) Finally, Hokusai exits `0` if all steps were successful. If any of steps `6`, `7` or `8` failed, it exits with `1`.
 
 
-## How to rollback
+### How to rollback
 
 You can use the command `hokusai registry images` to get a list of all images for your current project. They order from most recent to oldest. To do a rollback use `hokusai production deploy [image_tag]` to get back to a particular version. 
 
