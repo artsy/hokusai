@@ -85,12 +85,12 @@ template-config-files:
 
 ### (project)/hokusai/build.yml
 
-Referenced by `hokusai build` command. This file should contain a single Docker Compose Service with `build` spec referencing the root project directory, and any build args (i.e. host environment variables to inject into the Dockerfile).
+Used by `hokusai build` command. This file should contain a single Docker Compose Service with `build` spec referencing the root project directory, and any build args (i.e. host environment variables to inject into the Dockerfile).
 
 
 ### (project)/hokusai/development.yml
 
-Referenced by `hokusai local dev` commands. It should contain a definition for your project service (extending `(project)/hokusai/build.yml`) as well as development environment variables and any dependent services.
+Referenced by `hokusai dev` commands. It should contain a definition for your project service (extending `(project)/hokusai/build.yml`) as well as development environment variables and any dependent services.
 
 
 ### (project)/hokusai/test.yml

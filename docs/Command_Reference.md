@@ -41,6 +41,12 @@ hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> 
 
 * `hokusai setup` - Writes hokusai project config to `hokusai/config.yml`, creates test, development and production YAML files alongside it, adds a Dockerfile to the current directory, and creates a project ECR repo.
 
+The files files are a starting point for development, and you are expected to customize them. If your org has templates for these files on Github, say for a Rails project, you can pull them down by:
+
+```
+hokusai setup --template-remote git@github.com:org/hokusai-templates.git --template-dir rails
+```
+
 When running `hokusai setup` `staging.yml` and `production.yml` are created in the `./hokusai` project directory. These files define configuration for a staging / production Kubernetes context that you are assumed to have available, and Hokusai is opinionated about a workflow between a staging and a production Kubernetes context.
 
 Note: `hokusai staging` `hokusai production` subcommands such as `create`, `update`, `env`, `deploy` and `logs` reference the respective environment YAML file and interacts with the respective Kubernetes context.
@@ -68,6 +74,19 @@ Note: `hokusai staging` `hokusai production` subcommands such as `create`, `upda
 
 * `hokusai registry` - Interact with the project registry.
   - `hokusai registry push` - Build and push an image to the project registry.
+
+It will build and push an image to ECR. By default, it tags the image as the SHA1 of the HEAD of your current git branch (by calling `git rev-parse HEAD`).  You can override this behavior with the `--tag` option, although this is not recommended as creating builds matched to the SHA1 of Git tags gives you a clean view of your ECR project repository and deployment history.
+
+The command will also tag the image as `latest`.  This image tag should not be referenced in any Kubernetes YAML configuration, but serves only as a pointer, which is referenced when creating a Kubernetes environment.
+
+The command aborts if any of the following conditions is met:
+- The working directory is not clean (you have uncommitted changes)
+- The working directory contains any files specified in your `.gitignore` file. Running `git status --ignored` will list.
+- The project registry already contains the specified tag
+
+The reason for these conditional checks is that when building, Docker will copy your _entire_ working directory into the container image, which can produce unexpected results when building images locally, destined for production environments!  Hokusai aborts if it detects the working directory is unclean, or any ignored files or directories are present, as it attempts to prevent any local configuration leaking into container images.
+
+
   - `hokusai registry images` - Print image builds and tags in the project registry.
 
 ### Working with remotely deployed Kubernetes environments
