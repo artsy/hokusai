@@ -82,23 +82,19 @@ Hokusai currently supports Python 3.7+ only. The last version that supported Pyt
 
 ## Setup
 
-We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Compose set up, and that you have an AWS account. Perform the following steps to setup Hokusai:
+We assume that your org admin has already set up a Kubernetes cluster and an AWS infrastructure, and that your local environment has Git, Docker, and Docker-Compose installed. Perform the following steps to get Hokusai working:
 
-1. [Configure AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
+1. Ensure your org admin has completed the steps mentioned in [Administering Hokusai](./docs/Administering_Hokusai.md).
 
-2. Configure Hokusai
+2. Configure your local environment with [AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
+
+3. Run Hokusai configure command:
 
     ```
-    hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
+    HOKUSAI_GLOBAL_CONFIG=<path-to-org-wide-global-config-file> hokusai configure
     ```
 
-    Provide the Kubectl version matching that of your Kubernetes clusters, as well as the S3 bucket name/key where your org's Kubectl config file is stored.
-
-    For system administrators: see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS and Kubernetes, and on publishing a Kubectl config file.
-
-    For Artsy developers: see [artsy/README](https://github.com/artsy/README/blob/main/playbooks/hokusai.md) for the current way of installing and configuring hokusai.
-
-3. Enable Bash autocompletion:
+4. Optionally, enable Bash autocompletion:
 
     ```
     eval "$(_HOKUSAI_COMPLETE=source hokusai)"
@@ -106,7 +102,11 @@ We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Comp
 
 ## Getting Started
 
-See [Getting Started](./docs/Getting_Started.md) to start using Hokusai for your project.
+Once Hokusai is working on your local, you can start using Hokusai on a project. See [Getting Started](./docs/Getting_Started.md).
+
+## Configuration Options
+
+Hokusai can be configured globally or project by project, to suit an org or individual user. See [Configuration Options](./docs/Configuration_Options.md).
 
 ## Command Reference
 

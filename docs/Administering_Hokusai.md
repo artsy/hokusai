@@ -1,23 +1,37 @@
-## Administering Hokusai
+# Administering Hokusai
 
-Operationally, Hokusai requires:
-- One or more Kubernetes deployments
-- An AWS IAM user and keypair
-- IAM policy / policies granting access to ECR and S3
+This doc talks about some admin-level setup that must be performed before you can can start using Hokusai.
 
-### Deploying Kubernetes
+- Deploy a Kubernetes cluster
+- Create a kubectl config file
+- Create an AWS IAM User for the person using Hokusai
+- Grant IAM User access to ECR
+- Create an org-wide Hokusai global config file
+- Grant IAM User access to S3
 
-Deploying Kubernetes is outside the scope of Hokusai, but we recommend taking a look at [kops](https://github.com/kubernetes/kops) to bootstrap Kubernetes clusters on EC2.
 
-Note: Ensure that your Kubelets have access to ECR and can pull images.
+## Deploy a Kubernetes cluster
 
-### Creating an IAM user
+There is a bunch of tools available for doing this. [Kops](https://github.com/kubernetes/kops) is one, and it can deploy a cluster on AWS EC2.
 
-We recommend creating an IAM user per application developer, let's call her Anja. Navigate to the AWS IAM dashboard, and create a new user 'anja'.  Take note of the generated keypair.
+The cluster must be able to pull Docker images from AWS ECR.
 
-### Configuring IAM credentials
 
-In order to grant users access to the ECR repositories, create a new IAM policy, and attach this policy to `anja`.
+## Create a kubectl config file
+
+Create a kubectl config file (also known as kubeconfig file) that has two contexts: `staging` and `production`. Hokusai recognizes only those two contexts. Map these contexts to your staging and production environments which can be two Kubernetes clusters, or two namespaces of the same cluster.
+
+Upload the file to an S3 location readable by users.
+
+
+## Create an AWS IAM User for the person using Hokusai
+
+Suppose the person's name is Anja, create an IAM User named 'anja'. Generate a keypair and deliver to Anja.
+
+
+## Grant IAM User access to ECR
+
+For example, attach the following IAM policy to `anja` IAM User.
 
 ```json
 {
@@ -36,11 +50,17 @@ In order to grant users access to the ECR repositories, create a new IAM policy,
 }
 ```
 
-### Configuring kubectl for your organization
 
-Hokusai depends on the existence of two Kubernetes contexts - `staging` and `production`.  You should create a kubectl config file, with these two contexts targeting your staging and production Kubernetes deployment(s).  We manage seperate staging and production clusters, but you can just as easily use one cluster with different namespaces.
+## Create an org-wide Hokusai global config file
 
-Upload the kubectl config file to S3, and ensure your development teams have access to it by creating another / updating your existing IAM policy and attaching this policy to `anja`.
+See [Global Configuration](./Configuration_Options.md) for list of config variables supported.
+
+Upload the file to an S3 location readable by users.
+
+
+## Grant IAM User access to S3
+
+For example, attach the following IAM policy to `anja` IAM User.
 
 ```json
 {
@@ -49,10 +69,11 @@ Upload the kubectl config file to S3, and ensure your development teams have acc
     {
       "Effect": "Allow",
       "Action": ["s3:GetObject"],
-      "Resource": ["arn:aws:s3:::bucket-name/file-key"]
+      "Resource": [
+        "arn:aws:s3:::bucket-name/path/to/kubeconfig-file",
+        "arn:aws:s3:::bucket-name/path/to/org-wide-global-config-file"
+      ]
     }
   ]
 }
 ```
-
-Finally, instruct your development teams to run `hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>` with the version of your Kubernetes deployment(s) as well as the S3 bucket and key of the kubectl config file you provided.
