@@ -2,22 +2,23 @@
 
 Each Hokusai-managed project must have the following files:
 
-- `./hokusai/config.yml` - configuration for the project
-- `./hokusai/build.yml` - base docker-compose file with definition on building the project's Docker image
-- `./hokusai/development.yml` - docker-compose file with definition on launching a local development stack
-- `./hokusai/test.yml` - docker-compose file with definition on launching a test stack
-- `./hokusai/staging.yml` - Kubernetes spec for launching the project's resources in the Staging environment
-- `./hokusai/production.yml` - Kubernetes spec for launching the project's resources in the Production environment
+- `./hokusai/config.yml` - customizes Hokusai commands' behavior for the project
+- `./hokusai/build.yml` - the base docker-compose spec for building the project's Docker image
+- `./hokusai/development.yml` - the docker-compose spec on launching a local development stack
+- `./hokusai/test.yml` - the docker-compose spec on launching a test stack
+- `./hokusai/staging.yml` - the Kubernetes spec for launching the project's Staging resources
+- `./hokusai/production.yml` - the Kubernetes spec for launching the project's Production resources
 
-These files are meant to be modified on a per-project basis.
+There are samples of these files in [templates directory](../hokusai/templates/hokusai), which you can customize to suit your project.
 
-The following sections describe these files in detail.
+Most of these files can be [bootstrapped using `hokusai setup` command](./Command_Reference.md#setting-up-a-project).
+
 
 ## The files
 
 ### config.yml
 
-The configuration variables defined in this file allows you to customize Hokusai commands' behavior for a particular project. The variables supported are:
+The variables defined in this file are used to customize Hokusai commands' behavior for a particular project. The following variables are supported:
 
 - `hokusai-required-version`: <string> (optional) - A [PEP-440 version specifier string](https://www.python.org/dev/peps/pep-0440/#version-specifiers).  Hokusai will raise an error when running commands if its current version does not satisfy these version specifications.  For example: `~=0.5`, `==0.5.1`, `>=0.4.0,<0.4.6`, `!=0.1.*` are all valid version specifier strings
 - `project-name`: <string> (required) - The project name
@@ -33,10 +34,30 @@ The configuration variables defined in this file allows you to customize Hokusai
 - `run-constraints`: <list of kubernetes label selector strings> - Constrain run containers to Kubernetes nodes matching the label selectors in the form `key=value` by setting the `nodeSelector` field on the container's spec. Bound to the `--constrint` option for `hokusai [staging|production|review_app] run` as well as containers run via the `--migration` flag as well as `pre-deploy` / `post-deploy` hooks triggered by `hokusai [staging|production|review_app] deploy` or `hokusai pipeline promote`.  Falls back to the `HOKUSAI_RUN_CONSTRAINTS` env var, in which case a list is parsed from a comma-delimited string.
 - `always-verbose`: <boolean> (optional) - Always pront verbose output.  Bound to the `--verbose` option for various commands, and falls back to the `HOKUSAI_ALWAYS_VERBOSE` env var.
 
+Some of these configuration variables have corresponding environment variables and/or Hokusai command line options. When user specifies a config in multiple ways, the order of precedence is as follows:
+
+- If the configuration variable is bound to a command-line option, the option supplied on the command line always takes precedence.
+- If the configuration variable is provided in `./hokusai/config.yml` it is used as the option if not supplied on the command line.
+- If an environment variable is set it is used as a fallback.
+- The default value from the command-line option is used.
+
+Here's a sample `./hokusai/config.yml` file:
+
+```
+---
+project-name: test-project
+git-remote: git@github.com:acme/test-project.git
+hokusai-required-version: ">=1.0.0"
+pre-deploy: echo hi
+post-deploy: echo bye
+template-config-files:
+  - s3://bucket/hokusai-vars.yml
+```
+
 
 ### build.yml
 
-Referenced by `hokusai build` command. This file should contain a single service for the project, `build` referencing the root project directory, and any build args (i.e.) host environment variables to inject into the Dockerfile.
+Referenced by `hokusai build` command. This file should contain a single Docker Compose Service with `build` spec referencing the root project directory, and any build args (i.e. host environment variables to inject into the Dockerfile).
 
 
 ### development.yml
@@ -56,7 +77,7 @@ Referenced by `hokusai staging` subcommands. It should contain a `Deployment` an
 
 ### production.yml
 
-Referenced by `hokusai production` subcommands. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
+Referenced by `hokusai production` subcommands. It should contain at least a `Deployment` and a `Service` definition for the project as well as any dependent Kubernetes resources.
 
 
 ## Kubernetes Yaml Template Processing
@@ -67,6 +88,7 @@ as [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates. The files ar
 The default [template context dictionary](https://jinja.palletsprojects.com/en/2.11.x/templates/#variables) includes the variables `project_name` and `project_repo` and the context can be extended by providing the location of multiple Yaml files to the `template-config-files` project config parameter.  These files must contain a dictionary as a single document.  The dictionaries are merged into the template context dictionary in the order specified.  Any variables defined in the template and not included in the context dictionary will result in Hokusai raising an error, as will invalid operations on a variable, i.e. attempting to access a missing property of a variable of the wrong type.
 
 For advanced template design see Jinja's [template designer documentation](https://jinja.palletsprojects.com/en/2.11.x/templates/).
+
 
 ### Tips on template design
 

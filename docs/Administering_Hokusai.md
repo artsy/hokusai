@@ -1,6 +1,6 @@
 # Administering Hokusai
 
-This doc talks about some admin-level setup that must be performed before you can can start using Hokusai.
+This doc covers admin-level setup that must be performed before you can start using Hokusai.
 
 - Deploy a Kubernetes cluster
 - Create a kubectl config file
