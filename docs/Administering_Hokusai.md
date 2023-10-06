@@ -53,7 +53,7 @@ For example, attach the following IAM policy to `anja` IAM User.
 
 ## Create an org-wide Hokusai global config file
 
-See [Global Configuration](./Configuration_Options.md) for list of config variables supported.
+See [Hokusai Files](./hokusai_files.md) for list of config variables supported.
 
 Upload the file to an S3 location readable by users.
 

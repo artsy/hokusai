@@ -25,7 +25,7 @@ hokusai setup
   * `staging.yml` - a Kubernetes YAML file used by `hokusai staging`
   * `production.yml` - a Kubernetes YAML file used by `hokusai production`
 
-The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Configuration Options](./Configuration_Options.md) if you want to modify your project's configuration.
+The files in `./hokusai` as well as the `Dockerfile` / `.dockerignore` files are meant to be a starting point for development of your specific application's dependencies, and can / should be freely modified, as you customize your Docker build, add service dependencies to your environments, introduce environment variables, or change the container runtime commands.  See [Hokusai Files](./hokusai_files.md) if you want to modify your project's configuration.
 
 You are able to define your own [Jinja templates](http://jinja.pocoo.org/docs/2.10/) and load them from a local directory with the `--template-dir` option, or specify a remote git repository with `--template-remote` and point to a remote path in that repository with `--template-dir`.
 
@@ -71,14 +71,14 @@ To shut down the environment's running containers, run `hokusai dev stop`
 
 Container filesystems will be preserved between environment starts and stops, unless you run `hokusai dev clean`, in which case the container filesystems will be deleted.
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your development environment's configuration.
+See [Hokusai Files](./hokusai_files.md) if you want to modify your development environment's configuration.
 
 
 4) Run the test suite in the test environment
 
 `hokusai test` will build a Docker image, start a Docker Compose environment defined by `./hokusai/test.yml`, run the defined test command in the main (project-name) container to completion, and return its exit code.
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your test environment's configuration.
+See [Hokusai Files](./hokusai_files.md) if you want to modify your test environment's configuration.
 
 5) Build and push an image to ECR
 
@@ -114,7 +114,7 @@ After setting environment variables you need to run:
 hokusai staging refresh
 ```
 
-See [Configuration Options](./Configuration_Options.md) if you want to modify your staging environment's configuration.
+See [Hokusai Files](./hokusai_files.md) if you want to modify your staging environment's configuration.
 
 
 8) Create the Kubernetes production environment
