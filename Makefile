@@ -71,7 +71,9 @@ publish-to-s3-canonical:
 	fi
 
 build-docker-image:
+	python -m setuptools_scm
 	poetry build
+	cat hokusai/_version.py
 	docker build . \
 	  --tag hokusai
 
