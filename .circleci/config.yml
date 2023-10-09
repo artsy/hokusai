@@ -103,6 +103,7 @@ jobs:
       - run: apk add curl docker-cli git make
       - run: pip install setuptools --upgrade
       - run: pip install setuptools_scm
+      - run: pip install poetry
       - run: make build-docker-image
 
   release_beta_s3_linux:
@@ -151,6 +152,7 @@ jobs:
       - run: apk add curl docker-cli git make
       - run: pip install setuptools --upgrade
       - run: pip install setuptools_scm
+      - run: pip install poetry
       - run: make build-docker-image
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
       - run: make publish-to-dockerhub-beta
@@ -256,6 +258,7 @@ jobs:
       - run: apk add curl docker-cli git make
       - run: pip install setuptools --upgrade
       - run: pip install setuptools_scm
+      - run: pip install poetry
       - run: scripts/create_release_tag.sh
       - run: make build-docker-image
       - run: echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
