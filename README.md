@@ -102,11 +102,11 @@ We assume that your org admin has already set up a Kubernetes cluster and an AWS
 
 ## Getting Started
 
-Once Hokusai is working on your local, you can start using Hokusai on a project. See [Getting Started](./docs/Getting_Started.md).
+Once Hokusai is working on your local, you can start using Hokusai on a project. Please see [Getting Started](./docs/Getting_Started.md).
 
 ## Configuration Options
 
-Hokusai can be configured globally or project by project, to suit an org or individual user. See [Configuration Options](./docs/Configuration_Options.md).
+Hokusai has global configurations as well as project-specific configurations. Please see [Configuration Options](./docs/Configuration_Options.md).
 
 ## Command Reference
 
@@ -175,7 +175,7 @@ The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-v
 
 ### Poetry
 
-Use [Poetry](https://python-poetry.org/) to install Hokusai's dependencies as well as Hokusai itself in [editable mode](https://pip-python3.readthedocs.io/en/latest/reference/pip_install.html#editable-installs). See [this guide](https://python-poetry.org/docs/basic-usage/) for working with Poetry.
+Use [Poetry](https://python-poetry.org/) to install Hokusai's dependencies as well as Hokusai itself in [editable mode](https://pip-python3.readthedocs.io/en/latest/reference/pip_install.html#editable-installs). Please see [this guide](https://python-poetry.org/docs/basic-usage/) for working with Poetry.
 
 Install Poetry:
 
