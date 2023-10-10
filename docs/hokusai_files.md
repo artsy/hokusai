@@ -2,25 +2,28 @@
 
 The following Hokusai files must exist on a user's local environment:
 
-Global file:
+Global files:
 
 - `~/.hokusai.yml` - user's global Hokusai configuration
 
 Per-project files:
 
-- `(project)/hokusai/config.yml` - customizes Hokusai commands' behavior for the project
-- `(project)/hokusai/build.yml` - the base docker-compose spec for building the project's Docker image
-- `(project)/hokusai/development.yml` - the docker-compose spec on launching a local development stack
-- `(project)/hokusai/test.yml` - the docker-compose spec on launching a test stack
-- `(project)/hokusai/staging.yml` - the Kubernetes spec for launching the project's Staging resources
-- `(project)/hokusai/production.yml` - the Kubernetes spec for launching the project's Production resources
+These files are stored in a `hokuai` directory that is in the project's root directory (i.e. `/path/to/project/hokusai`)
+
+- `config.yml` - customizes Hokusai commands' behavior for the project
+- `build.yml` - the base docker-compose spec for building the project's Docker image
+- `development.yml` - the docker-compose spec on launching a local development stack
+- `test.yml` - the docker-compose spec on launching a test stack
+- `staging.yml` - the Kubernetes spec for launching the project's Staging resources
+- `production.yml` - the Kubernetes spec for launching the project's Production resources
 
 There are samples of project files in [templates directory](../hokusai/templates/hokusai), which you can customize to suit your project. Project-specific files can be [bootstrapped by `hokusai setup` command](./Command_Reference.md#setting-up-a-project).
 
 
-## The files
+## Global files
 
 This section describes the files in more detail.
+
 
 ### ~/.hokusai.yml
 
@@ -44,7 +47,10 @@ kubectl-version: 1.28.0
 A user would not have this file at the beginning. An admin is expected to [prepare an org-wide version](./Administering_Hokusai.md#create-an-org-wide-hokusai-global-config-file) in advance, which can be obtained by users by running [hokusai configure](docs/Command_Reference.md#configuring-hokusai-for-your-organization) command.
 
 
-### (project)/hokusai/config.yml
+## Per-project files
+
+
+### config.yml
 
 The variables defined in this file are used to customize Hokusai commands' behavior for a particular project. The following variables are supported:
 
@@ -83,27 +89,27 @@ template-config-files:
 ```
 
 
-### (project)/hokusai/build.yml
+### build.yml
 
 Used by `hokusai build` command. This file should contain a single Docker Compose Service with `build` spec referencing the root project directory, and any build args (i.e. host environment variables to inject into the Dockerfile).
 
 
-### (project)/hokusai/development.yml
+### development.yml
 
 Referenced by `hokusai dev` commands. It should contain a definition for your project service (extending `(project)/hokusai/build.yml`) as well as development environment variables and any dependent services.
 
 
-### (project)/hokusai/test.yml
+### test.yml
 
 Referenced by `hokusai test`. It should contain a definition for your project service (extending `(project)/hokusai/build.yml`) as well as test environment variables and any dependent services.
 
 
-### (project)/hokusai/staging.yml
+### staging.yml
 
 Referenced by `hokusai staging` subcommands. It should contain a `Deployment` and a `Service` definition for the project as well as any dependent deployments and/or services.
 
 
-### (project)/hokusai/production.yml
+### production.yml
 
 Referenced by `hokusai production` subcommands. It should contain at least a `Deployment` and a `Service` definition for the project as well as any dependent Kubernetes resources.
 
