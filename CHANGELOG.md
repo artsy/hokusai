@@ -4,9 +4,9 @@
 
 ### Notable changes since v1.4.0
 
-* 2bc836a fix: python -m setuptools_scm no longer creates _version.py file
-* 2574cf0 fix: setuptools version too old for setuptools_scm
-* a177174 fix: run no tty not return return code
+* 2bc836a fix: python -m setuptools_scm no longer creates _version.py file (#382)
+* 2574cf0 fix: setuptools version too old for setuptools_scm (#381)
+* a177174 fix: run no tty not return return code (#380)
 
 ## v1.4.0
 
