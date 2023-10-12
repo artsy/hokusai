@@ -191,9 +191,9 @@ def describe_command_runner():
         mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
         mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
         runner = CommandRunner('staging')
-        mocker.patch.object(runner, '_run_no_tty')
+        mocker.patch.object(runner, '_run_no_tty', return_value=0)
         spy = mocker.spy(runner, '_run_no_tty')
-        runner.run('footag', 'foocmd', tty=False, env=('foo=bar',), constraint=('fooconstraint=bar',))
+        returncode = runner.run('footag', 'foocmd', tty=False, env=('foo=bar',), constraint=('fooconstraint=bar',))
         assert spy.call_count == 1
         spy.assert_has_calls([
           mocker.call(
@@ -202,3 +202,4 @@ def describe_command_runner():
             mock_spec
           )
         ])
+        assert returncode == 0

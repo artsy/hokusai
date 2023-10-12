@@ -164,4 +164,4 @@ class CommandRunner:
     if run_tty:
       self._run_tty(cmd, image_name, overrides)
     else:
-      self._run_no_tty(cmd, image_name, overrides)
+      return self._run_no_tty(cmd, image_name, overrides)
