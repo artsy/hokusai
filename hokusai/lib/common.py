@@ -76,7 +76,10 @@ def local_to_local(
   optionally create target dir, set target file mode as desired
   0o660 = rw-rw---- (read/write by file owner or group owner)
   '''
-  target_path = os.path.join(target_dir, target_file)
+  # expand any ~
+  expanded_target_dir = os.path.expanduser(target_dir)
+
+  target_path = os.path.join(expanded_target_dir, target_file)
   target_path_obj = Path(target_path)
 
   # raise if target exists and is a dir
@@ -90,7 +93,7 @@ def local_to_local(
 
   # if target dir does not exist, create it if desired
   if create_target_dir:
-    target_dir_obj = Path(target_dir)
+    target_dir_obj = Path(expanded_target_dir)
     # noop if dir exists, error if what exists is a file
     target_dir_obj.mkdir(parents=True, exist_ok=True)
 

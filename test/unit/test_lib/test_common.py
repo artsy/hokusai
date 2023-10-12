@@ -72,6 +72,18 @@ def describe_local_to_local():
             tpath = Path(target)
             assert tpath.is_file()
             assert os.stat(target).st_mode == int(0o100111) # the leading 10 means regular file
+        def it_copies_to_home_dir(monkeypatch):
+          with tempfile.TemporaryDirectory() as tmpdir:
+            source = os.path.join(tmpdir, 'a.yml')
+            spath = Path(source)
+            spath.touch()
+            home_dir = os.path.join(tmpdir, 'myhome')
+            monkeypatch.setenv('HOME', home_dir)
+            target = os.path.join(home_dir, 'subdir', 'b.yml')
+            local_to_local(source, '~/subdir', 'b.yml')
+            tpath = Path(target)
+            assert tpath.is_file()
+            assert os.stat(target).st_mode == int(0o100660) # the leading 10 means regular file
       def describe_target_dir_missing():
         def describe_create_target_dir_true():
           def it_copies():
