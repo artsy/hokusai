@@ -34,17 +34,18 @@ These commands are global, as in, they are not specific to a project. They can b
 
 ### Configuring Hokusai for your organization
 
-* `hokusai configure` - Install and configure kubectl, as instructed by user-specified options (higher precedence) or by global config (lower precedence). Write user-specified options back to global config. Save global config to `~/.hokusai.yml`.
+* `hokusai configure` - Install and configure kubectl. Rely on config from `~/hokusai.yml` ([the global configuration file](./hokusai_files.md#hokusaiyml)). User-specified values in command line options (e.g. kubectl-dir) supercede corresponding values in `~/.hokusai.yml`. Merge command line options into `~/.hokusai.yml`.
 
-  Please see [Hokusai Files](./hokusai_files.md#hokusaiyml) for vars supported by global config.
-
-  By default, Hokusai reads global config from `~/.hokusai.yml`. If the file doesn't exist, or there has been org-wide changes (e.g. new kubectl version), the org admin is to [prepare a new config file](./Administering_Hokusai.md#create-an-org-wide-hokusai-global-config-file), then you can pull it down with:
+  `~/.hokusai.yml` of course would not exist at first. The org admin is expected to [prepare an org-wide version](./Administering_Hokusai.md#create-an-org-wide-hokusai-global-config-file) which users can then obtain by:
 
   ```
   HOKUSAI_GLOBAL_CONFIG=s3://bucket/path/to/org/new/config/hokusai.yml hokusai configure
   ```
 
-  It will create/overwrite your `~/.hokusai.yml`.
+  `hokusai configure` will read the global config in S3 and write it to `~/.hokusai.yml`, creating the file for the first time.
+
+  Similarly, when an org-wide config (e.g. kubectl version) has changed, the org admin should update S3, and users should re-run the above command to update. `hokusai configure` will overwrite the existing `~/.hokusai.yml`.
+
 
 ## Project-scoped commands
 

@@ -4,13 +4,13 @@ The following Hokusai files must exist on a user's local environment:
 
 Global files:
 
-- `~/.hokusai.yml` - user's global Hokusai configuration
+- `~/.hokusai.yml` - Default global Hokusai configuration file, with configs that meet the org's specifications.
 
 Per-project files:
 
-These files are stored in a `hokuai` directory that is in the project's root directory (i.e. `/path/to/project/hokusai`)
+These files are stored in a `hokusai` directory that is in the project's root directory (i.e. `/path/to/project/hokusai`)
 
-- `config.yml` - customizes Hokusai commands' behavior for the project
+- `config.yml` - Hokusai configuration file for the project
 - `build.yml` - docker-compose spec for building the project's Docker image
 - `development.yml` - docker-compose spec for launching a local development stack
 - `test.yml` - docker-compose spec for launching a test stack
@@ -46,7 +46,7 @@ kubectl-dir: /Users/anja/.local/bin
 kubectl-version: 1.28.0
 ```
 
-Of course, a new Hokusai user would not have this file at first. The org admin is expected to [prepare an org-wide version](./Administering_Hokusai.md#create-an-org-wide-hokusai-global-config-file) which users can obtain by running [hokusai configure](./Command_Reference.md#configuring-hokusai-for-your-organization).
+Please see [hokusai configure command](./Command_Reference.md#configuring-hokusai-for-your-organization) on how to generate this file based on the org's specifications.
 
 
 ## Per-project files

@@ -88,11 +88,7 @@ We assume that your org admin has already set up a Kubernetes cluster and an AWS
 
 2. Configure your local environment with [AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
 
-3. Run Hokusai configure command:
-
-    ```
-    HOKUSAI_GLOBAL_CONFIG=<path-to-org-wide-global-config-file> hokusai configure
-    ```
+3. Run [hokusai configure command](docs/Command_Reference.md#configuring-hokusai-for-your-organization).
 
 4. Optionally, enable Bash autocompletion:
 
@@ -102,11 +98,7 @@ We assume that your org admin has already set up a Kubernetes cluster and an AWS
 
 ## Getting Started
 
-Once Hokusai is working on your local, you can start using Hokusai on a project. Please see [Getting Started](./docs/Getting_Started.md).
-
-## Configuration Options
-
-Hokusai has global configurations as well as project-specific configurations. Please see [Configuration Options](./docs/Configuration_Options.md).
+Once Hokusai is configured, you can start using it on a project. Please see [Getting Started](./docs/Getting_Started.md).
 
 ## Command Reference
 
@@ -117,6 +109,10 @@ A full command reference can be found in [Command Reference](./docs/Command_Refe
 Hokusai can be used to simplify the process of spinning up a "review app" instance of your project, based on a feature branch or pull request.
 
 Full details are in the [Review App reference](./docs/Review_Apps.md).
+
+## Hokusai Files
+
+A descripton of all the [files used by Hokusai](docs/hokusai_files.md).
 
 ## Developing Hokusai
 
