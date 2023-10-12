@@ -40,9 +40,10 @@ class HokusaiGlobalConfig:
           output,
           default_flow_style=False
         )
+      os.chmod(local_global_config, 0o660)
     except:
       print_red(
-        f'Error: Not able to write Hokusai config to {file_path}'
+        f'Error: Not able to write Hokusai config to {local_global_config}'
       )
       raise
 
