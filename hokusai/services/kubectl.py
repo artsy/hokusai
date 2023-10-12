@@ -7,13 +7,12 @@ from hokusai.lib.common import shout
 from hokusai.lib.global_config import HokusaiGlobalConfig
 
 
-global_config = HokusaiGlobalConfig()
-
 class Kubectl:
   ''' run kubectl commands '''
   def __init__(self, context, namespace=None):
     self.context = context
     self.namespace = namespace
+    global_config = HokusaiGlobalConfig()
     self.kubectl = os.path.join(
       global_config.kubectl_dir, 'kubectl'
     )
