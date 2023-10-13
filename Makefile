@@ -1,4 +1,4 @@
-.PHONY: dependencies test integration tests pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
+.PHONY: dependencies test integration pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
 
 # a var passed in as an argument to 'make' command moots its ?= assgiment
 AWS ?= $(shell which aws)
@@ -22,9 +22,6 @@ test:
 
 integration:
 	coverage run --omit="test/*" -m unittest discover test.integration
-
-tests:
-	coverage run --omit="test/*" -m unittest discover test
 
 pyinstaller-build-onefile: # for linux
 	python -m setuptools_scm

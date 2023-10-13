@@ -24,18 +24,15 @@ def console():
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--kubectl-version', type=click.STRING, required=False, help='The version of kubectl to install')
-@click.option('--s3-bucket', type=click.STRING, required=False, help="The S3 bucket name containing your org's kubectl config file")
-@click.option('--s3-key', type=click.STRING, required=False, help="The S3 key of your org's kubectl config file")
-@click.option('--config_file', type=click.STRING, required=False, help="Your org's kubectl config file")
-@click.option('--platform', type=click.Choice(['darwin', 'linux']), default='darwin', help='The platform OS (default: darwin)')
-@click.option('--install-to', type=click.STRING, default='/usr/local/bin', help='Install kubectl to (default: /usr/local/bin)')
-@click.option('--install-config-to', type=click.STRING, default=os.path.join(os.environ.get('HOME'), '.kube'), help='Install kubectl config to (default: ~/.kube)')
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def configure(kubectl_version, s3_bucket, s3_key, config_file, platform, install_to, install_config_to, verbose):
-  """Install and configure kubectl"""
+@click.option('--kubeconfig-dir', type=click.STRING, default=None, help='Directory to install kubeconfig into. The kubeconfig file will be named "config". (default: None)')
+@click.option('--kubectl-dir', type=click.STRING, default=None, help='Directory to install kubectl into. The executable will be named "kubectl". (default: None)')
+@click.option('--skip-kubeconfig', type=click.BOOL, is_flag=True, help='Skip kubeconfig install.')
+@click.option('--skip-kubectl', type=click.BOOL, is_flag=True, help='Skip kubectl install.')
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output.')
+def configure(kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, verbose):
+  """Pull new Hokusai global config, download kubeconfig, install kubectl, save final global config to ~/.hokusai.yml"""
   set_verbosity(verbose)
-  hokusai.configure(kubectl_version, s3_bucket, s3_key, config_file, install_to, install_config_to)
+  hokusai.hokusai_configure(kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

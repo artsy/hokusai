@@ -82,23 +82,15 @@ Hokusai currently supports Python 3.7+ only. The last version that supported Pyt
 
 ## Setup
 
-We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Compose set up, and that you have an AWS account. Perform the following steps to setup Hokusai:
+We assume that your org admin has already set up a Kubernetes cluster and an AWS infrastructure, and that your local environment has Git, Docker, and Docker-Compose installed. Perform the following steps to get Hokusai working:
 
-1. [Configure AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
+1. Ensure your org admin has completed the steps mentioned in [Administering Hokusai](./docs/Administering_Hokusai.md).
 
-2. Configure Hokusai
+2. Configure your local environment with [AWS credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
 
-    ```
-    hokusai configure --kubectl-version <kubectl version> --s3-bucket <bucket name> --s3-key <file key>
-    ```
+3. Run [hokusai configure command](docs/Command_Reference.md#configuring-hokusai-for-your-organization).
 
-    Provide the Kubectl version matching that of your Kubernetes clusters, as well as the S3 bucket name/key where your org's Kubectl config file is stored.
-
-    For system administrators: see [Administering Hokusai](./docs/Administering_Hokusai.md) for instructions on preparing AWS and Kubernetes, and on publishing a Kubectl config file.
-
-    For Artsy developers: see [artsy/README](https://github.com/artsy/README/blob/main/playbooks/hokusai.md) for the current way of installing and configuring hokusai.
-
-3. Enable Bash autocompletion:
+4. Optionally, enable Bash autocompletion:
 
     ```
     eval "$(_HOKUSAI_COMPLETE=source hokusai)"
@@ -106,7 +98,7 @@ We assume that you already have Kubernetes cluster, Git, Docker, and Docker-Comp
 
 ## Getting Started
 
-See [Getting Started](./docs/Getting_Started.md) to start using Hokusai for your project.
+Once Hokusai is configured, you can start using it on a project. Please see [Getting Started](./docs/Getting_Started.md).
 
 ## Command Reference
 
@@ -117,6 +109,10 @@ A full command reference can be found in [Command Reference](./docs/Command_Refe
 Hokusai can be used to simplify the process of spinning up a "review app" instance of your project, based on a feature branch or pull request.
 
 Full details are in the [Review App reference](./docs/Review_Apps.md).
+
+## Hokusai Files
+
+A descripton of all the [files used by Hokusai](docs/hokusai_files.md).
 
 ## Developing Hokusai
 
@@ -175,7 +171,7 @@ The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-v
 
 ### Poetry
 
-Use [Poetry](https://python-poetry.org/) to install Hokusai's dependencies as well as Hokusai itself in [editable mode](https://pip-python3.readthedocs.io/en/latest/reference/pip_install.html#editable-installs). See [this guide](https://python-poetry.org/docs/basic-usage/) for working with Poetry.
+Use [Poetry](https://python-poetry.org/) to install Hokusai's dependencies as well as Hokusai itself in [editable mode](https://pip-python3.readthedocs.io/en/latest/reference/pip_install.html#editable-installs). Please see [this guide](https://python-poetry.org/docs/basic-usage/) for working with Poetry.
 
 Install Poetry:
 
@@ -216,19 +212,13 @@ minikube start --kubernetes-version=<version of your Kubernetes clusters, exampl
 
 ### Run tests
 
-To run all tests:
-
-```
-make tests
-```
-
-To run only unit tests:
+To run unit and smoke tests:
 
 ```
 make test
 ```
 
-Only integration tests:
+To run integration tests:
 
 ```
 make integration

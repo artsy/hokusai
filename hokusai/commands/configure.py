@@ -1,52 +1,81 @@
 import os
-import platform
 import shutil
 import tempfile
-import sys
-from urllib.parse import urlparse
+
 from urllib.request import urlretrieve
 
-from distutils.dir_util import mkpath
-
-import boto3
-
-from hokusai.lib.global_config import global_config
 from hokusai.lib.command import command
-from hokusai.lib.common import print_green, get_region_name
-from hokusai.lib.exceptions import HokusaiError
+from hokusai.lib.common import (
+  get_platform,
+  local_to_local,
+  print_green,
+  print_red,
+  uri_to_local
+)
+from hokusai.lib.global_config import HokusaiGlobalConfig
+
+
+def install_kubectl(kubectl_version, kubectl_dir):
+  ''' download and install kubectl '''
+  tmpdir = tempfile.mkdtemp()
+  try:
+    url = (
+      f'https://storage.googleapis.com/kubernetes-release/release/v' +
+      f'{kubectl_version}' +
+      f'/bin/{get_platform()}/amd64/kubectl'
+    )
+    download_to = os.path.join(tmpdir, 'kubectl')
+    print_green(
+      f'Downloading kubectl from {url} ...', newline_after=True
+    )
+    urlretrieve(url, download_to)
+    print_green(
+      f'Installing kubectl into {kubectl_dir} ...', newline_after=True
+    )
+    local_to_local(download_to, kubectl_dir, 'kubectl', mode=0o770)
+  except:
+    print_red(f'Error: Failed to install kubectl')
+    raise
+  finally:
+    shutil.rmtree(tmpdir)
+
+def install(global_config, skip_kubeconfig, skip_kubectl):
+  ''' install kubeconfig and kubectl '''
+  if not skip_kubeconfig:
+    print_green(
+      f'Downloading kubeconfig from ' +
+      f'{global_config.kubeconfig_source_uri} ' +
+      f'to {global_config.kubeconfig_dir} ...',
+      newline_after=True
+    )
+    uri_to_local(
+      global_config.kubeconfig_source_uri,
+      global_config.kubeconfig_dir,
+      'config'
+    )
+  if not skip_kubectl:
+    install_kubectl(
+      global_config.kubectl_version,
+      global_config.kubectl_dir
+    )
 
 @command(config_check=False)
-def configure(kubectl_version, bucket_name, key_name, config_file, install_to, install_config_to):
-  if global_config.is_present() and global_config.kubectl_version is not None:
-    kubectl_version = global_config.kubectl_version
-
-  if not kubectl_version:
-    raise HokusaiError("You must supply a kubectl_version")
-
-  if global_config.is_present() and global_config.kubectl_config_file is not None:
-    uri = urlparse(global_config.kubectl_config_file)
-    if uri.scheme == 's3':
-      bucket_name = uri.netloc
-      key_name = uri.path
-    if uri.scheme == 'file':
-      key_name = uri.path
-
-  if not ((bucket_name and key_name) or config_file):
-    raise HokusaiError("You must define valid config_file")
-
-  print_green("Downloading and installing kubectl...", newline_before=True, newline_after=True)
-  tmpdir = tempfile.mkdtemp()
-  urlretrieve("https://storage.googleapis.com/kubernetes-release/release/v%s/bin/%s/amd64/kubectl" % (kubectl_version, platform.system().lower()), os.path.join(tmpdir, 'kubectl'))
-  os.chmod(os.path.join(tmpdir, 'kubectl'), 0o755)
-  shutil.move(os.path.join(tmpdir, 'kubectl'), os.path.join(install_to, 'kubectl'))
-  shutil.rmtree(tmpdir)
-
-  print_green("Configuring kubectl...", newline_after=True)
-  if not os.path.isdir(install_config_to):
-    mkpath(install_config_to)
-
-  if bucket_name and key_name:
-    client = boto3.client('s3', region_name=get_region_name())
-    client.download_file(bucket_name, key_name.lstrip('/'), os.path.join(install_config_to, 'config'))
-  else:
-    shutil.copy(config_file, os.path.join(install_config_to, 'config'))
+def hokusai_configure(
+  kubeconfig_dir,
+  kubectl_dir,
+  skip_kubeconfig,
+  skip_kubectl
+):
+  '''
+  read new global config,
+  save global config,
+  install kubeconfig and kubectl
+  '''
+  global_config = HokusaiGlobalConfig()
+  # override global config with cmdline options
+  global_config.merge(
+    kubectl_dir=kubectl_dir,
+    kubeconfig_dir=kubeconfig_dir,
+  )
+  global_config.save()
+  install(global_config, skip_kubeconfig, skip_kubectl)

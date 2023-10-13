@@ -1,50 +1,39 @@
 import os
-import sys
 import tempfile
-from shutil import rmtree, copyfile
-from urllib.parse import urlparse
-
-import boto3
 import yaml
 
-from botocore.exceptions import ClientError
+from shutil import rmtree
 
-from hokusai.lib.common import get_region_name
+from hokusai.lib.common import print_red, uri_to_local
 from hokusai.lib.exceptions import HokusaiError
 
+
 class ConfigLoader:
+  ''' load Hokusai config from Yaml files '''
   def __init__(self, uri):
     self.uri = uri
 
+  def _load_from_file(self, file_path):
+    ''' load config from file '''
+    with open(file_path, 'r') as f:
+      struct = yaml.safe_load(f.read())
+      return struct
+
   def load(self):
-    uri = urlparse(self.uri)
-    if not uri.path.endswith('yaml') and not uri.path.endswith('yml'):
-      raise HokusaiError('Uri must be of Yaml file type')
+    ''' load config from uri '''
+    if not self.uri.endswith('yaml') and not self.uri.endswith('yml'):
+      raise HokusaiError('Config file must be of Yaml file type')
 
     tmpdir = tempfile.mkdtemp()
-    tmp_configfile = os.path.join(tmpdir, 'config')
+    filename = 'hokusai.yml'
+    tmp_configfile = os.path.join(tmpdir, filename)
 
     try:
-      if uri.scheme == 's3':
-        client = boto3.client('s3', region_name=get_region_name())
-        try:
-          client.download_file(uri.netloc, uri.path.lstrip('/'), tmp_configfile)
-        except ClientError:
-          raise HokusaiError("Error fetching file %s" % self.uri)
-      else:
-        try:
-          copyfile(uri.path, tmp_configfile)
-        except IOError:
-          raise HokusaiError("Error copying file %s" % self.uri)
-
-      with open(tmp_configfile, 'r') as f:
-        struct = yaml.safe_load(f.read())
-        if type(struct) is not dict:
-          raise HokusaiError('Yaml is invalid')
-        return struct
-
-    except HokusaiError:
+      uri_to_local(self.uri, tmpdir, filename)
+      config = self._load_from_file(tmp_configfile)
+      return config
+    except:
+      print_red(f'Error: Not able to load config from {self.uri}')
       raise
-
     finally:
       rmtree(tmpdir)

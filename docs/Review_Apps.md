@@ -34,11 +34,11 @@ In order to start a review app you will need to follow these steps:
 
     Example:
     ```yml
-    image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/volt:staging
+    image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/volt:staging
 
     # must be changed to...
 
-    image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/volt:<name>
+    image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/volt:<name>
     ```
     ... where `<name>` is the review app name you've been using in previous steps, especially step 3.
 
