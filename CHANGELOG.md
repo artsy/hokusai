@@ -1,3 +1,14 @@
+## v2.0.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v2.0.0/README.md)
+
+### Notable changes since v1.4.1
+
+* 62f3dc8 feat: add a user global config file (#379)
+  * This is a !!! Breaking Change !!! to:
+  * Hokusai Global Config
+  * "hokusai configure" command
+
 ## v1.4.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v1.4.1/README.md)
