@@ -1,54 +1,78 @@
 import os
-import sys
-
-from collections import OrderedDict
-
 import yaml
 
-from packaging.specifiers import SpecifierSet, InvalidSpecifier
-from packaging.version import Version, InvalidVersion
-
-from hokusai import CWD
+from hokusai.lib.common import print_red
+from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
-from hokusai.version import VERSION
 
-HOKUSAI_GLOBAL_CONFIG_FILE = os.path.join(os.environ.get('HOME', '/'), '.hokusai', 'config.yml')
+
+user_home = os.environ.get('HOME', '/')
+local_global_config = os.path.join(
+  user_home,
+  '.hokusai.yml'
+)
+source_global_config = os.environ.get(
+  'HOKUSAI_GLOBAL_CONFIG',
+  local_global_config
+)
 
 class HokusaiGlobalConfig:
-  def is_present(self):
-    return os.path.isfile(HOKUSAI_GLOBAL_CONFIG_FILE)
+  ''' manage Hokusai global config '''
+  def __init__(self):
+    self._config = ConfigLoader(source_global_config).load()
+    self.validate_config()
 
-  def get(self, key, default=None, use_env=False, _type=str):
-    value = self._config_value_for(key, _type)
-    if value is not None:
-      return value
+  def merge(self, **kwargs):
+    ''' merge key/value pairs into config, skipping None '''
+    for k,v in kwargs.items():
+      if v is not None:
+        # use dash in _config keys
+        self._config[k.replace('_', '-')] = v
 
-    return default
-
-
-  def _config_value_for(self, key, _type):
+  def save(self):
+    ''' save config to local config file '''
     try:
-      with open(HOKUSAI_GLOBAL_CONFIG_FILE, 'r') as config_file:
-        config_struct = yaml.safe_load(config_file.read())
-        try:
-          val = config_struct[key]
-        except KeyError:
-          return None
-        if not isinstance(val, _type):
-          raise HokusaiError("Config key %s is not of %s" % (key, _type))
-        return val
-    except IOError:
-      return None
+      with open(local_global_config, 'w') as output:
+        output.write(YAML_HEADER)
+        yaml.safe_dump(
+          self._config,
+          output,
+          default_flow_style=False
+        )
+      os.chmod(local_global_config, 0o660)
+    except:
+      print_red(
+        f'Error: Not able to write Hokusai config to {local_global_config}'
+      )
+      raise
 
+  def validate_config(self):
+    ''' sanity check config '''
+    required_vars = [
+      'kubectl-version',
+      'kubeconfig-dir',
+      'kubeconfig-source-uri',
+      'kubectl-dir'
+    ]
+    for var in required_vars:
+      if not var in self._config:
+        raise HokusaiError(
+          f'{var} is missing in Hokusai global config'
+        )
+
+  @property
+  def kubeconfig_dir(self):
+    return self._config['kubeconfig-dir']
+
+  @property
+  def kubeconfig_source_uri(self):
+    return self._config['kubeconfig-source-uri']
+
+  @property
+  def kubectl_dir(self):
+    return self._config['kubectl-dir']
 
   @property
   def kubectl_version(self):
-    return self.get('kubectl-version')
-
-  @property
-  def kubectl_config_file(self):
-    return self.get('kubectl-config-file')
-
-
-global_config = HokusaiGlobalConfig()
+    return self._config['kubectl-version']

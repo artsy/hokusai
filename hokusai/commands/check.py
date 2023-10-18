@@ -1,16 +1,15 @@
 import boto3
-import os
-
 import botocore.exceptions as botoexceptions
+import os
 
 from hokusai import CWD
 from hokusai.lib.command import command
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, TEST_YML_FILE, DEVELOPMENT_YML_FILE, config
-from hokusai.services.ecr import ECR
-from hokusai.services.kubectl import Kubectl
 from hokusai.lib.common import get_region_name, print_red, print_green, shout
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, TEST_YML_FILE, DEVELOPMENT_YML_FILE, config
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.ecr import ECR
+from hokusai.services.kubectl import Kubectl
 
 @command()
 def check():

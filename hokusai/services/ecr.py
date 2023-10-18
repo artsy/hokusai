@@ -1,11 +1,11 @@
-import re
 import base64
-
 import boto3
+import re
+
 from botocore.exceptions import BotoCoreError, ClientError
 
-from hokusai.lib.config import config
 from hokusai.lib.common import get_region_name
+from hokusai.lib.config import config
 from hokusai.lib.exceptions import HokusaiError
 
 SHA1_REGEX = re.compile(r"\b[0-9a-f]{40}\b")
