@@ -154,34 +154,3 @@ Please see [Review App reference](Review_Apps.md).
 7) Push deployment Docker tags to the registry. If it fails, print a warning and continue.
 8) If `git-remote` is specified in `./hokusai/config.yml`, push deployment Git tags to Github. If it fails, print a warning and continue.
 9) Finally, exit `0` if all steps were successful. If any of steps `6`, `7` or `8` failed, exit with `1`.
-
-
-### How to rollback
-
-Run `hokusai registry images` for a list of all image tags in project's registry. They order from most recent to oldest. To rollback to a specific tag (i.e. app version), run:
-
-`hokusai production deploy [image_tag]`
-
-For example, to roll back a problematic production deploy, do the following:
-
-```
-# List "production" tagged images
-$ hokusai registry images --filter-tags production
-
-Image Pushed At     | Image Tags
-----------------------------------------------------------
-2022-01-27 12:15:21-05:00 | staging--2022-01-27--19-05-54, 9718ddb9334c3e9b2a0a0ffa5d744e1ca91d5cb3, production--2022-01-27--19-43-45, production
-2022-01-26 06:16:16-05:00 | staging--2022-01-26--11-55-47, production--2022-01-26--14-17-47, 84fd6dcd9b115482e2b1d2981c31f4c8bc97a015
-2022-01-25 11:02:42-05:00 | fcf109fa7db52c538755a4eac1b103ecf83dddce, staging--2022-01-25--16-57-31, production--2022-01-25--17-54-15
-...
-
-81 more images available
-```
-
-The image tagged with `production` (the first one, scroll to the right) is the one being used in production environment (a.k.a. the current production image). It is also tagged with `9718ddb9334c3e9b2a0a0ffa5d744e1ca91d5cb3`. The images tagged with `production-<timestamp>` were used in production at one point but no longer.
- 
-If the current production image is problematic, rollback to the last known-good-working image which in this case is the one tagged with `production--2022-01-26--14-17-47`
-```
-# Rollback
-$ hokusai production deploy production--2022-01-26--14-17-47
-```
