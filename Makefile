@@ -6,7 +6,6 @@ DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
 RELEASE_VERSION ?= $(shell cat RELEASE_VERSION)
 RELEASE_MINOR_VERSION ?= $(shell cat RELEASE_VERSION | awk -F"." '{ print $$1"."$$2 }')
-ARTIFACT_LABEL ?= $(shell python -m setuptools_scm)
 BINARY_SUFFIX ?= -$(ARTIFACT_LABEL)-$(shell uname -s)-$(shell uname -m)
 
 dependencies:
@@ -24,7 +23,6 @@ integration:
 	coverage run --omit="test/*" -m unittest discover test.integration
 
 pyinstaller-build-onefile: # for linux
-	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -37,7 +35,6 @@ pyinstaller-build-onefile: # for linux
 
 # for mac (because build-onefile's binary runs too slow on mac)
 pyinstaller-build-onedir:
-	python -m setuptools_scm
 	pyinstaller \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
@@ -68,7 +65,6 @@ publish-to-s3-canonical:
 	fi
 
 build-docker-image:
-	python -m setuptools_scm
 	poetry build
 	cat hokusai/_version.py
 	docker build . \
@@ -92,7 +88,6 @@ publish-to-dockerhub-canonical-and-latest:
 	fi
 
 publish-to-pip:
-	python -m setuptools_scm
 	pip install --upgrade wheel
 	poetry version $(RELEASE_VERSION) # bump version in pyproject.toml
 	poetry build
