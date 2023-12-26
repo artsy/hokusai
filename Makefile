@@ -4,8 +4,9 @@
 AWS ?= $(shell which aws)
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
-RELEASE_VERSION ?= $(shell cat RELEASE_VERSION)
-RELEASE_MINOR_VERSION ?= $(shell cat RELEASE_VERSION | awk -F"." '{ print $$1"."$$2 }')
+VERSION ?= $(shell cat hokusai/VERSION)
+MINOR_VERSION ?= $(shell cat VERSION | awk -F"." '{ print $$1"."$$2 }')
+ARTIFACT_LABEL ?= $(shell cat hokusai/VERSION)
 BINARY_SUFFIX ?= -$(ARTIFACT_LABEL)-$(shell uname -s)-$(shell uname -m)
 
 dependencies:
@@ -66,7 +67,6 @@ publish-to-s3-canonical:
 
 build-docker-image:
 	poetry build
-	cat hokusai/_version.py
 	docker build . \
 	  --tag hokusai
 

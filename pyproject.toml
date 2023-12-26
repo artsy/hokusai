@@ -3,14 +3,14 @@ dynamic = ["version"]
 
 [tool.poetry]
 name = "hokusai"
-version = "0.0.0"
+version = "999.999.999"
 description = "Artsy Docker development toolkit"
 authors = ["Isac Petruzzi <isac@artsymail.com>"]
 maintainers = ["Jian-Feng Xu <jian-feng@artsymail.com>"]
 license = "MIT"
 readme = "README.md"
 repository = "http://github.com/artsy/hokusai"
-include = ["hokusai/_version.py"]
+include = ["hokusai/VERSION"]
 
 [tool.poetry.dependencies]
 boto3 = "==1.21.28"
