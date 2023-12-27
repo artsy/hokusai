@@ -254,7 +254,7 @@ curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh | 
 To create an official release, such as `v1.2.3`, perform the following:
 
 - Create a branch named `prepare-v1.2.3` and make the following changes:
-  - Bump version in [RELEASE_VERSION](./RELEASE_VERSION) file.
+  - Bump version in [RELEASE_VERSION](./hokusai/RELEASE_VERSION) file.
   - Upate [CHANGELOG](./CHANGELOG.md).
   - Open a PR to merge into `main`. Please see [past PRs](https://github.com/artsy/hokusai/pulls?q=is%3Apr+Release+is%3Aclosed+%22prepare+version%22) for example.
 
