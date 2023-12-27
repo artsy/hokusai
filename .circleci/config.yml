@@ -105,7 +105,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: apk add curl docker-cli git make
-      - run: pip install setuptools --upgrade
       - run: pip install poetry
       - run: make build-docker-image
 
@@ -155,7 +154,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: apk add curl docker-cli git make
-      - run: pip install setuptools --upgrade
       - run: pip install poetry
       - run: scripts/update_version_file.sh
       - run: make build-docker-image
@@ -261,7 +259,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: apk add curl docker-cli git make
-      - run: pip install setuptools --upgrade
       - run: pip install poetry
       - run: scripts/update_version_file.sh
       - run: make build-docker-image

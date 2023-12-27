@@ -5,7 +5,7 @@ AWS ?= $(shell which aws)
 DIST_DIR ?= dist/
 PROJECT = github.com/artsy/hokusai
 VERSION ?= $(shell cat hokusai/VERSION)
-MINOR_VERSION ?= $(shell cat VERSION | awk -F"." '{ print $$1"."$$2 }')
+MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."$$2 }')
 ARTIFACT_LABEL ?= $(shell cat hokusai/VERSION)
 BINARY_SUFFIX ?= -$(ARTIFACT_LABEL)-$(shell uname -s)-$(shell uname -m)
 
