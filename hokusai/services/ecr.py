@@ -76,7 +76,7 @@ class ECR:
     token = base64.b64decode(res['authorizationToken']).decode('utf8')
     username = token.split(':')[0]
     password = token.split(':')[1]
-    return "docker login -u %s -p %s %s" % (username, password, res['proxyEndpoint'])
+    return "docker login -u %s --password-stdin %s %s" % (username, password, res['proxyEndpoint'])
 
   def get_image_by_tag(self, tag):
     try:

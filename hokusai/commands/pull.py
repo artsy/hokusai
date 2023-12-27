@@ -12,7 +12,7 @@ def pull(tag, local_tag):
   if not ecr.project_repo_exists():
     raise HokusaiError("ECR repo %s does not exist... did you run `hokusai setup` for this project?" % config.project_name)
 
-  shout(ecr.get_login(), mask=(r'^(docker login -u) .+ (-p) .+ (.+)$', r'\1 ****** \2 ***** \3'))
+  shout(ecr.get_login(), mask=(r'^(docker login -u) .+ (--password-stdin) .+ (.+)$', r'\1 ****** \2 ***** \3'))
 
   shout("docker pull %s:%s" % (ecr.project_repo, tag))
 
