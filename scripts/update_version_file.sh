@@ -1,46 +1,37 @@
 #!/usr/bin/env sh
 
+# Set Hokusai version in:
+#
+# - hokusai/VERSION file
+#     'hokusai version' command retrieves version from this file.
+#
+# - pyproject.toml file tool.poetry.version field
+#     This field decides the version number in artifact file names, and in PyPI.
+#
+# Set version differently depending on environment and Git branch.
+#
+# For 'release' branch build in CircleCI, set version to what is in hokusai/RELEASE_VERSION file.
+#
+# For all others, set it to:
+#   - hokusai/RELEASE_VERSION, plus
+#   - git rev-parse --short HEAD
+# For example, if RELEASE_VERSION is 2.0.0 and git rev-parse is 680c2ad, set version to 2.0.0+680c2ad
+# This is useful for identifying Beta builds.
 
-# This script is to be run in CI only, for 'main' and 'release' branch builds.
-#
-# It updates hokusai/VERSION file during the builds,
-# so that built artifacts have correct version numbers.
-# The changes made in CI are not git committed.
-#
-# It also updates pyproject.toml tool.poetry.version.
-#
-# - 'main' build
-#     Set VERSION to RELEASE_VERSION + last git commit.
-#     This VERSION number signifies a beta artifact.
-#
-# - 'release' build
-#     Set VERSION to RELEASE_VERSION.
-#     This numbere signifies a cannonical artifact.
-#
-# hokusai/RELEASE_VERSION is manually incremented for canonical releases.
-#
-# hokusai/VERSION and the version number in pyproject.toml are set to dummy value in version control.
+RELEASE_VERSION=$(cat hokusai/RELEASE_VERSION)
 
-
-RELEASE_VERSION=v$(cat hokusai/RELEASE_VERSION)
-
-# 'main' branch
-if [ "$CIRCLE_BRANCH" = 'main' ]
+if [ "$CIRCLE_BRANCH" = 'release' ]
 then
-  echo "On main branch"
-  COMMIT=$(git rev-parse --short HEAD)
-  VERSION="$RELEASE_VERSION-$COMMIT"
-elif [ "$CIRCLE_BRANCH" = 'release' ]
-then
-  echo "On release branch"
+  echo "In CircleCI 'release' branch build."
   VERSION="$RELEASE_VERSION"
 else
-  echo "Error: not 'main' nor 'release' branch!"
-  exit 1
+  echo "In CircleCI non-release branch build, or not even in CircleCI."
+  COMMIT=$(git rev-parse --short HEAD)
+  VERSION="$RELEASE_VERSION+$COMMIT"
 fi
 
-echo "Setting hokusai/VERSION to $VERSION..."
+echo "Setting $VERSION in hokusai/VERSION file..."
 echo $VERSION > hokusai/VERSION
 
-echo "Setting pyproject.toml tool.poetry.version to $VERSION..."
+echo "Setting $VERSION in pyproject.toml file tool.poetry.version field..."
 sed -i "s/999.999.999/$VERSION/" pyproject.toml
