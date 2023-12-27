@@ -111,6 +111,14 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def list(verbose):
+  """List existing review apps of the project"""
+  set_verbosity(verbose)
+  hokusai.list_namespaces(KUBE_CONTEXT, labels=f'app-name={config.project_name},app-phase=review')
+
+
+@review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
 @click.option('-d', '--deployment', type=click.STRING, help='Only refresh the given deployment')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
