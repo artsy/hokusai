@@ -34,4 +34,5 @@ echo "Setting $VERSION in hokusai/VERSION file..."
 echo $VERSION > hokusai/VERSION
 
 echo "Setting $VERSION in pyproject.toml file tool.poetry.version field..."
+# use -i.bak so it works with CircleCI Mac's sed
 sed -i.bak "s/999\.999\.999/$VERSION/" pyproject.toml
