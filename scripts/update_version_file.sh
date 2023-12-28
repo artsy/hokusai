@@ -34,4 +34,4 @@ echo "Setting $VERSION in hokusai/VERSION file..."
 echo $VERSION > hokusai/VERSION
 
 echo "Setting $VERSION in pyproject.toml file tool.poetry.version field..."
-sed -i "s/999.999.999/$VERSION/" pyproject.toml
+sed -i.bak "s/999\.999\.999/$VERSION/" pyproject.toml
