@@ -3,6 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
+from hokusai.lib.command_wrapper import wrap
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @base.group()
@@ -52,4 +53,12 @@ def promote(migration, constraint, git_remote, timeout, update_config, filename,
   currently deployed on staging and update the production tag
   to reference the same image"""
   set_verbosity(verbose)
-  hokusai.promote(migration, constraint, git_remote, timeout, update_config=update_config, filename=filename)
+  wrap(
+    hokusai.promote,
+    migration,
+    constraint,
+    git_remote,
+    timeout,
+    update_config=update_config,
+    filename=filename
+  )

@@ -22,7 +22,6 @@ def refresh(context, deployment_name, namespace=None):
   deployment.refresh()
 
 
-@command()
 def promote(migration, constraint, git_remote, timeout, update_config=False, filename=None):
   if migration is not None:
     print_green("Running migration '%s' on production..." % migration, newline_after=True)
