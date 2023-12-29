@@ -3,6 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
+from hokusai.lib.command_wrapper import wrap
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 from hokusai.lib.config import config
 
@@ -21,7 +22,12 @@ def dev(context_settings=CONTEXT_SETTINGS):
 def start(build, detach, filename, verbose):
   """Start the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_start(build, detach, filename)
+  wrap(
+    hokusai.dev_start,
+    build,
+    detach,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)

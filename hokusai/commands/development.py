@@ -11,7 +11,6 @@ from hokusai.lib.template_selector import TemplateSelector
 from hokusai.lib.docker_compose_helpers import follow_extends
 from hokusai.services.yaml_spec import YamlSpec
 
-@command()
 def dev_start(build, detach, filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
