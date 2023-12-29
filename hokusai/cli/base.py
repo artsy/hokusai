@@ -75,7 +75,7 @@ def test(build, cleanup, filename, service_name, verbose):
 @base.command(context_settings=CONTEXT_SETTINGS)
 def check():
   """Check Hokusai dependencies and configuration"""
-  hokusai.check()
+  wrap(hokusai.check)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
