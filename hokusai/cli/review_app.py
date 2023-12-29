@@ -30,7 +30,13 @@ def setup(app_name, verbose, source_file):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(app_name, verbose):
   """Creates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
-  hokusai.k8s_create(KUBE_CONTEXT, tag=app_name, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
+  wrap(
+    hokusai.k8s_create,
+    KUBE_CONTEXT,
+    tag=app_name,
+    namespace=clean_string(app_name),
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -39,7 +45,12 @@ def create(app_name, verbose):
 def delete(app_name, verbose):
   """Deletes the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_delete(KUBE_CONTEXT, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
+  wrap(
+    hokusai.k8s_delete,
+    KUBE_CONTEXT,
+    namespace=clean_string(app_name),
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -67,7 +78,16 @@ def update(app_name, verbose):
 def status(app_name, resources, pods, describe, top, verbose):
   """Print the Kubernetes resources status defined in the staging context / {APP_NAME} namespace"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
+  wrap(
+    hokusai.k8s_status,
+    KUBE_CONTEXT,
+    resources,
+    pods,
+    describe,
+    top,
+    namespace=clean_string(app_name),
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -177,7 +197,12 @@ def env(context_settings=CONTEXT_SETTINGS):
 def copy(app_name, configmap, verbose):
   """Copies the app's environment config map to the namespace {APP_NAME}"""
   set_verbosity(verbose)
-  hokusai.k8s_copy_config(KUBE_CONTEXT, clean_string(app_name), name=configmap)
+  wrap(
+    hokusai.k8s_copy_config,
+    KUBE_CONTEXT,
+    clean_string(app_name),
+    name=configmap
+  )
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)

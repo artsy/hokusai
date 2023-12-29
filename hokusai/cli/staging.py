@@ -22,7 +22,12 @@ def staging(context_settings=CONTEXT_SETTINGS):
 def create(filename, environment, verbose):
   """Create the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_create(KUBE_CONTEXT, filename=filename, environment=environment)
+  wrap(
+    hokusai.k8s_create,
+    KUBE_CONTEXT,
+    filename=filename,
+    environment=environment
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -31,7 +36,11 @@ def create(filename, environment, verbose):
 def delete(filename, verbose):
   """Delete the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_delete(KUBE_CONTEXT, filename=filename)
+  wrap(
+    hokusai.k8s_delete,
+    KUBE_CONTEXT,
+    filename=filename
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -65,7 +74,15 @@ def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
 def status(resources, pods, describe, top, filename, verbose):
   """Print Kubernetes resources in the staging context"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, filename=filename)
+  wrap(
+    hokusai.k8s_status,
+    KUBE_CONTEXT,
+    resources,
+    pods,
+    describe,
+    top,
+    filename=filename
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
