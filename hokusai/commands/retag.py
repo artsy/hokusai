@@ -1,9 +1,7 @@
-from hokusai.lib.command import command
 from hokusai.lib.common import print_green, print_red
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.ecr import ECR, ClientError
 
-@command()
 def retag(tag_to_change, tag_to_match):
   ecr = ECR()
 

@@ -78,4 +78,8 @@ def retag(tag1, tag2, verbose):
   Tag1 must be either 'staging' or 'production'.
   """
   set_verbosity(verbose)
-  hokusai.retag(tag1, tag2)
+  wrap(
+    hokusai.retag,
+    tag1,
+    tag2
+  )
