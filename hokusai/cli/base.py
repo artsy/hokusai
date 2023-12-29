@@ -46,7 +46,15 @@ def configure(kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, verbos
 def setup(project_name, template_remote, template_dir, var, allow_missing_vars, verbose):
   """Set up Hokusai for the current project"""
   set_verbosity(verbose)
-  hokusai.setup(project_name, template_remote, template_dir, var, allow_missing_vars)
+  wrap(
+    hokusai.setup,
+    project_name,
+    template_remote,
+    template_dir,
+    var,
+    allow_missing_vars,
+    config_check=False
+  )
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
