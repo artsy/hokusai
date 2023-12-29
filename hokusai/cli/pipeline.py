@@ -29,7 +29,9 @@ def gitlog(verbose):
   """Print a git log between the tag currently deployed on production
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
-  hokusai.gitlog()
+  wrap(
+    hokusai.gitlog
+  )
 
 @pipeline.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--org-name', type=click.STRING, required=True, help='Name of the (github) organization')
