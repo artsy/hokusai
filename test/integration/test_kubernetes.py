@@ -29,14 +29,14 @@ class TestKubernetes(HokusaiIntegrationTestCase):
             shout(cls.kctl.command("delete all --selector testFixture=true"), print_output=True)
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_00_k8s_env_create(self, mocked_sys_exit):
         configmap = ConfigMap(TEST_KUBE_CONTEXT)
         configmap.create()
 
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_01_k8s_create(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
@@ -54,7 +54,7 @@ class TestKubernetes(HokusaiIntegrationTestCase):
         self.assertIn("hello-web", deployments)
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_02_k8s_update(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
@@ -71,7 +71,7 @@ class TestKubernetes(HokusaiIntegrationTestCase):
                             out.getvalue().strip())
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_03_k8s_status(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
@@ -111,14 +111,14 @@ class TestKubernetes(HokusaiIntegrationTestCase):
 
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_04_deployment_refresh(self, mocked_sys_exit):
         deployment = Deployment(TEST_KUBE_CONTEXT)
         deployment.refresh()
 
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_05_k8s_delete(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
@@ -133,7 +133,7 @@ class TestKubernetes(HokusaiIntegrationTestCase):
                             out.getvalue().strip())
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_06_k8s_env_destroy(self, mocked_sys_exit):
         configmap = ConfigMap(TEST_KUBE_CONTEXT)
         configmap.destroy()

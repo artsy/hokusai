@@ -29,7 +29,7 @@ class TestReviewApp(HokusaiIntegrationTestCase):
             shout(cls.kctl.command("delete ns a-review-app"), print_output=True)
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_create_review_app_yaml_file(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                                 body=self.fixture('sts-get-caller-identity-response.xml'),
@@ -47,7 +47,7 @@ class TestReviewApp(HokusaiIntegrationTestCase):
             os.remove(review_app_yaml_file)
 
     @httpretty.activate
-    @patch('hokusai.lib.command.sys.exit')
+    @patch('hokusai.lib.command_wrapper.sys.exit')
     def test_01_k8s_create(self, mocked_sys_exit):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
