@@ -37,7 +37,11 @@ def gitcompare(org_name, git_compare_link, verbose):
   """Prints a git compare link between the tag currently deployed on production
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
-  hokusai.gitcompare(org_name, git_compare_link)
+  wrap(
+    hokusai.gitcompare,
+    org_name,
+    git_compare_link
+  )
 
 
 @pipeline.command(context_settings=CONTEXT_SETTINGS)
