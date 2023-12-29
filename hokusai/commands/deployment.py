@@ -17,7 +17,6 @@ def update(context, tag, migration, constraint, git_remote, timeout,
   print_green("Deployment(s) updated to %s" % tag)
 
 
-@command()
 def refresh(context, deployment_name, namespace=None):
   deployment = Deployment(context, deployment_name=deployment_name, namespace=namespace)
   deployment.refresh()

@@ -141,7 +141,12 @@ def list(verbose):
 def refresh(app_name, deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT, deployment, namespace=clean_string(app_name))
+  wrap(
+    hokusai.refresh,
+    KUBE_CONTEXT,
+    deployment,
+    namespace=clean_string(app_name)
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -151,7 +156,12 @@ def refresh(app_name, deployment, verbose):
 def restart(app_name, deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT, deployment, namespace=clean_string(app_name))
+  wrap(
+    hokusai.refresh,
+    KUBE_CONTEXT,
+    deployment,
+    namespace=clean_string(app_name)
+  )
 
 
 @review_app.group()

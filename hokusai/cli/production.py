@@ -127,7 +127,11 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
 def refresh(deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT, deployment)
+  wrap(
+    hokusai.refresh,
+    KUBE_CONTEXT,
+    deployment
+  )
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
@@ -136,7 +140,11 @@ def refresh(deployment, verbose):
 def restart(deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT, deployment)
+  wrap(
+    hokusai.refresh,
+    KUBE_CONTEXT,
+    deployment
+  )
 
 
 @production.group()
