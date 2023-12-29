@@ -1,4 +1,3 @@
-from hokusai.lib.command import command
 from hokusai.lib.common import print_green
 from hokusai.services.deployment import Deployment
 from hokusai.services.command_runner import CommandRunner
