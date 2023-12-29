@@ -107,7 +107,16 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
   set_verbosity(verbose)
   if tag is None:
     tag = clean_string(app_name)
-  hokusai.run(KUBE_CONTEXT, command, tty, tag, env, constraint, namespace=clean_string(app_name))
+  wrap(
+    hokusai.run,
+    KUBE_CONTEXT,
+    command,
+    tty,
+    tag,
+    env,
+    constraint,
+    namespace=clean_string(app_name)
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)

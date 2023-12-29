@@ -95,7 +95,15 @@ def status(resources, pods, describe, top, filename, verbose):
 def run(command, tty, tag, env, constraint, verbose):
   """Launch a new container and run a command"""
   set_verbosity(verbose)
-  hokusai.run(KUBE_CONTEXT, command, tty, tag, env, constraint)
+  wrap(
+    hokusai.run,
+    KUBE_CONTEXT,
+    command,
+    tty,
+    tag,
+    env,
+    constraint
+  )
 
 
 @production.command(context_settings=CONTEXT_SETTINGS)
