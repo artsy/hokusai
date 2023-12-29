@@ -77,8 +77,7 @@ def describe_push_image():
       'overwrite': False,
       'skip_latest': False,
     }
-    with pytest.raises(SystemExit):
-      push_image(**args)
+    push_image(**args)
     assert build_and_push_spy.call_count == 1
     assert ecr_check_spy.call_count == 1
     assert git_status_check_spy.call_count == 1
@@ -96,8 +95,7 @@ def describe_push_image():
       'overwrite': False,
       'skip_latest': False,
     }
-    with pytest.raises(SystemExit):
-      push_image(**args)
+    push_image(**args)
     assert build_and_push_spy.call_count == 0
     assert ecr_check_spy.call_count == 1
     assert git_status_check_spy.call_count == 1
@@ -115,8 +113,7 @@ def describe_push_image():
       'overwrite': False,
       'skip_latest': False,
     }
-    with pytest.raises(SystemExit):
-      push_image(**args)
+    push_image(**args)
     assert build_and_push_spy.call_count == 0
     assert ecr_check_spy.call_count == 1
     assert git_status_check_spy.call_count == 0
