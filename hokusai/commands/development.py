@@ -39,7 +39,6 @@ def dev_start(build, detach, filename):
   if detach:
     print_green("Run `hokousai dev stop` to shut down, or `hokusai dev logs --follow` to tail output.")
 
-@command()
 def dev_stop(filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))

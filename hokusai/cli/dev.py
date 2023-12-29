@@ -36,7 +36,10 @@ def start(build, detach, filename, verbose):
 def stop(filename, verbose):
   """Stop the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_stop(filename)
+  wrap(
+    hokusai.dev_stop,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
