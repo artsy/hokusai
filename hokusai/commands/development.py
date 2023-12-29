@@ -50,7 +50,6 @@ def dev_stop(filename):
 
   shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
-@command()
 def dev_status(filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))

@@ -48,7 +48,10 @@ def stop(filename, verbose):
 def status(filename, verbose):
   """Print the status of the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_status(filename)
+  wrap(
+    hokusai.dev_status,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
