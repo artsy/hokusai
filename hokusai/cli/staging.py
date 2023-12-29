@@ -108,7 +108,15 @@ def run(command, tty, tag, env, constraint, verbose):
 def logs(timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, label)
+  wrap(
+    hokusai.logs,
+    KUBE_CONTEXT,
+    timestamps,
+    follow,
+    tail,
+    previous,
+    label
+  )
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)

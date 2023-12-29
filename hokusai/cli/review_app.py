@@ -117,7 +117,16 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
 def logs(app_name, timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, label, namespace=clean_string(app_name))
+  wrap(
+    hokusai.logs,
+    KUBE_CONTEXT,
+    timestamps,
+    follow,
+    tail,
+    previous,
+    label,
+    namespace=clean_string(app_name)
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
