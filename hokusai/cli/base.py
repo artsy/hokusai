@@ -77,7 +77,13 @@ def test(build, cleanup, filename, service_name, verbose):
 
   Return the exit code of the container with the name 'project-name' in `hokusai/config.yml`"""
   set_verbosity(verbose)
-  hokusai.test(build, cleanup, filename, service_name)
+  wrap(
+    hokusai.test,
+    build,
+    cleanup,
+    filename,
+    service_name
+  )
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)

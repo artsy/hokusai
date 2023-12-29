@@ -2,7 +2,6 @@ import os
 import signal
 
 from hokusai import CWD
-from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, TEST_YML_FILE, config
 from hokusai.lib.common import print_green, print_red, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
@@ -11,7 +10,6 @@ from hokusai.lib.template_selector import TemplateSelector
 from hokusai.lib.docker_compose_helpers import follow_extends
 from hokusai.services.yaml_spec import YamlSpec
 
-@command()
 def test(build, cleanup, filename, service_name):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, TEST_YML_FILE))
