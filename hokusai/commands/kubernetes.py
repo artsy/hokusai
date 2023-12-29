@@ -46,7 +46,6 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
   print_green("Created Kubernetes environment %s" % yaml_template)
 
 
-@command()
 def k8s_update(context, namespace=None, filename=None, check_branch="main",
                 check_remote=None, skip_checks=False, dry_run=False):
   if filename is None:

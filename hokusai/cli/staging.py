@@ -3,6 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
+from hokusai.lib.command_wrapper import wrap
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 KUBE_CONTEXT = 'staging'
@@ -43,9 +44,15 @@ def delete(filename, verbose):
 def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
   """Update the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, check_branch=check_branch,
-                      check_remote=check_remote, skip_checks=skip_checks,
-                      filename=filename, dry_run=dry_run)
+  wrap(
+    hokusai.k8s_update,
+    KUBE_CONTEXT,
+    check_branch=check_branch,
+    check_remote=check_remote,
+    skip_checks=skip_checks,
+    filename=filename,
+    dry_run=dry_run
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -100,7 +107,17 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
   the given image tag and update the tag staging
   to reference the same image"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout, update_config=update_config, filename=filename)
+  wrap(
+    hokusai.update,
+    KUBE_CONTEXT,
+    tag,
+    migration,
+    constraint,
+    git_remote,
+    timeout,
+    update_config=update_config,
+    filename=filename
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)

@@ -6,6 +6,7 @@ import hokusai
 from hokusai import CWD
 from hokusai.cli.base import base
 from hokusai.cli.staging import KUBE_CONTEXT
+from hokusai.lib.command_wrapper import wrap
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 
@@ -47,7 +48,13 @@ def delete(app_name, verbose):
 def update(app_name, verbose):
   """Updates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, namespace=clean_string(app_name), filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name), skip_checks=True)
+  wrap(
+    hokusai.k8s_update,
+    KUBE_CONTEXT,
+    namespace=clean_string(app_name),
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
+    skip_checks=True
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -105,9 +112,18 @@ def logs(app_name, timestamps, follow, tail, previous, label, verbose):
 def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_config, verbose):
   """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout,
-                  namespace=clean_string(app_name), update_config=update_config,
-                  filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name))
+  wrap(
+    hokusai.update,
+    KUBE_CONTEXT,
+    tag,
+    migration,
+    constraint,
+    git_remote,
+    timeout,
+    namespace=clean_string(app_name),
+    update_config=update_config,
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)i
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)

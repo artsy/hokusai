@@ -5,7 +5,6 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
 from hokusai.lib.exceptions import HokusaiError
 
-@command()
 def update(context, tag, migration, constraint, git_remote, timeout,
             namespace=None, update_config=False, filename=None):
   if migration is not None:
