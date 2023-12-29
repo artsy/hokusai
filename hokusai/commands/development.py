@@ -2,7 +2,6 @@ import os
 import signal
 
 from hokusai import CWD
-from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE, config
 from hokusai.lib.common import print_green, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import HokusaiError
@@ -61,7 +60,6 @@ def dev_status(filename):
 
   shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai ps" % docker_compose_yml, print_output=True)
 
-@command()
 def dev_logs(follow, tail, filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
@@ -79,7 +77,6 @@ def dev_logs(follow, tail, filename):
 
   shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
 
-@command()
 def dev_run(command, service_name, stop, filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
@@ -97,7 +94,6 @@ def dev_run(command, service_name, stop, filename):
   if stop:
     shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
 
-@command()
 def dev_clean(filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
