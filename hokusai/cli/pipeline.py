@@ -18,7 +18,9 @@ def gitdiff(verbose):
   """Print a git diff between the tag currently deployed on production
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
-  hokusai.gitdiff()
+  wrap(
+    hokusai.gitdiff
+  )
 
 
 @pipeline.command(context_settings=CONTEXT_SETTINGS)
