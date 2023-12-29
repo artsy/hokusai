@@ -95,7 +95,10 @@ def check():
 @base.command(context_settings=CONTEXT_SETTINGS)
 def version():
   """Print Hokusai's version and exit"""
-  hokusai.version()
+  wrap(
+    hokusai.version,
+    config_check=False
+  )
 
 if __name__ == '__main__':
   base(obj={})
