@@ -4,6 +4,7 @@ import click
 from click_repl import repl
 
 import hokusai
+from hokusai.lib.command_wrapper import wrap
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @click.group()
@@ -54,7 +55,7 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
 def build(filename, verbose):
   """Build the Docker image defined in ./hokusai/build.yml"""
   set_verbosity(verbose)
-  hokusai.build(filename)
+  wrap(hokusai.build, filename)
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
