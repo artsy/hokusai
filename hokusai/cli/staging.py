@@ -158,7 +158,11 @@ def env(context_settings=CONTEXT_SETTINGS):
 def get(env_vars, verbose):
   """Print environment variables stored on the Kubernetes server"""
   set_verbosity(verbose)
-  hokusai.get_env(KUBE_CONTEXT, env_vars)
+  wrap(
+    hokusai.get_env,
+    KUBE_CONTEXT,
+    env_vars
+  )
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
@@ -167,7 +171,11 @@ def get(env_vars, verbose):
 def set(env_vars, verbose):
   """Set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'"""
   set_verbosity(verbose)
-  hokusai.set_env(KUBE_CONTEXT, env_vars)
+  wrap(
+    hokusai.set_env,
+    KUBE_CONTEXT,
+    env_vars
+  )
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
@@ -176,4 +184,8 @@ def set(env_vars, verbose):
 def unset(env_vars, verbose):
   """Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'"""
   set_verbosity(verbose)
-  hokusai.unset_env(KUBE_CONTEXT, env_vars)
+  wrap(
+    hokusai.unset_env,
+    KUBE_CONTEXT,
+    env_vars
+  )
