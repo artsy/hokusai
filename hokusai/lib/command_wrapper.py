@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 
-from hokusai.lib.common import print_red, get_verbosity
+from hokusai.lib.common import print_red
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.config import config
 

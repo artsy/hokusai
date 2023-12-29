@@ -33,7 +33,14 @@ def console():
 def configure(kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, verbose):
   """Pull new Hokusai global config, download kubeconfig, install kubectl, save final global config to ~/.hokusai.yml"""
   set_verbosity(verbose)
-  wrap(hokusai.hokusai_configure, kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, config_check=False)
+  wrap(
+    hokusai.hokusai_configure,
+    kubeconfig_dir,
+    kubectl_dir,
+    skip_kubeconfig,
+    skip_kubectl,
+    config_check=False
+  )
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
@@ -63,7 +70,10 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
 def build(filename, verbose):
   """Build the Docker image defined in ./hokusai/build.yml"""
   set_verbosity(verbose)
-  wrap(hokusai.build, filename)
+  wrap(
+    hokusai.build,
+    filename
+  )
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
@@ -89,7 +99,9 @@ def test(build, cleanup, filename, service_name, verbose):
 @base.command(context_settings=CONTEXT_SETTINGS)
 def check():
   """Check Hokusai dependencies and configuration"""
-  wrap(hokusai.check)
+  wrap(
+    hokusai.check
+  )
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
