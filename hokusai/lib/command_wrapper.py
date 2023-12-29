@@ -23,10 +23,7 @@ def wrap(command, *args, config_check=True, **kwargs):
     print_red("ERROR: %s" % e.message)
     sys.exit(e.return_code)
   except CalledProcessError as e:
-    if get_verbosity() or os.environ.get('DEBUG'):
-      print_red(traceback.format_exc())
-    else:
-      print_red("ERROR: %s" % str(e))
+    print_red(traceback.format_exc())
     if hasattr(e, 'output') and e.output is not None:
       if type(e.output) == bytes:
         print_red("ERROR: %s" % e.output.decode('utf-8'))
@@ -34,8 +31,5 @@ def wrap(command, *args, config_check=True, **kwargs):
         print_red("ERROR: %s" % e.output)
     sys.exit(e.returncode)
   except Exception as e:
-    if get_verbosity() or os.environ.get('DEBUG'):
-      print_red(traceback.format_exc())
-    else:
-      print_red("ERROR: %s" % str(e))
+    print_red(traceback.format_exc())
     sys.exit(1)
