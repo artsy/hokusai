@@ -164,7 +164,7 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
     timeout,
     namespace=clean_string(app_name),
     update_config=update_config,
-    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)i
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
   )
 
 
