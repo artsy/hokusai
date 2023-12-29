@@ -1,11 +1,9 @@
 from operator import itemgetter
 
-from hokusai.lib.command import command
 from hokusai.services.ecr import ECR
 from hokusai.lib.config import config
 from hokusai.lib.common import print_green, print_yellow, print_red, print_smart, shout, pick_yes, pick_no
 
-@command()
 def images(tag_exists, reverse_sort, limit, filter_tags, digests):
   ecr = ECR()
   if tag_exists:

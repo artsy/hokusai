@@ -46,7 +46,14 @@ def pull(tag, local_tag, verbose):
 def images(tag_exists, reverse_sort, limit, filter_tags, digests, verbose):
   """Print images and tags in the project's registry"""
   set_verbosity(verbose)
-  hokusai.images(tag_exists, reverse_sort, limit, filter_tags, digests)
+  wrap(
+    hokusai.images,
+    tag_exists,
+    reverse_sort,
+    limit,
+    filter_tags,
+    digests
+  )
 
 @registry.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag1', type=click.Choice(['staging', 'production']))
