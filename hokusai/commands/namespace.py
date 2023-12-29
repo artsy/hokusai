@@ -6,7 +6,6 @@ import yaml
 from collections import OrderedDict
 
 from hokusai import CWD
-from hokusai.lib.command import command
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.common import print_green, clean_string, shout
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
@@ -15,7 +14,6 @@ from hokusai.services.kubectl import Kubectl
 from hokusai.services.yaml_spec import YamlSpec
 
 
-@command()
 def create_new_app_yaml(source_file, app_name):
   yaml_spec = YamlSpec(source_file).to_file()
   with open(yaml_spec, 'r') as stream:

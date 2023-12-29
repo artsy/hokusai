@@ -22,7 +22,11 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 def setup(app_name, verbose, source_file):
   """Setup a new review-app - create a Yaml file based on APP_NAME and --source-file"""
   set_verbosity(verbose)
-  hokusai.create_new_app_yaml(source_file, app_name)
+  wrap(
+    hokusai.create_new_app_yaml,
+    source_file,
+    app_name
+  )
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
