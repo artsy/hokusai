@@ -33,7 +33,11 @@ def push(tag, local_tag, build, filename, force, overwrite, skip_latest, verbose
 def pull(tag, local_tag, verbose):
   """Pull the image tag --tag from the project's registry and tag as --local-tag"""
   set_verbosity(verbose)
-  hokusai.pull(tag, local_tag)
+  wrap(
+    hokusai.pull,
+    tag,
+    local_tag
+  )
 
 
 @registry.command(context_settings=CONTEXT_SETTINGS)
