@@ -29,15 +29,13 @@ class TestKubernetes(HokusaiIntegrationTestCase):
             shout(cls.kctl.command("delete all --selector testFixture=true"), print_output=True)
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_00_k8s_env_create(self, mocked_sys_exit):
+    def test_00_k8s_env_create(self):
         configmap = ConfigMap(TEST_KUBE_CONTEXT)
         configmap.create()
 
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_01_k8s_create(self, mocked_sys_exit):
+    def test_01_k8s_create(self):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -46,7 +44,6 @@ class TestKubernetes(HokusaiIntegrationTestCase):
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_create(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml)
-            mocked_sys_exit.assert_called_once_with(0)
             self.assertIn('Created Kubernetes environment %s' % self.__class__.kubernetes_yml,
                             out.getvalue().strip())
 
@@ -54,8 +51,7 @@ class TestKubernetes(HokusaiIntegrationTestCase):
         self.assertIn("hello-web", deployments)
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_02_k8s_update(self, mocked_sys_exit):
+    def test_02_k8s_update(self):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -64,15 +60,13 @@ class TestKubernetes(HokusaiIntegrationTestCase):
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_update(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml, skip_checks=True)
-            mocked_sys_exit.assert_called_once_with(0)
             # self.assertIn('deployment.apps "hello-web" unchanged', out.getvalue().strip())
             # self.assertIn('service "hello-web" unchanged', out.getvalue().strip())
             self.assertIn('Updated Kubernetes environment %s' % self.__class__.kubernetes_yml,
                             out.getvalue().strip())
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_03_k8s_status(self, mocked_sys_exit):
+    def test_03_k8s_status(self):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -81,45 +75,35 @@ class TestKubernetes(HokusaiIntegrationTestCase):
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_status(TEST_KUBE_CONTEXT, True, False, False, False, filename=self.__class__.kubernetes_yml)
-            mocked_sys_exit.assert_called_once_with(0)
             self.assertIn('Resources', out.getvalue().strip())
             # self.assertIn('deployment.apps/hello-web', out.getvalue().strip())
             # self.assertIn('service/hello-web', out.getvalue().strip())
-            mocked_sys_exit.reset_mock()
 
             kubernetes.k8s_status(TEST_KUBE_CONTEXT, True, False, True, False, filename=self.__class__.kubernetes_yml)
-            mocked_sys_exit.assert_called_once_with(0)
             self.assertIn('Resources', out.getvalue().strip())
             # self.assertIn('Name:                   hello-web', out.getvalue().strip())
             # self.assertIn('Selector:               app=hello', out.getvalue().strip())
-            mocked_sys_exit.reset_mock()
 
             kubernetes.k8s_status(TEST_KUBE_CONTEXT, False, True, False, False, filename=self.__class__.kubernetes_yml)
-            mocked_sys_exit.assert_called_once_with(0)
             self.assertIn('Pods', out.getvalue().strip())
             # self.assertIn('hello-web', out.getvalue().strip())
             # self.assertTrue('ContainerCreating' in out.getvalue().strip() or 'Running' in out.getvalue().strip())
-            mocked_sys_exit.reset_mock()
 
             kubernetes.k8s_status(TEST_KUBE_CONTEXT, False, True, True, False, filename=self.__class__.kubernetes_yml)
-            mocked_sys_exit.assert_called_once_with(0)
             # self.assertIn('Name:           hello-web', out.getvalue().strip())
-            mocked_sys_exit.reset_mock()
 
             # TODO enable heapster in minikube to get top pods
             # kubernetes.k8s_status(TEST_KUBE_CONTEXT, False, False, False, True, filename=self.__class__.kubernetes_yml)
 
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_04_deployment_refresh(self, mocked_sys_exit):
+    def test_04_deployment_refresh(self):
         deployment = Deployment(TEST_KUBE_CONTEXT)
         deployment.refresh()
 
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_05_k8s_delete(self, mocked_sys_exit):
+    def test_05_k8s_delete(self):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -128,13 +112,10 @@ class TestKubernetes(HokusaiIntegrationTestCase):
                                 content_type="application/x-amz-json-1.1")
         with captured_output() as (out, err):
             kubernetes.k8s_delete(TEST_KUBE_CONTEXT, filename=self.__class__.kubernetes_yml)
-            mocked_sys_exit.assert_called_once_with(0)
             self.assertIn('Deleted Kubernetes environment %s' % self.__class__.kubernetes_yml,
                             out.getvalue().strip())
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_06_k8s_env_destroy(self, mocked_sys_exit):
+    def test_06_k8s_env_destroy(self):
         configmap = ConfigMap(TEST_KUBE_CONTEXT)
         configmap.destroy()
-

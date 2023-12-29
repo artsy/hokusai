@@ -29,8 +29,7 @@ class TestReviewApp(HokusaiIntegrationTestCase):
             shout(cls.kctl.command("delete ns a-review-app"), print_output=True)
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_create_review_app_yaml_file(self, mocked_sys_exit):
+    def test_create_review_app_yaml_file(self):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                                 body=self.fixture('sts-get-caller-identity-response.xml'),
                                 content_type="application/xml")
@@ -41,14 +40,12 @@ class TestReviewApp(HokusaiIntegrationTestCase):
         review_app_yaml_file = os.path.join(CWD, self.__class__.HOKUSAI_CONFIG_DIR, 'a-review-app.yml')
         try:
             create_new_app_yaml(os.path.join(CWD, self.__class__.HOKUSAI_CONFIG_DIR, 'minikube.yml'), 'a-review-app')
-            mocked_sys_exit.assert_called_once_with(0)
             self.assertTrue(os.path.isfile(review_app_yaml_file))
         finally:
             os.remove(review_app_yaml_file)
 
     @httpretty.activate
-    @patch('hokusai.lib.command_wrapper.sys.exit')
-    def test_01_k8s_create(self, mocked_sys_exit):
+    def test_01_k8s_create(self):
         httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
@@ -60,10 +57,7 @@ class TestReviewApp(HokusaiIntegrationTestCase):
         with captured_output() as (out, err):
           try:
             create_new_app_yaml(os.path.join(CWD, self.__class__.HOKUSAI_CONFIG_DIR, 'minikube.yml'), 'a-review-app')
-            mocked_sys_exit.assert_called_once_with(0)
-            mocked_sys_exit.reset_mock()
             kubernetes.k8s_create(TEST_KUBE_CONTEXT, filename=review_app_yaml_file)
-            mocked_sys_exit.assert_called_once_with(0)
             namespaces = shout(self.kctl.command("get ns -l app-phase=review"))
             self.assertIn("a-review-app", namespaces)
             self.assertNotIn("default", namespaces)
