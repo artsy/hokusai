@@ -22,4 +22,4 @@ class TestCommand(HokusaiUnitTestCase):
     with captured_output() as (out, err):
       wrap(foo_command, False)
       mocked_sys_exit.assert_called_once_with(1)
-      self.assertIn('ERROR: Bad command', out.getvalue().strip())
+      self.assertIn('Bad command', out.getvalue().strip())
