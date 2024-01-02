@@ -6,7 +6,7 @@ from hokusai.lib.common import print_red
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.config import config
 
-def wrap(command, *args, config_check=True, **kwargs):
+def command(command, *args, config_check=True, **kwargs):
   try:
     if config_check:
       config.check()

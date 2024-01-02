@@ -4,7 +4,7 @@ import click
 from click_repl import repl
 
 import hokusai
-from hokusai.lib.command_wrapper import wrap
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @click.group()
@@ -33,7 +33,7 @@ def console():
 def configure(kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, verbose):
   """Pull new Hokusai global config, download kubeconfig, install kubectl, save final global config to ~/.hokusai.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.hokusai_configure,
     kubeconfig_dir,
     kubectl_dir,
@@ -53,7 +53,7 @@ def configure(kubeconfig_dir, kubectl_dir, skip_kubeconfig, skip_kubectl, verbos
 def setup(project_name, template_remote, template_dir, var, allow_missing_vars, verbose):
   """Set up Hokusai for the current project"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.setup,
     project_name,
     template_remote,
@@ -70,7 +70,7 @@ def setup(project_name, template_remote, template_dir, var, allow_missing_vars, 
 def build(filename, verbose):
   """Build the Docker image defined in ./hokusai/build.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.build,
     filename
   )
@@ -87,7 +87,7 @@ def test(build, cleanup, filename, service_name, verbose):
 
   Return the exit code of the container with the name 'project-name' in `hokusai/config.yml`"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.test,
     build,
     cleanup,
@@ -99,7 +99,7 @@ def test(build, cleanup, filename, service_name, verbose):
 @base.command(context_settings=CONTEXT_SETTINGS)
 def check():
   """Check Hokusai dependencies and configuration"""
-  wrap(
+  command(
     hokusai.check
   )
 
@@ -107,7 +107,7 @@ def check():
 @base.command(context_settings=CONTEXT_SETTINGS)
 def version():
   """Print Hokusai's version and exit"""
-  wrap(
+  command(
     hokusai.version,
     config_check=False
   )

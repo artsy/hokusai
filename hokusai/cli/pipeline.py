@@ -3,7 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
-from hokusai.lib.command_wrapper import wrap
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @base.group()
@@ -18,7 +18,7 @@ def gitdiff(verbose):
   """Print a git diff between the tag currently deployed on production
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.gitdiff
   )
 
@@ -29,7 +29,7 @@ def gitlog(verbose):
   """Print a git log between the tag currently deployed on production
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.gitlog
   )
 
@@ -41,7 +41,7 @@ def gitcompare(org_name, git_compare_link, verbose):
   """Prints a git compare link between the tag currently deployed on production
   and the tag currently deployed on staging"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.gitcompare,
     org_name,
     git_compare_link
@@ -61,7 +61,7 @@ def promote(migration, constraint, git_remote, timeout, update_config, filename,
   currently deployed on staging and update the production tag
   to reference the same image"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.promote,
     migration,
     constraint,

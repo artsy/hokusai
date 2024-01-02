@@ -3,7 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
-from hokusai.lib.command_wrapper import wrap
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 @base.group()
@@ -24,7 +24,7 @@ def registry(context_settings=CONTEXT_SETTINGS):
 def push(tag, local_tag, build, filename, force, overwrite, skip_latest, verbose):
   """Build and push an image to the project's registry tagged as the git SHA1 of HEAD"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.push_image,
     tag,
     local_tag,
@@ -43,7 +43,7 @@ def push(tag, local_tag, build, filename, force, overwrite, skip_latest, verbose
 def pull(tag, local_tag, verbose):
   """Pull the image tag --tag from the project's registry and tag as --local-tag"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.pull,
     tag,
     local_tag
@@ -60,7 +60,7 @@ def pull(tag, local_tag, verbose):
 def images(tag_exists, reverse_sort, limit, filter_tags, digests, verbose):
   """Print images and tags in the project's registry"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.images,
     tag_exists,
     reverse_sort,
@@ -79,7 +79,7 @@ def retag(tag1, tag2, verbose):
   Tag1 must be either 'staging' or 'production'.
   """
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.retag,
     tag1,
     tag2

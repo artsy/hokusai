@@ -3,7 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
-from hokusai.lib.command_wrapper import wrap
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 KUBE_CONTEXT = 'production'
@@ -22,7 +22,7 @@ def production(context_settings=CONTEXT_SETTINGS):
 def create(filename, environment, verbose):
   """Create the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_create,
     KUBE_CONTEXT,
     filename=filename,
@@ -36,7 +36,7 @@ def create(filename, environment, verbose):
 def delete(filename, verbose):
   """Delete the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_delete,
     KUBE_CONTEXT,
     filename=filename
@@ -53,7 +53,7 @@ def delete(filename, verbose):
 def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
   """Update the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_update,
     KUBE_CONTEXT,
     check_branch=check_branch,
@@ -74,7 +74,7 @@ def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
 def status(resources, pods, describe, top, filename, verbose):
   """Print Kubernetes resources in the production context"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_status,
     KUBE_CONTEXT,
     resources,
@@ -95,7 +95,7 @@ def status(resources, pods, describe, top, filename, verbose):
 def run(command, tty, tag, env, constraint, verbose):
   """Launch a new container and run a command"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.run,
     KUBE_CONTEXT,
     command,
@@ -116,7 +116,7 @@ def run(command, tty, tag, env, constraint, verbose):
 def logs(timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.logs,
     KUBE_CONTEXT,
     timestamps,
@@ -140,7 +140,7 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
   the given image tag and update the tag production
   to reference the same image"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.update,
     KUBE_CONTEXT,
     tag,
@@ -159,7 +159,7 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
 def refresh(deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.refresh,
     KUBE_CONTEXT,
     deployment
@@ -172,7 +172,7 @@ def refresh(deployment, verbose):
 def restart(deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.refresh,
     KUBE_CONTEXT,
     deployment
@@ -191,7 +191,7 @@ def env(context_settings=CONTEXT_SETTINGS):
 def get(env_vars, verbose):
   """Print environment variables stored on the Kubernetes server"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.get_env,
     KUBE_CONTEXT,
     env_vars
@@ -204,7 +204,7 @@ def get(env_vars, verbose):
 def set(env_vars, verbose):
   """Set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.set_env,
     KUBE_CONTEXT,
     env_vars
@@ -217,7 +217,7 @@ def set(env_vars, verbose):
 def unset(env_vars, verbose):
   """Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.unset_env,
     KUBE_CONTEXT,
     env_vars

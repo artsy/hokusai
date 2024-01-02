@@ -6,7 +6,7 @@ import hokusai
 from hokusai import CWD
 from hokusai.cli.base import base
 from hokusai.cli.staging import KUBE_CONTEXT
-from hokusai.lib.command_wrapper import wrap
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 
@@ -22,7 +22,7 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 def setup(app_name, verbose, source_file):
   """Setup a new review-app - create a Yaml file based on APP_NAME and --source-file"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.create_new_app_yaml,
     source_file,
     app_name
@@ -34,7 +34,7 @@ def setup(app_name, verbose, source_file):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def create(app_name, verbose):
   """Creates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
-  wrap(
+  command(
     hokusai.k8s_create,
     KUBE_CONTEXT,
     tag=app_name,
@@ -49,7 +49,7 @@ def create(app_name, verbose):
 def delete(app_name, verbose):
   """Deletes the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_delete,
     KUBE_CONTEXT,
     namespace=clean_string(app_name),
@@ -63,7 +63,7 @@ def delete(app_name, verbose):
 def update(app_name, verbose):
   """Updates the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_update,
     KUBE_CONTEXT,
     namespace=clean_string(app_name),
@@ -82,7 +82,7 @@ def update(app_name, verbose):
 def status(app_name, resources, pods, describe, top, verbose):
   """Print the Kubernetes resources status defined in the staging context / {APP_NAME} namespace"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_status,
     KUBE_CONTEXT,
     resources,
@@ -107,7 +107,7 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
   set_verbosity(verbose)
   if tag is None:
     tag = clean_string(app_name)
-  wrap(
+  command(
     hokusai.run,
     KUBE_CONTEXT,
     command,
@@ -130,7 +130,7 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
 def logs(app_name, timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.logs,
     KUBE_CONTEXT,
     timestamps,
@@ -154,7 +154,7 @@ def logs(app_name, timestamps, follow, tail, previous, label, verbose):
 def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_config, verbose):
   """Update the project's deployment(s) to reference the given image tag"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.update,
     KUBE_CONTEXT,
     tag,
@@ -183,7 +183,7 @@ def list(verbose):
 def refresh(app_name, deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.refresh,
     KUBE_CONTEXT,
     deployment,
@@ -198,7 +198,7 @@ def refresh(app_name, deployment, verbose):
 def restart(app_name, deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.refresh,
     KUBE_CONTEXT,
     deployment,
@@ -219,7 +219,7 @@ def env(context_settings=CONTEXT_SETTINGS):
 def copy(app_name, configmap, verbose):
   """Copies the app's environment config map to the namespace {APP_NAME}"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.k8s_copy_config,
     KUBE_CONTEXT,
     clean_string(app_name),
@@ -234,7 +234,7 @@ def copy(app_name, configmap, verbose):
 def get(app_name, env_vars, verbose):
   """Print environment variables stored on the Kubernetes server"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.get_env,
     KUBE_CONTEXT,
     env_vars,
@@ -249,7 +249,7 @@ def get(app_name, env_vars, verbose):
 def set(app_name, env_vars, verbose):
   """Set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.set_env,
     KUBE_CONTEXT,
     env_vars,
@@ -264,7 +264,7 @@ def set(app_name, env_vars, verbose):
 def unset(app_name, env_vars, verbose):
   """Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.unset_env,
     KUBE_CONTEXT,
     env_vars,

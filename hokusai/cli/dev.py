@@ -3,7 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
-from hokusai.lib.command_wrapper import wrap
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 from hokusai.lib.config import config
 
@@ -22,7 +22,7 @@ def dev(context_settings=CONTEXT_SETTINGS):
 def start(build, detach, filename, verbose):
   """Start the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.dev_start,
     build,
     detach,
@@ -36,7 +36,7 @@ def start(build, detach, filename, verbose):
 def stop(filename, verbose):
   """Stop the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.dev_stop,
     filename
   )
@@ -48,7 +48,7 @@ def stop(filename, verbose):
 def status(filename, verbose):
   """Print the status of the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.dev_status,
     filename
   )
@@ -62,7 +62,7 @@ def status(filename, verbose):
 def logs(follow, tail, filename, verbose):
   """Print logs from the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.dev_logs,
     follow,
     tail,
@@ -79,7 +79,7 @@ def logs(follow, tail, filename, verbose):
 def run(command, service_name, stop, filename, verbose):
   """Run a command in a new container in the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.dev_run,
     command,
     service_name,
@@ -94,7 +94,7 @@ def run(command, service_name, stop, filename, verbose):
 def clean(filename, verbose):
   """Stop and remove all containers in the development environment defined in ./hokusai/development.yml.j2"""
   set_verbosity(verbose)
-  wrap(
+  command(
     hokusai.dev_clean,
     filename
   )
