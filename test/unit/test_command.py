@@ -5,7 +5,6 @@ from test.utils import captured_output
 
 from hokusai.lib.command import command
 
-@command()
 def foo_command(foo):
   if foo:
     return 0
@@ -15,12 +14,12 @@ def foo_command(foo):
 class TestCommand(HokusaiUnitTestCase):
   @patch('hokusai.lib.command.sys.exit', return_code=True)
   def test_command_exits_with_return_code(self, mocked_sys_exit):
-    foo_command('Ohai!')
+    command(foo_command, 'Ohai!')
     mocked_sys_exit.assert_called_once_with(0)
 
   @patch('hokusai.lib.command.sys.exit', return_code=True)
   def test_command_catches_exceptions(self, mocked_sys_exit):
     with captured_output() as (out, err):
-      foo_command(False)
+      command(foo_command, False)
       mocked_sys_exit.assert_called_once_with(1)
-      self.assertIn('ERROR: Bad command', out.getvalue().strip())
+      self.assertIn('Bad command', out.getvalue().strip())

@@ -1,10 +1,8 @@
-from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.lib.common import shout, shout_concurrent
 from hokusai.services.kubectl import Kubectl
 from hokusai.lib.exceptions import HokusaiError
 
-@command()
 def logs(context, timestamps, follow, tail, previous, labels, namespace=None):
   kctl = Kubectl(context, namespace=namespace)
 

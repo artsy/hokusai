@@ -1,4 +1,3 @@
-from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, print_yellow, shout
@@ -26,7 +25,6 @@ def git_status_check():
     print_yellow(git_status_files)
     raise HokusaiError("Working directory unclean. Aborting. Use '--force' to force.")
 
-@command()
 def push_image(remote_tag, local_tag, build, filename, force, overwrite, skip_latest=False):
   """Push Docker image to ECR"""
   force or git_status_check()

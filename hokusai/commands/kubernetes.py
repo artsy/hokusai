@@ -1,7 +1,6 @@
 import os
 
 from hokusai import CWD
-from hokusai.lib.command import command
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.lib.common import print_green, shout, returncode
 from hokusai.lib.template_selector import TemplateSelector
@@ -11,7 +10,6 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import HokusaiError
 
-@command()
 def k8s_create(context, tag='latest', namespace=None, filename=None, environment=()):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
@@ -46,7 +44,6 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
   print_green("Created Kubernetes environment %s" % yaml_template)
 
 
-@command()
 def k8s_update(context, namespace=None, filename=None, check_branch="main",
                 check_remote=None, skip_checks=False, dry_run=False):
   if filename is None:
@@ -83,7 +80,6 @@ def k8s_update(context, namespace=None, filename=None, check_branch="main",
     print_green("Updated Kubernetes environment %s" % yaml_template)
 
 
-@command()
 def k8s_delete(context, namespace=None, filename=None):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
@@ -102,7 +98,6 @@ def k8s_delete(context, namespace=None, filename=None):
   print_green("Deleted Kubernetes environment %s" % yaml_template)
 
 
-@command()
 def k8s_status(context, resources, pods, describe, top, namespace=None, filename=None):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
@@ -132,8 +127,6 @@ def k8s_status(context, resources, pods, describe, top, namespace=None, filename
     shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
 
 
-
-@command()
 def k8s_copy_config(context, destination_namespace, name=None):
   source_configmap = ConfigMap(context, name=name)
   destination_configmap = ConfigMap(context, name=name, namespace=destination_namespace)
