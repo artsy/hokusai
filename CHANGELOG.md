@@ -1,3 +1,13 @@
+## v2.1.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v2.1.0/README.md)
+
+### Notable changes since v2.0.0
+
+* fd09bac feat: un-decorate all commands, and print stacktrace for unanticipated exceptions (#392)
+* 53c5b44 feat: hokusai review_app list command (#390)
+* d5ced96 feat: new way of versioning beta builds (#389)
+
 ## v2.0.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v2.0.0/README.md)
