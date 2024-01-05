@@ -71,17 +71,17 @@ def logs(follow, tail, filename, verbose):
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('command')
+@click.argument('container_command')
 @click.option('--service-name', type=click.STRING, help="The service name to launch the container as (default: the name 'project-name' in `hokusai/config.yml`)")
 @click.option('--stop', type=click.BOOL, is_flag=True, help='Stop all services after running the command')
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default ./hokusai/development.yml.j2)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(command, service_name, stop, filename, verbose):
+def run(container_command, service_name, stop, filename, verbose):
   """Run a command in a new container in the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
   command(
     hokusai.dev_run,
-    command,
+    container_command,
     service_name,
     stop,
     filename

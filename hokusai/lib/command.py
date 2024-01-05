@@ -6,11 +6,11 @@ from hokusai.lib.common import print_red
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.config import config
 
-def command(command, *args, config_check=True, **kwargs):
+def command(container_command, *args, config_check=True, **kwargs):
   try:
     if config_check:
       config.check()
-    result = command(*args, **kwargs)
+    result = container_command(*args, **kwargs)
     if result is None:
       sys.exit(0)
     else:

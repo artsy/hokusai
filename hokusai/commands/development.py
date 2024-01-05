@@ -77,7 +77,7 @@ def dev_logs(follow, tail, filename):
 
   shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai logs%s" % (docker_compose_yml, opts), print_output=True)
 
-def dev_run(command, service_name, stop, filename):
+def dev_run(container_command, service_name, stop, filename):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE))
   else:
@@ -89,7 +89,7 @@ def dev_run(command, service_name, stop, filename):
   if service_name is None:
     service_name = config.project_name
 
-  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai run %s %s" % (docker_compose_yml, service_name, command), print_output=True)
+  shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai run %s %s" % (docker_compose_yml, service_name, container_command), print_output=True)
 
   if stop:
     shout("COMPOSE_COMPATIBILITY=true docker-compose -f %s -p hokusai stop" % docker_compose_yml, print_output=True)
