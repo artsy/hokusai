@@ -29,5 +29,10 @@ def describe_version():
 
 def describe_check():
   def it_validates_aws_creds():
-    output = check_output('hokusai check', shell=True, text=True, timeout=5)
-    assert 'Valid AWS credentials found' in output
+    output = None
+    try:
+      output = check_output('hokusai check', shell=True, text=True, timeout=5)
+      assert 'Valid AWS credentials found' in output
+    except:
+      print(output)
+      raise
