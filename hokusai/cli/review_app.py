@@ -96,13 +96,13 @@ def status(app_name, resources, pods, describe, top, verbose):
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.argument('command', type=click.STRING)
+@click.argument('container_command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to APP_NAME)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(app_name, command, tty, tag, env, constraint, verbose):
+def run(app_name, container_command, tty, tag, env, constraint, verbose):
   """Launch a new container and run a command"""
   set_verbosity(verbose)
   if tag is None:
@@ -110,7 +110,7 @@ def run(app_name, command, tty, tag, env, constraint, verbose):
   command(
     hokusai.run,
     KUBE_CONTEXT,
-    command,
+    container_command,
     tty,
     tag,
     env,
