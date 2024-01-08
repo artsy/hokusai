@@ -22,7 +22,6 @@ test:
 	coverage run --omit="test/*" -m unittest discover test.smoke
 
 integration:
-	coverage run --omit="test/*" -m unittest discover test.integration
 	coverage run -m pytest test/integration
 
 pyinstaller-build-onefile: # for linux
