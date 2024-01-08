@@ -1,9 +1,9 @@
 import os
-import subprocess
 
 from git import Repo
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+from subprocess import check_output
 
 from hokusai.lib.common import ansi_escape
 
@@ -22,16 +22,7 @@ def describe_git_repo_for_test():
 
 def describe_version():
   def it_outputs_valid_version():
-    resp = subprocess.run(
-      'hokusai version',
-      capture_output=True,
-      shell=True,
-      text=True,
-      timeout=5
-    )
-    assert resp.returncode == 0
+    output = check_output('hokusai version', shell=True, text=True, timeout=5)
     spec1 = SpecifierSet('>=0.0.0', prereleases=True)
-    version_output = ansi_escape(
-      resp.stdout.rstrip()
-    )
+    version_output = ansi_escape(output.rstrip())
     assert Version(version_output) in spec1
