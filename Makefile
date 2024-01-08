@@ -15,7 +15,7 @@ dependencies:
 	# pin version due to https://github.com/python-poetry/poetry/issues/7184
 	pip install poetry==1.2.2 --quiet --ignore-installed
 	poetry --version
-	poetry install --no-root
+	poetry install
 
 test:
 	coverage run -m pytest test/unit
