@@ -7,10 +7,15 @@ from pathlib import Path
 import hokusai.lib.common
 import test.unit.test_lib.fixtures.common
 
-from hokusai.lib.common import get_platform, user, local_to_local, uri_to_local, utc_yyyymmdd, validate_key_value
+from hokusai.lib.common import ansi_escape, get_platform, user, local_to_local, uri_to_local, utc_yyyymmdd, validate_key_value
 from hokusai.lib.exceptions import HokusaiError
 from test.unit.test_lib.fixtures.common import download_for_spy, mock_s3_interface_class, mock_local_to_local_raise
 
+
+def describe_ansi_escape():
+  def it_removes_color():
+    green_foo = '\x1b[32mfoo\x1b[0m'
+    assert ansi_escape(green_foo) == 'foo'
 
 def describe_get_platform():
   def it_returns_platform(mocker):
