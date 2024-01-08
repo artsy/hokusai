@@ -1,5 +1,6 @@
 [project]
 dynamic = ["version"]
+name = "hokusai"
 
 [tool.poetry]
 name = "hokusai"
