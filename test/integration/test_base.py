@@ -1,9 +1,9 @@
 import os
+import subprocess
 
 from git import Repo
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
-from subprocess import check_output
 
 from hokusai.lib.common import ansi_escape
 
@@ -22,17 +22,30 @@ def describe_git_repo_for_test():
 
 def describe_version():
   def it_outputs_valid_version():
-    output = check_output('hokusai version', shell=True, text=True, timeout=5)
+    resp = subprocess.run(
+      'hokusai version',
+      capture_output=True,
+      shell=True,
+      text=True,
+      timeout=5
+    )
+    if resp.returncode != 0:
+      print(resp.stderr)
+    assert resp.returncode == 0
     spec1 = SpecifierSet('>=0.0.0', prereleases=True)
-    version_output = ansi_escape(output.rstrip())
+    version_output = ansi_escape(resp.stdout.rstrip())
     assert Version(version_output) in spec1
 
 def describe_check():
   def it_validates_aws_creds():
-    output = None
-    try:
-      output = check_output('hokusai check', shell=True, text=True, timeout=5)
-      assert 'Valid AWS credentials found' in output
-    except:
-      print(output)
-      raise
+    resp = subprocess.run(
+      'hokusai check',
+      capture_output=True,
+      shell=True,
+      text=True,
+      timeout=5
+    )
+    if resp.returncode != 0:
+      print(resp.stderr)
+    assert resp.returncode == 0
+    assert 'Valid AWS credentials found' in resp.stdout
