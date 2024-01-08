@@ -26,3 +26,8 @@ def describe_version():
     spec1 = SpecifierSet('>=0.0.0', prereleases=True)
     version_output = ansi_escape(output.rstrip())
     assert Version(version_output) in spec1
+
+def describe_check():
+  def it_validates_aws_creds():
+    output = check_output('hokusai check', shell=True, text=True, timeout=5)
+    assert 'Valid AWS credentials found' in output
