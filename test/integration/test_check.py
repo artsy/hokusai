@@ -21,4 +21,6 @@ def describe_git_repo_for_test():
 def describe_check():
   runner = CliRunner()
   result = runner.invoke(base, ['check'])
+  if (result.exit_code != 0):
+    print(result.output)
   assert result.exit_code == 0
