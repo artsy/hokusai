@@ -376,6 +376,8 @@ workflows:
             branches:
               ignore: release
       - test_integration:
+          context:
+          - hokusai-project
           filters:
             branches:
               ignore: release
