@@ -1,12 +1,10 @@
 import os
 
-from hokusai.lib.command import command
 from hokusai.lib.config import config
 from hokusai.services.ecr import ECR
 from hokusai.lib.common import print_green, shout
 from hokusai.lib.exceptions import HokusaiError
 
-@command()
 def pull(tag, local_tag):
   ecr = ECR()
   if not ecr.project_repo_exists():

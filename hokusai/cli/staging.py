@@ -3,6 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 
 KUBE_CONTEXT = 'staging'
@@ -21,7 +22,12 @@ def staging(context_settings=CONTEXT_SETTINGS):
 def create(filename, environment, verbose):
   """Create the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_create(KUBE_CONTEXT, filename=filename, environment=environment)
+  command(
+    hokusai.k8s_create,
+    KUBE_CONTEXT,
+    filename=filename,
+    environment=environment
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -30,7 +36,11 @@ def create(filename, environment, verbose):
 def delete(filename, verbose):
   """Delete the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_delete(KUBE_CONTEXT, filename=filename)
+  command(
+    hokusai.k8s_delete,
+    KUBE_CONTEXT,
+    filename=filename
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -43,9 +53,15 @@ def delete(filename, verbose):
 def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
   """Update the Kubernetes resources defined in ./hokusai/staging.yml"""
   set_verbosity(verbose)
-  hokusai.k8s_update(KUBE_CONTEXT, check_branch=check_branch,
-                      check_remote=check_remote, skip_checks=skip_checks,
-                      filename=filename, dry_run=dry_run)
+  command(
+    hokusai.k8s_update,
+    KUBE_CONTEXT,
+    check_branch=check_branch,
+    check_remote=check_remote,
+    skip_checks=skip_checks,
+    filename=filename,
+    dry_run=dry_run
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -58,20 +74,36 @@ def update(check_branch, check_remote, skip_checks, filename, dry_run, verbose):
 def status(resources, pods, describe, top, filename, verbose):
   """Print Kubernetes resources in the staging context"""
   set_verbosity(verbose)
-  hokusai.k8s_status(KUBE_CONTEXT, resources, pods, describe, top, filename=filename)
+  command(
+    hokusai.k8s_status,
+    KUBE_CONTEXT,
+    resources,
+    pods,
+    describe,
+    top,
+    filename=filename
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('command', type=click.STRING)
+@click.argument('container_command', type=click.STRING)
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to "staging")')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
 @click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(command, tty, tag, env, constraint, verbose):
+def run(container_command, tty, tag, env, constraint, verbose):
   """Launch a new container and run a command"""
   set_verbosity(verbose)
-  hokusai.run(KUBE_CONTEXT, command, tty, tag, env, constraint)
+  command(
+    hokusai.run,
+    KUBE_CONTEXT,
+    container_command,
+    tty,
+    tag,
+    env,
+    constraint
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -84,7 +116,15 @@ def run(command, tty, tag, env, constraint, verbose):
 def logs(timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
   set_verbosity(verbose)
-  hokusai.logs(KUBE_CONTEXT, timestamps, follow, tail, previous, label)
+  command(
+    hokusai.logs,
+    KUBE_CONTEXT,
+    timestamps,
+    follow,
+    tail,
+    previous,
+    label
+  )
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('tag', type=click.STRING)
@@ -100,7 +140,17 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
   the given image tag and update the tag staging
   to reference the same image"""
   set_verbosity(verbose)
-  hokusai.update(KUBE_CONTEXT, tag, migration, constraint, git_remote, timeout, update_config=update_config, filename=filename)
+  command(
+    hokusai.update,
+    KUBE_CONTEXT,
+    tag,
+    migration,
+    constraint,
+    git_remote,
+    timeout,
+    update_config=update_config,
+    filename=filename
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -109,7 +159,11 @@ def deploy(tag, migration, constraint, git_remote, timeout, update_config, filen
 def refresh(deployment, verbose):
   """Refresh the project's deployment(s) by recreating the currently running containers"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT, deployment)
+  command(
+    hokusai.refresh,
+    KUBE_CONTEXT,
+    deployment
+  )
 
 
 @staging.command(context_settings=CONTEXT_SETTINGS)
@@ -118,7 +172,11 @@ def refresh(deployment, verbose):
 def restart(deployment, verbose):
   """Alias for 'refresh'"""
   set_verbosity(verbose)
-  hokusai.refresh(KUBE_CONTEXT, deployment)
+  command(
+    hokusai.refresh,
+    KUBE_CONTEXT,
+    deployment
+  )
 
 
 @staging.group()
@@ -133,7 +191,11 @@ def env(context_settings=CONTEXT_SETTINGS):
 def get(env_vars, verbose):
   """Print environment variables stored on the Kubernetes server"""
   set_verbosity(verbose)
-  hokusai.get_env(KUBE_CONTEXT, env_vars)
+  command(
+    hokusai.get_env,
+    KUBE_CONTEXT,
+    env_vars
+  )
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
@@ -142,7 +204,11 @@ def get(env_vars, verbose):
 def set(env_vars, verbose):
   """Set environment variables - each of {ENV_VARS} must be in of form 'KEY=VALUE'"""
   set_verbosity(verbose)
-  hokusai.set_env(KUBE_CONTEXT, env_vars)
+  command(
+    hokusai.set_env,
+    KUBE_CONTEXT,
+    env_vars
+  )
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
@@ -151,4 +217,8 @@ def set(env_vars, verbose):
 def unset(env_vars, verbose):
   """Unset environment variables - each of {ENV_VARS} must be of the form 'KEY'"""
   set_verbosity(verbose)
-  hokusai.unset_env(KUBE_CONTEXT, env_vars)
+  command(
+    hokusai.unset_env,
+    KUBE_CONTEXT,
+    env_vars
+  )

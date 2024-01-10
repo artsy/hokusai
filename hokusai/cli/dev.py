@@ -3,6 +3,7 @@ import click
 import hokusai
 
 from hokusai.cli.base import base
+from hokusai.lib.command import command
 from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
 from hokusai.lib.config import config
 
@@ -21,7 +22,12 @@ def dev(context_settings=CONTEXT_SETTINGS):
 def start(build, detach, filename, verbose):
   """Start the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_start(build, detach, filename)
+  command(
+    hokusai.dev_start,
+    build,
+    detach,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
@@ -30,7 +36,10 @@ def start(build, detach, filename, verbose):
 def stop(filename, verbose):
   """Stop the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_stop(filename)
+  command(
+    hokusai.dev_stop,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
@@ -39,7 +48,10 @@ def stop(filename, verbose):
 def status(filename, verbose):
   """Print the status of the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_status(filename)
+  command(
+    hokusai.dev_status,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
@@ -50,19 +62,30 @@ def status(filename, verbose):
 def logs(follow, tail, filename, verbose):
   """Print logs from the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_logs(follow, tail, filename)
+  command(
+    hokusai.dev_logs,
+    follow,
+    tail,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
-@click.argument('command')
+@click.argument('container_command')
 @click.option('--service-name', type=click.STRING, help="The service name to launch the container as (default: the name 'project-name' in `hokusai/config.yml`)")
 @click.option('--stop', type=click.BOOL, is_flag=True, help='Stop all services after running the command')
 @click.option('-f', '--filename', type=click.STRING, help='Use the given docker-compose Yaml file (default ./hokusai/development.yml.j2)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def run(command, service_name, stop, filename, verbose):
+def run(container_command, service_name, stop, filename, verbose):
   """Run a command in a new container in the development environment defined in ./hokusai/development.yml"""
   set_verbosity(verbose)
-  hokusai.dev_run(command, service_name, stop, filename)
+  command(
+    hokusai.dev_run,
+    container_command,
+    service_name,
+    stop,
+    filename
+  )
 
 
 @dev.command(context_settings=CONTEXT_SETTINGS)
@@ -71,4 +94,7 @@ def run(command, service_name, stop, filename, verbose):
 def clean(filename, verbose):
   """Stop and remove all containers in the development environment defined in ./hokusai/development.yml.j2"""
   set_verbosity(verbose)
-  hokusai.dev_clean(filename)
+  command(
+    hokusai.dev_clean,
+    filename
+  )

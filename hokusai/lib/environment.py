@@ -26,3 +26,9 @@ def templates_dir_path():
     return sys._MEIPASS + '/hokusai_datas/templates'
   else:
     return os.path.dirname(hokusai.__file__) + '/templates'
+
+def version_file_path():
+  if frozen():
+    return sys._MEIPASS + '/hokusai_datas/VERSION'
+  else:
+    return os.path.dirname(hokusai.__file__) + '/VERSION'

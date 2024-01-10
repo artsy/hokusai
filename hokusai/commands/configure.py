@@ -4,7 +4,6 @@ import tempfile
 
 from urllib.request import urlretrieve
 
-from hokusai.lib.command import command
 from hokusai.lib.common import (
   get_platform,
   local_to_local,
@@ -59,7 +58,6 @@ def install(global_config, skip_kubeconfig, skip_kubectl):
       global_config.kubectl_dir
     )
 
-@command(config_check=False)
 def hokusai_configure(
   kubeconfig_dir,
   kubectl_dir,
