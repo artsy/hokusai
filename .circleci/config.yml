@@ -72,7 +72,13 @@ jobs:
       - run:
           name: start minikube
           command: |
+            set +e
             minikube start --profile staging --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube.log 2>&1 < /dev/null
+            if [ $? -ne '0' ]
+            then
+              cat $HOME/minikube.log
+              exit 1
+            fi
       - run:
           name: wait for minikube
           command: |
