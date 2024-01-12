@@ -49,7 +49,6 @@ jobs:
       MINIKUBE_WANTUPDATENOTIFICATION: false
       MINIKUBE_WANTREPORTERRORPROMPT: false
       MINIKUBE_HOME: /home/circleci
-      CHANGE_MINIKUBE_NONE_USER: true
     steps:
       - checkout
       - run:
