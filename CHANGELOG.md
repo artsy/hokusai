@@ -1,3 +1,11 @@
+## v2.1.1
+
+[Documentation](https://github.com/artsy/hokusai/blob/v2.1.1/README.md)
+
+### Notable changes since v2.1.0
+
+* 29a9190 fix: minor version var missing (#396)
+
 ## v2.1.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v2.1.0/README.md)
