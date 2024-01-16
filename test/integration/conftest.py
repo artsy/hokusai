@@ -5,7 +5,6 @@ import git
 import pytest
 
 
-INTEGRATION_FIXTURES_DIR = 'test/integration/fixtures'
 TEST_GIT_REPO_NAME = 'hokusai-sandbox'
 
 # this function is called before any test runs
@@ -34,12 +33,14 @@ def pytest_configure(config):
     msg = 'Error: Production Kubernetes context does not point to 127.0.0.1. Is production Minikube setup?'
     pytest.exit(msg)
 
-@pytest.fixture(scope="session", autouse=True)
-def clone_repo():
-  os.chdir(INTEGRATION_FIXTURES_DIR)
+  # clone test git repo
+  os.chdir('test/integration/fixtures')
   # avoid cloning repeatedly when on local
   if not os.path.isdir(TEST_GIT_REPO_NAME):
     git.Git(".").clone(f"https://github.com/artsy/{TEST_GIT_REPO_NAME}.git")
+
+@pytest.fixture(scope="session", autouse=True)
+def cd_into_test_git_repo():
   os.chdir(TEST_GIT_REPO_NAME)
 
 @pytest.fixture(autouse=True)
