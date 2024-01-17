@@ -29,7 +29,7 @@ _version.py
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# tests / coverage reports
 htmlcov/
 .tox/
 .coverage
@@ -39,6 +39,7 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+test/integration/fixtures/hokusai-sandbox/
 
 # Translations
 *.mo

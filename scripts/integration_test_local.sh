@@ -7,6 +7,7 @@ export BACKED_UP_KUBE_CONFIG=false
 
 function start_minikube(){
   profile=$1
+  minikube delete --profile "$profile"
   minikube start --profile "$profile" --kubernetes-version="$K8S_VERSION"
   JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
   until kubectl --context "$profile" get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
