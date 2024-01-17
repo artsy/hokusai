@@ -204,7 +204,7 @@ minikube start --kubernetes-version=<version of your Kubernetes clusters, exampl
 
 ### Run tests
 
-To run unit and smoke tests:
+To run unit tests:
 
 ```
 make test
@@ -213,7 +213,7 @@ make test
 To run integration tests:
 
 ```
-make integration
+make integration-local
 ```
 
 Only specific modules, TestClasses, or even methods:

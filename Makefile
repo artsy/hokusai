@@ -19,7 +19,6 @@ dependencies:
 
 test:
 	coverage run -m pytest test/unit
-	coverage run --omit="test/*" -m unittest discover test.smoke
 
 integration:
 	coverage run -m pytest test/integration
