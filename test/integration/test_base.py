@@ -20,7 +20,7 @@ def describe_git_repo_for_test():
     heads = repo.heads
     assert 'main' in heads
 
-def describe_version():
+def describe_hokusai_version():
   def it_outputs_valid_version():
     resp = subprocess.run(
       'hokusai version',
@@ -36,7 +36,7 @@ def describe_version():
     version_output = ansi_escape(resp.stdout.rstrip())
     assert Version(version_output) in spec1
 
-def describe_check():
+def describe_hokusai_check():
   def it_validates_aws_creds():
     resp = subprocess.run(
       'hokusai check',
