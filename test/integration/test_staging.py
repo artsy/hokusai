@@ -1,8 +1,6 @@
 import os
 import subprocess
 
-from hokusai.lib.common import ansi_escape
-
 
 def describe_create():
   def it_creates():
