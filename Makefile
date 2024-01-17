@@ -1,4 +1,4 @@
-.PHONY: dependencies test integration pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
+.PHONY: dependencies test integration integration-local pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
 
 # a var passed in as an argument to 'make' command moots its ?= assgiment
 AWS ?= $(shell which aws)
@@ -23,6 +23,9 @@ test:
 
 integration:
 	coverage run -m pytest test/integration
+
+integration-local:
+	scripts/integration_test_local.sh
 
 pyinstaller-build-onefile: # for linux
 	pyinstaller \
