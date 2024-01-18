@@ -3,7 +3,7 @@ import subprocess
 
 
 def describe_setup():
-  def it_setups():
+  def it_creates_yml():
     resp = subprocess.run(
       'hokusai review_app setup a-review-app',
       capture_output=True,
@@ -17,7 +17,7 @@ def describe_setup():
     assert 'Created hokusai/a-review-app.yml' in resp.stdout
 
 def describe_create():
-  def it_creates():
+  def it_creates_deployment():
     subprocess.run(
       'hokusai registry push --force --skip-latest --tag a-review-app',
       shell=True,
@@ -37,7 +37,7 @@ def describe_create():
     assert 'deployment.apps/hokusai-integration-test-web created' in resp.stdout
 
 def describe_list():
-  def it_lists():
+  def it_lists_review_app():
     resp = subprocess.run(
       'hokusai review_app list',
       capture_output=True,
