@@ -4,6 +4,12 @@ import subprocess
 
 def describe_create():
   def it_creates():
+    subprocess.run(
+      'hokusai registry push --force',
+      shell=True,
+      text=True,
+      timeout=30
+    )
     resp = subprocess.run(
       'hokusai staging create',
       capture_output=True,
