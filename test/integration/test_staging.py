@@ -1,5 +1,8 @@
 import os
+import pytest
 import subprocess
+
+from subprocess import TimeoutExpired
 
 
 def describe_create():
@@ -20,9 +23,9 @@ def describe_create():
     if resp.returncode != 0:
       print(resp.stderr)
     assert resp.returncode == 0
+    assert 'Created configmap hokusai-integration-test-environment' in resp.stdout
     assert 'deployment.apps/hokusai-integration-test-web created' in resp.stdout
     assert 'service/hokusai-integration-test-web created' in resp.stdout
-    assert 'Created configmap hokusai-integration-test-environment' in resp.stdout
     assert 'Created Kubernetes environment' in resp.stdout
 
 def describe_status():
@@ -37,8 +40,10 @@ def describe_status():
     if resp.returncode != 0:
       print(resp.stderr)
     assert resp.returncode == 0
+    assert 'Resources' in resp.stdout
     assert 'deployment.apps/hokusai-integration-test-web' in resp.stdout
     assert 'service/hokusai-integration-test-web' in resp.stdout
+    assert 'Pods' in resp.stdout
 
 def describe_update():
   def it_reports_no_changes():
@@ -57,20 +62,22 @@ def describe_update():
     assert 'Updated Kubernetes environment' in resp.stdout
 
 def describe_refresh():
-  def it_reports_success():
-    resp = subprocess.run(
-      'hokusai staging refresh',
-      capture_output=True,
-      shell=True,
-      text=True,
-      timeout=30
-    )
-    if resp.returncode != 0:
-      print(resp.stderr)
-    assert resp.returncode == 0
-    assert 'Refreshing hokusai-integration-test-web' in resp.stdout
-    assert 'Waiting for deployment "hokusai-integration-test-web" rollout to finish' in resp.stdout
-    assert 'deployment "hokusai-integration-test-web" successfully rolled out' in resp.stdout
+  def it_times_out():
+    # expect timeout due to minikube lacking ECR image pull permission
+    with pytest.raises(TimeoutExpired):
+      resp = subprocess.run(
+        'hokusai staging refresh',
+        capture_output=True,
+        shell=True,
+        text=True,
+        timeout=10
+      )
+      if resp.returncode != -9:
+        print(resp.stderr)
+      assert resp.returncode == -9
+      assert 'Refreshing hokusai-integration-test-web' in resp.stdout
+      assert 'Waiting for refresh to complete' in resp.stdout
+      assert 'Waiting for deployment "hokusai-integration-test-web" rollout to finish' in resp.stdout
 
 def describe_delete():
   def it_reports_deleted():
