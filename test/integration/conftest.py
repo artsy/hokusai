@@ -43,7 +43,7 @@ def pytest_configure(config):
   # skip cloning if already cloned and no force
   if os.path.isdir(TEST_GIT_REPO_NAME) and os.environ.get('FORCE_CLONE') != '1':
     return
-  shutil.rmtree(TEST_GIT_REPO_NAME)
+  shutil.rmtree(TEST_GIT_REPO_NAME, ignore_errors=True)
   git.Git(".").clone(f"https://github.com/artsy/{TEST_GIT_REPO_NAME}.git")
 
 
