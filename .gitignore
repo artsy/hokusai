@@ -39,7 +39,7 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
-test/integration/fixtures/hokusai-sandbox/
+test/integration/fixtures/hokusai-integration-test/
 
 # Translations
 *.mo

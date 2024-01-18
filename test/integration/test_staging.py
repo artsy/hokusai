@@ -5,7 +5,7 @@ import subprocess
 def describe_create():
   def it_creates():
     resp = subprocess.run(
-      'hokusai staging create --filename hokusai/staging-hokusai-integration-test.yml.j2',
+      'hokusai staging create',
       capture_output=True,
       shell=True,
       text=True,
@@ -14,4 +14,4 @@ def describe_create():
     if resp.returncode != 0:
       print(resp.stderr)
     assert resp.returncode == 0
-    assert 'deployment.apps/hokusai-sandbox-web created' in resp.stdout
+    assert 'deployment.apps/hokusai-integration-test-web created' in resp.stdout

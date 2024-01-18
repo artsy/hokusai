@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import subprocess
 
 import git
@@ -8,7 +9,7 @@ import pytest
 from hokusai.lib.common import ansi_escape
 
 
-TEST_GIT_REPO_NAME = 'hokusai-sandbox'
+TEST_GIT_REPO_NAME = 'hokusai-integration-test'
 
 
 def exit_pytest_if_not_minikube(context):
@@ -39,9 +40,11 @@ def pytest_configure(config):
   exit_pytest_if_not_minikube('production')
   # clone test git repo
   os.chdir('test/integration/fixtures')
-  # avoid cloning repeatedly when on local
-  if not os.path.isdir(TEST_GIT_REPO_NAME):
-    git.Git(".").clone(f"https://github.com/artsy/{TEST_GIT_REPO_NAME}.git")
+  # skip cloning if already cloned and no force
+  if os.path.isdir(TEST_GIT_REPO_NAME) and os.environ.get('FORCE_CLONE') != '1':
+    return
+  shutil.rmtree(TEST_GIT_REPO_NAME)
+  git.Git(".").clone(f"https://github.com/artsy/{TEST_GIT_REPO_NAME}.git")
 
 
 ## autouse fixtures

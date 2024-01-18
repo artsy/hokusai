@@ -5,7 +5,7 @@ import subprocess
 def describe_setup():
   def it_setups():
     resp = subprocess.run(
-      'hokusai review_app setup --source-file hokusai/staging-hokusai-integration-test.yml.j2 a-review-app',
+      'hokusai review_app setup a-review-app',
       capture_output=True,
       shell=True,
       text=True,
@@ -34,7 +34,7 @@ def describe_create():
     if resp.returncode != 0:
       print(resp.stderr)
     assert resp.returncode == 0
-    assert 'deployment.apps/hokusai-sandbox-web created' in resp.stdout
+    assert 'deployment.apps/hokusai-integration-test-web created' in resp.stdout
 
 def describe_list():
   def it_lists():
