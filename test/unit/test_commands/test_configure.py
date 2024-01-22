@@ -1,6 +1,5 @@
 import os
 import pytest
-import tempfile
 
 import hokusai.commands.configure
 
@@ -74,30 +73,30 @@ def describe_install():
       assert install_kubectl_spy.call_count == 0
 
 def describe_install_kubectl():
-  def it_calls_properly(mocker):
+  def it_calls_properly(mocker, tmp_path):
     mocker.patch('hokusai.commands.configure.urlretrieve')
     retrieve_spy = mocker.spy(hokusai.commands.configure, 'urlretrieve')
     mocker.patch('hokusai.commands.configure.local_to_local')
     local_to_local_spy = mocker.spy(hokusai.commands.configure, 'local_to_local')
-    with tempfile.TemporaryDirectory() as tmpdir:
-      mocker.patch('hokusai.commands.configure.tempfile.mkdtemp', return_value=tmpdir)
-      install_kubectl('fooversion', 'foodir')
-      url = f'https://storage.googleapis.com/kubernetes-release/release/vfooversion/bin/{get_platform()}/amd64/kubectl'
-      download_to = os.path.join(tmpdir, 'kubectl')
-      retrieve_spy.assert_has_calls([
-        mocker.call(
-          url,
-          download_to
-        )
-      ])
-      local_to_local_spy.assert_has_calls([
-        mocker.call(
-          download_to,
-          'foodir',
-          'kubectl',
-          mode=0o770
-        )
-      ])
+    mocker.patch('hokusai.commands.configure.tempfile.mkdtemp', return_value=tmp_path)
+    install_kubectl('fooversion', 'foodir')
+    url = f'https://storage.googleapis.com/kubernetes-release/release/vfooversion/bin/{get_platform()}/amd64/kubectl'
+    download_to = os.path.join(tmp_path, 'kubectl')
+    retrieve_spy.assert_has_calls([
+      mocker.call(
+        url,
+        download_to
+      )
+    ])
+    local_to_local_spy.assert_has_calls([
+      mocker.call(
+        download_to,
+        'foodir',
+        'kubectl',
+        mode=0o770
+      )
+    ])
+
   def it_catches_exceptions(mocker, mock_urlretrieve_raise):
     mocker.patch('hokusai.commands.configure.urlretrieve').side_effect = mock_urlretrieve_raise
     with pytest.raises(Exception):
