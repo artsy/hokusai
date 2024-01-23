@@ -1,6 +1,5 @@
 import os
 import pytest
-import tempfile
 import yaml
 
 import hokusai.lib.global_config
@@ -47,17 +46,16 @@ def describe_hokusai_global_config():
       assert config_obj._config['kubeconfig-source-uri'] == '/fake/path/to/kube/config'
 
   def describe_save():
-    def it_saves(monkeypatch):
+    def it_saves(monkeypatch, tmp_path):
       config_file = os.path.join(os.environ['HOME'], '.hokusai.yml')
       config_obj = HokusaiGlobalConfig()
       config_obj.merge(kubeconfig_dir='foodir')
-      with tempfile.TemporaryDirectory() as tmpdir:
-        file_path = os.path.join(tmpdir, '.hokusai.yml')
-        monkeypatch.setattr(hokusai.lib.global_config, "local_global_config", file_path)
-        config_obj.save()
-        with open(file_path, 'r') as f:
-          struct = yaml.safe_load(f.read())
-          assert struct['kubeconfig-dir'] == 'foodir'
+      file_path = os.path.join(tmp_path, '.hokusai.yml')
+      monkeypatch.setattr(hokusai.lib.global_config, "local_global_config", file_path)
+      config_obj.save()
+      with open(file_path, 'r') as f:
+        struct = yaml.safe_load(f.read())
+        assert struct['kubeconfig-dir'] == 'foodir'
 
   def describe_validate_config():
     def it_raises_when_required_var_missing():
