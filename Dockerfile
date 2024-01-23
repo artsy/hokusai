@@ -26,6 +26,7 @@ RUN curl -SL https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/d
       chmod a+x /usr/local/bin/aws-iam-authenticator
 
 # Install AWS CLI
+RUN pip install pip --upgrade
 RUN pip --no-cache-dir install awscli --upgrade
 
 COPY . /src
