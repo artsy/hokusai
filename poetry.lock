@@ -512,8 +512,6 @@ files = [
 
 [package.extras]
 tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipython", "littleutils", "pytest", "rich"]
-<<<<<<< HEAD
-=======
 
 [[package]]
 name = "gitdb"
@@ -545,7 +543,6 @@ gitdb = ">=4.0.1,<5"
 
 [package.extras]
 test = ["black", "coverage[toml]", "ddt (>=1.1.1,!=1.4.3)", "mock", "mypy", "pre-commit", "pytest", "pytest-cov", "pytest-instafail", "pytest-subtests", "pytest-sugar"]
->>>>>>> 74b4c62 (feat: add gitpython dev dependency, and ran poetry install)
 
 [[package]]
 name = "httpretty"
@@ -1722,22 +1719,13 @@ watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "wcwidth"
-<<<<<<< HEAD
 version = "0.2.13"
-=======
-version = "0.2.12"
->>>>>>> 74b4c62 (feat: add gitpython dev dependency, and ran poetry install)
 description = "Measures the displayed width of unicode strings in a terminal"
 optional = false
 python-versions = "*"
 files = [
-<<<<<<< HEAD
     {file = "wcwidth-0.2.13-py2.py3-none-any.whl", hash = "sha256:3da69048e4540d84af32131829ff948f1e022c1c6bdb8d6102117aac784f6859"},
     {file = "wcwidth-0.2.13.tar.gz", hash = "sha256:72ea0c06399eb286d978fdedb6923a9eb47e1c486ce63e9b4e64fc18303972b5"},
-=======
-    {file = "wcwidth-0.2.12-py2.py3-none-any.whl", hash = "sha256:f26ec43d96c8cbfed76a5075dac87680124fa84e0855195a6184da9c187f133c"},
-    {file = "wcwidth-0.2.12.tar.gz", hash = "sha256:f01c104efdf57971bcb756f054dd58ddec5204dd15fa31d6503ea57947d97c02"},
->>>>>>> 74b4c62 (feat: add gitpython dev dependency, and ran poetry install)
 ]
 
 [[package]]
@@ -1851,8 +1839,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-<<<<<<< HEAD
 content-hash = "5d3f83a12a32317a07f0b8f87c808a1bef3a5e34ff197f465434a3bd8f7a3aaf"
-=======
-content-hash = "a34c60888d96ab05100c35a9cb0c87a57b9885534ad5243c244c60c9c8ed8fea"
->>>>>>> 74b4c62 (feat: add gitpython dev dependency, and ran poetry install)
