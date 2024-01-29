@@ -42,41 +42,70 @@ jobs:
     machine:
       image: ubuntu-2004:202201-02
     environment:
-      K8S_VERSION: v1.19.16
+      KUBECTL_VERSION: v1.20.15
+      K8S_VERSION: v1.21.14
       KUBECONFIG: /home/circleci/.kube/config
-      MINIKUBE_VERSION: v1.22.0
+      MINIKUBE_VERSION: v1.31.2
       MINIKUBE_WANTUPDATENOTIFICATION: false
       MINIKUBE_WANTREPORTERRORPROMPT: false
       MINIKUBE_HOME: /home/circleci
-      CHANGE_MINIKUBE_NONE_USER: true
     steps:
       - checkout
       - run:
-          name: setup kubectl
+          name: install kubectl
           command: |
-            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            kubectl --client=true version
             mkdir -p ${HOME}/.kube
             touch ${HOME}/.kube/config
       - run:
-          name: setup minikube
+          name: install minikube
           command: |
             curl -Lo minikube https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+            minikube version
       # required by minikube for k8s v1.18 onwards
       - run:
           name: install conntrack
           command: |
             sudo apt-get -qq update && sudo apt-get -qq install conntrack
       - run:
-          name: start minikube
+          name: start staging minikube cluster
           command: |
-            sudo -E minikube start --vm-driver=none --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube.log 2>&1 < /dev/null
+            set +e
+            minikube start --profile staging --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube-staging.log 2>&1 < /dev/null
+            if [ $? -ne '0' ]
+            then
+              cat $HOME/minikube-staging.log
+              exit 1
+            fi
       - run:
-          name: wait for minikube
+          name: wait for staging minikube cluster
           command: |
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
-            until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+            until kubectl --context staging get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
               sleep 1;
             done
+            kubectl --context staging version
+            kubectl --context staging cluster-info
+      - run:
+          name: start production minikube cluster
+          command: |
+            set +e
+            minikube start --profile production --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube-production.log 2>&1 < /dev/null
+            if [ $? -ne '0' ]
+            then
+              cat $HOME/minikube-production.log
+              exit 1
+            fi
+      - run:
+          name: wait for production minikube cluster
+          command: |
+            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+            until kubectl --context production get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+              sleep 1;
+            done
+            kubectl --context production version
+            kubectl --context production cluster-info
       - run:
           name: fix RBAC
           command: |
@@ -91,8 +120,7 @@ jobs:
           name: setup hokusai global config file
           command: |
             cp test/integration/fixtures/ci_hokusai_global_config.yml ${HOME}/.hokusai.yml
-      - run: pyenv install 3.9.10
-      - run: pyenv local 3.9.10
+      - run: pyenv local 3.10.2
       - run: make dependencies
       - run: pyenv rehash
       - run: make integration
@@ -374,6 +402,8 @@ workflows:
             branches:
               ignore: release
       - test_integration:
+          context:
+          - hokusai-project
           filters:
             branches:
               ignore: release

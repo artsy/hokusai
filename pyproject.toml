@@ -1,5 +1,6 @@
 [project]
 dynamic = ["version"]
+name = "hokusai"
 
 [tool.poetry]
 name = "hokusai"
@@ -26,6 +27,7 @@ termcolor = "==1.1.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.3.2"
+gitpython = "^3.1.40"
 httpretty = "^1.1.4"
 ipdb = "^0.13.9"
 mock = "^4.0.3"

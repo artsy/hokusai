@@ -514,6 +514,37 @@ files = [
 tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipython", "littleutils", "pytest", "rich"]
 
 [[package]]
+name = "gitdb"
+version = "4.0.11"
+description = "Git Object Database"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "gitdb-4.0.11-py3-none-any.whl", hash = "sha256:81a3407ddd2ee8df444cbacea00e2d038e40150acfa3001696fe0dcf1d3adfa4"},
+    {file = "gitdb-4.0.11.tar.gz", hash = "sha256:bf5421126136d6d0af55bc1e7c1af1c397a34f5b7bd79e776cd3e89785c2b04b"},
+]
+
+[package.dependencies]
+smmap = ">=3.0.1,<6"
+
+[[package]]
+name = "gitpython"
+version = "3.1.40"
+description = "GitPython is a Python library used to interact with Git repositories"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "GitPython-3.1.40-py3-none-any.whl", hash = "sha256:cf14627d5a8049ffbf49915732e5eddbe8134c3bdb9d476e6182b676fc573f8a"},
+    {file = "GitPython-3.1.40.tar.gz", hash = "sha256:22b126e9ffb671fdd0c129796343a02bf67bf2994b35449ffc9321aa755e18a4"},
+]
+
+[package.dependencies]
+gitdb = ">=4.0.1,<5"
+
+[package.extras]
+test = ["black", "coverage[toml]", "ddt (>=1.1.1,!=1.4.3)", "mock", "mypy", "pre-commit", "pytest", "pytest-cov", "pytest-instafail", "pytest-subtests", "pytest-sugar"]
+
+[[package]]
 name = "httpretty"
 version = "1.1.4"
 description = "HTTP client mock for Python"
@@ -894,6 +925,31 @@ python-versions = ">=3.8"
 files = [
     {file = "more-itertools-10.2.0.tar.gz", hash = "sha256:8fccb480c43d3e99a00087634c06dd02b0d50fbf088b380de5a41a015ec239e1"},
     {file = "more_itertools-10.2.0-py3-none-any.whl", hash = "sha256:686b06abe565edfab151cb8fd385a05651e1fdf8f0a14191e4439283421f8684"},
+]
+
+[[package]]
+name = "nh3"
+version = "0.2.15"
+description = "Python bindings to the ammonia HTML sanitization library."
+optional = false
+python-versions = "*"
+files = [
+    {file = "nh3-0.2.15-cp37-abi3-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:9c0d415f6b7f2338f93035bba5c0d8c1b464e538bfbb1d598acd47d7969284f0"},
+    {file = "nh3-0.2.15-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:6f42f99f0cf6312e470b6c09e04da31f9abaadcd3eb591d7d1a88ea931dca7f3"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ac19c0d68cd42ecd7ead91a3a032fdfff23d29302dbb1311e641a130dfefba97"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:5f0d77272ce6d34db6c87b4f894f037d55183d9518f948bba236fe81e2bb4e28"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:8d595df02413aa38586c24811237e95937ef18304e108b7e92c890a06793e3bf"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:86e447a63ca0b16318deb62498db4f76fc60699ce0a1231262880b38b6cff911"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3277481293b868b2715907310c7be0f1b9d10491d5adf9fce11756a97e97eddf"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:60684857cfa8fdbb74daa867e5cad3f0c9789415aba660614fe16cd66cbb9ec7"},
+    {file = "nh3-0.2.15-cp37-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:3b803a5875e7234907f7d64777dfde2b93db992376f3d6d7af7f3bc347deb305"},
+    {file = "nh3-0.2.15-cp37-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:0d02d0ff79dfd8208ed25a39c12cbda092388fff7f1662466e27d97ad011b770"},
+    {file = "nh3-0.2.15-cp37-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:f3b53ba93bb7725acab1e030bc2ecd012a817040fd7851b332f86e2f9bb98dc6"},
+    {file = "nh3-0.2.15-cp37-abi3-musllinux_1_2_i686.whl", hash = "sha256:b1e97221cedaf15a54f5243f2c5894bb12ca951ae4ddfd02a9d4ea9df9e1a29d"},
+    {file = "nh3-0.2.15-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:a5167a6403d19c515217b6bcaaa9be420974a6ac30e0da9e84d4fc67a5d474c5"},
+    {file = "nh3-0.2.15-cp37-abi3-win32.whl", hash = "sha256:427fecbb1031db085eaac9931362adf4a796428ef0163070c484b5a768e71601"},
+    {file = "nh3-0.2.15-cp37-abi3-win_amd64.whl", hash = "sha256:bc2d086fb540d0fa52ce35afaded4ea526b8fc4d3339f783db55c95de40ef02e"},
+    {file = "nh3-0.2.15.tar.gz", hash = "sha256:d1e30ff2d8d58fb2a14961f7aac1bbb1c51f9bdd7da727be35c63826060b0bf3"},
 ]
 
 [[package]]
@@ -1456,6 +1512,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
+
+[[package]]
+name = "smmap"
+version = "5.0.1"
+description = "A pure Python implementation of a sliding window memory map manager"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "smmap-5.0.1-py3-none-any.whl", hash = "sha256:e6d8668fa5f93e706934a62d7b4db19c8d9eb8cf2adbb75ef1b675aa332b69da"},
+    {file = "smmap-5.0.1.tar.gz", hash = "sha256:dceeb6c0028fdb6734471eb07c0cd2aae706ccaecab45965ee83f11c8d3b1f62"},
 ]
 
 [[package]]
