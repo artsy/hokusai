@@ -107,6 +107,27 @@ jobs:
             kubectl --context production version
             kubectl --context production cluster-info
       - run:
+          name: log into ECR
+          command: |
+            aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
+            aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | \
+              docker login --username AWS \
+                --password-stdin ${aws_account_id}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+      - run:
+          name: setup regcred for staging minikube/k8s
+          command: |
+            kubectl --context staging create secret generic regcred \
+              --from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+              --type=kubernetes.io/dockerconfigjson
+            kubectl --context staging patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+      - run:
+          name: setup regcred for production minikube/k8s
+          command: |
+            kubectl --context production create secret generic regcred \
+              --from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+              --type=kubernetes.io/dockerconfigjson
+            kubectl --context production patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+      - run:
           name: fix RBAC
           command: |
             # make default account cluster-admin
