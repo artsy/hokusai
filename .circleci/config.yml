@@ -6,7 +6,7 @@ jobs:
       - image: python:3.9.10
     steps:
       - checkout
-      - run: make dependencies
+      - run: make hokusai
       - run: make test
       - run: coverage report
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=beta
@@ -32,7 +32,7 @@ jobs:
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: make test
       - run: coverage report
@@ -121,7 +121,7 @@ jobs:
           command: |
             cp test/integration/fixtures/ci_hokusai_global_config.yml ${HOME}/.hokusai.yml
       - run: pyenv local 3.10.2
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: make integration
       - run: coverage report
@@ -143,7 +143,7 @@ jobs:
       - checkout
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
-      - run: make dependencies
+      - run: make hokusai
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=beta
       - run: make publish-to-s3 ARTIFACT_LABEL=beta
@@ -169,7 +169,7 @@ jobs:
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
@@ -244,7 +244,7 @@ jobs:
       - checkout
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
-      - run: make dependencies
+      - run: make hokusai
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=$(cat hokusai/VERSION)
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=latest
@@ -272,7 +272,7 @@ jobs:
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=$(cat hokusai/VERSION)
@@ -309,7 +309,7 @@ jobs:
       - image: python:3.9.10
     steps:
       - checkout
-      - run: make dependencies
+      - run: make hokusai
       - run: scripts/update_version_file.sh
       - run: make publish-to-pip
 
