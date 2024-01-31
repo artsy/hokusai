@@ -9,7 +9,7 @@ import pytest
 from hokusai.lib.common import ansi_escape
 
 
-TEST_GIT_REPO_NAME = 'hokusai-integration-test'
+NAME_OF_TEST_GIT_REPO = 'hokusai-integration-test'
 
 
 def exit_pytest_if_not_minikube(context):
@@ -41,18 +41,18 @@ def pytest_configure(config):
   # clone test git repo
   os.chdir('test/integration/fixtures')
   # skip cloning if already cloned and no force
-  if os.path.isdir(TEST_GIT_REPO_NAME) and os.environ.get('FORCE_CLONE') != '1':
+  if os.path.isdir(NAME_OF_TEST_GIT_REPO) and os.environ.get('FORCE_CLONE') != '1':
     return
-  shutil.rmtree(TEST_GIT_REPO_NAME, ignore_errors=True)
-  git.Git(".").clone(f"https://github.com/artsy/{TEST_GIT_REPO_NAME}.git")
+  shutil.rmtree(NAME_OF_TEST_GIT_REPO, ignore_errors=True)
+  git.Git(".").clone(f"https://github.com/artsy/{NAME_OF_TEST_GIT_REPO}.git")
 
 
 ## autouse fixtures
 
 @pytest.fixture(scope="session", autouse=True)
 def cd_into_test_git_repo():
-  os.chdir(TEST_GIT_REPO_NAME)
+  os.chdir(NAME_OF_TEST_GIT_REPO)
 
 @pytest.fixture(autouse=True)
-def test_git_repo_name():
-  return TEST_GIT_REPO_NAME
+def name_of_test_git_repo():
+  return NAME_OF_TEST_GIT_REPO

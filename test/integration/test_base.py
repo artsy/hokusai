@@ -13,8 +13,8 @@ from hokusai.lib.common import ansi_escape
 # working directory is set to repo dir, also in conftest.py
 
 def describe_git_repo_for_test():
-  def operating_in_test_git_repo_clone_dir(test_git_repo_name):
-    assert os.path.basename(os.getcwd()) == test_git_repo_name
+  def operating_in_test_git_repo_clone_dir(name_of_test_git_repo):
+    assert os.path.basename(os.getcwd()) == name_of_test_git_repo
   def operating_on_main_branch():
     repo = Repo(os.getcwd())
     heads = repo.heads
