@@ -87,6 +87,7 @@ jobs:
             done
             kubectl --context staging version
             kubectl --context staging cluster-info
+            kubectl --context staging get pods --all-namespaces
       - run:
           name: start production minikube cluster
           command: |
@@ -106,6 +107,7 @@ jobs:
             done
             kubectl --context production version
             kubectl --context production cluster-info
+            kubectl --context production get pods --all-namespaces
       - run:
           name: log into ECR
           command: |
@@ -127,11 +129,6 @@ jobs:
               --from-file=.dockerconfigjson=${HOME}/.docker/config.json \
               --type=kubernetes.io/dockerconfigjson
             kubectl --context production patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
-      - run:
-          name: dump cluster-info
-          command: |
-            kubectl cluster-info
-            kubectl get pods --all-namespaces
       - run:
           name: setup hokusai global config file
           command: |
