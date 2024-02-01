@@ -128,11 +128,6 @@ jobs:
               --type=kubernetes.io/dockerconfigjson
             kubectl --context production patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
       - run:
-          name: fix RBAC
-          command: |
-            # make default account cluster-admin
-            kubectl create clusterrolebinding add-on-cluster-admin --clusterrole cluster-admin --serviceaccount=kube-system:default
-      - run:
           name: dump cluster-info
           command: |
             kubectl cluster-info
