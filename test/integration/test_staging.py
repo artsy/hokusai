@@ -62,22 +62,21 @@ def describe_update():
     assert 'Updated Kubernetes environment' in resp.stdout
 
 def describe_refresh():
-  def it_times_out():
-    # expect timeout due to minikube lacking ECR image pull permission
-    with pytest.raises(TimeoutExpired):
-      resp = subprocess.run(
-        'hokusai staging refresh',
-        capture_output=True,
-        shell=True,
-        text=True,
-        timeout=10
-      )
-      if resp.returncode != -9:
-        print(resp.stderr)
-      assert resp.returncode == -9
-      assert 'Refreshing hokusai-integration-test-web' in resp.stdout
-      assert 'Waiting for refresh to complete' in resp.stdout
-      assert 'Waiting for deployment "hokusai-integration-test-web" rollout to finish' in resp.stdout
+  def it_reports_success():
+    resp = subprocess.run(
+      'hokusai staging refresh',
+      capture_output=True,
+      shell=True,
+      text=True,
+      timeout=30
+    )
+    if resp.returncode != 0:
+      print(resp.stderr)
+    assert resp.returncode == 0
+    assert 'Refreshing hokusai-integration-test-web' in resp.stdout
+    assert 'Waiting for refresh to complete' in resp.stdout
+    assert 'Waiting for deployment "hokusai-integration-test-web" rollout to finish' in resp.stdout
+    assert 'deployment "hokusai-integration-test-web" successfully rolled out' in resp.stdout
 
 def describe_delete():
   def it_reports_deleted():
