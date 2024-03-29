@@ -48,7 +48,13 @@ def describe_kubectl():
         obj = Kubectl('staging')
         mock_return = { 'foo': 'bar' }
         mocker.patch('hokusai.services.kubectl.shout', return_value=json.dumps(mock_return))
+        spy = mocker.spy(hokusai.services.kubectl, 'shout')
         assert obj.get_object('pods') == mock_return
+        spy.assert_has_calls([
+          mocker.call(
+            '/tmp/.local/bin/kubectl --context staging get pods -o json'
+          )
+        ])
     def describe_value_error():
       def it_returns_none(mocker, mock_shout_raises):
         obj = Kubectl('staging')
