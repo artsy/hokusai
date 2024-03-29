@@ -38,7 +38,7 @@ class Kubectl:
 
   def get_object(self, obj):
     ''' run kubectl get <object> '''
-    cmd = self.command(f'get {obj} -o json)')
+    cmd = self.command(f'get {obj} -o json')
     try:
       return json.loads(shout(cmd))
     except ValueError:
