@@ -14,7 +14,7 @@
 
 ## prepare env
 
-export K8S_VERSION=v1.21.14
+export K8S_VERSION=v1.22.17
 export KUBE_CONFIG_PATH=${HOME}/.kube/config
 export KUBE_CONFIG_BACKUP_PATH=${HOME}/.kube/config.bak
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)

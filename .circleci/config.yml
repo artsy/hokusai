@@ -43,7 +43,7 @@ jobs:
       image: ubuntu-2004:202201-02
     environment:
       KUBECTL_VERSION: v1.20.15
-      K8S_VERSION: v1.21.14
+      K8S_VERSION: v1.22.17
       KUBECONFIG: /home/circleci/.kube/config
       MINIKUBE_VERSION: v1.31.2
       MINIKUBE_WANTUPDATENOTIFICATION: false
