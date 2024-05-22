@@ -176,6 +176,7 @@ Use [Poetry](https://python-poetry.org/) to install Hokusai's dependencies as we
 Install Poetry:
 
 ```
+pip install --upgrade pip
 pip install poetry
 ```
 
