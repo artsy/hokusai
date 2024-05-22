@@ -39,8 +39,7 @@ def create(app_name, verbose):
     KUBE_CONTEXT,
     tag=app_name,
     namespace=clean_string(app_name),
-    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    render_template=False
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
   )
 
 
@@ -54,8 +53,7 @@ def delete(app_name, verbose):
     hokusai.k8s_delete,
     KUBE_CONTEXT,
     namespace=clean_string(app_name),
-    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    render_template=False
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
   )
 
 
@@ -70,8 +68,7 @@ def update(app_name, verbose):
     KUBE_CONTEXT,
     namespace=clean_string(app_name),
     filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    skip_checks=True,
-    render_template=False
+    skip_checks=True
   )
 
 
@@ -93,8 +90,7 @@ def status(app_name, resources, pods, describe, top, verbose):
     describe,
     top,
     namespace=clean_string(app_name),
-    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    render_template=False
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
   )
 
 
@@ -168,8 +164,7 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
     timeout,
     namespace=clean_string(app_name),
     update_config=update_config,
-    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    render_template=False
+    filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name)
   )
 
 

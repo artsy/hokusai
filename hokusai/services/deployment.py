@@ -28,16 +28,7 @@ class Deployment:
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(
-    self,
-    tag,
-    constraint,
-    git_remote,
-    timeout,
-    update_config=False,
-    filename=None,
-    render_template=True
-  ):
+  def update(self, tag, constraint, git_remote, timeout, update_config=False, filename=None):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
@@ -78,7 +69,7 @@ class Deployment:
     else:
       yaml_template = TemplateSelector().get(filename)
 
-    yaml_spec = YamlSpec(yaml_template, render_template).to_list()
+    yaml_spec = YamlSpec(yaml_template).to_list()
 
     # If a review app, a canary app or the canonical app while updating config,
     # bust the deployment cache and populate deployments from the yaml file
