@@ -133,7 +133,7 @@ jobs:
           name: setup hokusai global config file
           command: |
             cp test/integration/fixtures/ci_hokusai_global_config.yml ${HOME}/.hokusai.yml
-      - run: pyenv local 3.10
+      - run: pyenv local 3.10.2
       - run: make hokusai
       - run: pyenv rehash
       - run: make integration
