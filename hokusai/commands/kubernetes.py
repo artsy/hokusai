@@ -38,7 +38,7 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
     print_green("Created configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file(render_template)
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   shout(kctl.command("create --save-config -f %s" % yaml_spec), print_output=True)
   print_green("Created Kubernetes environment %s" % yaml_template)
@@ -70,7 +70,7 @@ def k8s_update(context, namespace=None, filename=None, check_branch="main",
         raise HokusaiError("Local branch %s is divergent from %s/%s.  Aborting." % (current_branch, remote, current_branch))
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file(render_template)
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   if dry_run:
     shout(kctl.command("apply -f %s --dry-run" % yaml_spec), print_output=True)
@@ -92,7 +92,7 @@ def k8s_delete(context, namespace=None, filename=None, render_template=True):
     print_green("Deleted configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file(render_template)
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   shout(kctl.command("delete -f %s" % yaml_spec), print_output=True)
   print_green("Deleted Kubernetes environment %s" % yaml_template)
@@ -105,7 +105,7 @@ def k8s_status(context, resources, pods, describe, top, namespace=None, filename
     yaml_template = TemplateSelector().get(filename)
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file(render_template)
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   if describe:
     kctl_cmd = "describe"

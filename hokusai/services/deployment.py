@@ -69,7 +69,7 @@ class Deployment:
     else:
       yaml_template = TemplateSelector().get(filename)
 
-    yaml_spec = YamlSpec(yaml_template).to_list(render_template)
+    yaml_spec = YamlSpec(yaml_template, render_template).to_list()
 
     # If a review app, a canary app or the canonical app while updating config,
     # bust the deployment cache and populate deployments from the yaml file
