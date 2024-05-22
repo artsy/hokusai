@@ -3,7 +3,7 @@ version: 2
 jobs:
   test_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: make hokusai
@@ -24,8 +24,8 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
@@ -141,7 +141,7 @@ jobs:
 
   test_docker_build:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -151,7 +151,7 @@ jobs:
 
   release_beta_s3_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: apt-get -qq update
@@ -174,8 +174,8 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
@@ -190,7 +190,7 @@ jobs:
 
   release_beta_dockerhub:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -252,7 +252,7 @@ jobs:
 
   release_s3_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: apt-get -qq update
@@ -277,8 +277,8 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
@@ -295,7 +295,7 @@ jobs:
 
   release_dockerhub:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -319,7 +319,7 @@ jobs:
 
   release_pip:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: make hokusai
