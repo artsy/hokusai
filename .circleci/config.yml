@@ -42,7 +42,7 @@ jobs:
     machine:
       image: ubuntu-2004:202201-02
     environment:
-      KUBECTL_VERSION: v1.20.15
+      KUBECTL_VERSION: v1.21.14
       K8S_VERSION: v1.22.17
       KUBECONFIG: /home/circleci/.kube/config
       MINIKUBE_VERSION: v1.31.2
@@ -133,7 +133,7 @@ jobs:
           name: setup hokusai global config file
           command: |
             cp test/integration/fixtures/ci_hokusai_global_config.yml ${HOME}/.hokusai.yml
-      - run: pyenv local 3.10.2
+      - run: pyenv local 3.10
       - run: make hokusai
       - run: pyenv rehash
       - run: make integration
