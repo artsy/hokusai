@@ -10,7 +10,14 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import HokusaiError
 
-def k8s_create(context, tag='latest', namespace=None, filename=None, environment=(), render_template=True):
+def k8s_create(
+  context,
+  tag='latest',
+  namespace=None,
+  filename=None,
+  environment=(),
+  render_template=True
+):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
@@ -44,8 +51,16 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
   print_green("Created Kubernetes environment %s" % yaml_template)
 
 
-def k8s_update(context, namespace=None, filename=None, check_branch="main",
-                check_remote=None, skip_checks=False, dry_run=False, render_template=True):
+def k8s_update(
+  context,
+  namespace=None,
+  filename=None,
+  check_branch="main",
+  check_remote=None,
+  skip_checks=False,
+  dry_run=False,
+  render_template=True
+):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
@@ -98,7 +113,16 @@ def k8s_delete(context, namespace=None, filename=None, render_template=True):
   print_green("Deleted Kubernetes environment %s" % yaml_template)
 
 
-def k8s_status(context, resources, pods, describe, top, namespace=None, filename=None, render_template=True):
+def k8s_status(
+  context,
+  resources,
+  pods,
+  describe,
+  top,
+  namespace=None,
+  filename=None,
+  render_template=True
+):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
