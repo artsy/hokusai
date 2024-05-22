@@ -28,7 +28,16 @@ class Deployment:
     else:
       self.cache = self.kctl.get_objects('deployment', selector="app=%s,layer=application" % config.project_name)
 
-  def update(self, tag, constraint, git_remote, timeout, update_config=False, filename=None, render_template=True):
+  def update(
+    self,
+    tag,
+    constraint,
+    git_remote,
+    timeout,
+    update_config=False,
+    filename=None,
+    render_template=True
+  ):
     if not self.ecr.project_repo_exists():
       raise HokusaiError("Project repo does not exist.  Aborting.")
 
