@@ -135,30 +135,28 @@ echo 'export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"' >> ~/.b
 
 ### Python
 
-Hokusai is currently tested on Python 3.9.10 so we recommend using that Python version.
+Hokusai is currently tested on Python 3.10 so we recommend using that Python version.
 
 If you use Pyenv to install Python, you should see an output similar to this:
 
 ```
-pyenv install 3.9.10
-
-    python-build: use openssl from homebrew
-    python-build: use readline from homebrew
-
-    Downloading Python-3.9.10.tar.xz...
-    -> https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tar.xz
-    Installing Python-3.9.10...
-    python-build: use tcl-tk from homebrew
-    python-build: use readline from homebrew
-    python-build: use zlib from xcode sdk
-
-    Installed Python-3.9.10 to $HOME/.pyenv/versions/3.9.10
+$ pyenv install 3.10
+python-build: use openssl@1.1 from homebrew
+python-build: use readline from homebrew
+Downloading Python-3.10.13.tar.xz...
+-> https://www.python.org/ftp/python/3.10.13/Python-3.10.13.tar.xz
+Installing Python-3.10.13...
+python-build: use tcl-tk from homebrew
+python-build: use readline from homebrew
+python-build: use ncurses from homebrew
+python-build: use zlib from xcode sdk
+Installed Python-3.10.13 to /Users/jxu/.pyenv/versions/3.10.13
 ```
 
 With the desired Python version installed, activate it globally:
 
 ```
-pyenv global 3.9.10
+pyenv global 3.10
 ```
 
 Note: If you want to create a PyInstaller distribution, Python must be installed with development libraries. Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
