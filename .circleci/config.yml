@@ -3,7 +3,7 @@ version: 2
 jobs:
   test_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: make hokusai
@@ -13,7 +13,7 @@ jobs:
 
   test_macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.3.0"
     steps:
       - checkout
       - run:
@@ -24,8 +24,8 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
@@ -42,7 +42,7 @@ jobs:
     machine:
       image: ubuntu-2004:202201-02
     environment:
-      KUBECTL_VERSION: v1.20.15
+      KUBECTL_VERSION: v1.22.17
       K8S_VERSION: v1.22.17
       KUBECONFIG: /home/circleci/.kube/config
       MINIKUBE_VERSION: v1.31.2
@@ -141,7 +141,7 @@ jobs:
 
   test_docker_build:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -151,7 +151,7 @@ jobs:
 
   release_beta_s3_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: apt-get -qq update
@@ -163,7 +163,7 @@ jobs:
 
   release_beta_s3_macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.3.0"
     steps:
       - checkout
       - run:
@@ -174,8 +174,8 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
@@ -190,7 +190,7 @@ jobs:
 
   release_beta_dockerhub:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -252,7 +252,7 @@ jobs:
 
   release_s3_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: apt-get -qq update
@@ -266,7 +266,7 @@ jobs:
 
   release_s3_macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.3.0"
     steps:
       - checkout
       - run:
@@ -277,8 +277,8 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
@@ -295,7 +295,7 @@ jobs:
 
   release_dockerhub:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -319,7 +319,7 @@ jobs:
 
   release_pip:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: make hokusai
