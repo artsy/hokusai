@@ -37,7 +37,7 @@ def describe_yaml_spec():
             'test/fixtures/kubernetes-config.yml',
             {
               'project_name': 'hello',
-              'project_repo': mock_ecr_obj.project_repo
+              'project_repo': 'foo'
             }
           ),
           mocker.call().render()
