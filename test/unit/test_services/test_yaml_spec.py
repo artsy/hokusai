@@ -66,6 +66,10 @@ def describe_yaml_spec():
       mocker.patch('hokusai.services.yaml_spec.NamedTemporaryFile', return_value=f)
       file_name = obj.to_file()
       assert file_name == f.name
+      content = ''
+      with open(file_name, 'r') as f:
+        content = f.read().strip()
+      assert content == 'foo'
 
   def describe_to_list():
     def it_returns_list(mocker):
