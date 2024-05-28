@@ -10,7 +10,14 @@ from hokusai.services.configmap import ConfigMap
 from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import HokusaiError
 
-def k8s_create(context, tag='latest', namespace=None, filename=None, environment=()):
+def k8s_create(
+  context,
+  tag='latest',
+  namespace=None,
+  filename=None,
+  environment=(),
+  render_template=True
+):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
@@ -38,14 +45,22 @@ def k8s_create(context, tag='latest', namespace=None, filename=None, environment
     print_green("Created configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file()
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   shout(kctl.command("create --save-config -f %s" % yaml_spec), print_output=True)
   print_green("Created Kubernetes environment %s" % yaml_template)
 
 
-def k8s_update(context, namespace=None, filename=None, check_branch="main",
-                check_remote=None, skip_checks=False, dry_run=False):
+def k8s_update(
+  context,
+  namespace=None,
+  filename=None,
+  check_branch="main",
+  check_remote=None,
+  skip_checks=False,
+  dry_run=False,
+  render_template=True
+):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
@@ -70,7 +85,7 @@ def k8s_update(context, namespace=None, filename=None, check_branch="main",
         raise HokusaiError("Local branch %s is divergent from %s/%s.  Aborting." % (current_branch, remote, current_branch))
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file()
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   if dry_run:
     shout(kctl.command("apply -f %s --dry-run" % yaml_spec), print_output=True)
@@ -80,7 +95,7 @@ def k8s_update(context, namespace=None, filename=None, check_branch="main",
     print_green("Updated Kubernetes environment %s" % yaml_template)
 
 
-def k8s_delete(context, namespace=None, filename=None):
+def k8s_delete(context, namespace=None, filename=None, render_template=True):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
@@ -92,20 +107,29 @@ def k8s_delete(context, namespace=None, filename=None):
     print_green("Deleted configmap %s-environment" % config.project_name)
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file()
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   shout(kctl.command("delete -f %s" % yaml_spec), print_output=True)
   print_green("Deleted Kubernetes environment %s" % yaml_template)
 
 
-def k8s_status(context, resources, pods, describe, top, namespace=None, filename=None):
+def k8s_status(
+  context,
+  resources,
+  pods,
+  describe,
+  top,
+  namespace=None,
+  filename=None,
+  render_template=True
+):
   if filename is None:
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, context))
   else:
     yaml_template = TemplateSelector().get(filename)
 
   kctl = Kubectl(context, namespace=namespace)
-  yaml_spec = YamlSpec(yaml_template).to_file()
+  yaml_spec = YamlSpec(yaml_template, render_template).to_file()
 
   if describe:
     kctl_cmd = "describe"
