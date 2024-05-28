@@ -40,7 +40,7 @@ jobs:
 
   test_integration:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2024.04.4
     environment:
       KUBECTL_VERSION: v1.22.17
       K8S_VERSION: v1.22.17
