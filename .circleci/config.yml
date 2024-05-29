@@ -40,7 +40,7 @@ jobs:
 
   test_integration:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2024.04.4
     environment:
       KUBECTL_VERSION: v1.22.17
       K8S_VERSION: v1.22.17
@@ -133,7 +133,8 @@ jobs:
           name: setup hokusai global config file
           command: |
             cp test/integration/fixtures/ci_hokusai_global_config.yml ${HOME}/.hokusai.yml
-      - run: pyenv local 3.10.2
+      - run: pyenv install 3.10
+      - run: pyenv local 3.10
       - run: make hokusai
       - run: pyenv rehash
       - run: make integration
