@@ -1,3 +1,13 @@
+## v2.2.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v2.2.0/README.md)
+
+### Notable changes since v2.1.1
+
+* 9c204be feat: do not jinja render when applying review app spec
+* 095659d feat: bump python and xcode versions (#409)
+* 9426e0e fix: stray paren in command to describe deployments (#406)
+
 ## v2.1.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v2.1.1/README.md)
