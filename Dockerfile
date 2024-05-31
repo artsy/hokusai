@@ -1,4 +1,4 @@
-FROM python:3.9.10-alpine
+FROM python:3.10-alpine
 
 ARG COMPOSE_VERSION=2.20.3
 ARG AUTHENTICATOR_VERSION=0.4.0
@@ -26,6 +26,7 @@ RUN curl -SL https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/d
       chmod a+x /usr/local/bin/aws-iam-authenticator
 
 # Install AWS CLI
+RUN pip install pip --upgrade
 RUN pip --no-cache-dir install awscli --upgrade
 
 COPY . /src

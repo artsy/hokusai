@@ -1,6 +1,5 @@
 import os
 import pytest
-import tempfile
 
 from datetime import datetime
 from pathlib import Path
@@ -8,10 +7,15 @@ from pathlib import Path
 import hokusai.lib.common
 import test.unit.test_lib.fixtures.common
 
-from hokusai.lib.common import get_platform, user, local_to_local, uri_to_local, utc_yyyymmdd, validate_key_value
+from hokusai.lib.common import ansi_escape, get_platform, user, local_to_local, uri_to_local, utc_yyyymmdd, validate_key_value
 from hokusai.lib.exceptions import HokusaiError
 from test.unit.test_lib.fixtures.common import download_for_spy, mock_s3_interface_class, mock_local_to_local_raise
 
+
+def describe_ansi_escape():
+  def it_removes_color():
+    green_foo = '\x1b[32mfoo\x1b[0m'
+    assert ansi_escape(green_foo) == 'foo'
 
 def describe_get_platform():
   def it_returns_platform(mocker):
@@ -25,114 +29,106 @@ def describe_local_to_local():
   def describe_source_exists():
     def describe_target_exists():
       def describe_it_is_a_dir():
-        def it_errors():
-          with tempfile.TemporaryDirectory() as tmpdir:
-            source = os.path.join(tmpdir, 'a.yml')
-            spath = Path(source)
-            spath.touch()
-            target = os.path.join(tmpdir, 'foodir')
-            tpath = Path(target)
-            tpath.mkdir()
-            with pytest.raises(HokusaiError):
-              local_to_local(source, tmpdir, 'foodir')
+        def it_errors(tmp_path):
+          source = os.path.join(tmp_path, 'a.yml')
+          spath = Path(source)
+          spath.touch()
+          target = os.path.join(tmp_path, 'foodir')
+          tpath = Path(target)
+          tpath.mkdir()
+          with pytest.raises(HokusaiError):
+            local_to_local(source, tmp_path, 'foodir')
       def describe_it_is_a_file():
-        def it_backs_up_file_and_copies():
-          with tempfile.TemporaryDirectory() as tmpdir:
-            source = os.path.join(tmpdir, 'a.yml')
-            spath = Path(source)
-            spath.touch()
-            target = os.path.join(tmpdir, 'b.yml')
-            tpath = Path(target)
-            tpath.touch()
-            utc_yyyymmdd = datetime.utcnow().strftime("%Y%m%d")
-            backup = os.path.join(tmpdir, f'b.yml.backup.{utc_yyyymmdd}')
-            bpath = Path(backup)
-            local_to_local(source, tmpdir, 'b.yml')
-            assert tpath.is_file()
-            assert bpath.is_file()
+        def it_backs_up_file_and_copies(tmp_path):
+          source = os.path.join(tmp_path, 'a.yml')
+          spath = Path(source)
+          spath.touch()
+          target = os.path.join(tmp_path, 'b.yml')
+          tpath = Path(target)
+          tpath.touch()
+          utc_yyyymmdd = datetime.utcnow().strftime("%Y%m%d")
+          backup = os.path.join(tmp_path, f'b.yml.backup.{utc_yyyymmdd}')
+          bpath = Path(backup)
+          local_to_local(source, tmp_path, 'b.yml')
+          assert tpath.is_file()
+          assert bpath.is_file()
     def describe_target_does_not_exist():
       def describe_target_dir_exists():
-        def it_copies_and_sets_default_mode():
-          with tempfile.TemporaryDirectory() as tmpdir:
-            source = os.path.join(tmpdir, 'a.yml')
-            spath = Path(source)
-            spath.touch()
-            target = os.path.join(tmpdir, 'b.yml')
-            local_to_local(source, tmpdir, 'b.yml')
-            tpath = Path(target)
-            assert tpath.is_file()
-            assert os.stat(target).st_mode == int(0o100660) # the leading 10 means regular file
-        def it_copies_and_sets_custom_mode():
-          with tempfile.TemporaryDirectory() as tmpdir:
-            source = os.path.join(tmpdir, 'a.yml')
-            spath = Path(source)
-            spath.touch()
-            target = os.path.join(tmpdir, 'b.yml')
-            local_to_local(source, tmpdir, 'b.yml', mode=0o111)
-            tpath = Path(target)
-            assert tpath.is_file()
-            assert os.stat(target).st_mode == int(0o100111) # the leading 10 means regular file
-        def it_copies_to_home_dir(monkeypatch):
-          with tempfile.TemporaryDirectory() as tmpdir:
-            source = os.path.join(tmpdir, 'a.yml')
-            spath = Path(source)
-            spath.touch()
-            home_dir = os.path.join(tmpdir, 'myhome')
-            monkeypatch.setenv('HOME', home_dir)
-            target = os.path.join(home_dir, 'subdir', 'b.yml')
-            local_to_local(source, '~/subdir', 'b.yml')
-            tpath = Path(target)
-            assert tpath.is_file()
-            assert os.stat(target).st_mode == int(0o100660) # the leading 10 means regular file
+        def it_copies_and_sets_default_mode(tmp_path):
+          source = os.path.join(tmp_path, 'a.yml')
+          spath = Path(source)
+          spath.touch()
+          target = os.path.join(tmp_path, 'b.yml')
+          local_to_local(source, tmp_path, 'b.yml')
+          tpath = Path(target)
+          assert tpath.is_file()
+          assert os.stat(target).st_mode == int(0o100660) # the leading 10 means regular file
+        def it_copies_and_sets_custom_mode(tmp_path):
+          source = os.path.join(tmp_path, 'a.yml')
+          spath = Path(source)
+          spath.touch()
+          target = os.path.join(tmp_path, 'b.yml')
+          local_to_local(source, tmp_path, 'b.yml', mode=0o111)
+          tpath = Path(target)
+          assert tpath.is_file()
+          assert os.stat(target).st_mode == int(0o100111) # the leading 10 means regular file
+        def it_copies_to_home_dir(monkeypatch, tmp_path):
+          source = os.path.join(tmp_path, 'a.yml')
+          spath = Path(source)
+          spath.touch()
+          home_dir = os.path.join(tmp_path, 'myhome')
+          monkeypatch.setenv('HOME', home_dir)
+          target = os.path.join(home_dir, 'subdir', 'b.yml')
+          local_to_local(source, '~/subdir', 'b.yml')
+          tpath = Path(target)
+          assert tpath.is_file()
+          assert os.stat(target).st_mode == int(0o100660) # the leading 10 means regular file
       def describe_target_dir_missing():
         def describe_create_target_dir_true():
-          def it_copies():
-            with tempfile.TemporaryDirectory() as tmpdir:
-              source = os.path.join(tmpdir, 'a.yml')
-              spath = Path(source)
-              spath.touch()
-              target = os.path.join(tmpdir, 'missing', 'b.yml')
-              local_to_local(source, os.path.join(tmpdir, 'missing'), 'b.yml')
-              tpath = Path(target)
-              assert tpath.is_file()
+          def it_copies(tmp_path):
+            source = os.path.join(tmp_path, 'a.yml')
+            spath = Path(source)
+            spath.touch()
+            target = os.path.join(tmp_path, 'missing', 'b.yml')
+            local_to_local(source, os.path.join(tmp_path, 'missing'), 'b.yml')
+            tpath = Path(target)
+            assert tpath.is_file()
         def describe_create_target_dir_false():
-          def it_errors():
-            with tempfile.TemporaryDirectory() as tmpdir:
-              source = os.path.join(tmpdir, 'a.yml')
-              spath = Path(source)
-              spath.touch()
-              with pytest.raises(FileNotFoundError):
-                local_to_local(source, os.path.join(tmpdir, 'missing'), 'b.yml', create_target_dir=False)
+          def it_errors(tmp_path):
+            source = os.path.join(tmp_path, 'a.yml')
+            spath = Path(source)
+            spath.touch()
+            with pytest.raises(FileNotFoundError):
+              local_to_local(source, os.path.join(tmp_path, 'missing'), 'b.yml', create_target_dir=False)
   def describe_source_non_existent():
-    def it_errors():
-      with tempfile.TemporaryDirectory() as tmpdir:
-        source = os.path.join(tmpdir, 'a.yml')
-        with pytest.raises(FileNotFoundError):
-          local_to_local(source, tmpdir, 'b.yml')
+    def it_errors(tmp_path):
+      source = os.path.join(tmp_path, 'a.yml')
+      with pytest.raises(FileNotFoundError):
+        local_to_local(source, tmp_path, 'b.yml')
 
 def describe_uri_to_local():
   def describe_s3_scheme():
-    def it_calls_s3_interface_download(mocker, mock_s3_interface_class):
+    def it_calls_s3_interface_download(mocker, mock_s3_interface_class, tmp_path):
       mocker.patch('hokusai.lib.common.S3Interface').side_effect = mock_s3_interface_class
       s3_spy = mocker.spy(test.unit.test_lib.fixtures.common, 'download_for_spy')
       mocker.patch('hokusai.lib.common.local_to_local')
       local_to_local_spy = mocker.spy(hokusai.lib.common, 'local_to_local')
-      with tempfile.TemporaryDirectory() as tmpdir:
-        mocker.patch('hokusai.lib.common.tempfile.mkdtemp', return_value=tmpdir)
-        uri_to_local('s3://foobucket/bar/file.txt', tmpdir, 'file.txt')
-        s3_spy.assert_has_calls([
-          mocker.call(
-            's3://foobucket/bar/file.txt',
-            os.path.join(tmpdir, 'downloaded_file')
-          )
-        ])
-        local_to_local_spy.assert_has_calls([
-          mocker.call(
-            os.path.join(tmpdir, 'downloaded_file'),
-            tmpdir,
-            'file.txt'
-          )
-        ])
+      mocker.patch('hokusai.lib.common.tempfile.mkdtemp', return_value=tmp_path)
+      uri_to_local('s3://foobucket/bar/file.txt', tmp_path, 'file.txt')
+      s3_spy.assert_has_calls([
+        mocker.call(
+          's3://foobucket/bar/file.txt',
+          os.path.join(tmp_path, 'downloaded_file')
+        )
+      ])
+      local_to_local_spy.assert_has_calls([
+        mocker.call(
+          os.path.join(tmp_path, 'downloaded_file'),
+          tmp_path,
+          'file.txt'
+        )
+      ])
+
   def describe_no_scheme():
     def it_calls_local_to_local(mocker):
       mocker.patch('hokusai.lib.common.local_to_local')

@@ -37,6 +37,12 @@ VERBOSE = False
 
 AWS_DEFAULT_REGION = 'us-east-1'
 
+
+def ansi_escape(raw_string):
+  ''' rid string of ANSI esapes such as color '''
+  escape_regex = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+  return escape_regex.sub('', raw_string)
+
 def clean_string(str):
   return str.lower().replace('_', '-')
 

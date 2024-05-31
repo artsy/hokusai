@@ -3,17 +3,17 @@ version: 2
 jobs:
   test_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
-      - run: make dependencies
+      - run: make hokusai
       - run: make test
       - run: coverage report
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=beta
 
   test_macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.3.0"
     steps:
       - checkout
       - run:
@@ -24,15 +24,15 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: make test
       - run: coverage report
@@ -40,67 +40,109 @@ jobs:
 
   test_integration:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2024.04.4
     environment:
-      K8S_VERSION: v1.19.16
+      KUBECTL_VERSION: v1.22.17
+      K8S_VERSION: v1.22.17
       KUBECONFIG: /home/circleci/.kube/config
-      MINIKUBE_VERSION: v1.22.0
+      MINIKUBE_VERSION: v1.31.2
       MINIKUBE_WANTUPDATENOTIFICATION: false
       MINIKUBE_WANTREPORTERRORPROMPT: false
       MINIKUBE_HOME: /home/circleci
-      CHANGE_MINIKUBE_NONE_USER: true
     steps:
       - checkout
       - run:
-          name: setup kubectl
+          name: install kubectl
           command: |
-            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            kubectl --client=true version
             mkdir -p ${HOME}/.kube
             touch ${HOME}/.kube/config
       - run:
-          name: setup minikube
+          name: install minikube
           command: |
             curl -Lo minikube https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+            minikube version
       # required by minikube for k8s v1.18 onwards
       - run:
           name: install conntrack
           command: |
             sudo apt-get -qq update && sudo apt-get -qq install conntrack
       - run:
-          name: start minikube
+          name: start staging minikube cluster
           command: |
-            sudo -E minikube start --vm-driver=none --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube.log 2>&1 < /dev/null
+            set +e
+            minikube start --profile staging --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube-staging.log 2>&1 < /dev/null
+            if [ $? -ne '0' ]
+            then
+              cat $HOME/minikube-staging.log
+              exit 1
+            fi
       - run:
-          name: wait for minikube
+          name: wait for staging minikube cluster
           command: |
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
-            until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+            until kubectl --context staging get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
               sleep 1;
             done
+            kubectl --context staging version
+            kubectl --context staging cluster-info
+            kubectl --context staging get pods --all-namespaces
       - run:
-          name: fix RBAC
+          name: start production minikube cluster
           command: |
-            # make default account cluster-admin
-            kubectl create clusterrolebinding add-on-cluster-admin --clusterrole cluster-admin --serviceaccount=kube-system:default
+            set +e
+            minikube start --profile production --cpus 2 --memory 2048 --kubernetes-version=${K8S_VERSION} &> $HOME/minikube-production.log 2>&1 < /dev/null
+            if [ $? -ne '0' ]
+            then
+              cat $HOME/minikube-production.log
+              exit 1
+            fi
       - run:
-          name: dump cluster-info
+          name: wait for production minikube cluster
           command: |
-            kubectl cluster-info
-            kubectl get pods --all-namespaces
+            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+            until kubectl --context production get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+              sleep 1;
+            done
+            kubectl --context production version
+            kubectl --context production cluster-info
+            kubectl --context production get pods --all-namespaces
+      - run:
+          name: log into ECR
+          command: |
+            aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
+            aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | \
+              docker login --username AWS \
+                --password-stdin ${aws_account_id}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+      - run:
+          name: setup regcred for staging minikube/k8s
+          command: |
+            kubectl --context staging create secret generic regcred \
+              --from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+              --type=kubernetes.io/dockerconfigjson
+            kubectl --context staging patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
+      - run:
+          name: setup regcred for production minikube/k8s
+          command: |
+            kubectl --context production create secret generic regcred \
+              --from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+              --type=kubernetes.io/dockerconfigjson
+            kubectl --context production patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
       - run:
           name: setup hokusai global config file
           command: |
             cp test/integration/fixtures/ci_hokusai_global_config.yml ${HOME}/.hokusai.yml
-      - run: pyenv install 3.9.10
-      - run: pyenv local 3.9.10
-      - run: make dependencies
+      - run: pyenv install 3.10
+      - run: pyenv local 3.10
+      - run: make hokusai
       - run: pyenv rehash
       - run: make integration
       - run: coverage report
 
   test_docker_build:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -110,19 +152,19 @@ jobs:
 
   release_beta_s3_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
-      - run: make dependencies
+      - run: make hokusai
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=beta
       - run: make publish-to-s3 ARTIFACT_LABEL=beta
 
   release_beta_s3_macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.3.0"
     steps:
       - checkout
       - run:
@@ -133,15 +175,15 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
@@ -149,7 +191,7 @@ jobs:
 
   release_beta_dockerhub:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -211,12 +253,12 @@ jobs:
 
   release_s3_linux:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
-      - run: make dependencies
+      - run: make hokusai
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=$(cat hokusai/VERSION)
       - run: make pyinstaller-build-onefile ARTIFACT_LABEL=latest
@@ -225,7 +267,7 @@ jobs:
 
   release_s3_macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.3.0"
     steps:
       - checkout
       - run:
@@ -236,15 +278,15 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.9.10
-            pyenv local 3.9.10
+            pyenv install 3.10
+            pyenv local 3.10
             pip install --upgrade pip
       - run:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
             sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make dependencies
+      - run: make hokusai
       - run: pyenv rehash
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=$(cat hokusai/VERSION)
@@ -254,7 +296,7 @@ jobs:
 
   release_dockerhub:
     docker:
-      - image: python:3.9.10-alpine
+      - image: python:3.10-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -278,10 +320,10 @@ jobs:
 
   release_pip:
     docker:
-      - image: python:3.9.10
+      - image: python:3.10
     steps:
       - checkout
-      - run: make dependencies
+      - run: make hokusai
       - run: scripts/update_version_file.sh
       - run: make publish-to-pip
 
@@ -374,6 +416,8 @@ workflows:
             branches:
               ignore: release
       - test_integration:
+          context:
+          - hokusai-project
           filters:
             branches:
               ignore: release

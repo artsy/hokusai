@@ -1,6 +1,5 @@
 import os
 import pytest
-import tempfile
 
 import hokusai.lib.config_loader
 
@@ -23,27 +22,26 @@ def describe_config_loader():
 
   def describe_load():
     def describe_yaml_type():
-      def it_calls(mocker):
+      def it_calls(mocker, tmp_path):
         mocker.patch('hokusai.lib.config_loader.uri_to_local')
         uri_to_local_spy = mocker.spy(hokusai.lib.config_loader, 'uri_to_local')
         loader = ConfigLoader('file:///test/fixtures/template_config.yml')
         mocker.patch.object(loader, '_load_from_file')
         load_from_file_spy = mocker.spy(loader, '_load_from_file')
-        with tempfile.TemporaryDirectory() as tmpdir:
-          mocker.patch('tempfile.mkdtemp', return_value=tmpdir)
-          config = loader.load()
-          uri_to_local_spy.assert_has_calls([
-            mocker.call(
-              'file:///test/fixtures/template_config.yml',
-              tmpdir,
-              'hokusai.yml'
-            )
-          ])
-          load_from_file_spy.assert_has_calls([
-            mocker.call(
-              os.path.join(tmpdir, 'hokusai.yml')
-            )
-          ])
+        mocker.patch('tempfile.mkdtemp', return_value=tmp_path)
+        config = loader.load()
+        uri_to_local_spy.assert_has_calls([
+          mocker.call(
+            'file:///test/fixtures/template_config.yml',
+            tmp_path,
+            'hokusai.yml'
+          )
+        ])
+        load_from_file_spy.assert_has_calls([
+          mocker.call(
+            os.path.join(tmp_path, 'hokusai.yml')
+          )
+        ])
       def it_catches_exceptions(mocker, mock_uri_to_local_raise):
         mocker.patch('hokusai.lib.config_loader.uri_to_local').side_effect = mock_uri_to_local_raise
         loader = ConfigLoader('file:///test/fixtures/template_config.yml')

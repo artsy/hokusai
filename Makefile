@@ -1,4 +1,4 @@
-.PHONY: dependencies test integration pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
+.PHONY: hokusai test integration integration-local pyinstaller-build-onefile pyinstaller-build-onedir publish-to-s3 publish-to-s3-canonical build-docker-image publish-to-dockerhub-beta publish-to-dockerhub-canonical-and-latest publish-to-pip publish-to-github clean
 
 # a var passed in as an argument to 'make' command moots its ?= assgiment
 AWS ?= $(shell which aws)
@@ -10,19 +10,21 @@ RELEASE_MINOR_VERSION ?= $(shell cat hokusai/VERSION | awk -F"." '{ print $$1"."
 ARTIFACT_LABEL ?= $(shell cat hokusai/VERSION)
 BINARY_SUFFIX ?= -$(ARTIFACT_LABEL)-$(shell uname -s)-$(shell uname -m)
 
-dependencies:
+hokusai:
 	pip install --upgrade pip
 	# pin version due to https://github.com/python-poetry/poetry/issues/7184
 	pip install poetry==1.2.2 --quiet --ignore-installed
 	poetry --version
-	poetry install --no-root
+	poetry install
 
 test:
 	coverage run -m pytest test/unit
-	coverage run --omit="test/*" -m unittest discover test.smoke
 
 integration:
-	coverage run --omit="test/*" -m unittest discover test.integration
+	coverage run -m pytest test/integration
+
+integration-local:
+	scripts/integration_test_local.sh
 
 pyinstaller-build-onefile: # for linux
 	pyinstaller \

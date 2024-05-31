@@ -1,5 +1,6 @@
 [project]
 dynamic = ["version"]
+name = "hokusai"
 
 [tool.poetry]
 name = "hokusai"
@@ -13,7 +14,7 @@ repository = "http://github.com/artsy/hokusai"
 include = ["hokusai/VERSION"]
 
 [tool.poetry.dependencies]
-boto3 = "==1.21.28"
+boto3 = "^1.34.25"
 click = "==8.1.0"
 click-repl = "==0.2.0"
 Jinja2 = "==3.1.1"
@@ -26,6 +27,7 @@ termcolor = "==1.1.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.3.2"
+gitpython = "^3.1.40"
 httpretty = "^1.1.4"
 ipdb = "^0.13.9"
 mock = "^4.0.3"

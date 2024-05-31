@@ -1,9 +1,13 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {% raw %}{{ project_name }}{% endraw %}-web
   namespace: default
+  labels:
+    app: {% raw %}{{ project_name }}{% endraw %}
+    component: web
+    layer: application
 spec:
   replicas: 2
   strategy:
@@ -11,6 +15,11 @@ spec:
       maxSurge: 1
       maxUnavailable: 0
     type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {% raw %}{{ project_name }}{% endraw %}
+      component: web
+      layer: application
   template:
     metadata:
       labels:
