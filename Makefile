@@ -87,7 +87,7 @@ publish-to-dockerhub-canonical-and-latest:
 	  docker push artsy/hokusai:latest; \
 	else \
 	  echo "Version $(ARTIFACT_LABEL) already published"; \
-	  exit 1; \
+	  exit 0; \
 	fi
 
 publish-to-pip:
