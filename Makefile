@@ -94,7 +94,7 @@ publish-to-pip:
 	pip install --upgrade wheel
 	poetry version $(RELEASE_VERSION) # bump version in pyproject.toml
 	poetry build
-	twine upload dist/* --verbose
+	twine upload --skip-existing dist/* --verbose
 
 publish-to-github:
 	$(AWS) s3 cp \
