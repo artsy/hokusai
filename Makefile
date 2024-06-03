@@ -65,7 +65,7 @@ publish-to-s3-canonical:
 	    dist/ s3://artsy-provisioning-public/hokusai/; \
 	else \
 	  echo "Version $(ARTIFACT_LABEL) already published"; \
-	  exit 1; \
+	  exit 0; \
 	fi
 
 build-docker-image:
@@ -87,14 +87,14 @@ publish-to-dockerhub-canonical-and-latest:
 	  docker push artsy/hokusai:latest; \
 	else \
 	  echo "Version $(ARTIFACT_LABEL) already published"; \
-	  exit 1; \
+	  exit 0; \
 	fi
 
 publish-to-pip:
 	pip install --upgrade wheel
 	poetry version $(RELEASE_VERSION) # bump version in pyproject.toml
 	poetry build
-	twine upload dist/* --verbose
+	twine upload --skip-existing dist/* --verbose
 
 publish-to-github:
 	$(AWS) s3 cp \
