@@ -223,6 +223,8 @@ jobs:
               export SHA256=$(sha256sum hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
             fi
 
+            echo "SHA 256 sum is $SHA256"
+
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:artsy/homebrew-formulas.git
             cd ./homebrew-formulas
@@ -349,6 +351,8 @@ jobs:
             if [ $UNAME == "Linux" ]; then
               export SHA256=$(sha256sum hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
             fi
+
+            echo "SHA 256 sum is $SHA256"
 
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:artsy/homebrew-formulas.git
