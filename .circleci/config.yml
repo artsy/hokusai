@@ -223,6 +223,8 @@ jobs:
               export SHA256=$(sha256sum hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
             fi
 
+            echo "SHA 256 sum is $SHA256"
+
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:artsy/homebrew-formulas.git
             cd ./homebrew-formulas
@@ -350,15 +352,14 @@ jobs:
               export SHA256=$(sha256sum hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
             fi
 
+            echo "SHA 256 sum is $SHA256"
+
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             git clone git@github.com:artsy/homebrew-formulas.git
             cd ./homebrew-formulas
 
             if grep $VERSION ./Formula/hokusai.rb; then
-              echo "Formula version already set to $VERSION"
-              cd /tmp
-              rm -rf ./homebrew-formulas
-              exit 0
+              echo "Formula version already set to $VERSION. Overwriting it."
             fi
 
             echo "Bumping formula version to $VERSION"
