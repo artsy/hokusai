@@ -355,10 +355,7 @@ jobs:
             cd ./homebrew-formulas
 
             if grep $VERSION ./Formula/hokusai.rb; then
-              echo "Formula version already set to $VERSION"
-              cd /tmp
-              rm -rf ./homebrew-formulas
-              exit 0
+              echo "Formula version already set to $VERSION. Overwriting it."
             fi
 
             echo "Bumping formula version to $VERSION"
