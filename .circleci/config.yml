@@ -18,6 +18,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: install rosetta
+          command: |
+            sudo softwareupdate --install-rosetta --agree-to-license
+      - run:
+          name: install x86_64 homebrew
+          command: |
+            arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - run:
+          name: set PATH for subsequent steps
+          command: |
+            echo 'export PATH="/usr/local/bin:$PATH"' >> "$BASH_ENV"
+      - run:
           name: install openssl, pyenv
           command: |
             brew install openssl pyenv
@@ -32,7 +44,6 @@ jobs:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo softwareupdate --install-rosetta --agree-to-license
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make hokusai
       - run: pyenv rehash
