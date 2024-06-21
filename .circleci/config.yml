@@ -38,7 +38,8 @@ jobs:
       - run: pyenv rehash
       - run: make test
       - run: coverage report
-      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=test
+      - run: make publish-to-s3 ARTIFACT_LABEL=test
 
   test_integration:
     machine:
