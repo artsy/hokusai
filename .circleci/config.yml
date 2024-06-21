@@ -32,6 +32,7 @@ jobs:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+            sudo softwareupdate --install-rosetta --agree-to-license
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make hokusai
       - run: pyenv rehash
@@ -184,6 +185,7 @@ jobs:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+            sudo softwareupdate --install-rosetta --agree-to-license
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make hokusai
       - run: pyenv rehash
@@ -290,6 +292,7 @@ jobs:
           name: install awscli
           command: |
             curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+            sudo softwareupdate --install-rosetta --agree-to-license
             sudo installer -pkg AWSCLIV2.pkg -target /
       - run: make hokusai
       - run: pyenv rehash
