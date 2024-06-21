@@ -40,6 +40,7 @@ pyinstaller-build-onefile: # for linux
 # for mac (because build-onefile's binary runs too slow on mac)
 pyinstaller-build-onedir:
 	pyinstaller \
+	  --target-architecture=x86_64 \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
 	  hokusai_onedir.spec
