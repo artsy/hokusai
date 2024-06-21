@@ -420,6 +420,8 @@ workflows:
             branches:
               ignore: release
       - test_macos:
+          context:
+          - hokusai
           filters:
             branches:
               ignore: release
