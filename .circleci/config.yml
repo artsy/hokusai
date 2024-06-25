@@ -30,9 +30,9 @@ jobs:
           command: |
             echo 'export PATH="/usr/local/bin:$PATH"' >> "$BASH_ENV"
       - run:
-          name: install openssl, pyenv
+          name: install openssl, pyenv, xz
           command: |
-            brew install openssl pyenv
+            brew install openssl pyenv xz
             echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
       - run:
           name: install python
