@@ -37,7 +37,7 @@ jobs:
       - run:
           name: install python
           command: |
-            pyenv install 3.10
+            arch -x86_64 pyenv install 3.10
             pyenv local 3.10
             pip install --upgrade pip
       - run:
