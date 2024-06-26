@@ -6,30 +6,30 @@
 set -xeo pipefail
 
 # install rosetta
-sudo softwareupdate --install-rosetta --agree-to-license
+time sudo softwareupdate --install-rosetta --agree-to-license
 
 # install x86 homebrew
-arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+time arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # set PATH to x86 executables
 export PATH="/usr/local/bin:$PATH"
 
 # install pyenv
-brew install pyenv
+time brew install pyenv
 echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
 
 # install python pre-reqs
-brew install openssl xz
+time brew install openssl xz
 
 # install python
-arch -x86_64 pyenv install 3.10
+time arch -x86_64 pyenv install 3.10
 pyenv local 3.10
-pip install --upgrade pip
+time pip install --upgrade pip
 
 # install awscli
-curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-sudo installer -pkg AWSCLIV2.pkg -target /
+time curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+time sudo installer -pkg AWSCLIV2.pkg -target /
 
 # build hokusai
-make hokusai
+time make hokusai
 pyenv rehash
