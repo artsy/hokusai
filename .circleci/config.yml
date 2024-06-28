@@ -14,29 +14,17 @@ jobs:
   test_macos:
     macos:
       xcode: "15.3.0"
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: install openssl, pyenv
+          name: build hokusai
           command: |
-            brew install openssl pyenv
-            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-      - run:
-          name: install python
-          command: |
-            pyenv install 3.10
-            pyenv local 3.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make hokusai
-      - run: pyenv rehash
+            ./scripts/ci_macos_build_hokusai.sh
       - run: make test
       - run: coverage report
-      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=test
+      - run: make publish-to-s3 ARTIFACT_LABEL=test
 
   test_integration:
     machine:
@@ -165,26 +153,13 @@ jobs:
   release_beta_s3_macos:
     macos:
       xcode: "15.3.0"
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: install openssl, pyenv
+          name: build hokusai
           command: |
-            brew install openssl pyenv
-            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-      - run:
-          name: install python
-          command: |
-            pyenv install 3.10
-            pyenv local 3.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make hokusai
-      - run: pyenv rehash
+            ./scripts/ci_macos_build_hokusai.sh
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
       - run: make publish-to-s3 ARTIFACT_LABEL=beta
@@ -270,26 +245,13 @@ jobs:
   release_s3_macos:
     macos:
       xcode: "15.3.0"
+      resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: install openssl, pyenv
+          name: build hokusai
           command: |
-            brew install openssl pyenv
-            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-      - run:
-          name: install python
-          command: |
-            pyenv install 3.10
-            pyenv local 3.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make hokusai
-      - run: pyenv rehash
+            ./scripts/ci_macos_build_hokusai.sh
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=$(cat hokusai/VERSION)
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=latest
@@ -413,6 +375,8 @@ workflows:
             branches:
               ignore: release
       - test_macos:
+          context:
+          - hokusai
           filters:
             branches:
               ignore: release
