@@ -1,15 +1,19 @@
 import copy
 import json
+import os
 import pipes
 import re
+
+from tempfile import NamedTemporaryFile
 
 from hokusai.lib.common import (
   k8s_uuid, returncode, shout, user, validate_key_value
 )
-from hokusai.lib.config import config
+from hokusai.lib.config import config, HOKUSAI_TMP_DIR
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
+
 
 class CommandRunner:
   def __init__(self, context, namespace=None):
@@ -18,6 +22,13 @@ class CommandRunner:
     self.ecr = ECR()
     self.pod_name = self._name()
     self.container_name = self.pod_name
+
+  def _debug(self, overrides):
+    ''' dump overrides into a file for debug '''
+    if os.environ.get('DEBUG'):
+      with NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w') as temp_file:
+        pretty_json = json.dumps(overrides, indent=2)
+        temp_file.write(pretty_json)
 
   def _name(self):
     ''' generate name for pod and container '''
@@ -126,6 +137,7 @@ class CommandRunner:
         '--rm'
       ]
     )
+    self._debug(overrides)
     return returncode(
       self.kctl.command(args)
     )
@@ -149,6 +161,7 @@ class CommandRunner:
         '--rm'
       ]
     )
+    self._debug(overrides)
     shout(
       self.kctl.command(args),
       print_output=True
