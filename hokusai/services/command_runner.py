@@ -26,10 +26,10 @@ class CommandRunner:
     self.pod_name = self._name()
     self.container_name = self.pod_name
 
-  def _debug(self, overrides):
+  def _debug(self, overrides, suffix=None):
     ''' dump overrides into a file for debug '''
     if os.environ.get('DEBUG'):
-      with NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w') as temp_file:
+      with NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w', suffix=suffix) as temp_file:
         pretty_json = json.dumps(overrides, indent=2)
         temp_file.write(pretty_json)
 
@@ -140,7 +140,7 @@ class CommandRunner:
         '--rm'
       ]
     )
-    self._debug(overrides)
+    self._debug(overrides, suffix='command_runner.run_to_tty')
     return returncode(
       self.kctl.command(args)
     )
@@ -164,7 +164,7 @@ class CommandRunner:
         '--rm'
       ]
     )
-    self._debug(overrides)
+    self._debug(overrides, suffix='command_runner.run_tty')
     shout(
       self.kctl.command(args),
       print_output=True
@@ -204,7 +204,31 @@ class CommandRunner:
     ]
     for field in fields_to_keep:
       if field in pod_spec:
-        cleaned_spec.update({field: pod_spec[field]})
+        field_spec = pod_spec[field]
+        if field == 'containers':
+          field_spec = self._clean_containers_spec(field_spec)
+        cleaned_spec.update({field: field_spec})
+    return cleaned_spec
+
+  def _clean_containers_spec(self, containers_spec):
+    ''' return subset of fields in pod containers spec that are appropriate for kubectl run '''
+    print(containers_spec)
+    cleaned_spec = []
+    fields_to_keep = [
+      'name',
+      'envFrom',
+      'args',
+      'image',
+      'imagePullPolicy',
+      'volumeMounts'
+    ]
+    for container_spec in containers_spec:
+      cleaned_container_spec = {}
+      for field in fields_to_keep:
+        if field in container_spec:
+          field_spec = container_spec[field]
+          cleaned_container_spec.update({field: field_spec})
+      cleaned_spec = cleaned_spec + [cleaned_container_spec]
     return cleaned_spec
 
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
@@ -212,11 +236,11 @@ class CommandRunner:
     # assume we want to use <project>-web deployment as template
     template_deployment = config.project_name + '-web'
     run_template = self._extract_pod_spec(template_deployment)
-    self._debug(run_template)
+    self._debug(run_template, suffix='command_runner.run.run_template')
 
     # ensure pod_spec contains only fields appropriate for run
     cleaned_pod_spec = self._clean_pod_spec(run_template)
-    self._debug(cleaned_pod_spec)
+    self._debug(cleaned_pod_spec, suffix='command_runner.run.cleaned_pod_spec')
 
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
