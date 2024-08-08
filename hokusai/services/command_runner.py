@@ -191,13 +191,32 @@ class CommandRunner:
       raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
     return pod_spec
 
+  def _clean_pod_spec(self, pod_spec):
+    ''' return subset of fields in pod spec that are appropriate for kubectl run '''
+    cleaned_spec = {}
+    fields_to_keep = [
+      'initContainers',
+      'containers',
+      'dnsPolicy',
+      'dnsConfig',
+      'serviceAccountName',
+      'volumes'
+    ]
+    for field in fields_to_keep:
+      if field in pod_spec:
+        cleaned_spec.update({field: pod_spec[field]})
+    return cleaned_spec
+
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     ''' run command '''
-
     # assume we want to use <project>-web deployment as template
     template_deployment = config.project_name + '-web'
     run_template = self._extract_pod_spec(template_deployment)
     self._debug(run_template)
+
+    # ensure pod_spec contains only fields appropriate for run
+    cleaned_pod_spec = self._clean_pod_spec(run_template)
+    self._debug(cleaned_pod_spec)
 
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
