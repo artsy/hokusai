@@ -6,13 +6,16 @@ import re
 
 from tempfile import NamedTemporaryFile
 
+from hokusai import CWD
 from hokusai.lib.common import (
   k8s_uuid, returncode, shout, user, validate_key_value
 )
-from hokusai.lib.config import config, HOKUSAI_TMP_DIR
+from hokusai.lib.config import config, HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
+from hokusai.services.yaml_spec import YamlSpec
 
 
 class CommandRunner:
@@ -167,8 +170,28 @@ class CommandRunner:
       print_output=True
     )
 
+  def _extract_pod_spec(self, deployment_name):
+    ''' get pod spec from specified deployment in hokusai specs '''
+    pod_spec = None
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
+    print(yaml_template)
+    yaml_spec = YamlSpec(yaml_template, render_template=True).to_list()
+    for item in yaml_spec:
+      if item['kind'] == 'Deployment' and item['metadata']['name'] == deployment_name:
+        found_deployment = True
+        pod_spec = item['spec']['template']['spec']
+    if not pod_spec:
+      raise HokusaiError(f'Failed to find {deployment_name} deployment in {yaml_template}')
+    return pod_spec
+
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     ''' run command '''
+
+    # assume we want to use <project>-web deployment as template
+    template_deployment = config.project_name + '-web'
+    run_template = self._extract_pod_spec(template_deployment)
+    self._debug(run_template)
+
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
       cmd, constraint, env, tag_or_digest
