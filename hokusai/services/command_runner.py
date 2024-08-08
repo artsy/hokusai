@@ -53,78 +53,27 @@ class CommandRunner:
     image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
     return image_name
 
-  def _set_env(self, container_spec, env):
-    ''' set env field of given container spec '''
-    spec = copy.deepcopy(container_spec)
-    spec['env'] = []
-    for var in env:
-      validate_key_value(var)
-      split = var.split('=', 1)
-      spec['env'].append(
-        {'name': split[0], 'value': split[1]}
-      )
-    return spec
-
-  def _set_envfrom(self, container_spec):
-    ''' set envFrom field of given container spec '''
-    spec = copy.deepcopy(container_spec)
-    spec.update(
-      {
-        'envFrom': [
-          {
-            'configMapRef': {
-              'name': f'{config.project_name}-environment'
-            }
-          },
-          {
-            'secretRef': {
-              'name': f'{config.project_name}',
-              'optional': True
-            }
-          }
-        ]
-      }
-    )
-    return spec
-
-  def _set_constraint(self, containers_spec, constraint):
-    ''' set nodeSelector field of given containers spec '''
-    spec = copy.deepcopy(containers_spec)
+  def _overrides(self, cmd, constraint, env, tag_or_digest, pod_spec):
+    ''' generate overrides '''
+    overrides = { 'apiVersion': 'v1', 'spec': pod_spec}
+    overrides['spec']['containers'][0]['args'] = cmd.split(' ')
+    overrides['spec']['containers'][0]['name'] = self.container_name
+    overrides['spec']['containers'][0]['image'] = self._image_name(tag_or_digest)
     constraint = constraint or config.run_constraints
     if constraint:
-      spec['nodeSelector'] = {}
+      overrides['spec']['nodeSelector'] = {}
       for label in constraint:
         validate_key_value(label)
         split = label.split('=', 1)
-        spec['nodeSelector'][split[0]] = split[1]
-    return spec
-
-  def _overrides_container(self, cmd, env, tag_or_digest):
-    ''' generate overrides['spec']['containers'][0] spec '''
-    spec = {
-      'args': cmd.split(' '),
-      'name': self.container_name,
-      'image': self._image_name(tag_or_digest),
-      'imagePullPolicy': 'Always',
-    }
-    spec = self._set_env(spec, env)
-    spec = self._set_envfrom(spec)
-    return spec
-
-  def _overrides_spec(self, cmd, constraint, env, tag_or_digest):
-    ''' generate overrides['spec'] spec '''
-    spec = {}
-    container_spec = self._overrides_container(
-      cmd, env, tag_or_digest
-    )
-    spec.update({'containers': [container_spec]})
-    spec = self._set_constraint(spec, constraint)
-    return spec
-
-  def _overrides(self, cmd, constraint, env, tag_or_digest):
-    ''' generate overrides '''
-    spec = self._overrides_spec(cmd, constraint, env, tag_or_digest)
-    overrides = { 'apiVersion': 'v1', 'spec': spec }
+        overrides['spec']['nodeSelector'][split[0]] = split[1]
+    if env:
+      overrides['spec']['containers'][0]['env'] = []
+      for var in env:
+        validate_key_value(var)
+        split = var.split('=', 1)
+        overrides['spec']['containers'][0]['env'].append(
+          {'name': split[0], 'value': split[1]}
+        )
     return overrides
 
   def _run_no_tty(self, cmd, image_name, overrides):
@@ -140,7 +89,7 @@ class CommandRunner:
         '--rm'
       ]
     )
-    self._debug(overrides, suffix='command_runner.run_to_tty')
+    self._debug(overrides, suffix='command_runner.run_no_tty')
     return returncode(
       self.kctl.command(args)
     )
@@ -212,7 +161,6 @@ class CommandRunner:
 
   def _clean_containers_spec(self, containers_spec):
     ''' return subset of fields in pod containers spec that are appropriate for kubectl run '''
-    print(containers_spec)
     cleaned_spec = []
     fields_to_keep = [
       'name',
@@ -244,7 +192,7 @@ class CommandRunner:
 
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
-      cmd, constraint, env, tag_or_digest
+      cmd, constraint, env, tag_or_digest, cleaned_pod_spec
     )
     image_name = self._image_name(tag_or_digest)
     if run_tty:
