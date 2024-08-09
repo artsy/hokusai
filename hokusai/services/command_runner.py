@@ -56,7 +56,13 @@ class CommandRunner:
   def _overrides(self, cmd, constraint, env, tag_or_digest, pod_spec):
     ''' generate overrides '''
     overrides = { 'apiVersion': 'v1', 'spec': pod_spec}
-    overrides['spec']['containers'][0]['args'] = cmd.split(' ')
+    # assume 1) there's a secrets file, 2) the path to it
+    secrets_file = '/secrets/secrets'
+    overrides['spec']['containers'][0]['args'] = [
+      'sh',
+      '-c',
+      'source /secrets/secrets ' + '&& ' + cmd
+    ]
     overrides['spec']['containers'][0]['name'] = self.container_name
     overrides['spec']['containers'][0]['image'] = self._image_name(tag_or_digest)
     constraint = constraint or config.run_constraints
