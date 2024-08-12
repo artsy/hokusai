@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 
 from hokusai import CWD
 from hokusai.lib.common import (
-  k8s_uuid, returncode, shout, user, validate_key_value, filter_dict
+  k8s_uuid, returncode, shout, user, validate_key_value
 )
 from hokusai.lib.config import config, HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR
 from hokusai.lib.exceptions import HokusaiError
@@ -131,7 +131,6 @@ class CommandRunner:
     template_deployment = config.project_name + '-web'
     yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
     run_template = YamlSpec(yaml_template, render_template=True).extract_pod_spec(template_deployment)
-
     self._debug(run_template, suffix='command_runner.run.run_template')
 
     # ensure pod_spec contains only fields appropriate for run
@@ -143,7 +142,7 @@ class CommandRunner:
       'serviceAccountName',
       'volumes'
     ]
-    cleaned_pod_spec = filter_dict(run_template, fields_to_keep)
+    cleaned_pod_spec = {k: run_template[k] for k in fields_to_keep if k in run_template}
     self._debug(cleaned_pod_spec, suffix='command_runner.run.cleaned_pod_spec')
 
     # ensure containers spec contains only fields appropriate for run
@@ -157,7 +156,7 @@ class CommandRunner:
     ]
     cleaned_containers_spec = []
     for container_spec in cleaned_pod_spec['containers']:
-      cleaned_containers_spec += [filter_dict(container_spec, fields_to_keep)]
+      cleaned_containers_spec += [{k: container_spec[k] for k in fields_to_keep if k in container_spec}]
     cleaned_pod_spec['containers'] = cleaned_containers_spec
 
     run_tty = tty if tty is not None else config.run_tty

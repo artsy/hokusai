@@ -63,7 +63,7 @@ class YamlSpec:
   def to_list(self):
     return list(yaml.safe_load_all(self.to_string()))
 
-  def get_deployment(self, deployment_name):
+  def get_deployment_spec(self, deployment_name):
     ''' return spec of specified deployment '''
     spec = None
     yaml_spec = self.to_list()
@@ -77,7 +77,7 @@ class YamlSpec:
   def extract_pod_spec(self, deployment_name):
     ''' extract pod spec from spec of specified deployment '''
     spec = None
-    deployment_spec = self.get_deployment(deployment_name)
+    deployment_spec = self.get_deployment_spec(deployment_name)
     spec = deployment_spec['spec']['template']['spec']
     if not spec:
       raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
