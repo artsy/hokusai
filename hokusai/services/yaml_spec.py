@@ -74,6 +74,15 @@ class YamlSpec:
       raise HokusaiError(f'Failed to find {deployment_name} deployment in {self.template_file}')
     return spec
 
+  def extract_pod_spec(self, deployment_name):
+    ''' extract pod spec from spec of specified deployment '''
+    spec = None
+    deployment_spec = self.get_deployment(deployment_name)
+    spec = deployment_spec['spec']['template']['spec']
+    if not spec:
+      raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
+    return spec
+
   def cleanup(self):
     if os.environ.get('DEBUG'):
       return

@@ -125,16 +125,6 @@ class CommandRunner:
       print_output=True
     )
 
-  def _extract_pod_spec(self, deployment_name):
-    ''' get pod spec from specified deployment, from proper hokusai yaml '''
-    pod_spec = None
-    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
-    deployment_spec = YamlSpec(yaml_template, render_template=True).get_deployment(deployment_name)
-    pod_spec = deployment_spec['spec']['template']['spec']
-    if not pod_spec:
-      raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
-    return pod_spec
-
   def _clean_pod_spec(self, pod_spec):
     ''' return subset of fields in pod spec that are appropriate for kubectl run '''
     cleaned_spec = {}
@@ -178,7 +168,9 @@ class CommandRunner:
     ''' run command '''
     # assume we want to use <project>-web deployment as template
     template_deployment = config.project_name + '-web'
-    run_template = self._extract_pod_spec(template_deployment)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
+    run_template = YamlSpec(yaml_template, render_template=True).extract_pod_spec(template_deployment)
+
     self._debug(run_template, suffix='command_runner.run.run_template')
 
     # ensure pod_spec contains only fields appropriate for run
