@@ -8,9 +8,17 @@ from tempfile import NamedTemporaryFile
 
 from hokusai import CWD
 from hokusai.lib.common import (
-  k8s_uuid, returncode, shout, user, validate_key_value
+  k8s_uuid,
+  returncode,
+  shout,
+  user,
+  validate_key_value
 )
-from hokusai.lib.config import config, HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR
+from hokusai.lib.config import (
+  config,
+  HOKUSAI_CONFIG_DIR,
+  HOKUSAI_TMP_DIR
+)
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.ecr import ECR
@@ -29,7 +37,12 @@ class CommandRunner:
   def _debug(self, overrides, suffix=None):
     ''' dump overrides into a file for debug '''
     if os.environ.get('DEBUG'):
-      with NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w', suffix=suffix) as temp_file:
+      with NamedTemporaryFile(
+        delete=False,
+        dir=HOKUSAI_TMP_DIR,
+        mode='w',
+        suffix=suffix
+      ) as temp_file:
         pretty_json = json.dumps(overrides, indent=2)
         temp_file.write(pretty_json)
 
@@ -64,7 +77,9 @@ class CommandRunner:
       'source /secrets/secrets ' + '&& ' + cmd
     ]
     overrides['spec']['containers'][0]['name'] = self.container_name
-    overrides['spec']['containers'][0]['image'] = self._image_name(tag_or_digest)
+    overrides['spec']['containers'][0]['image'] = self._image_name(
+      tag_or_digest
+    )
     constraint = constraint or config.run_constraints
     if constraint:
       overrides['spec']['nodeSelector'] = {}
@@ -129,9 +144,15 @@ class CommandRunner:
     ''' run command '''
     # assume we want to use <project>-web deployment as template
     template_deployment = config.project_name + '-web'
-    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
-    run_template = YamlSpec(yaml_template, render_template=True).extract_pod_spec(template_deployment)
-    self._debug(run_template, suffix='command_runner.run.run_template')
+    yaml_template = TemplateSelector().get(
+      os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context)
+    )
+    run_template = YamlSpec(
+      yaml_template, render_template=True
+    ).extract_pod_spec(template_deployment)
+    self._debug(
+      run_template, suffix='command_runner.run.run_template'
+    )
 
     # ensure pod_spec contains only fields appropriate for run
     fields_to_keep = [
@@ -142,8 +163,13 @@ class CommandRunner:
       'serviceAccountName',
       'volumes'
     ]
-    cleaned_pod_spec = {k: run_template[k] for k in fields_to_keep if k in run_template}
-    self._debug(cleaned_pod_spec, suffix='command_runner.run.cleaned_pod_spec')
+    cleaned_pod_spec = {
+      k: run_template[k] for k in fields_to_keep
+      if k in run_template
+    }
+    self._debug(
+      cleaned_pod_spec, suffix='command_runner.run.cleaned_pod_spec'
+    )
 
     # ensure containers spec contains only fields appropriate for run
     fields_to_keep = [
@@ -156,7 +182,12 @@ class CommandRunner:
     ]
     cleaned_containers_spec = []
     for container_spec in cleaned_pod_spec['containers']:
-      cleaned_containers_spec += [{k: container_spec[k] for k in fields_to_keep if k in container_spec}]
+      cleaned_containers_spec += [
+        {
+          k: container_spec[k] for k in fields_to_keep
+          if k in container_spec
+        }
+      ]
     cleaned_pod_spec['containers'] = cleaned_containers_spec
 
     run_tty = tty if tty is not None else config.run_tty

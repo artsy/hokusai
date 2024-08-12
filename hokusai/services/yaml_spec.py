@@ -36,10 +36,15 @@ class YamlSpec:
   def extract_pod_spec(self, deployment_name):
     ''' extract pod spec from spec of specified deployment '''
     spec = None
-    deployment_spec = self.get_resource_spec('Deployment', deployment_name)
+    deployment_spec = self.get_resource_spec(
+      'Deployment',
+      deployment_name
+    )
     spec = deployment_spec['spec']['template']['spec']
     if not spec:
-      raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
+      raise HokusaiError(
+        f'Failed to find pod spec in {deployment_name} deployment spec'
+      )
     return spec
 
   def get_resource_spec(self, kind, name):
@@ -62,7 +67,9 @@ class YamlSpec:
     file_basename = os.path.basename(self.template_file)
     if file_basename.endswith('.j2'):
       file_basename = file_basename.rstrip('.j2')
-    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
+    f = NamedTemporaryFile(
+      delete=False, dir=HOKUSAI_TMP_DIR, mode='w'
+    )
     self.tmp_filename = f.name
     f.write(self.to_string())
     f.close()
@@ -80,7 +87,9 @@ class YamlSpec:
       try:
         template_config["project_repo"] = self.ecr.project_repo
       except NoCredentialsError:
-        print_yellow("WARNING: Could not get template variable project_repo")
+        print_yellow(
+          "WARNING: Could not get template variable project_repo"
+        )
 
       if config.template_config_files:
         for template_config_file in config.template_config_files:
@@ -88,9 +97,13 @@ class YamlSpec:
             config_loader = ConfigLoader(template_config_file)
             template_config.update(config_loader.load())
           except NoCredentialsError:
-            print_yellow("WARNING: Could not get template config file %s" % template_config_file)
+            print_yellow(
+              "WARNING: Could not get template config file %s" % template_config_file
+            )
 
-      return TemplateRenderer(self.template_file, template_config).render()
+      return TemplateRenderer(
+        self.template_file, template_config
+      ).render()
     else:
       with open(self.template_file, 'r') as f:
         content = f.read().strip()
