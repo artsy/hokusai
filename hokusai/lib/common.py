@@ -246,3 +246,12 @@ def verbose(msg, mask=()):
     else:
       print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
   return msg
+
+def filter_dict(dict1, keys_to_keep):
+  ''' return dict containing only keys listed in keys_to_keep '''
+  filtered = {}
+  for key in keys_to_keep:
+    if key in dict1:
+      value = dict1[key]
+      filtered.update({key: value})
+  return filtered

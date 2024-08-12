@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 
 from hokusai import CWD
 from hokusai.lib.common import (
-  k8s_uuid, returncode, shout, user, validate_key_value
+  k8s_uuid, returncode, shout, user, validate_key_value, filter_dict
 )
 from hokusai.lib.config import config, HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR
 from hokusai.lib.exceptions import HokusaiError
@@ -125,45 +125,6 @@ class CommandRunner:
       print_output=True
     )
 
-  def _clean_pod_spec(self, pod_spec):
-    ''' return subset of fields in pod spec that are appropriate for kubectl run '''
-    cleaned_spec = {}
-    fields_to_keep = [
-      'initContainers',
-      'containers',
-      'dnsPolicy',
-      'dnsConfig',
-      'serviceAccountName',
-      'volumes'
-    ]
-    for field in fields_to_keep:
-      if field in pod_spec:
-        field_spec = pod_spec[field]
-        if field == 'containers':
-          field_spec = self._clean_containers_spec(field_spec)
-        cleaned_spec.update({field: field_spec})
-    return cleaned_spec
-
-  def _clean_containers_spec(self, containers_spec):
-    ''' return subset of fields in pod containers spec that are appropriate for kubectl run '''
-    cleaned_spec = []
-    fields_to_keep = [
-      'name',
-      'envFrom',
-      'args',
-      'image',
-      'imagePullPolicy',
-      'volumeMounts'
-    ]
-    for container_spec in containers_spec:
-      cleaned_container_spec = {}
-      for field in fields_to_keep:
-        if field in container_spec:
-          field_spec = container_spec[field]
-          cleaned_container_spec.update({field: field_spec})
-      cleaned_spec = cleaned_spec + [cleaned_container_spec]
-    return cleaned_spec
-
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     ''' run command '''
     # assume we want to use <project>-web deployment as template
@@ -174,8 +135,30 @@ class CommandRunner:
     self._debug(run_template, suffix='command_runner.run.run_template')
 
     # ensure pod_spec contains only fields appropriate for run
-    cleaned_pod_spec = self._clean_pod_spec(run_template)
+    fields_to_keep = [
+      'initContainers',
+      'containers',
+      'dnsPolicy',
+      'dnsConfig',
+      'serviceAccountName',
+      'volumes'
+    ]
+    cleaned_pod_spec = filter_dict(run_template, fields_to_keep)
     self._debug(cleaned_pod_spec, suffix='command_runner.run.cleaned_pod_spec')
+
+    # ensure containers spec contains only fields appropriate for run
+    fields_to_keep = [
+      'name',
+      'envFrom',
+      'args',
+      'image',
+      'imagePullPolicy',
+      'volumeMounts'
+    ]
+    cleaned_containers_spec = []
+    for container_spec in cleaned_pod_spec['containers']:
+      cleaned_containers_spec += [filter_dict(container_spec, fields_to_keep)]
+    cleaned_pod_spec['containers'] = cleaned_containers_spec
 
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
