@@ -25,6 +25,52 @@ class YamlSpec:
     self.render_template = render_template
     atexit.register(self.cleanup)
 
+  def cleanup(self):
+    if os.environ.get('DEBUG'):
+      return
+    try:
+      os.unlink(self.tmp_filename)
+    except:
+      pass
+
+  def extract_pod_spec(self, deployment_name):
+    ''' extract pod spec from spec of specified deployment '''
+    spec = None
+    deployment_spec = self.get_resource_spec('Deployment', deployment_name)
+    spec = deployment_spec['spec']['template']['spec']
+    if not spec:
+      raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
+    return spec
+
+  def get_resource_spec(self, kind, name):
+    ''' return spec of specified resource identified by kind and name '''
+    spec = None
+    yaml_spec = self.to_list()
+    for item in yaml_spec:
+      if (
+        item['kind'] == kind and
+        item['metadata']['name'] == name
+      ):
+        spec = item
+    if not spec:
+      raise HokusaiError(
+        f'Failed to find {name} {kind} resource in {self.template_file}'
+      )
+    return spec
+
+  def to_file(self):
+    file_basename = os.path.basename(self.template_file)
+    if file_basename.endswith('.j2'):
+      file_basename = file_basename.rstrip('.j2')
+    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
+    self.tmp_filename = f.name
+    f.write(self.to_string())
+    f.close()
+    return f.name
+
+  def to_list(self):
+    return list(yaml.safe_load_all(self.to_string()))
+
   def to_string(self):
     if self.render_template:
       template_config = {
@@ -49,44 +95,3 @@ class YamlSpec:
       with open(self.template_file, 'r') as f:
         content = f.read().strip()
       return content
-
-  def to_file(self):
-    file_basename = os.path.basename(self.template_file)
-    if file_basename.endswith('.j2'):
-      file_basename = file_basename.rstrip('.j2')
-    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
-    self.tmp_filename = f.name
-    f.write(self.to_string())
-    f.close()
-    return f.name
-
-  def to_list(self):
-    return list(yaml.safe_load_all(self.to_string()))
-
-  def get_deployment_spec(self, deployment_name):
-    ''' return spec of specified deployment '''
-    spec = None
-    yaml_spec = self.to_list()
-    for item in yaml_spec:
-      if item['kind'] == 'Deployment' and item['metadata']['name'] == deployment_name:
-        spec = item
-    if not spec:
-      raise HokusaiError(f'Failed to find {deployment_name} deployment in {self.template_file}')
-    return spec
-
-  def extract_pod_spec(self, deployment_name):
-    ''' extract pod spec from spec of specified deployment '''
-    spec = None
-    deployment_spec = self.get_deployment_spec(deployment_name)
-    spec = deployment_spec['spec']['template']['spec']
-    if not spec:
-      raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')
-    return spec
-
-  def cleanup(self):
-    if os.environ.get('DEBUG'):
-      return
-    try:
-      os.unlink(self.tmp_filename)
-    except:
-      pass
