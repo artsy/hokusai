@@ -4,10 +4,9 @@ import os
 import pipes
 import re
 
-from tempfile import NamedTemporaryFile
-
 from hokusai import CWD
 from hokusai.lib.common import (
+  file_debug,
   k8s_uuid,
   returncode,
   shout,
@@ -16,8 +15,7 @@ from hokusai.lib.common import (
 )
 from hokusai.lib.config import (
   config,
-  HOKUSAI_CONFIG_DIR,
-  HOKUSAI_TMP_DIR
+  HOKUSAI_CONFIG_DIR
 )
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
@@ -33,18 +31,6 @@ class CommandRunner:
     self.ecr = ECR()
     self.pod_name = self._name()
     self.container_name = self.pod_name
-
-  def _debug(self, overrides, suffix=None):
-    ''' dump overrides into a file for debug '''
-    if os.environ.get('DEBUG'):
-      with NamedTemporaryFile(
-        delete=False,
-        dir=HOKUSAI_TMP_DIR,
-        mode='w',
-        suffix=suffix
-      ) as temp_file:
-        pretty_json = json.dumps(overrides, indent=2)
-        temp_file.write(pretty_json)
 
   def _name(self):
     ''' generate name for pod and container '''
@@ -110,7 +96,10 @@ class CommandRunner:
         '--rm'
       ]
     )
-    self._debug(overrides, suffix='command_runner.run_no_tty')
+    file_debug(
+      overrides,
+      file_suffix='command_runner.run_no_tty.overrides'
+    )
     return returncode(
       self.kctl.command(args)
     )
@@ -134,65 +123,83 @@ class CommandRunner:
         '--rm'
       ]
     )
-    self._debug(overrides, suffix='command_runner.run_tty')
+    file_debug(
+      overrides,
+      file_suffix='command_runner.run_tty.overrides'
+    )
     shout(
       self.kctl.command(args),
       print_output=True
     )
 
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
-    ''' run command '''
-    # assume we want to use <project>-web deployment as template
-    template_deployment = config.project_name + '-web'
+    '''
+    spawn a pod to run the specified command,
+    create an override spec for kubectl run,
+    base the override on:
+    - pod spec of a model deployment spec in the appropriate hokusai yaml
+    - this function's params
+    '''
+    # assume we want to use <project>-web deployment as model
+    model_deployment = config.project_name + '-web'
     yaml_template = TemplateSelector().get(
       os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context)
     )
-    run_template = YamlSpec(
-      yaml_template, render_template=True
-    ).extract_pod_spec(template_deployment)
-    self._debug(
-      run_template, suffix='command_runner.run.run_template'
+    pod_spec = YamlSpec(
+      yaml_template,
+      render_template=True
+    ).extract_pod_spec(model_deployment)
+    file_debug(
+      pod_spec,
+      file_suffix='command_runner.run.pod_spec'
     )
 
     # ensure pod_spec contains only fields appropriate for run
-    fields_to_keep = [
-      'initContainers',
+    pod_fields_to_keep = [
       'containers',
-      'dnsPolicy',
       'dnsConfig',
+      'dnsPolicy',
+      'initContainers',
       'serviceAccountName',
       'volumes'
     ]
-    cleaned_pod_spec = {
-      k: run_template[k] for k in fields_to_keep
-      if k in run_template
+    clean_pod_spec = {
+      field: pod_spec[field] for field in pod_fields_to_keep
+      if field in pod_spec
     }
-    self._debug(
-      cleaned_pod_spec, suffix='command_runner.run.cleaned_pod_spec'
+    file_debug(
+      clean_pod_spec,
+      file_suffix='command_runner.run.clean_pod_spec'
     )
 
-    # ensure containers spec contains only fields appropriate for run
-    fields_to_keep = [
-      'name',
-      'envFrom',
+    # ensure each container spec
+    # contains only fields appropriate for run
+    container_fields_to_keep = [
       'args',
+      'envFrom',
       'image',
       'imagePullPolicy',
+      'name',
       'volumeMounts'
     ]
-    cleaned_containers_spec = []
-    for container_spec in cleaned_pod_spec['containers']:
-      cleaned_containers_spec += [
+    clean_containers_spec = []
+    for container_spec in clean_pod_spec['containers']:
+      clean_containers_spec += [
         {
-          k: container_spec[k] for k in fields_to_keep
-          if k in container_spec
+          field: container_spec[field]
+          for field in container_fields_to_keep
+          if field in container_spec
         }
       ]
-    cleaned_pod_spec['containers'] = cleaned_containers_spec
+    clean_pod_spec['containers'] = clean_containers_spec
 
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
-      cmd, constraint, env, tag_or_digest, cleaned_pod_spec
+      cmd,
+      constraint,
+      env,
+      tag_or_digest,
+      clean_pod_spec
     )
     image_name = self._image_name(tag_or_digest)
     if run_tty:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import platform
 import random
@@ -15,10 +16,14 @@ from pathlib import Path
 from subprocess import (
   call, check_call, check_output, Popen, STDOUT
 )
+from tempfile import NamedTemporaryFile
 from termcolor import cprint
 from urllib.parse import urlparse
 
-from hokusai.lib.config import config
+from hokusai.lib.config import (
+  config,
+  HOKUSAI_TMP_DIR
+)
 from hokusai.lib.exceptions import (
   CalledProcessError, HokusaiError
 )
@@ -45,6 +50,18 @@ def ansi_escape(raw_string):
 
 def clean_string(str):
   return str.lower().replace('_', '-')
+
+def file_debug(dict1, file_suffix=None):
+  ''' write dict to a file for debug '''
+  if os.environ.get('DEBUG'):
+    with NamedTemporaryFile(
+      delete=False,
+      dir=HOKUSAI_TMP_DIR,
+      mode='w',
+      suffix=file_suffix
+    ) as temp_file:
+      pretty_json = json.dumps(dict1, indent=2)
+      temp_file.write(pretty_json)
 
 def get_platform():
   ''' get the platform (e.g. darwin, linux) of the machine '''

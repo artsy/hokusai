@@ -48,7 +48,7 @@ class YamlSpec:
     return spec
 
   def get_resource_spec(self, kind, name):
-    ''' return spec of specified resource identified by kind and name '''
+    ''' return spec of resource of the specified kind and name '''
     spec = None
     yaml_spec = self.to_list()
     for item in yaml_spec:
