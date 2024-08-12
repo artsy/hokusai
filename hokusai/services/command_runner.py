@@ -125,22 +125,11 @@ class CommandRunner:
       print_output=True
     )
 
-  def _get_deployment_spec(self, deployment_name):
-    ''' return spec of specified deployment, from proper hokusai yaml '''
-    deployment_spec = None
-    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
-    yaml_spec = YamlSpec(yaml_template, render_template=True).to_list()
-    for item in yaml_spec:
-      if item['kind'] == 'Deployment' and item['metadata']['name'] == deployment_name:
-        deployment_spec = item
-    if not deployment_spec:
-      raise HokusaiError(f'Failed to find {deployment_name} deployment in {yaml_template}')
-    return deployment_spec
-
   def _extract_pod_spec(self, deployment_name):
     ''' get pod spec from specified deployment, from proper hokusai yaml '''
     pod_spec = None
-    deployment_spec = self._get_deployment_spec(deployment_name)
+    yaml_template = TemplateSelector().get(os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context))
+    deployment_spec = YamlSpec(yaml_template, render_template=True).get_deployment(deployment_name)
     pod_spec = deployment_spec['spec']['template']['spec']
     if not pod_spec:
       raise HokusaiError(f'Failed to find pod spec in {deployment_name} deployment spec')

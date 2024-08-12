@@ -63,6 +63,17 @@ class YamlSpec:
   def to_list(self):
     return list(yaml.safe_load_all(self.to_string()))
 
+  def get_deployment(self, deployment_name):
+    ''' return spec of specified deployment '''
+    spec = None
+    yaml_spec = self.to_list()
+    for item in yaml_spec:
+      if item['kind'] == 'Deployment' and item['metadata']['name'] == deployment_name:
+        spec = item
+    if not spec:
+      raise HokusaiError(f'Failed to find {deployment_name} deployment in {self.template_file}')
+    return spec
+
   def cleanup(self):
     if os.environ.get('DEBUG'):
       return
