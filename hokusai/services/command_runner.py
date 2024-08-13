@@ -31,6 +31,9 @@ class CommandRunner:
     self.ecr = ECR()
     self.pod_name = self._name()
     self.container_name = self.pod_name
+    self.yaml_template = TemplateSelector().get(
+      os.path.join(CWD, HOKUSAI_CONFIG_DIR, context)
+    )
 
   def _name(self):
     ''' generate name for pod and container '''
@@ -132,29 +135,8 @@ class CommandRunner:
       print_output=True
     )
 
-  def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
-    '''
-    spawn a pod to run the specified command,
-    create an override spec for kubectl run,
-    base the override on:
-    - pod spec of a model deployment spec in the appropriate hokusai yaml
-    - this function's params
-    '''
-    # assume we want to use <project>-web deployment as model
-    model_deployment = config.project_name + '-web'
-    yaml_template = TemplateSelector().get(
-      os.path.join(CWD, HOKUSAI_CONFIG_DIR, self.context)
-    )
-    pod_spec = YamlSpec(
-      yaml_template,
-      render_template=True
-    ).extract_pod_spec(model_deployment)
-    file_debug(
-      pod_spec,
-      file_suffix='command_runner.run.pod_spec'
-    )
-
-    # ensure pod_spec contains only fields appropriate for run
+  def _clean_pod_spec(self, spec):
+    ''' return pod spec that at every level contains only fields to be kept '''
     pod_fields_to_keep = [
       'containers',
       'dnsConfig',
@@ -163,17 +145,16 @@ class CommandRunner:
       'serviceAccountName',
       'volumes'
     ]
-    clean_pod_spec = {
-      field: pod_spec[field] for field in pod_fields_to_keep
-      if field in pod_spec
-    }
+    clean_spec = self._clean_resource_spec(spec, pod_fields_to_keep)
     file_debug(
-      clean_pod_spec,
-      file_suffix='command_runner.run.clean_pod_spec'
+      clean_spec,
+      file_suffix='command_runner._clean_pod_spec.clean_spec'
     )
+    clean_spec['containers'] = self._clean_containers_spec(clean_spec['containers'])
+    return clean_spec
 
-    # ensure each container spec
-    # contains only fields appropriate for run
+  def _clean_containers_spec(self, spec):
+    ''' return containers spec whose every container spec contains only fields to be kept '''
     container_fields_to_keep = [
       'args',
       'envFrom',
@@ -182,17 +163,40 @@ class CommandRunner:
       'name',
       'volumeMounts'
     ]
-    clean_containers_spec = []
-    for container_spec in clean_pod_spec['containers']:
-      clean_containers_spec += [
-        {
-          field: container_spec[field]
-          for field in container_fields_to_keep
-          if field in container_spec
-        }
-      ]
-    clean_pod_spec['containers'] = clean_containers_spec
+    clean_spec = []
+    for container_spec in spec:
+      clean_spec += [self._clean_resource_spec(container_spec, container_fields_to_keep)]
+    return clean_spec
 
+  def _clean_resource_spec(self, spec, fields_to_keep):
+    ''' return container spec containing only fields to be kept '''
+    clean_spec = {
+      field: spec[field]
+      for field in fields_to_keep
+      if field in spec
+    }
+    return clean_spec
+
+  def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
+    '''
+    spawn a pod to run the specified command,
+    create an override spec to be given to kubectl run,
+    base the override on:
+    - pod spec of a model deployment spec in the appropriate hokusai yaml
+    - this function's params
+    '''
+    # assume we want to use <project>-web deployment as model
+    model_deployment = config.project_name + '-web'
+    pod_spec = YamlSpec(
+      self.yaml_template,
+      render_template=True
+    ).extract_pod_spec(model_deployment)
+    file_debug(
+      pod_spec,
+      file_suffix='command_runner.run.pod_spec'
+    )
+    # clean specs so they are appropriate for kubectl run
+    clean_pod_spec = self._clean_pod_spec(pod_spec)
     run_tty = tty if tty is not None else config.run_tty
     overrides = self._overrides(
       cmd,
