@@ -10,20 +10,47 @@ from hokusai.services.command_runner import CommandRunner
 from hokusai.services.ecr import ECR
 from test.unit.test_services.fixtures.ecr import mock_ecr_class
 from test.unit.test_services.fixtures.command_runner import (
+  mock_ecr_class,
   mock_spec,
   mock_tty_spec
 )
 
+HOKUSAI_TEMPLATE_FILE = 'test/fixtures/project/hokusai/hokusai_spec.yml'
+
 def describe_command_runner():
   def describe_init():
-    def it_inits(mocker, monkeypatch):
-      monkeypatch.setenv('USER', 'foouser')
-      mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
-      runner = CommandRunner('staging')
-      assert runner.context == 'staging'
-      assert type(runner.ecr) == ECR
-      assert runner.pod_name == 'hello-hokusai-run-foouser-abcde'
-      assert runner.container_name == 'hello-hokusai-run-foouser-abcde'
+    def describe_when_run_template_specified():
+      def it_inits(mocker, monkeypatch, mock_ecr_class):
+        mocker.patch('hokusai.services.command_runner.Kubectl')
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+        monkeypatch.setenv('USER', 'foouser')
+        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+        mocker.patch(
+          'hokusai.services.command_runner.TemplateSelector.get',
+          return_value = HOKUSAI_TEMPLATE_FILE
+        )
+        runner = CommandRunner('staging')
+        assert runner.context == 'staging'
+        assert type(runner.ecr) == mock_ecr_class
+        assert runner.pod_name == 'hello-hokusai-run-foouser-abcde'
+        assert runner.container_name == 'hello-hokusai-run-foouser-abcde'
+        assert runner.yaml_template == HOKUSAI_TEMPLATE_FILE
+        assert runner.model_deployment == 'hello-web'
+        assert runner.secrets_file == '/path/to/secrets/file'
+    def describe_when_run_template_not_specified():
+      def it_raises(mocker, monkeypatch, mock_ecr_class):
+        mocker.patch('hokusai.services.command_runner.Kubectl')
+        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
+        monkeypatch.setenv('USER', 'foouser')
+        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
+        mocker.patch(
+          'hokusai.services.command_runner.TemplateSelector.get',
+          return_value = HOKUSAI_TEMPLATE_FILE
+        )
+        mock_config_object = mocker.patch('hokusai.services.command_runner.config')
+        mock_config_object.run_template = None
+        with pytest.raises(HokusaiError):
+          runner = CommandRunner('staging')
 
   def describe_name():
     def describe_user_set_in_env():

@@ -55,3 +55,10 @@ def mock_tty_spec():
       'nodeSelector': {'fooconstraint': 'bar'}
     }
   }
+
+@pytest.fixture
+def mock_ecr_class():
+  class mock_ECR:
+    def __init__(self):
+      pass
+  return mock_ECR
