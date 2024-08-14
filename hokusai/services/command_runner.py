@@ -39,6 +39,7 @@ class CommandRunner:
         'run-template config must be specified in Hokusai config file'
       )
     self.model_deployment = config.run_template
+    self.secrets_file = config.secrets_file
 
   def _name(self):
     ''' generate name for pod and container '''
@@ -60,16 +61,20 @@ class CommandRunner:
     image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
     return image_name
 
+  def _finalize_cmd(self, cmd):
+    if self.secrets_file:
+      return [
+        'sh',
+        '-c',
+        f'source {self.secrets_file} ' + '&& ' + cmd
+      ]
+    else:
+      return cmd.split(' ')
+
   def _overrides(self, cmd, constraint, env, tag_or_digest, pod_spec):
     ''' generate overrides '''
     overrides = { 'apiVersion': 'v1', 'spec': pod_spec}
-    # assume 1) there's a secrets file, 2) the path to it
-    secrets_file = '/secrets/secrets'
-    overrides['spec']['containers'][0]['args'] = [
-      'sh',
-      '-c',
-      'source /secrets/secrets ' + '&& ' + cmd
-    ]
+    overrides['spec']['containers'][0]['args'] = self._finalize_cmd(cmd)
     overrides['spec']['containers'][0]['name'] = self.container_name
     overrides['spec']['containers'][0]['image'] = self._image_name(
       tag_or_digest

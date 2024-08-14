@@ -161,4 +161,8 @@ class HokusaiConfig:
   def run_template(self):
     return self.get('run-template')
 
+  @property
+  def secrets_file(self):
+    return self.get('secrets-file')
+
 config = HokusaiConfig()
