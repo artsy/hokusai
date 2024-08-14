@@ -34,6 +34,11 @@ class CommandRunner:
     self.yaml_template = TemplateSelector().get(
       os.path.join(CWD, HOKUSAI_CONFIG_DIR, context)
     )
+    if not config.run_template:
+      raise HokusaiError(
+        'run-template config must be specified in Hokusai config file'
+      )
+    self.model_deployment = config.run_template
 
   def _name(self):
     ''' generate name for pod and container '''
@@ -185,12 +190,10 @@ class CommandRunner:
     - pod spec of a model deployment spec in the appropriate hokusai yaml
     - this function's params
     '''
-    # assume we want to use <project>-web deployment as model
-    model_deployment = config.project_name + '-web'
     pod_spec = YamlSpec(
       self.yaml_template,
       render_template=True
-    ).extract_pod_spec(model_deployment)
+    ).extract_pod_spec(self.model_deployment)
     file_debug(
       pod_spec,
       file_suffix='command_runner.run.pod_spec'

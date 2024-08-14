@@ -157,4 +157,8 @@ class HokusaiConfig:
   def always_verbose(self):
     return self.get('always-verbose', default=False, use_env=True, _type=bool)
 
+  @property
+  def run_template(self):
+    return self.get('run-template')
+
 config = HokusaiConfig()
