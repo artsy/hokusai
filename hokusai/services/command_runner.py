@@ -41,8 +41,73 @@ class CommandRunner:
     self.model_deployment = config.run_template
     self.secrets_file = config.secrets_file
 
+  def _clean_containers_spec(self, spec):
+    '''
+    given a pod's 'containers' spec, return that spec,
+    but ensure that each container spec has only the desired fields.
+    '''
+    container_fields_to_keep = [
+      'args',
+      'envFrom',
+      'image',
+      'imagePullPolicy',
+      'name',
+      'volumeMounts'
+    ]
+    clean_spec = []
+    for container_spec in spec:
+      clean_spec += [
+        self._clean_resource_spec(container_spec, container_fields_to_keep)
+      ]
+    return clean_spec
+
+  def _clean_pod_spec(self, spec):
+    '''
+    given a pod spec, return that spec,
+    but ensure that it has only the desired fields.
+    '''
+    pod_fields_to_keep = [
+      'containers',
+      'dnsConfig',
+      'dnsPolicy',
+      'initContainers',
+      'serviceAccountName',
+      'volumes'
+    ]
+    clean_spec = self._clean_resource_spec(
+      spec, pod_fields_to_keep
+    )
+    file_debug(
+      clean_spec,
+      file_suffix='command_runner._clean_pod_spec.clean_spec'
+    )
+    clean_spec['containers'] = self._clean_containers_spec(
+      clean_spec['containers']
+    )
+    return clean_spec
+
+  def _clean_resource_spec(self, spec, fields_to_keep):
+    ''' return spec ensuring that it contains only desired fields '''
+    clean_spec = {
+      field: spec[field]
+      for field in fields_to_keep
+      if field in spec
+    }
+    return clean_spec
+
+  def _finalize_cmd(self, cmd):
+    ''' return the cmd that is to be run by kubectl '''
+    if self.secrets_file:
+      return [
+        'sh',
+        '-c',
+        f'source {self.secrets_file} ' + '&& ' + cmd
+      ]
+    else:
+      return cmd.split(' ')
+
   def _name(self):
-    ''' generate name for pod and container '''
+    ''' fabricate a name for the pod and container '''
     name = '-'.join(
       filter(
         None,
@@ -56,23 +121,13 @@ class CommandRunner:
     return name
 
   def _image_name(self, tag_or_digest):
-    ''' generate docker image name '''
+    ''' compose name for the docker image field in pod spec '''
     separator = '@' if ':' in tag_or_digest else ':'
     image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
     return image_name
 
-  def _finalize_cmd(self, cmd):
-    if self.secrets_file:
-      return [
-        'sh',
-        '-c',
-        f'source {self.secrets_file} ' + '&& ' + cmd
-      ]
-    else:
-      return cmd.split(' ')
-
   def _overrides(self, cmd, constraint, env, tag_or_digest, pod_spec):
-    ''' generate overrides '''
+    ''' create overrides spec for kubectl '''
     overrides = { 'apiVersion': 'v1', 'spec': pod_spec}
     overrides['spec']['containers'][0]['args'] = self._finalize_cmd(cmd)
     overrides['spec']['containers'][0]['name'] = self.container_name
@@ -145,55 +200,13 @@ class CommandRunner:
       print_output=True
     )
 
-  def _clean_pod_spec(self, spec):
-    ''' return pod spec that at every level contains only fields to be kept '''
-    pod_fields_to_keep = [
-      'containers',
-      'dnsConfig',
-      'dnsPolicy',
-      'initContainers',
-      'serviceAccountName',
-      'volumes'
-    ]
-    clean_spec = self._clean_resource_spec(spec, pod_fields_to_keep)
-    file_debug(
-      clean_spec,
-      file_suffix='command_runner._clean_pod_spec.clean_spec'
-    )
-    clean_spec['containers'] = self._clean_containers_spec(clean_spec['containers'])
-    return clean_spec
-
-  def _clean_containers_spec(self, spec):
-    ''' return containers spec whose every container spec contains only fields to be kept '''
-    container_fields_to_keep = [
-      'args',
-      'envFrom',
-      'image',
-      'imagePullPolicy',
-      'name',
-      'volumeMounts'
-    ]
-    clean_spec = []
-    for container_spec in spec:
-      clean_spec += [self._clean_resource_spec(container_spec, container_fields_to_keep)]
-    return clean_spec
-
-  def _clean_resource_spec(self, spec, fields_to_keep):
-    ''' return container spec containing only fields to be kept '''
-    clean_spec = {
-      field: spec[field]
-      for field in fields_to_keep
-      if field in spec
-    }
-    return clean_spec
-
   def run(self, tag_or_digest, cmd, tty=None, env=(), constraint=()):
     '''
     spawn a pod to run the specified command,
-    create an override spec to be given to kubectl run,
+    create an overrides spec to be given to kubectl run,
     base the override on:
     - pod spec of a model deployment spec in the appropriate hokusai yaml
-    - this function's params
+    - the args to this function
     '''
     pod_spec = YamlSpec(
       self.yaml_template,
