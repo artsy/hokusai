@@ -16,6 +16,7 @@ from hokusai.lib.exceptions import HokusaiError
 
 from hokusai.services.ecr import ECR
 
+import pdb
 
 class YamlSpec:
   def __init__(self, template_file, render_template=True):
@@ -35,17 +36,15 @@ class YamlSpec:
 
   def extract_pod_spec(self, deployment_name):
     ''' extract pod spec from spec of specified deployment '''
-    spec = None
     deployment_spec = self.get_resource_spec(
       'Deployment',
       deployment_name
     )
-    spec = deployment_spec['spec']['template']['spec']
-    if not spec:
+    if not deployment_spec['spec']['template']['spec']:
       raise HokusaiError(
-        f'Failed to find pod spec in {deployment_name} deployment spec'
+        f'Pod spec in {deployment_name} deployment is empty.'
       )
-    return spec
+    return deployment_spec['spec']['template']['spec']
 
   def get_resource_spec(self, kind, name=None):
     '''
@@ -54,17 +53,21 @@ class YamlSpec:
     if name is not specified,
     return the spec of the first resource matching kind
     '''
-    spec = None
+    right_kinds_spec = self.get_resources_by_kind(kind)
+    for item in right_kinds_spec:
+      if not name or item['metadata']['name'] == name:
+        return item
+    raise HokusaiError(
+      f'Failed to find {name} {kind} resource in {self.template_file}'
+    )
+
+  def get_resources_by_kind(self, kind):
+    ''' return specs of all resources found in Hokusai yaml matching kind '''
+    spec = []
     yaml_spec = self.to_list()
     for item in yaml_spec:
-      if item['kind'] == kind and not name:
-        spec = item
-      elif item['kind'] == kind and item['metadata']['name'] == name:
-        spec = item
-    if not spec:
-      raise HokusaiError(
-        f'Failed to find {name} {kind} resource in {self.template_file}'
-      )
+      if item['kind'] == kind:
+        spec += [item]
     return spec
 
   def to_file(self):
