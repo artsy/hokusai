@@ -8,6 +8,7 @@ from hokusai import CWD
 from hokusai.lib.common import (
   file_debug,
   k8s_uuid,
+  key_value_list_to_dict,
   returncode,
   shout,
   user,
@@ -137,17 +138,14 @@ class CommandRunner:
     constraint = constraint or config.run_constraints
     if constraint:
       overrides['spec']['nodeSelector'] = {}
-      for label in constraint:
-        validate_key_value(label)
-        split = label.split('=', 1)
-        overrides['spec']['nodeSelector'][split[0]] = split[1]
+      overrides['spec']['nodeSelector'].update(
+        key_value_list_to_dict(constraint)
+      )
     if env:
       overrides['spec']['containers'][0]['env'] = []
-      for var in env:
-        validate_key_value(var)
-        split = var.split('=', 1)
+      for name, value in key_value_list_to_dict(env).items():
         overrides['spec']['containers'][0]['env'].append(
-          {'name': split[0], 'value': split[1]}
+          {'name': name, 'value': value}
         )
     return overrides
 

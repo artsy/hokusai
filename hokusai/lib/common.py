@@ -87,6 +87,28 @@ def k8s_uuid():
     uuid.append(random.choice(string.ascii_lowercase))
   return ''.join(uuid)
 
+def key_value_list_to_dict(key_value_list):
+  '''
+  given:
+  [
+    'key1=value1',
+    'key2=value2',
+    ...
+  ]
+
+  return:
+  {
+    'key1': 'value1',
+    'key2': 'value2',
+    ...
+  }
+  '''
+  return {
+    key_value.split('=', 1)[0]: key_value.split('=', 1)[1]
+    for key_value in key_value_list
+    if validate_key_value(key_value)
+  }
+
 def local_to_local(
   source_path,
   target_dir,
@@ -250,11 +272,12 @@ def utc_yyyymmdd():
   return datetime.utcnow().strftime("%Y%m%d")
 
 def validate_key_value(key_value):
-  ''' raise if key_value is NOT of the form KEY=VALUE '''
+  ''' return true if key_value is in the form KEY=VALUE, else raise '''
   if '=' not in key_value:
     raise HokusaiError(
       "Error: key/value pair must be of the form 'KEY=VALUE'"
     )
+  return True
 
 def verbose(msg, mask=()):
   if VERBOSE:
