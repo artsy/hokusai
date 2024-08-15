@@ -48,6 +48,14 @@ def ansi_escape(raw_string):
   escape_regex = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
   return escape_regex.sub('', raw_string)
 
+def clean_dict(d1, fields_to_keep):
+  ''' return dict ensuring that it contains only desired fields '''
+  return {
+    field: d1[field]
+    for field in fields_to_keep
+    if field in d1
+  }
+
 def clean_string(str):
   return str.lower().replace('_', '-')
 

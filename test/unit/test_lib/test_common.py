@@ -11,6 +11,7 @@ import test.unit.test_lib.fixtures.common
 
 from hokusai.lib.common import (
   ansi_escape,
+  clean_dict,
   file_debug,
   get_platform,
   key_value_list_to_dict,
@@ -32,6 +33,22 @@ def describe_ansi_escape():
   def it_removes_color():
     green_foo = '\x1b[32mfoo\x1b[0m'
     assert ansi_escape(green_foo) == 'foo'
+
+def describe_clean_dict():
+  def it_cleans():
+    d1 = {
+      'foo': 'bar',
+      'bar': 'foo',
+    }
+    fields_to_keep = [
+      'foo',
+      'bing'
+    ]
+    assert clean_dict(d1, fields_to_keep) == {
+      'foo': 'bar'
+    }
+    d2 = {}
+    assert clean_dict(d2, fields_to_keep) == {}
 
 def describe_file_debug():
   def describe_when_debug_on():

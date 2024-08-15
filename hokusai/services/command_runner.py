@@ -6,6 +6,7 @@ import re
 
 from hokusai import CWD
 from hokusai.lib.common import (
+  clean_dict,
   file_debug,
   k8s_uuid,
   key_value_list_to_dict,
@@ -54,7 +55,7 @@ class CommandRunner:
     clean_spec = []
     for container_spec in spec:
       clean_spec += [
-        self._clean_resource_spec(container_spec, container_fields_to_keep)
+        clean_dict(container_spec, container_fields_to_keep)
       ]
     return clean_spec
 
@@ -71,7 +72,7 @@ class CommandRunner:
       'serviceAccountName',
       'volumes'
     ]
-    clean_spec = self._clean_resource_spec(
+    clean_spec = clean_dict(
       spec, pod_fields_to_keep
     )
     file_debug(
@@ -81,15 +82,6 @@ class CommandRunner:
     clean_spec['containers'] = self._clean_containers_spec(
       clean_spec['containers']
     )
-    return clean_spec
-
-  def _clean_resource_spec(self, spec, fields_to_keep):
-    ''' return spec ensuring that it contains only desired fields '''
-    clean_spec = {
-      field: spec[field]
-      for field in fields_to_keep
-      if field in spec
-    }
     return clean_spec
 
   def _finalize_cmd(self, cmd):
@@ -102,6 +94,12 @@ class CommandRunner:
       ]
     else:
       return cmd.split(' ')
+
+  def _image_name(self, tag_or_digest):
+    ''' compose name for the docker image field in pod spec '''
+    separator = '@' if ':' in tag_or_digest else ':'
+    image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
+    return image_name
 
   def _name(self):
     ''' fabricate a name for the pod and container '''
@@ -116,12 +114,6 @@ class CommandRunner:
       )
     )
     return name
-
-  def _image_name(self, tag_or_digest):
-    ''' compose name for the docker image field in pod spec '''
-    separator = '@' if ':' in tag_or_digest else ':'
-    image_name = f'{self.ecr.project_repo}{separator}{tag_or_digest}'
-    return image_name
 
   def _overrides(self, cmd, constraint, env, tag_or_digest, pod_spec):
     ''' create overrides spec for kubectl '''

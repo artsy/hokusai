@@ -72,7 +72,6 @@ def mock_clean_pod_spec():
         'name': 'hello-hokusai-run-foouser-abcde',
         'image': 'foo:footag',
         'imagePullPolicy': 'Always',
-        'env': [{'name': 'foo', 'value': 'bar'}],
         'envFrom':
           [
             {
@@ -83,8 +82,7 @@ def mock_clean_pod_spec():
             }
           ]
       }
-    ],
-    'nodeSelector': {'fooconstraint': 'bar'}
+    ]
   }
 
 @pytest.fixture
@@ -116,3 +114,23 @@ def mock_pod_spec():
     ],
     'nodeSelector': {'fooconstraint': 'bar'}
   }
+
+@pytest.fixture
+def mock_clean_containers_spec():
+  return [
+    {
+      'args': ['foocmd'],
+      'name': 'hello-hokusai-run-foouser-abcde',
+      'image': 'foo:footag',
+      'imagePullPolicy': 'Always',
+      'envFrom':
+        [
+          {
+            'configMapRef': {'name': 'hello-environment'}
+          },
+          {
+            'secretRef': {'name': 'hello', 'optional': True}
+          }
+        ]
+    }
+  ]
