@@ -35,10 +35,6 @@ class CommandRunner:
     self.yaml_template = TemplateSelector().get(
       os.path.join(CWD, HOKUSAI_CONFIG_DIR, context)
     )
-    if not config.run_template:
-      raise HokusaiError(
-        'run-template config must be specified in Hokusai config file'
-      )
     self.model_deployment = config.run_template
     self.secrets_file = config.secrets_file
 

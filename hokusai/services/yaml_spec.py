@@ -47,15 +47,19 @@ class YamlSpec:
       )
     return spec
 
-  def get_resource_spec(self, kind, name):
-    ''' return spec of resource of the specified kind and name '''
+  def get_resource_spec(self, kind, name=None):
+    '''
+    given 'kind' and 'metadata/name' of a Kubernetes resource,
+    return its spec found in Hokusai yaml,
+    if name is not specified,
+    return the spec of the first resource matching kind
+    '''
     spec = None
     yaml_spec = self.to_list()
     for item in yaml_spec:
-      if (
-        item['kind'] == kind and
-        item['metadata']['name'] == name
-      ):
+      if item['kind'] == kind and not name:
+        spec = item
+      elif item['kind'] == kind and item['metadata']['name'] == name:
         spec = item
     if not spec:
       raise HokusaiError(

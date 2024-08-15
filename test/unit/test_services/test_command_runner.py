@@ -37,20 +37,6 @@ def describe_command_runner():
         assert runner.yaml_template == HOKUSAI_TEMPLATE_FILE
         assert runner.model_deployment == 'hello-web'
         assert runner.secrets_file == '/path/to/secrets/file'
-    def describe_when_run_template_not_specified():
-      def it_raises(mocker, monkeypatch, mock_ecr_class):
-        mocker.patch('hokusai.services.command_runner.Kubectl')
-        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
-        monkeypatch.setenv('USER', 'foouser')
-        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
-        mocker.patch(
-          'hokusai.services.command_runner.TemplateSelector.get',
-          return_value = HOKUSAI_TEMPLATE_FILE
-        )
-        mock_config_object = mocker.patch('hokusai.services.command_runner.config')
-        mock_config_object.run_template = None
-        with pytest.raises(HokusaiError):
-          runner = CommandRunner('staging')
 
   def describe_name():
     def describe_user_set_in_env():
