@@ -5,3 +5,5 @@ post-deploy: sh -c report.sh
 git-remote: git@github.com:artsy/hokusai.git
 template-config-files:
   - ./test/fixtures/template_config.yml
+run-template: hello-web
+secrets-file: /path/to/secrets/file

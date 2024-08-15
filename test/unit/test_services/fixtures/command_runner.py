@@ -1,13 +1,13 @@
 import pytest
 
 @pytest.fixture
-def mock_spec():
+def mock_overrides_spec():
   return {
     'apiVersion': 'v1',
     'spec': {
       'containers': [
         {
-          'args': ['foocmd'],
+          'args': ['sh', '-c', 'source /path/to/secrets/file && foocmd'],
           'name': 'hello-hokusai-run-foouser-abcde',
           'image': 'foo:footag',
           'imagePullPolicy': 'Always',
@@ -62,3 +62,57 @@ def mock_ecr_class():
     def __init__(self):
       pass
   return mock_ECR
+
+@pytest.fixture
+def mock_clean_pod_spec():
+  return {
+    'containers': [
+      {
+        'args': ['foocmd'],
+        'name': 'hello-hokusai-run-foouser-abcde',
+        'image': 'foo:footag',
+        'imagePullPolicy': 'Always',
+        'env': [{'name': 'foo', 'value': 'bar'}],
+        'envFrom':
+          [
+            {
+              'configMapRef': {'name': 'hello-environment'}
+            },
+            {
+              'secretRef': {'name': 'hello', 'optional': True}
+            }
+          ]
+      }
+    ],
+    'nodeSelector': {'fooconstraint': 'bar'}
+  }
+
+@pytest.fixture
+def mock_pod_spec():
+  return {
+    'containers': [
+      {
+        'args': ['foocmd'],
+        'name': 'hello-hokusai-run-foouser-abcde',
+        'image': 'foo:footag',
+        'imagePullPolicy': 'Always',
+        'ports': [
+          {
+            'name': 'foo-http',
+            'containerPort': '8080'
+          }
+        ],
+        'env': [{'name': 'foo', 'value': 'bar'}],
+        'envFrom':
+          [
+            {
+              'configMapRef': {'name': 'hello-environment'}
+            },
+            {
+              'secretRef': {'name': 'hello', 'optional': True}
+            }
+          ]
+      }
+    ],
+    'nodeSelector': {'fooconstraint': 'bar'}
+  }
