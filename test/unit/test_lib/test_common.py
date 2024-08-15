@@ -1,21 +1,66 @@
+import json
 import os
 import pytest
 
 from datetime import datetime
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import hokusai.lib.common
 import test.unit.test_lib.fixtures.common
 
-from hokusai.lib.common import ansi_escape, get_platform, user, local_to_local, uri_to_local, utc_yyyymmdd, validate_key_value
+from hokusai.lib.common import (
+  ansi_escape,
+  file_debug,
+  get_platform,
+  key_value_list_to_dict,
+  local_to_local,
+  uri_to_local,
+  user,
+  utc_yyyymmdd,
+  validate_key_value
+)
 from hokusai.lib.exceptions import HokusaiError
-from test.unit.test_lib.fixtures.common import download_for_spy, mock_s3_interface_class, mock_local_to_local_raise
+from test.unit.test_lib.fixtures.common import (
+  download_for_spy,
+  mock_local_to_local_raise,
+  mock_s3_interface_class
+)
 
 
 def describe_ansi_escape():
   def it_removes_color():
     green_foo = '\x1b[32mfoo\x1b[0m'
     assert ansi_escape(green_foo) == 'foo'
+
+def describe_file_debug():
+  def describe_when_debug_on():
+    def it_writes_file(mocker, monkeypatch, tmp_path):
+      d1 = {
+        'foo': 'bar',
+        'bar': 'foo'
+      }
+      tmp_file_obj = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
+      mocker.patch('hokusai.lib.common.NamedTemporaryFile', return_value=tmp_file_obj)
+      monkeypatch.setenv('DEBUG', '1')
+      file_debug(d1)
+      with open(tmp_file_obj.name, 'r') as f:
+        content = f.read().strip()
+      assert json.loads(content) == d1
+  def describe_when_debug_off():
+    def it_does_not_write_file(mocker, monkeypatch, tmp_path):
+      d1 = {
+        'foo': 'bar',
+        'bar': 'foo'
+      }
+      tmp_file_obj = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
+      mocker.patch('hokusai.lib.common.NamedTemporaryFile', return_value=tmp_file_obj)
+      monkeypatch.setenv('DEBUG', '')
+      file_debug(d1)
+      with open(tmp_file_obj.name, 'r') as f:
+        content = f.read().strip()
+      with pytest.raises(json.decoder.JSONDecodeError):
+        json.loads(content)
 
 def describe_get_platform():
   def it_returns_platform(mocker):
@@ -24,6 +69,17 @@ def describe_get_platform():
   def it_returns_lower_case(mocker):
     mocker.patch('hokusai.lib.common.platform.system', return_value='FooPlatform')
     assert get_platform() == 'fooplatform'
+
+def describe_key_value_list_to_dict():
+  def it_transforms():
+    kv_list = [
+      'key1=value1',
+      'key2=value2',
+    ]
+    assert key_value_list_to_dict(kv_list) == {
+      'key1': 'value1',
+      'key2': 'value2'
+    }
 
 def describe_local_to_local():
   def describe_source_exists():
@@ -176,9 +232,10 @@ def describe_utc_yyyymmdd():
 
 def describe_validate_key_value():
   def describe_form_good():
-    def it_does_not_error():
-      validate_key_value('foo=bar')
+    def it_returns_true():
+      assert validate_key_value('foo=bar') == True
+      assert validate_key_value('foo=bar=bing') == True
   def describe_form_bad():
-    def it_errors():
+    def it_raises():
       with pytest.raises(HokusaiError):
         validate_key_value('foobar')
