@@ -163,12 +163,12 @@ def print_smart(msg, newline_before=False, newline_after=False):
 def print_yellow(msg, newline_before=False, newline_after=False):
   cprint(smart_str(msg, newline_before, newline_after), 'yellow')
 
+def returncode(command, mask=()):
+  return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+
 def set_verbosity(v):
   global VERBOSE
   VERBOSE = v or config.always_verbose
-
-def returncode(command, mask=()):
-  return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def shout(command, print_output=False, mask=()):
   try:

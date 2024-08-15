@@ -103,6 +103,38 @@ class HokusaiConfig:
 
 
   @property
+  def always_verbose(self):
+    return self.get('always-verbose', default=False, use_env=True, _type=bool)
+
+  @property
+  def follow_logs(self):
+    return self.get('follow-logs', default=False, use_env=True, _type=bool)
+
+  @property
+  def git_remote(self):
+    return self.get('git-remote')
+
+  @property
+  def hokusai_required_version(self):
+    return self.get('hokusai-required-version')
+
+  @property
+  def post_build(self):
+    return self.get('post-build')
+
+  @property
+  def post_deploy(self):
+    return self.get('post-deploy')
+
+  @property
+  def pre_build(self):
+    return self.get('pre-build')
+
+  @property
+  def pre_deploy(self):
+    return self.get('pre-deploy')
+
+  @property
   def project_name(self):
     project = self.get('project-name')
     if project is None:
@@ -110,59 +142,27 @@ class HokusaiConfig:
     return project
 
   @property
-  def hokusai_required_version(self):
-    return self.get('hokusai-required-version')
-
-  @property
-  def pre_deploy(self):
-    return self.get('pre-deploy')
-
-  @property
-  def post_deploy(self):
-    return self.get('post-deploy')
-
-  @property
-  def git_remote(self):
-    return self.get('git-remote')
-
-  @property
-  def pre_build(self):
-    return self.get('pre-build')
-
-  @property
-  def post_build(self):
-    return self.get('post-build')
-
-  @property
-  def template_config_files(self):
-    return self.get('template-config-files', _type=list)
-
-  @property
-  def run_tty(self):
-    return self.get('run-tty', default=False, use_env=True, _type=bool)
-
-  @property
   def run_constraints(self):
     return self.get('run-constraints', default=[], use_env=True, _type=list)
-
-  @property
-  def follow_logs(self):
-    return self.get('follow-logs', default=False, use_env=True, _type=bool)
-
-  @property
-  def tail_logs(self):
-    return self.get('tail-logs', use_env=True, _type=int)
-
-  @property
-  def always_verbose(self):
-    return self.get('always-verbose', default=False, use_env=True, _type=bool)
 
   @property
   def run_template(self):
     return self.get('run-template')
 
   @property
+  def run_tty(self):
+    return self.get('run-tty', default=False, use_env=True, _type=bool)
+
+  @property
   def secrets_file(self):
     return self.get('secrets-file')
+
+  @property
+  def tail_logs(self):
+    return self.get('tail-logs', use_env=True, _type=int)
+
+  @property
+  def template_config_files(self):
+    return self.get('template-config-files', _type=list)
 
 config = HokusaiConfig()
