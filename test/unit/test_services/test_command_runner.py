@@ -132,7 +132,7 @@ def describe_command_runner():
       )
       runner = CommandRunner('staging')
       spec = runner._overrides(
-        'foocmd',
+        'foocmd fooarg',
         ('fooconstraint=bar',),
         ('foo=bar',),
         'footag',

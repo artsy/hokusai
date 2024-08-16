@@ -7,7 +7,7 @@ def mock_overrides_spec():
     'spec': {
       'containers': [
         {
-          'args': ['foocmd'],
+          'args': ['foocmd', 'fooarg'],
           'name': 'hello-hokusai-run-foouser-abcde',
           'image': 'foo:footag',
           'imagePullPolicy': 'Always',
