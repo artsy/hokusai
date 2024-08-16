@@ -154,10 +154,6 @@ class HokusaiConfig:
     return self.get('run-tty', default=False, use_env=True, _type=bool)
 
   @property
-  def secrets_file(self):
-    return self.get('secrets-file')
-
-  @property
   def tail_logs(self):
     return self.get('tail-logs', use_env=True, _type=int)
 

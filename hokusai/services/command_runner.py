@@ -37,7 +37,6 @@ class CommandRunner:
       os.path.join(CWD, HOKUSAI_CONFIG_DIR, context)
     )
     self.model_deployment = config.run_template
-    self.secrets_file = config.secrets_file
 
   def _clean_containers_spec(self, spec):
     '''
@@ -84,17 +83,6 @@ class CommandRunner:
     )
     return clean_spec
 
-  def _finalize_cmd(self, cmd):
-    ''' return the cmd that is to be run by kubectl '''
-    if self.secrets_file:
-      return [
-        'sh',
-        '-c',
-        f'source {self.secrets_file} ' + '&& ' + cmd
-      ]
-    else:
-      return cmd.split(' ')
-
   def _image_name(self, tag_or_digest):
     ''' compose name for the docker image field in pod spec '''
     separator = '@' if ':' in tag_or_digest else ':'
@@ -118,7 +106,7 @@ class CommandRunner:
   def _overrides(self, cmd, constraint, env, tag_or_digest, pod_spec):
     ''' create overrides spec for kubectl '''
     overrides = { 'apiVersion': 'v1', 'spec': pod_spec}
-    overrides['spec']['containers'][0]['args'] = self._finalize_cmd(cmd)
+    overrides['spec']['containers'][0]['args'] = cmd.split(' ')
     overrides['spec']['containers'][0]['name'] = self.container_name
     overrides['spec']['containers'][0]['image'] = self._image_name(
       tag_or_digest

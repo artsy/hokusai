@@ -37,7 +37,6 @@ def describe_command_runner():
         assert runner.container_name == 'hello-hokusai-run-foouser-abcde'
         assert runner.yaml_template == HOKUSAI_TEMPLATE_FILE
         assert runner.model_deployment == 'hello-web'
-        assert runner.secrets_file == '/path/to/secrets/file'
 
   def describe_clean_containers_spec():
     def it_cleans(mocker, monkeypatch, mock_ecr_class, mock_pod_spec, mock_clean_containers_spec):
@@ -66,40 +65,6 @@ def describe_command_runner():
       )
       runner = CommandRunner('staging')
       assert runner._clean_pod_spec(mock_pod_spec) == mock_clean_pod_spec
-
-  def describe_finalize_cmd():
-    def describe_no_secrets_file():
-      def it_returns_only_user_specified_cmd(mocker, monkeypatch, mock_ecr_class):
-        mocker.patch('hokusai.services.command_runner.Kubectl')
-        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
-        monkeypatch.setenv('USER', 'foouser')
-        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
-        mocker.patch(
-          'hokusai.services.command_runner.TemplateSelector.get',
-          return_value = HOKUSAI_TEMPLATE_FILE
-        )
-        runner = CommandRunner('staging')
-        runner.secrets_file = None
-        assert runner._finalize_cmd('foo command') == [
-          'foo',
-          'command'
-        ]
-    def describe_there_is_secrets_file():
-      def it_prepends_to_user_specified_cmd(mocker, monkeypatch, mock_ecr_class):
-        mocker.patch('hokusai.services.command_runner.Kubectl')
-        mocker.patch('hokusai.services.command_runner.ECR').side_effect = mock_ecr_class
-        monkeypatch.setenv('USER', 'foouser')
-        mocker.patch('hokusai.services.command_runner.k8s_uuid', return_value = 'abcde')
-        mocker.patch(
-          'hokusai.services.command_runner.TemplateSelector.get',
-          return_value = HOKUSAI_TEMPLATE_FILE
-        )
-        runner = CommandRunner('staging')
-        assert runner._finalize_cmd('foo command') == [
-          'sh',
-          '-c',
-          'source /path/to/secrets/file && foo command'
-        ]
 
   def describe_name():
     def describe_user_set_in_env():

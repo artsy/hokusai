@@ -7,7 +7,7 @@ def mock_overrides_spec():
     'spec': {
       'containers': [
         {
-          'args': ['sh', '-c', 'source /path/to/secrets/file && foocmd'],
+          'args': ['foocmd'],
           'name': 'hello-hokusai-run-foouser-abcde',
           'image': 'foo:footag',
           'imagePullPolicy': 'Always',
