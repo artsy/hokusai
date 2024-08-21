@@ -111,10 +111,14 @@ def key_value_list_to_dict(key_value_list):
     ...
   }
   '''
-  return {
-    key_value.split('=', 1)[0]: key_value.split('=', 1)[1]
+  splitted_key_value_list = (
+    key_value.split('=', 1)
     for key_value in key_value_list
     if validate_key_value(key_value)
+  )
+  return {
+    key: value
+    for key, value in splitted_key_value_list
   }
 
 def local_to_local(

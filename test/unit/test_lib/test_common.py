@@ -88,13 +88,15 @@ def describe_get_platform():
     assert get_platform() == 'fooplatform'
 
 def describe_key_value_list_to_dict():
-  def it_transforms():
+  def it_transforms(mocker):
+    mocker.patch('hokusai.lib.common.validate_key_value').side_effect = [True, True, False]
     kv_list = [
-      'key1=value1',
+      'key1=value1=value1b',
       'key2=value2',
+      'key3:value3'
     ]
     assert key_value_list_to_dict(kv_list) == {
-      'key1': 'value1',
+      'key1': 'value1=value1b',
       'key2': 'value2'
     }
 
