@@ -56,19 +56,20 @@ Please see [hokusai configure command](./Command_Reference.md#configuring-hokusa
 
 Per-project config file. The following configs are supported:
 
-- `hokusai-required-version`: <string> (optional) - A [PEP-440 version specifier string](https://www.python.org/dev/peps/pep-0440/#version-specifiers).  Hokusai will raise an error when running commands if its current version does not satisfy these version specifications.  For example: `~=0.5`, `==0.5.1`, `>=0.4.0,<0.4.6`, `!=0.1.*` are all valid version specifier strings
-- `project-name`: <string> (required) - The project name
-- `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hokusai [staging|production] deploy` or the `hokusai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like `git@github.com:artsy/hokusai.git`.  Bound to the `--git-remote` option for these commands.
-- `template-config-files`: <list> (optional) - Load template config files from the desired URIs, either `s3://` or a local file path.  See [Kubernetes YAML Template Processing](#kubernetes-yaml-template-processing) for further details.
-- `pre-build`: <string> (optional) - A pre-build hook - useful to inject dynamic environment variables into the build, for example: `export COMMIT_HASH=$(git rev-parse HEAD)`
-- `post-build`: <string> (optional) - A post-build hook - useful for image post-processing
-- `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
-- `post-deploy`: <string> (optional) - A post-deploy hook - useful for deploy notifications
-- `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production|review_app] run`.  Bound to the `--tty` option for this command, and falls back to by the `HOKUSAI_RUN_TTY` env var.
-    - `follow-logs`: <boolean> (optional) - Follow log output when invoking `hokusai [staging|production|review_app] logs`.  Bound to the `--follow` option for this command, and falls back to the `HOKUSAI_FOLLOW_LOGS` env var.
-    - `tail-logs`: <integer> (optional) - Tail N lines of log output when invoking `hokusai [staging|production|review_app] logs`.  Bound to the `--tail` option for this command, and falls back to the `HOKUSAI_TAIL_LOGS` env var.
-- `run-constraints`: <list of kubernetes label selector strings> - Constrain run containers to Kubernetes nodes matching the label selectors in the form `key=value` by setting the `nodeSelector` field on the container's spec. Bound to the `--constrint` option for `hokusai [staging|production|review_app] run` as well as containers run via the `--migration` flag as well as `pre-deploy` / `post-deploy` hooks triggered by `hokusai [staging|production|review_app] deploy` or `hokusai pipeline promote`.  Falls back to the `HOKUSAI_RUN_CONSTRAINTS` env var, in which case a list is parsed from a comma-delimited string.
 - `always-verbose`: <boolean> (optional) - Always print verbose output.  Bound to the `--verbose` option for various commands, and falls back to the `HOKUSAI_ALWAYS_VERBOSE` env var.
+- `follow-logs`: <boolean> (optional) - Follow log output when invoking `hokusai [staging|production|review_app] logs`.  Bound to the `--follow` option for this command, and falls back to the `HOKUSAI_FOLLOW_LOGS` env var.
+- `git-remote`: <string> (optional) - Push deployment tags to git remote when invoking the `hokusai [staging|production] deploy` or the `hokusai pipeline promote` commands.  Can either be a local alias like 'origin' or a URI like `git@github.com:artsy/hokusai.git`.  Bound to the `--git-remote` option for these commands.
+- `hokusai-required-version`: <string> (optional) - A [PEP-440 version specifier string](https://www.python.org/dev/peps/pep-0440/#version-specifiers).  Hokusai will raise an error when running commands if its current version does not satisfy these version specifications.  For example: `~=0.5`, `==0.5.1`, `>=0.4.0,<0.4.6`, `!=0.1.*` are all valid version specifier strings
+- `post-build`: <string> (optional) - A post-build hook - useful for image post-processing
+- `post-deploy`: <string> (optional) - A post-deploy hook - useful for deploy notifications
+- `pre-build`: <string> (optional) - A pre-build hook - useful to inject dynamic environment variables into the build, for example: `export COMMIT_HASH=$(git rev-parse HEAD)`
+- `pre-deploy`: <string> (optional) - A pre-deploy hook - useful to enforce migrations
+- `project-name`: <string> (required) - The project name
+- `run-constraints`: <list of kubernetes label selector strings> - Constrain run containers to Kubernetes nodes matching the label selectors in the form `key=value` by setting the `nodeSelector` field on the container's spec. Bound to the `--constrint` option for `hokusai [staging|production|review_app] run` as well as containers run via the `--migration` flag as well as `pre-deploy` / `post-deploy` hooks triggered by `hokusai [staging|production|review_app] deploy` or `hokusai pipeline promote`.  Falls back to the `HOKUSAI_RUN_CONSTRAINTS` env var, in which case a list is parsed from a comma-delimited string.
+- `run-template`: <string> (optional) - `hokusai [staging|production|review_app] run` creates a pod to run the user-specified command. This config specifies name of the Deployment in `hokusai/staging.yml` or `hokusai/production.yml` to model the run-pod's spec after. If not specified, Hokusai uses the first Deployment found in those files.
+- `run-tty`: <boolean> (optional) - Attach the terminal to your shell session when invoking `hokusai [staging|production|review_app] run`.  Bound to the `--tty` option for this command, and falls back to by the `HOKUSAI_RUN_TTY` env var.
+- `tail-logs`: <integer> (optional) - Tail N lines of log output when invoking `hokusai [staging|production|review_app] logs`.  Bound to the `--tail` option for this command, and falls back to the `HOKUSAI_TAIL_LOGS` env var.
+- `template-config-files`: <list> (optional) - Load template config files from the desired URIs, either `s3://` or a local file path.  See [Kubernetes YAML Template Processing](#kubernetes-yaml-template-processing) for further details.
 
 Some of these configs have corresponding environment variables and/or Hokusai command line options. When a config is specified in multiple ways, the following order of precedence applies:
 
@@ -77,7 +78,7 @@ Some of these configs have corresponding environment variables and/or Hokusai co
 - Value in environment variable
 - Default value of command line option
 
-Here's a sample of the config file:
+Here's a sample config file:
 
 ```
 ---
