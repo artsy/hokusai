@@ -1,3 +1,11 @@
+## v2.3.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v2.3.0/README.md)
+
+### Notable changes since v2.2.0
+
+* df4a45a let "hokusai staging/production/review_app run" commands derive overrides from deployment spec (#419)
+
 ## v2.2.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v2.2.0/README.md)
