@@ -185,19 +185,12 @@ jobs:
       - run:
           name: release beta homebrew
           command: |
+            export ARTIFACT=hokusai-beta-Darwin-arm64.tar.gz
+
             cd /tmp
+            wget "https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT"
 
-            wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-arm64.tar.gz
-
-            export UNAME=$(uname)
-            if [ $UNAME == "Darwin" ]; then
-              export SHA256=$(shasum -a 256 hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
-
-            if [ $UNAME == "Linux" ]; then
-              export SHA256=$(sha256sum hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
-
+            export SHA256=$(sha256sum $ARTIFACT | awk '{ print $1 }')
             echo "SHA 256 sum is $SHA256"
 
             ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -208,7 +201,7 @@ jobs:
             class HokusaiBeta < Formula
               desc 'Hokusai is a Docker + Kubernetes CLI for application developers'
               homepage 'https://github.com/artsy/hokusai'
-              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-arm64.tar.gz'
+              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT'
               sha256 '$SHA256'
               version 'beta'
 
@@ -225,7 +218,7 @@ jobs:
             git push origin main
 
             cd /tmp
-            rm -f hokusai-beta-Darwin-x86_64.tar.gz
+            rm -f "$ARTIFACT"
             rm -rf ./homebrew-formulas
 
   release_s3_linux:
@@ -300,20 +293,12 @@ jobs:
           name: release homebrew
           command: |
             export VERSION=$(hokusai version | sed 's/\x1B\[[0-9;]\+[A-Za-z]//g')
+            export ARTIFACT="hokusai-$VERSION-Darwin-arm64.tar.gz"
 
             cd /tmp
+            wget "https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT"
 
-            wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-Darwin-arm64.tar.gz
-
-            export UNAME=$(uname)
-            if [ $UNAME == "Darwin" ]; then
-              export SHA256=$(shasum -a 256 hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
-
-            if [ $UNAME == "Linux" ]; then
-              export SHA256=$(sha256sum hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
-
+            export SHA256=$(sha256sum $ARTIFACT | awk '{ print $1 }')
             echo "SHA 256 sum is $SHA256"
 
             ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -330,7 +315,7 @@ jobs:
             class Hokusai < Formula
               desc 'Hokusai is a Docker + Kubernetes CLI for application developers'
               homepage 'https://github.com/artsy/hokusai'
-              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-Darwin-arm64.tar.gz'
+              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT'
               sha256 '$SHA256'
               version '$VERSION'
 
@@ -347,7 +332,7 @@ jobs:
             git push origin main
 
             cd /tmp
-            rm -f hokusai-$VERSION-Darwin-x86_64.tar.gz
+            rm -f "$ARTIFACT"
             rm -rf ./homebrew-formulas
 
 only_main: &only_main
