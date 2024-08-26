@@ -40,6 +40,7 @@ pyinstaller-build-onefile: # for linux
 # for mac (because build-onefile's binary runs too slow on mac)
 pyinstaller-build-onedir:
 	pyinstaller \
+	  --target-architecture=x86_64 \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
 	  hokusai_onedir.spec
@@ -65,7 +66,7 @@ publish-to-s3-canonical:
 	    dist/ s3://artsy-provisioning-public/hokusai/; \
 	else \
 	  echo "Version $(ARTIFACT_LABEL) already published"; \
-	  exit 1; \
+	  exit 0; \
 	fi
 
 build-docker-image:

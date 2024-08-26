@@ -14,29 +14,17 @@ jobs:
   test_macos:
     macos:
       xcode: "15.3.0"
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: install openssl, pyenv
+          name: build hokusai
           command: |
-            brew install openssl pyenv
-            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-      - run:
-          name: install python
-          command: |
-            pyenv install 3.10
-            pyenv local 3.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make hokusai
-      - run: pyenv rehash
+            ./scripts/ci_macos_build_hokusai.sh
       - run: make test
       - run: coverage report
-      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
+      - run: make pyinstaller-build-onedir ARTIFACT_LABEL=test
+      - run: make publish-to-s3 ARTIFACT_LABEL=test
 
   test_integration:
     machine:
@@ -165,26 +153,13 @@ jobs:
   release_beta_s3_macos:
     macos:
       xcode: "15.3.0"
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: install openssl, pyenv
+          name: build hokusai
           command: |
-            brew install openssl pyenv
-            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-      - run:
-          name: install python
-          command: |
-            pyenv install 3.10
-            pyenv local 3.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make hokusai
-      - run: pyenv rehash
+            ./scripts/ci_macos_build_hokusai.sh
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=beta
       - run: make publish-to-s3 ARTIFACT_LABEL=beta
@@ -210,18 +185,13 @@ jobs:
       - run:
           name: release beta homebrew
           command: |
+            export ARTIFACT=hokusai-beta-Darwin-arm64.tar.gz
+
             cd /tmp
+            wget "https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT"
 
-            wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x86_64.tar.gz
-
-            export UNAME=$(uname)
-            if [ $UNAME == "Darwin" ]; then
-              export SHA256=$(shasum -a 256 hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
-
-            if [ $UNAME == "Linux" ]; then
-              export SHA256=$(sha256sum hokusai-beta-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
+            export SHA256=$(sha256sum $ARTIFACT | awk '{ print $1 }')
+            echo "SHA 256 sum is $SHA256"
 
             echo "SHA 256 sum is $SHA256"
 
@@ -233,7 +203,7 @@ jobs:
             class HokusaiBeta < Formula
               desc 'Hokusai is a Docker + Kubernetes CLI for application developers'
               homepage 'https://github.com/artsy/hokusai'
-              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-beta-Darwin-x86_64.tar.gz'
+              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT'
               sha256 '$SHA256'
               version 'beta'
 
@@ -250,7 +220,7 @@ jobs:
             git push origin main
 
             cd /tmp
-            rm -f hokusai-beta-Darwin-x86_64.tar.gz
+            rm -f "$ARTIFACT"
             rm -rf ./homebrew-formulas
 
   release_s3_linux:
@@ -270,26 +240,13 @@ jobs:
   release_s3_macos:
     macos:
       xcode: "15.3.0"
+      resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: install openssl, pyenv
+          name: build hokusai
           command: |
-            brew install openssl pyenv
-            echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-      - run:
-          name: install python
-          command: |
-            pyenv install 3.10
-            pyenv local 3.10
-            pip install --upgrade pip
-      - run:
-          name: install awscli
-          command: |
-            curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-            sudo installer -pkg AWSCLIV2.pkg -target /
-      - run: make hokusai
-      - run: pyenv rehash
+            ./scripts/ci_macos_build_hokusai.sh
       - run: scripts/update_version_file.sh
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=$(cat hokusai/VERSION)
       - run: make pyinstaller-build-onedir ARTIFACT_LABEL=latest
@@ -338,19 +295,13 @@ jobs:
           name: release homebrew
           command: |
             export VERSION=$(hokusai version | sed 's/\x1B\[[0-9;]\+[A-Za-z]//g')
+            export ARTIFACT="hokusai-$VERSION-Darwin-arm64.tar.gz"
 
             cd /tmp
+            wget "https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT"
 
-            wget https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-Darwin-x86_64.tar.gz
-
-            export UNAME=$(uname)
-            if [ $UNAME == "Darwin" ]; then
-              export SHA256=$(shasum -a 256 hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
-
-            if [ $UNAME == "Linux" ]; then
-              export SHA256=$(sha256sum hokusai-$VERSION-Darwin-x86_64.tar.gz | awk '{ print $1 }')
-            fi
+            export SHA256=$(sha256sum $ARTIFACT | awk '{ print $1 }')
+            echo "SHA 256 sum is $SHA256"
 
             echo "SHA 256 sum is $SHA256"
 
@@ -368,7 +319,7 @@ jobs:
             class Hokusai < Formula
               desc 'Hokusai is a Docker + Kubernetes CLI for application developers'
               homepage 'https://github.com/artsy/hokusai'
-              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/hokusai-$VERSION-Darwin-x86_64.tar.gz'
+              url 'https://artsy-provisioning-public.s3.amazonaws.com/hokusai/$ARTIFACT'
               sha256 '$SHA256'
               version '$VERSION'
 
@@ -385,7 +336,7 @@ jobs:
             git push origin main
 
             cd /tmp
-            rm -f hokusai-$VERSION-Darwin-x86_64.tar.gz
+            rm -f "$ARTIFACT"
             rm -rf ./homebrew-formulas
 
 only_main: &only_main
@@ -413,6 +364,8 @@ workflows:
             branches:
               ignore: release
       - test_macos:
+          context:
+          - hokusai
           filters:
             branches:
               ignore: release

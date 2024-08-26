@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import platform
 import random
@@ -15,10 +16,14 @@ from pathlib import Path
 from subprocess import (
   call, check_call, check_output, Popen, STDOUT
 )
+from tempfile import NamedTemporaryFile
 from termcolor import cprint
 from urllib.parse import urlparse
 
-from hokusai.lib.config import config
+from hokusai.lib.config import (
+  config,
+  HOKUSAI_TMP_DIR
+)
 from hokusai.lib.exceptions import (
   CalledProcessError, HokusaiError
 )
@@ -43,8 +48,28 @@ def ansi_escape(raw_string):
   escape_regex = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
   return escape_regex.sub('', raw_string)
 
+def clean_dict(d1, fields_to_keep):
+  ''' return dict ensuring that it contains only desired fields '''
+  return {
+    field: d1[field]
+    for field in fields_to_keep
+    if field in d1
+  }
+
 def clean_string(str):
   return str.lower().replace('_', '-')
+
+def file_debug(dict1, file_suffix=None):
+  ''' write dict to a file for debug '''
+  if os.environ.get('DEBUG'):
+    with NamedTemporaryFile(
+      delete=False,
+      dir=HOKUSAI_TMP_DIR,
+      mode='w',
+      suffix=file_suffix
+    ) as temp_file:
+      pretty_json = json.dumps(dict1, indent=2)
+      temp_file.write(pretty_json)
 
 def get_platform():
   ''' get the platform (e.g. darwin, linux) of the machine '''
@@ -69,6 +94,32 @@ def k8s_uuid():
   for i in range(0,5):
     uuid.append(random.choice(string.ascii_lowercase))
   return ''.join(uuid)
+
+def key_value_list_to_dict(key_value_list):
+  '''
+  given:
+  [
+    'key1=value1',
+    'key2=value2',
+    ...
+  ]
+
+  return:
+  {
+    'key1': 'value1',
+    'key2': 'value2',
+    ...
+  }
+  '''
+  splitted_key_value_list = (
+    key_value.split('=', 1)
+    for key_value in key_value_list
+    if validate_key_value(key_value)
+  )
+  return {
+    key: value
+    for key, value in splitted_key_value_list
+  }
 
 def local_to_local(
   source_path,
@@ -124,12 +175,12 @@ def print_smart(msg, newline_before=False, newline_after=False):
 def print_yellow(msg, newline_before=False, newline_after=False):
   cprint(smart_str(msg, newline_before, newline_after), 'yellow')
 
+def returncode(command, mask=()):
+  return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
+
 def set_verbosity(v):
   global VERBOSE
   VERBOSE = v or config.always_verbose
-
-def returncode(command, mask=()):
-  return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def shout(command, print_output=False, mask=()):
   try:
@@ -233,11 +284,12 @@ def utc_yyyymmdd():
   return datetime.utcnow().strftime("%Y%m%d")
 
 def validate_key_value(key_value):
-  ''' raise if key_value is NOT of the form KEY=VALUE '''
+  ''' return true if key_value is in the form KEY=VALUE, else raise '''
   if '=' not in key_value:
     raise HokusaiError(
       "Error: key/value pair must be of the form 'KEY=VALUE'"
     )
+  return True
 
 def verbose(msg, mask=()):
   if VERBOSE:
