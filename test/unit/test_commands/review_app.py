@@ -1,13 +1,13 @@
-import hokusai.commands.namespace
+import hokusai.commands.review_app
 
-from hokusai.commands.namespace import list_namespaces
+from hokusai.commands.review_app import list_namespaces
 
 from test.unit.test_commands.fixtures.kubectl import mock_kubectl_obj
 
 
 def describe_list_namespaces():
   def it_lists(mocker, mock_kubectl_obj, capfd):
-    mocker.patch('hokusai.commands.namespace.Kubectl', return_value=mock_kubectl_obj)
+    mocker.patch('hokusai.commands.review_app.Kubectl', return_value=mock_kubectl_obj)
     spy = mocker.spy(mock_kubectl_obj, 'get_objects')
     list_namespaces('staging', 'foo1=bar1')
     assert spy.call_count == 1
