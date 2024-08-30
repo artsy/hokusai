@@ -20,10 +20,10 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 @click.option('-sf', '--source-file', type=click.STRING, default='hokusai/staging.yml', help="The source yaml file from which to create the new resource file (default: hokusai/staging.yml)")
 def setup(app_name, verbose, source_file):
-  """Setup a new review-app - create a Yaml file based on APP_NAME and --source-file"""
+  """Setup a new Review App"""
   set_verbosity(verbose)
   command(
-    hokusai.create_new_app_yaml,
+    hokusai.setup_review_app,
     source_file,
     app_name
   )
@@ -51,11 +51,10 @@ def delete(app_name, verbose):
   """Deletes the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
   command(
-    hokusai.k8s_delete,
+    hokusai.delete_review_app,
     KUBE_CONTEXT,
-    namespace=clean_string(app_name),
+    app_name,
     filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    render_template=False
   )
 
 
