@@ -298,3 +298,10 @@ def verbose(msg, mask=()):
     else:
       print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
   return msg
+
+def write_temp_file(data, dir):
+  ''' write data to temp file '''
+  obj = NamedTemporaryFile(delete=False, dir=dir, mode='w')
+  obj.write(data)
+  obj.close()
+  return obj

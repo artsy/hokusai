@@ -1,14 +1,13 @@
 import os
 import sys
 
-from tempfile import NamedTemporaryFile
-
 import json
 
 from hokusai.lib.config import config, HOKUSAI_TMP_DIR
-from hokusai.lib.common import print_green, shout
-from hokusai.services.kubectl import Kubectl
+from hokusai.lib.common import print_green, shout write_temp_file
 from hokusai.lib.exceptions import HokusaiError
+from hokusai.services.kubectl import Kubectl
+
 
 class ConfigMap:
   def __init__(self, context, namespace='default', name=None):
@@ -28,14 +27,8 @@ class ConfigMap:
       'data': {}
     }
 
-  def _to_file(self):
-    f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
-    f.write(json.dumps(self.struct))
-    f.close()
-    return f
-
   def create(self):
-    f = self._to_file()
+    f = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
     try:
       shout(self.kctl.command("create -f %s" % f.name))
     finally:
@@ -53,7 +46,7 @@ class ConfigMap:
       self.struct['data'] = {}
 
   def save(self):
-    f = self._to_file()
+    f = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
     try:
       shout(self.kctl.command("apply -f %s" % f.name))
     finally:

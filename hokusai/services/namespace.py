@@ -2,9 +2,7 @@ import os
 
 import json
 
-from tempfile import NamedTemporaryFile
-
-from hokusai.lib.common import shout
+from hokusai.lib.common import shout, write_temp_file
 from hokusai.lib.config import HOKUSAI_TMP_DIR
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.kubectl import Kubectl
@@ -25,13 +23,6 @@ class Namespace:
       raise HokusaiError(f'Cannot delete "default" namespace.')
     shout(self.kctl.command(f'delete namespace {self.name}'))
 
-  def _to_file(self):
-    ''' return object of temp file containing struct '''
-    temp_file_obj = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
-    temp_file_obj.write(json.dumps(self.struct))
-    temp_file_obj.close()
-    return temp_file_obj
-
   def create(self):
     ''' create namespace '''
     if self.name == 'default':
@@ -45,7 +36,7 @@ class Namespace:
       'kind': 'Namespace',
       'metadata': metadata
     }
-    file_obj = self._to_file()
+    file_obj = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
     try:
       shout(self.kctl.command(f'create -f {file_obj.name}'))
     finally:
