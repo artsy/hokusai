@@ -4,7 +4,7 @@ import sys
 import json
 
 from hokusai.lib.config import config, HOKUSAI_TMP_DIR
-from hokusai.lib.common import print_green, shout write_temp_file
+from hokusai.lib.common import print_green, shout, write_temp_file
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.services.kubectl import Kubectl
 
