@@ -41,16 +41,22 @@ def setup_review_app(source_file, app_name):
 
 def create_yaml(source_file, app_name):
   ''' create yaml for review app '''
+
+  # render source yaml file and write to new file
   yaml_spec = YamlSpec(source_file).to_file()
+
+  # load new file into struct
   with open(yaml_spec, 'r') as stream:
     try:
       yaml_content = list(yaml.load_all(stream, Loader=yaml.FullLoader))
     except yaml.YAMLError as exc:
       raise HokusaiError("Cannot read source yaml file %s." % source_file)
 
+  # change namespace of every k8s resource
   namespace = clean_string(app_name)
   for c in yaml_content: update_namespace(c, namespace)
 
+  # write struct to new file
   with open(os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name), 'w') as output:
     output.write(YAML_HEADER)
     yaml.safe_dump_all(yaml_content, output, default_flow_style=False)
@@ -67,7 +73,7 @@ def list_namespaces(context, labels=None):
 def update_namespace(yaml_section, destination_namespace):
   ''' edit namespace field for a Kubernetes resource definition '''
   if 'apiVersion' in yaml_section:
-    if 'metadata' in yaml_section:
-      yaml_section['metadata']['namespace'] = destination_namespace
-    else:
-      yaml_section['metadata'] = { 'namespace': destination_namespace }
+    struct = {
+      'namespace': destination_namespace
+    }
+    yaml_section['metadata'] = yaml_section.setdefault('metadata', struct) | struct
