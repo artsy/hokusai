@@ -69,9 +69,6 @@ class YamlSpec:
 
   def to_file(self):
     ''' write rendered template to file '''
-    file_basename = os.path.basename(self.template_file)
-    if file_basename.endswith('.j2'):
-      file_basename = file_basename.rstrip('.j2')
     file_obj = write_temp_file(self.to_string(), HOKUSAI_TMP_DIR)
     self.tmp_filename = file_obj.name
     return file_obj.name
