@@ -43,11 +43,18 @@ def create_yaml(source_file, app_name):
   ''' create yaml for review app '''
   yaml_content = YamlSpec(source_file).to_list()
   namespace = clean_string(app_name)
-  for c in yaml_content: update_namespace(c, namespace)
-  with open(os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name), 'w') as output:
+  for k8s_resource in yaml_content: update_namespace(k8s_resource, namespace)
+  with open(
+    os.path.join(
+      CWD,
+      HOKUSAI_CONFIG_DIR,
+      f'{app_name}.yml'
+    ),
+    'w'
+  ) as output:
     output.write(YAML_HEADER)
     yaml.safe_dump_all(yaml_content, output, default_flow_style=False)
-  print_green("Created %s/%s.yml" % (HOKUSAI_CONFIG_DIR, app_name))
+  print_green(f'Created {HOKUSAI_CONFIG_DIR}/{app_name}.yml')
 
 def list_namespaces(context, labels=None):
   ''' list Kubernetes namespaces that match the given labels '''
@@ -56,10 +63,10 @@ def list_namespaces(context, labels=None):
   for ns in namespaces:
     print(ns['metadata']['name'])
 
-def update_namespace(yaml_section, destination_namespace):
+def update_namespace(k8s_resource, destination_namespace):
   ''' edit namespace field for a Kubernetes resource definition '''
-  if 'apiVersion' in yaml_section:
+  if 'apiVersion' in k8s_resource:
     struct = {
       'namespace': destination_namespace
     }
-    yaml_section['metadata'] = yaml_section.setdefault('metadata', struct) | struct
+    k8s_resource['metadata'] = k8s_resource.setdefault('metadata', struct) | struct
