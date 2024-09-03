@@ -1,20 +1,28 @@
 import os
+
 import datetime
 import json
 import time
-
 import yaml
 
 from hokusai import CWD
+from hokusai.lib.common import (
+  print_green,
+  print_red,
+  print_yellow,
+  shout,
+  shout_concurrent,
+  write_temp_file
+)
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
-from hokusai.services.kubectl import Kubectl
-from hokusai.services.ecr import ECR, ClientError
-from hokusai.lib.common import print_green, print_red, print_yellow, shout, shout_concurrent, write_temp_file
-from hokusai.services.command_runner import CommandRunner
-from hokusai.services.yaml_spec import YamlSpec
-from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.constants import YAML_HEADER
+from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.command_runner import CommandRunner
+from hokusai.services.ecr import ECR, ClientError
+from hokusai.services.kubectl import Kubectl
+from hokusai.services.yaml_spec import YamlSpec
+
 
 class Deployment:
   def __init__(self, context, deployment_name=None, namespace=None):
@@ -104,9 +112,9 @@ class Deployment:
       payload_string = YAML_HEADER + yaml.safe_dump_all(payload, default_flow_style=False)
       file_obj = write_temp_file(payload_string, HOKUSAI_TMP_DIR)
 
-      print_green("Applying patched spec %s..." % file_obj.name, newline_after=True)
+      print_green(f'Applying patched spec {file_obj.name}...', newline_after=True)
       try:
-        shout(self.kctl.command("apply -f %s" % file_obj.name), print_output=True)
+        shout(self.kctl.command(f'apply -f {file_obj.name}', print_output=True)
       finally:
         os.unlink(file_obj.name)
 
