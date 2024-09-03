@@ -56,8 +56,8 @@ def create_yaml(source_file, app_name):
     yaml.safe_dump_all(yaml_content, output, default_flow_style=False)
   print_green(f'Created {HOKUSAI_CONFIG_DIR}/{app_name}.yml')
 
-def list_namespaces(context, labels=None):
-  ''' list Kubernetes namespaces that match the given labels '''
+def list_review_apps(context, labels=None):
+  ''' list project's review apps '''
   kctl = Kubectl(context)
   namespaces = kctl.get_objects('namespaces', labels)
   for ns in namespaces:

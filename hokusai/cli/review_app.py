@@ -177,7 +177,7 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
 def list(verbose):
   """List existing review apps of the project"""
   set_verbosity(verbose)
-  hokusai.list_namespaces(KUBE_CONTEXT, labels=f'app-name={config.project_name},app-phase=review')
+  hokusai.list_review_apps(KUBE_CONTEXT, labels=f'app-name={config.project_name},app-phase=review')
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
