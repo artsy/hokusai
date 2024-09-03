@@ -17,6 +17,16 @@ class Kubectl:
       global_config.kubectl_dir, 'kubectl'
     )
 
+  def apply(self, k8s_spec_file, print_output=False):
+    ''' run kubectl apply on a k8s spec file '''
+    try:
+      shout(
+        self.kctl.command(f'apply -f {k8s_spec_file}'),
+        print_output
+      )
+    finally:
+      os.unlink(k8s_spec_file)
+
   def command(self, cmd):
     ''' generate kubectl command '''
     if self.namespace is None:
@@ -35,6 +45,16 @@ class Kubectl:
         Loader=yaml.FullLoader
       )['contexts']
     ]
+
+  def create(self, k8s_spec_file, print_output=False):
+    ''' run kubectl create on a k8s spec file '''
+    try:
+      shout(
+        self.kctl.command(f'create -f {k8s_spec_file}'),
+        print_output
+      )
+    finally:
+      os.unlink(k8s_spec_file)
 
   def get_object(self, obj):
     ''' run kubectl get <object> '''

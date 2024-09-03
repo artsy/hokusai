@@ -37,7 +37,4 @@ class Namespace:
       'metadata': metadata
     }
     file_obj = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
-    try:
-      shout(self.kctl.command(f'create -f {file_obj.name}'))
-    finally:
-      os.unlink(file_obj.name)
+    self.kctl.create(file_obj.name)

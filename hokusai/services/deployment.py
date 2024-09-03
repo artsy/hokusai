@@ -113,10 +113,7 @@ class Deployment:
       file_obj = write_temp_file(payload_string, HOKUSAI_TMP_DIR)
 
       print_green(f'Applying patched spec {file_obj.name}...', newline_after=True)
-      try:
-        shout(self.kctl.command(f'apply -f {file_obj.name}', print_output=True)
-      finally:
-        os.unlink(file_obj.name)
+      self.kctl.apply(file_obj.name, print_output=True)
 
     # If not updating config, patch the deployments in the cache and call kubectl patch to update
     else:

@@ -10,6 +10,7 @@ from hokusai.services.kubectl import Kubectl
 
 
 class ConfigMap:
+  ''' represent a Kubernetes ConfigMap '''
   def __init__(self, context, namespace='default', name=None):
     self.context = context
     self.kctl = Kubectl(context, namespace=namespace)
@@ -28,16 +29,16 @@ class ConfigMap:
     }
 
   def create(self):
-    f = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
-    try:
-      shout(self.kctl.command("create -f %s" % f.name))
-    finally:
-      os.unlink(f.name)
+    ''' create configmap '''
+    file_obj = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
+    self.kctl.create(file_obj.name)
 
   def destroy(self):
+    ''' delete configmap '''
     shout(self.kctl.command("delete configmap %s" % self.name))
 
   def load(self):
+    ''' read configmap into struct '''
     payload = shout(self.kctl.command("get configmap %s -o json" % self.name))
     struct = json.loads(payload)
     if 'data' in struct:
@@ -46,19 +47,20 @@ class ConfigMap:
       self.struct['data'] = {}
 
   def save(self):
-    f = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
-    try:
-      shout(self.kctl.command("apply -f %s" % f.name))
-    finally:
-      os.unlink(f.name)
+    ''' save changes to configmap '''
+    file_obj = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
+    self.kctl.apply(file_obj.name)
 
   def all(self):
+    ''' load configmap data '''
     return self.struct['data']
 
   def update(self, key, value):
+    ''' update value of a key in configmap '''
     self.struct['data'].update({key: value})
 
   def delete(self, key):
+    ''' delete one key in configmap '''
     try:
       del self.struct['data'][key]
     except KeyError:
