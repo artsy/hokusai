@@ -238,6 +238,14 @@ def smart_str(s, newline_before=False, newline_after=False):
 
   return s
 
+def unlink_file_if_not_debug(path):
+  ''' if DEBUG is off, unlink specified file '''
+  if not os.environ.get('DEBUG'):
+    try:
+      os.unlink(path)
+    except:
+      pass
+
 def uri_to_local(uri, target_dir, target_file):
   '''
   copy file from uri to target_dir/target_file

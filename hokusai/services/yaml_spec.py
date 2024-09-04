@@ -6,7 +6,11 @@ import yaml
 
 from botocore.exceptions import NoCredentialsError
 
-from hokusai.lib.common import print_yellow, write_temp_file
+from hokusai.lib.common import (
+  print_yellow,
+  unlink_file_if_not_debug,
+  write_temp_file
+)
 from hokusai.lib.config import config, HOKUSAI_TMP_DIR
 from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.exceptions import HokusaiError
@@ -24,12 +28,7 @@ class YamlSpec:
     atexit.register(self.cleanup)
 
   def cleanup(self):
-    if os.environ.get('DEBUG'):
-      return
-    try:
-      os.unlink(self.tmp_filename)
-    except:
-      pass
+    unlink_file_if_not_debug(self.tmp_filename)
 
   def extract_pod_spec(self, deployment_name):
     ''' extract pod spec from spec of specified deployment '''

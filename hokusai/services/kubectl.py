@@ -3,7 +3,7 @@ import os
 
 import yaml
 
-from hokusai.lib.common import shout
+from hokusai.lib.common import shout, unlink_file_if_not_debug
 from hokusai.lib.global_config import HokusaiGlobalConfig
 
 
@@ -25,7 +25,7 @@ class Kubectl:
         print_output
       )
     finally:
-      os.unlink(k8s_spec_file)
+      unlink_file_if_not_debug(k8s_spec_file)
 
   def command(self, cmd):
     ''' generate kubectl command '''
@@ -54,7 +54,7 @@ class Kubectl:
         print_output
       )
     finally:
-      os.unlink(k8s_spec_file)
+      unlink_file_if_not_debug(k8s_spec_file)
 
   def get_object(self, obj):
     ''' run kubectl get <object> '''
