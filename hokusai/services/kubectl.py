@@ -21,7 +21,7 @@ class Kubectl:
     ''' run kubectl apply on a k8s spec file '''
     try:
       shout(
-        self.kctl.command(f'apply -f {k8s_spec_file}'),
+        self.command(f'apply -f {k8s_spec_file}'),
         print_output
       )
     finally:
@@ -50,7 +50,7 @@ class Kubectl:
     ''' run kubectl create on a k8s spec file '''
     try:
       shout(
-        self.kctl.command(f'create -f {k8s_spec_file}'),
+        self.command(f'create -f {k8s_spec_file}'),
         print_output
       )
     finally:
