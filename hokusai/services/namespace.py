@@ -37,4 +37,4 @@ class Namespace:
       'metadata': metadata
     }
     file_obj = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
-    self.kctl.create(file_obj.name)
+    self.kctl.apply(file_obj.name)
