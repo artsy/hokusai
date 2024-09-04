@@ -1,6 +1,6 @@
-import json
 import os
 
+import json
 import yaml
 
 from hokusai.lib.common import shout, unlink_file_if_not_debug

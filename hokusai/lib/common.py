@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import json
 import os
+
+import json
 import platform
 import random
 import re
@@ -158,10 +159,14 @@ def local_to_local(
   os.chmod(target_path, mode)
 
 def pick_no():
-  return random.choice(["Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"])
+  return random.choice([
+    "Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"
+  ])
 
 def pick_yes():
-  return random.choice(["Yep", "Si", "да", "Da", "Aane", "हाँ", "Ja", "はい", "Jā", "так", "بله", "Tak", "Wi", "Oui", "יאָ", "예", "是", "Sim"])
+  return random.choice([
+    "Yep", "Si", "да", "Da", "Aane", "हाँ", "Ja", "はい", "Jā", "так", "بله", "Tak", "Wi", "Oui", "יאָ", "예", "是", "Sim"
+  ])
 
 def print_green(msg, newline_before=False, newline_after=False):
   cprint(smart_str(msg, newline_before, newline_after), 'green')
@@ -213,7 +218,14 @@ def shout_concurrent(commands, print_output=False, mask=()):
   if print_output:
     processes = [Popen(verbose(command, mask=mask), shell=True) for command in commands]
   else:
-    processes = [Popen(verbose(command, mask=mask), shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
+    processes = [
+      Popen(
+        verbose(command, mask=mask),
+        shell=True,
+        stdout=open(os.devnull, 'w'),
+        stderr=STDOUT
+      ) for command in commands
+    ]
 
   return_codes = []
   try:
@@ -264,7 +276,9 @@ def uri_to_local(uri, target_dir, target_file):
     elif parsed_uri.scheme == '':
       local_to_local(parsed_uri.path, target_dir, target_file)
     else:
-      raise HokusaiError(f'URI {uri} has unsupported scheme. Only "s3://" and file paths are supported.')
+      raise HokusaiError(
+        f'URI {uri} has unsupported scheme. Only "s3://" and file paths are supported.'
+      )
   except:
     print_red(
       f'Error: failed to copy {uri} to {os.path.join(target_dir, target_file)}'
@@ -302,7 +316,10 @@ def validate_key_value(key_value):
 def verbose(msg, mask=()):
   if VERBOSE:
     if mask:
-      print_yellow("==> hokusai exec `%s`" % re.sub(mask[0], mask[1], msg), newline_after=True)
+      print_yellow(
+        "==> hokusai exec `%s`" % re.sub(mask[0], mask[1], msg),
+        newline_after=True
+      )
     else:
       print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
   return msg

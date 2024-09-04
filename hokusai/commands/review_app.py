@@ -1,14 +1,10 @@
 import os
 
-import json
 import yaml
-
-from collections import OrderedDict
 
 from hokusai import CWD
 from hokusai.commands.kubernetes import k8s_delete
-from hokusai.lib.exceptions import HokusaiError
-from hokusai.lib.common import print_green, clean_string, shout
+from hokusai.lib.common import print_green, clean_string
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.services.kubectl import Kubectl
@@ -16,13 +12,54 @@ from hokusai.services.namespace import Namespace
 from hokusai.services.yaml_spec import YamlSpec
 
 
+def create_yaml(source_file, app_name):
+  ''' create yaml for review app '''
+  yaml_content = YamlSpec(source_file).to_list()
+  namespace = clean_string(app_name)
+  for k8s_resource in yaml_content:
+    edit_namespace(k8s_resource, namespace)
+  with open(
+    os.path.join(
+      CWD,
+      HOKUSAI_CONFIG_DIR,
+      f'{app_name}.yml'
+    ),
+    'w'
+  ) as output:
+    output.write(YAML_HEADER)
+    yaml.safe_dump_all(
+      yaml_content,
+      output,
+      default_flow_style=False
+    )
+  print_green(f'Created {HOKUSAI_CONFIG_DIR}/{app_name}.yml')
+
 def delete_review_app(context, app_name, filename):
   ''' delete review app '''
   namespace = clean_string(app_name)
+  # delete resources in yaml
   k8s_delete(context, namespace, filename)
+  # delete namespace
   ns = Namespace('staging', namespace)
   ns.delete()
   print_green(f'Deleted {namespace} Kubernetes namespace.')
+
+def edit_namespace(k8s_resource, destination_namespace):
+  ''' edit namespace field for a Kubernetes resource definition '''
+  if 'apiVersion' in k8s_resource:
+    struct = {
+      'namespace': destination_namespace
+    }
+    k8s_resource['metadata'] = k8s_resource.setdefault(
+      'metadata', struct
+    ) | struct
+
+def list_review_apps(context, labels=None):
+  ''' list project's review apps '''
+  kctl = Kubectl(context)
+  namespaces = kctl.get_objects('namespaces', labels)
+  for ns in namespaces:
+    print(ns['metadata']['name'])
 
 def setup_review_app(source_file, app_name):
   ''' prepare for creating a review app '''
@@ -35,38 +72,4 @@ def setup_review_app(source_file, app_name):
   ns = Namespace('staging', namespace, labels)
   ns.create()
   print_green(f'Created {namespace} Kubernetes namespace.')
-
-  # create review app yaml
   create_yaml(source_file, app_name)
-
-def create_yaml(source_file, app_name):
-  ''' create yaml for review app '''
-  yaml_content = YamlSpec(source_file).to_list()
-  namespace = clean_string(app_name)
-  for k8s_resource in yaml_content: update_namespace(k8s_resource, namespace)
-  with open(
-    os.path.join(
-      CWD,
-      HOKUSAI_CONFIG_DIR,
-      f'{app_name}.yml'
-    ),
-    'w'
-  ) as output:
-    output.write(YAML_HEADER)
-    yaml.safe_dump_all(yaml_content, output, default_flow_style=False)
-  print_green(f'Created {HOKUSAI_CONFIG_DIR}/{app_name}.yml')
-
-def list_review_apps(context, labels=None):
-  ''' list project's review apps '''
-  kctl = Kubectl(context)
-  namespaces = kctl.get_objects('namespaces', labels)
-  for ns in namespaces:
-    print(ns['metadata']['name'])
-
-def update_namespace(k8s_resource, destination_namespace):
-  ''' edit namespace field for a Kubernetes resource definition '''
-  if 'apiVersion' in k8s_resource:
-    struct = {
-      'namespace': destination_namespace
-    }
-    k8s_resource['metadata'] = k8s_resource.setdefault('metadata', struct) | struct

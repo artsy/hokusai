@@ -17,16 +17,12 @@ class Namespace:
     self.labels = labels
     self.struct = {}
 
-  def delete(self):
-    ''' delete namespace '''
-    if self.name == 'default':
-      raise HokusaiError(f'Cannot delete "default" namespace.')
-    shout(self.kctl.command(f'delete namespace {self.name}'))
-
   def create(self):
     ''' create namespace '''
     if self.name == 'default':
-      raise HokusaiError(f'Cannot create "default" namespace.')
+      raise HokusaiError(
+        f'Cannot create "default" namespace.'
+      )
     metadata = {
       'name': self.name,
       'labels': self.labels
@@ -36,5 +32,13 @@ class Namespace:
       'kind': 'Namespace',
       'metadata': metadata
     }
-    file_obj = write_temp_file(json.dumps(self.struct), HOKUSAI_TMP_DIR)
+    file_obj = write_temp_file(
+      json.dumps(self.struct), HOKUSAI_TMP_DIR
+    )
     self.kctl.apply(file_obj.name)
+
+  def delete(self):
+    ''' delete namespace '''
+    if self.name == 'default':
+      raise HokusaiError(f'Cannot delete "default" namespace.')
+    shout(self.kctl.command(f'delete namespace {self.name}'))

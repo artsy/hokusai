@@ -1,7 +1,6 @@
 import os
 
 import atexit
-import jinja2
 import yaml
 
 from botocore.exceptions import NoCredentialsError
@@ -97,7 +96,7 @@ class YamlSpec:
             template_config.update(config_loader.load())
           except NoCredentialsError:
             print_yellow(
-              "WARNING: Could not get template config file %s" % template_config_file
+              f'WARNING: Could not get template config file {template_config_file}'
             )
 
       return TemplateRenderer(

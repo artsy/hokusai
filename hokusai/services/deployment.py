@@ -109,10 +109,17 @@ class Deployment:
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
         payload.append(item)
 
-      payload_string = YAML_HEADER + yaml.safe_dump_all(payload, default_flow_style=False)
-      file_obj = write_temp_file(payload_string, HOKUSAI_TMP_DIR)
+      payload_string = (
+        YAML_HEADER +
+        yaml.safe_dump_all(payload, default_flow_style=False)
+      )
+      file_obj = write_temp_file(
+        payload_string, HOKUSAI_TMP_DIR
+      )
 
-      print_green(f'Applying patched spec {file_obj.name}...', newline_after=True)
+      print_green(
+        f'Applying patched spec {file_obj.name}...', newline_after=True
+      )
       self.kctl.apply(file_obj.name, print_output=True)
 
     # If not updating config, patch the deployments in the cache and call kubectl patch to update
