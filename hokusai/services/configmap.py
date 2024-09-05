@@ -31,11 +31,11 @@ class ConfigMap:
     }
 
   def all(self):
-    ''' load configmap data '''
+    ''' return configmap data '''
     return self.struct['data']
 
   def create(self):
-    ''' create configmap '''
+    ''' create configmap in Kubernetes '''
     path = write_temp_file(
       json.dumps(self.struct), HOKUSAI_TMP_DIR
     )
@@ -51,7 +51,7 @@ class ConfigMap:
       )
 
   def destroy(self):
-    ''' delete configmap '''
+    ''' delete configmap in Kubernetes '''
     shout(
       self.kctl.command("delete configmap %s" % self.name)
     )
@@ -66,7 +66,7 @@ class ConfigMap:
     self.struct['data'] = struct['data']
 
   def save(self):
-    ''' save changes to configmap '''
+    ''' save changes to Kubernetes '''
     path = write_temp_file(
       json.dumps(self.struct), HOKUSAI_TMP_DIR
     )
