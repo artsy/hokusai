@@ -57,15 +57,13 @@ class ConfigMap:
     )
 
   def load(self):
-    ''' read configmap into struct '''
+    ''' read configmap data from Kubernetes '''
     payload = shout(
       self.kctl.command("get configmap %s -o json" % self.name)
     )
     struct = json.loads(payload)
-    if 'data' in struct:
-      self.struct['data'] = struct['data']
-    else:
-      self.struct['data'] = {}
+    struct['data'] = struct.setdefault('data', {})
+    self.struct['data'] = struct['data']
 
   def save(self):
     ''' save changes to configmap '''
