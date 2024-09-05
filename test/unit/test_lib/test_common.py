@@ -16,10 +16,12 @@ from hokusai.lib.common import (
   get_platform,
   key_value_list_to_dict,
   local_to_local,
+  unlink_file_if_not_debug,
   uri_to_local,
   user,
   utc_yyyymmdd,
-  validate_key_value
+  validate_key_value,
+  write_temp_file
 )
 from hokusai.lib.exceptions import HokusaiError
 from test.unit.test_lib.fixtures.common import (
@@ -181,6 +183,26 @@ def describe_local_to_local():
       with pytest.raises(FileNotFoundError):
         local_to_local(source, tmp_path, 'b.yml')
 
+def describe_unlink_file_if_not_debug():
+  def describe_debug_on():
+    def it_leaves_file_alone(monkeypatch, tmp_path):
+      monkeypatch.setenv('DEBUG', '1')
+      path = os.path.join(tmp_path, 'foo.yml')
+      path_obj = Path(path)
+      path_obj.touch()
+      assert os.path.exists(path)
+      unlink_file_if_not_debug(path)
+      assert os.path.exists(path)
+  def describe_debug_off():
+    def it_deletes_file(monkeypatch, tmp_path):
+      monkeypatch.setenv('DEBUG', '')
+      path = os.path.join(tmp_path, 'foo.yml')
+      path_obj = Path(path)
+      path_obj.touch()
+      assert os.path.exists(path)
+      unlink_file_if_not_debug(path)
+      assert not os.path.exists(path)
+
 def describe_uri_to_local():
   def describe_s3_scheme():
     def it_calls_s3_interface_download(mocker, mock_s3_interface_class, tmp_path):
@@ -258,3 +280,12 @@ def describe_validate_key_value():
     def it_raises():
       with pytest.raises(HokusaiError):
         validate_key_value('foobar')
+
+def describe_write_temp_file():
+  def it_writes(mocker, tmp_path):
+    tmp_file_obj = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
+    mocker.patch('hokusai.lib.common.NamedTemporaryFile', return_value=tmp_file_obj)
+    data = 'foo'
+    assert write_temp_file(data, tmp_path) == tmp_file_obj
+    with open(tmp_file_obj.name, 'r') as f:
+      assert f.read().strip() == 'foo'
