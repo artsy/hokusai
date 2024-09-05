@@ -325,8 +325,8 @@ def verbose(msg, mask=()):
   return msg
 
 def write_temp_file(data, dir):
-  ''' write data to temp file '''
+  ''' write data to temp file, return file path '''
   obj = NamedTemporaryFile(delete=False, dir=dir, mode='w')
   obj.write(data)
   obj.close()
-  return obj
+  return obj.name

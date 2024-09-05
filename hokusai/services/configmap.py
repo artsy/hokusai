@@ -36,10 +36,10 @@ class ConfigMap:
 
   def create(self):
     ''' create configmap '''
-    file_obj = write_temp_file(
+    path = write_temp_file(
       json.dumps(self.struct), HOKUSAI_TMP_DIR
     )
-    self.kctl.create(file_obj.name)
+    self.kctl.create(path)
 
   def delete(self, key):
     ''' delete one key in configmap '''
@@ -69,10 +69,10 @@ class ConfigMap:
 
   def save(self):
     ''' save changes to configmap '''
-    file_obj = write_temp_file(
+    path = write_temp_file(
       json.dumps(self.struct), HOKUSAI_TMP_DIR
     )
-    self.kctl.apply(file_obj.name)
+    self.kctl.apply(path)
 
   def update(self, key, value):
     ''' update value of a key in configmap '''

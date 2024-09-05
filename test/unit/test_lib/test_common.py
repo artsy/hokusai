@@ -286,6 +286,6 @@ def describe_write_temp_file():
     tmp_file_obj = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
     mocker.patch('hokusai.lib.common.NamedTemporaryFile', return_value=tmp_file_obj)
     data = 'foo'
-    assert write_temp_file(data, tmp_path) == tmp_file_obj
+    assert write_temp_file(data, tmp_path) == tmp_file_obj.name
     with open(tmp_file_obj.name, 'r') as f:
       assert f.read().strip() == 'foo'

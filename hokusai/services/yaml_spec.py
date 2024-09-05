@@ -67,9 +67,9 @@ class YamlSpec:
 
   def to_file(self):
     ''' write rendered template to file '''
-    file_obj = write_temp_file(self.to_string(), HOKUSAI_TMP_DIR)
-    self.tmp_filename = file_obj.name
-    return file_obj.name
+    path = write_temp_file(self.to_string(), HOKUSAI_TMP_DIR)
+    self.tmp_filename = path
+    return path
 
   def to_list(self):
     ''' convert rendered template to yaml list '''
