@@ -10,7 +10,7 @@ from hokusai.services.kubectl import Kubectl
 
 class Namespace:
   ''' represent a Kubernetes namespace '''
-  def __init__(self, context, name, labels=None):
+  def __init__(self, context, name, labels={}):
     self.context = context
     self.kctl = Kubectl(context)
     self.name = name
