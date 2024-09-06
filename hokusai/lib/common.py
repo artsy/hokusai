@@ -25,6 +25,7 @@ from hokusai.lib.config import (
   config,
   HOKUSAI_TMP_DIR
 )
+from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import (
   CalledProcessError, HokusaiError
 )
@@ -330,3 +331,7 @@ def write_temp_file(data, dir):
   obj.write(data)
   obj.close()
   return obj.name
+
+def yaml_content_with_header(content_string):
+  ''' return content with yaml header prepended '''
+  return YAML_HEADER + content_string

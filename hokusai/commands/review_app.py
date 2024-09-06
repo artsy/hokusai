@@ -9,10 +9,10 @@ from hokusai.lib.common import (
   clean_string,
   local_to_local,
   unlink_file_if_not_debug,
-  write_temp_file
+  write_temp_file,
+  yaml_content_with_header
 )
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
-from hokusai.lib.constants import YAML_HEADER
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.namespace import Namespace
 from hokusai.services.yaml_spec import YamlSpec
@@ -28,9 +28,9 @@ def create_yaml(source_file, app_name):
     yaml_content,
     default_flow_style=False
   )
-  payload_string = YAML_HEADER + payload_string
   tmp_path = write_temp_file(
-    payload_string, HOKUSAI_TMP_DIR
+    yaml_content_with_header(payload_string),
+    HOKUSAI_TMP_DIR
   )
   local_to_local(
     tmp_path,

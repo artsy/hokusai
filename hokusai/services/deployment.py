@@ -12,10 +12,10 @@ from hokusai.lib.common import (
   print_yellow,
   shout,
   shout_concurrent,
-  write_temp_file
+  write_temp_file,
+  yaml_content_with_header
 )
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
-from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.command_runner import CommandRunner
@@ -109,14 +109,14 @@ class Deployment:
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
         payload.append(item)
 
-      payload_string = (
-        YAML_HEADER +
-        yaml.safe_dump_all(payload, default_flow_style=False)
+      payload_string = yaml.safe_dump_all(
+        payload,
+        default_flow_style=False
       )
       path = write_temp_file(
-        payload_string, HOKUSAI_TMP_DIR
+        yaml_content_with_header(payload_string),
+        HOKUSAI_TMP_DIR
       )
-
       print_green(
         f'Applying patched spec {path}...', newline_after=True
       )
