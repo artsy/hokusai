@@ -1,6 +1,5 @@
+import json
 import pytest
-
-from tempfile import NamedTemporaryFile
 
 import hokusai.services.yaml_spec
 
@@ -133,21 +132,23 @@ def describe_yaml_spec():
       assert obj.get_resources_by_kind('fake-kind') == expected_return_value
 
   def describe_to_file():
-    def it_returns_file_name(mocker, tmp_path):
+    def it_returns_file_name(mocker, monkeypatch):
       mocker.patch('hokusai.services.yaml_spec.ECR')
       mocker.patch('hokusai.services.yaml_spec.atexit')
       mocker.patch('hokusai.services.yaml_spec.ConfigLoader')
       mocker.patch('hokusai.services.yaml_spec.TemplateRenderer')
+      mocker.patch('hokusai.services.yaml_spec.write_temp_file', return_value='foofile')
+      write_temp_file_spy = mocker.spy(hokusai.services.yaml_spec, 'write_temp_file')
+      mock_hokusai_tmp_dir = 'hokusaitmpdir'
+      monkeypatch.setattr(hokusai.services.yaml_spec, "HOKUSAI_TMP_DIR", mock_hokusai_tmp_dir)
       obj = YamlSpec('test/fixtures/kubernetes-config.yml')
       mocker.patch.object(obj, 'to_string', return_value='foo')
-      f = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
-      mocker.patch('hokusai.services.yaml_spec.NamedTemporaryFile', return_value=f)
       file_name = obj.to_file()
-      assert file_name == f.name
-      content = ''
-      with open(file_name, 'r') as f:
-        content = f.read().strip()
-      assert content == 'foo'
+      write_temp_file_spy.assert_called_once_with(
+        'foo',
+        mock_hokusai_tmp_dir
+      )
+      assert file_name == 'foofile'
 
   def describe_to_list():
     def it_returns_list(mocker):
