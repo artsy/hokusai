@@ -3,7 +3,7 @@ import subprocess
 
 
 def describe_setup():
-  def it_creates_yml():
+  def it_creates_yml_and_namespace():
     resp = subprocess.run(
       'hokusai review_app setup a-review-app',
       capture_output=True,
@@ -15,6 +15,7 @@ def describe_setup():
       print(resp.stderr)
     assert resp.returncode == 0
     assert 'Created hokusai/a-review-app.yml' in resp.stdout
+    assert 'Created a-review-app Kubernetes namespace' in resp.stdout
 
 def describe_create():
   def it_creates_deployment():
@@ -49,3 +50,18 @@ def describe_list():
       print(resp.stderr)
     assert resp.returncode == 0
     assert 'a-review-app' in resp.stdout
+
+def describe_delete():
+  def it_deletes_review_app():
+    resp = subprocess.run(
+      'hokusai review_app delete a-review-app',
+      capture_output=True,
+      shell=True,
+      text=True,
+      timeout=10
+    )
+    if resp.returncode != 0:
+      print(resp.stderr)
+    assert resp.returncode == 0
+    assert 'Deleted Kubernetes environment' in resp.stdout
+    assert 'Deleted a-review-app Kubernetes namespace' in resp.stdout
