@@ -21,10 +21,6 @@ from tempfile import NamedTemporaryFile
 from termcolor import cprint
 from urllib.parse import urlparse
 
-from hokusai.lib.config import (
-  config,
-  HOKUSAI_TMP_DIR
-)
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import (
   CalledProcessError, HokusaiError
@@ -63,6 +59,8 @@ def clean_string(str):
 
 def file_debug(dict1, file_suffix=None):
   ''' write dict to a file for debug '''
+  # due to circular import
+  from hokusai.lib.config import HOKUSAI_TMP_DIR
   if os.environ.get('DEBUG'):
     with NamedTemporaryFile(
       delete=False,
@@ -185,6 +183,8 @@ def returncode(command, mask=()):
   return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def set_verbosity(v):
+  # due to circular import
+  from hokusai.lib.config import config
   global VERBOSE
   VERBOSE = v or config.always_verbose
 

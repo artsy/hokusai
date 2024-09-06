@@ -11,8 +11,10 @@ from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version, InvalidVersion
 
 from hokusai import CWD
+from hokusai.lib.common import yaml_content_with_header
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
+
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_DIR = 'hokusai'

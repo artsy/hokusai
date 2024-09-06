@@ -2,11 +2,14 @@ import os
 import yaml
 
 from hokusai.lib.common import (
+  local_to_local,
   print_red,
+  unlink_file_if_not_debug,
   write_temp_file,
   yaml_content_with_header
 )
-from hokusai.lib.config_loader import HOKUSAI_TMP_DIR, ConfigLoader
+from hokusai.lib.config import HOKUSAI_TMP_DIR
+from hokusai.lib.config_loader import ConfigLoader
 from hokusai.lib.exceptions import HokusaiError
 
 
@@ -51,6 +54,7 @@ class HokusaiGlobalConfig:
         local_global_config_file_name,
         create_target_dir=False
       )
+      unlink_file_if_not_debug(tmp_path)
     except:
       print_red(
         f'Error: Not able to write Hokusai config to {local_global_config}'
