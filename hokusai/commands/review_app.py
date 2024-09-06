@@ -4,8 +4,14 @@ import yaml
 
 from hokusai import CWD
 from hokusai.commands.kubernetes import k8s_delete
-from hokusai.lib.common import print_green, clean_string
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
+from hokusai.lib.common import (
+  print_green,
+  clean_string,
+  local_to_local,
+  unlink_file_if_not_debug,
+  write_temp_file
+)
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
 from hokusai.lib.constants import YAML_HEADER
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.namespace import Namespace
@@ -18,20 +24,21 @@ def create_yaml(source_file, app_name):
   namespace = clean_string(app_name)
   for k8s_resource in yaml_content:
     edit_namespace(k8s_resource, namespace)
-  with open(
-    os.path.join(
-      CWD,
-      HOKUSAI_CONFIG_DIR,
-      f'{app_name}.yml'
-    ),
-    'w'
-  ) as output:
-    output.write(YAML_HEADER)
-    yaml.safe_dump_all(
-      yaml_content,
-      output,
-      default_flow_style=False
-    )
+  payload_string = yaml.safe_dump_all(
+    yaml_content,
+    default_flow_style=False
+  )
+  payload_string = YAML_HEADER + payload_string
+  tmp_path = write_temp_file(
+    payload_string, HOKUSAI_TMP_DIR
+  )
+  local_to_local(
+    tmp_path,
+    os.path.join(CWD, HOKUSAI_CONFIG_DIR),
+    f'{app_name}.yml',
+    create_target_dir=False
+  )
+  unlink_file_if_not_debug(tmp_path)
   print_green(f'Created {HOKUSAI_CONFIG_DIR}/{app_name}.yml')
 
 def delete_review_app(context, app_name, filename):
