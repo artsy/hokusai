@@ -13,6 +13,7 @@ from hokusai.lib.common import (
   yaml_content_with_header
 )
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
+from hokusai.services.configmap import ConfigMap
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.namespace import Namespace
 from hokusai.services.yaml_spec import YamlSpec
@@ -85,8 +86,21 @@ def setup_review_app(source_file, app_name):
 
   # get list of configmaps referenced in yaml's Deployments
   configmap_refs = YamlSpec(path).all_deployments_configmap_refs()
-  print(configmap_refs)
 
   # get list of service accounts referenced in yaml's Deployments
   service_account_refs = YamlSpec(path).all_deployments_sa_refs()
-  print(service_account_refs)
+
+  # copy configmaps from staging to review app namespace
+  for configmap in configmap_refs:
+    print_green(f'Copying {configmap} ConfigMap...')
+    copy_configmap(configmap, namespace)
+
+  # copy service accounts from staging to review app namespace
+
+def copy_configmap(name, destination_namespace):
+  ''' copy configmap from default namespace to destination namespace '''
+  source_configmap = ConfigMap('staging', name=name)
+  destination_configmap = ConfigMap('staging', name=name, namespace=destination_namespace)
+  source_configmap.load()
+  destination_configmap.struct['data'] = source_configmap.struct['data']
+  destination_configmap.save()

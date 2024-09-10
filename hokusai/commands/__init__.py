@@ -14,7 +14,7 @@ from hokusai.commands.push import push_image
 from hokusai.commands.pull import pull
 from hokusai.commands.run import run
 from hokusai.commands.setup import setup
-from hokusai.commands.kubernetes import k8s_create, k8s_update, k8s_delete, k8s_status, k8s_copy_config
+from hokusai.commands.kubernetes import k8s_create, k8s_update, k8s_delete, k8s_status
 from hokusai.commands.review_app import delete_review_app, list_review_apps, setup_review_app
 from hokusai.commands.retag import retag
 from hokusai.commands.test import test
