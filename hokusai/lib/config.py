@@ -11,9 +11,10 @@ from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version, InvalidVersion
 
 from hokusai import CWD
-from hokusai.lib.constants import YAML_HEADER
+from hokusai.lib.common import yaml_content_with_header
 from hokusai.lib.exceptions import HokusaiError
 from hokusai.version import VERSION
+
 
 HOKUSAI_ENV_VAR_PREFIX = 'HOKUSAI_'
 HOKUSAI_CONFIG_DIR = 'hokusai'
@@ -34,7 +35,9 @@ class HokusaiConfig:
     ])
 
     with open(HOKUSAI_CONFIG_FILE, 'w') as f:
-      payload = YAML_HEADER + yaml.safe_dump(config, default_flow_style=False)
+      payload = yaml_content_with_header(
+        yaml.safe_dump(config, default_flow_style=False)
+      )
       f.write(payload)
 
   def check(self):

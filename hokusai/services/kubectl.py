@@ -1,9 +1,9 @@
-import json
 import os
 
+import json
 import yaml
 
-from hokusai.lib.common import shout
+from hokusai.lib.common import shout, unlink_file_if_not_debug
 from hokusai.lib.global_config import HokusaiGlobalConfig
 
 
@@ -16,6 +16,20 @@ class Kubectl:
     self.kubectl = os.path.join(
       global_config.kubectl_dir, 'kubectl'
     )
+
+  def _apply_or_create(self, action, k8s_spec_file, print_output=False):
+    ''' run kubectl apply or create on a k8s spec file '''
+    try:
+      shout(
+        self.command(f'{action} -f {k8s_spec_file}'),
+        print_output
+      )
+    finally:
+      unlink_file_if_not_debug(k8s_spec_file)
+
+  def apply(self, k8s_spec_file, print_output=False):
+    ''' run kubectl apply on a k8s spec file '''
+    self._apply_or_create('apply', k8s_spec_file, print_output)
 
   def command(self, cmd):
     ''' generate kubectl command '''
@@ -35,6 +49,10 @@ class Kubectl:
         Loader=yaml.FullLoader
       )['contexts']
     ]
+
+  def create(self, k8s_spec_file, print_output=False):
+    ''' run kubectl create on a k8s spec file '''
+    self._apply_or_create('create', k8s_spec_file, print_output)
 
   def get_object(self, obj):
     ''' run kubectl get <object> '''

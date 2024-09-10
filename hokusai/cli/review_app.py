@@ -18,12 +18,18 @@ def review_app(context_settings=CONTEXT_SETTINGS):
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-@click.option('-sf', '--source-file', type=click.STRING, default='hokusai/staging.yml', help="The source yaml file from which to create the new resource file (default: hokusai/staging.yml)")
+@click.option(
+  '-sf',
+  '--source-file',
+  type=click.STRING,
+  default='hokusai/staging.yml',
+  help="The source yaml file from which to create the new resource file (default: hokusai/staging.yml)"
+)
 def setup(app_name, verbose, source_file):
-  """Setup a new review-app - create a Yaml file based on APP_NAME and --source-file"""
+  """Setup a new Review App"""
   set_verbosity(verbose)
   command(
-    hokusai.create_new_app_yaml,
+    hokusai.setup_review_app,
     source_file,
     app_name
   )
@@ -51,11 +57,10 @@ def delete(app_name, verbose):
   """Deletes the Kubernetes based resources defined in ./hokusai/{APP_NAME}.yml"""
   set_verbosity(verbose)
   command(
-    hokusai.k8s_delete,
+    hokusai.delete_review_app,
     KUBE_CONTEXT,
-    namespace=clean_string(app_name),
+    app_name,
     filename=os.path.join(CWD, HOKUSAI_CONFIG_DIR, "%s.yml" % app_name),
-    render_template=False
   )
 
 
@@ -77,7 +82,11 @@ def update(app_name, verbose):
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.option('--resources/--no-resources', default=True, help='Print Kubernetes API objects defined in ./hokusai/APP_NAME.yml (default: true)')
+@click.option(
+  '--resources/--no-resources',
+  default=True,
+  help='Print Kubernetes API objects defined in ./hokusai/APP_NAME.yml (default: true)'
+)
 @click.option('--pods/--no-pods', default=True, help='Print pods (default: true)')
 @click.option('--describe', type=click.BOOL, is_flag=True, help="Print 'kubectl describe' output")
 @click.option('--top', type=click.BOOL, is_flag=True, help='Print top pods')
@@ -104,7 +113,12 @@ def status(app_name, resources, pods, describe, top, verbose):
 @click.option('--tty', type=click.BOOL, is_flag=True, help='Attach the terminal')
 @click.option('--tag', type=click.STRING, help='The image tag to run (defaults to APP_NAME)')
 @click.option('--env', type=click.STRING, multiple=True, help='Environment variables in the form of "KEY=VALUE"')
-@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain command to run on nodes matching labels in the form of "key=value"')
+@click.option(
+  '--constraint',
+  type=click.STRING,
+  multiple=True,
+  help='Constrain command to run on nodes matching labels in the form of "key=value"'
+)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def run(app_name, container_command, tty, tag, env, constraint, verbose):
   """Launch a new container and run a command"""
@@ -129,7 +143,13 @@ def run(app_name, container_command, tty, tag, env, constraint, verbose):
 @click.option('-f', '--follow', type=click.BOOL, is_flag=True, help='Follow logs')
 @click.option('-t', '--tail', type=click.INT, help="Number of lines of recent logs to display")
 @click.option('-p', '--previous', type=click.BOOL, is_flag=True, help='Get from the previous run of the Pod container(s)')
-@click.option('-l', '--label', type=click.STRING, multiple=True, help='Filter pods by additional label selectors in the form of "key=value"')
+@click.option(
+  '-l',
+  '--label',
+  type=click.STRING,
+  multiple=True,
+  help='Filter pods by additional label selectors in the form of "key=value"'
+)
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def logs(app_name, timestamps, follow, tail, previous, label, verbose):
   """Get container logs"""
@@ -150,9 +170,20 @@ def logs(app_name, timestamps, follow, tail, previous, label, verbose):
 @click.argument('app_name', type=click.STRING)
 @click.argument('tag', type=click.STRING)
 @click.option('--migration', type=click.STRING, help='Run a migration before deploying')
-@click.option('--constraint', type=click.STRING, multiple=True, help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"')
+@click.option(
+  '--constraint',
+  type=click.STRING,
+  multiple=True,
+  help='Constrain migration and deploy hooks to run on nodes matching labels in the form of "key=value"'
+)
 @click.option('--git-remote', type=click.STRING, help='Push deployment tags to git remote')
-@click.option('-t', '--timeout', type=click.INT, default=600, help="Timeout deployment rollout after N seconds (default 600)")
+@click.option(
+  '-t',
+  '--timeout',
+  type=click.INT,
+  default=600,
+  help="Timeout deployment rollout after N seconds (default 600)"
+)
 @click.option('-u', '--update-config', type=click.BOOL, is_flag=True, help='Also update Kubernetes config')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
 def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_config, verbose):
@@ -178,7 +209,7 @@ def deploy(app_name, tag, migration, constraint, git_remote, timeout, update_con
 def list(verbose):
   """List existing review apps of the project"""
   set_verbosity(verbose)
-  hokusai.list_namespaces(KUBE_CONTEXT, labels=f'app-name={config.project_name},app-phase=review')
+  hokusai.list_review_apps(KUBE_CONTEXT, labels=f'app-name={config.project_name},app-phase=review')
 
 
 @review_app.command(context_settings=CONTEXT_SETTINGS)
@@ -219,8 +250,18 @@ def env(context_settings=CONTEXT_SETTINGS):
 
 @env.command(context_settings=CONTEXT_SETTINGS)
 @click.argument('app_name', type=click.STRING)
-@click.option('--configmap', type=click.STRING, help="Copy the given ConfigMap (default: the project's environment ConfigMap)")
-@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+@click.option(
+  '--configmap',
+  type=click.STRING,
+  help="Copy the given ConfigMap (default: the project's environment ConfigMap)"
+)
+@click.option(
+  '-v',
+  '--verbose',
+  type=click.BOOL,
+  is_flag=True,
+  help='Verbose output'
+)
 def copy(app_name, configmap, verbose):
   """Copies the app's environment config map to the namespace {APP_NAME}"""
   set_verbosity(verbose)

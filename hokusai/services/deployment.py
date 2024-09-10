@@ -1,21 +1,28 @@
 import os
+
 import datetime
 import json
-from tempfile import NamedTemporaryFile
 import time
-
 import yaml
 
 from hokusai import CWD
+from hokusai.lib.common import (
+  print_green,
+  print_red,
+  print_yellow,
+  shout,
+  shout_concurrent,
+  write_temp_file,
+  yaml_content_with_header
+)
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
-from hokusai.services.kubectl import Kubectl
-from hokusai.services.ecr import ECR, ClientError
-from hokusai.lib.common import print_green, print_red, print_yellow, shout, shout_concurrent
-from hokusai.services.command_runner import CommandRunner
-from hokusai.services.yaml_spec import YamlSpec
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
-from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.command_runner import CommandRunner
+from hokusai.services.ecr import ECR, ClientError
+from hokusai.services.kubectl import Kubectl
+from hokusai.services.yaml_spec import YamlSpec
+
 
 class Deployment:
   def __init__(self, context, deployment_name=None, namespace=None):
@@ -102,16 +109,18 @@ class Deployment:
               container['image'] = "%s@%s" % (self.ecr.project_repo, digest)
         payload.append(item)
 
-      f = NamedTemporaryFile(delete=False, dir=HOKUSAI_TMP_DIR, mode='w')
-      f.write(YAML_HEADER)
-      f.write(yaml.safe_dump_all(payload, default_flow_style=False))
-      f.close()
-
-      print_green("Applying patched spec %s..." % f.name, newline_after=True)
-      try:
-        shout(self.kctl.command("apply -f %s" % f.name), print_output=True)
-      finally:
-        os.unlink(f.name)
+      payload_string = yaml.safe_dump_all(
+        payload,
+        default_flow_style=False
+      )
+      path = write_temp_file(
+        yaml_content_with_header(payload_string),
+        HOKUSAI_TMP_DIR
+      )
+      print_green(
+        f'Applying patched spec {path}...', newline_after=True
+      )
+      self.kctl.apply(path, print_output=True)
 
     # If not updating config, patch the deployments in the cache and call kubectl patch to update
     else:
