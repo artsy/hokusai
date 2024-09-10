@@ -16,6 +16,7 @@ from hokusai.lib.config import HOKUSAI_CONFIG_DIR, HOKUSAI_TMP_DIR, config
 from hokusai.services.configmap import ConfigMap
 from hokusai.services.kubectl import Kubectl
 from hokusai.services.namespace import Namespace
+from hokusai.services.service_account import ServiceAccount
 from hokusai.services.yaml_spec import YamlSpec
 
 
@@ -96,6 +97,18 @@ def setup_review_app(source_file, app_name):
     copy_configmap(configmap, namespace)
 
   # copy service accounts from staging to review app namespace
+  for sa in service_account_refs:
+    print_green(f'Copying {sa} ServiceAccount...')
+    copy_sa(sa, namespace)
+
+def copy_sa(name, destination_namespace):
+  ''' copy service account from default namespace to destination namespace '''
+  source_sa = ServiceAccount('staging', name=name)
+  source_sa.load()
+  spec = source_sa.clean_spec()
+  spec['metadata']['namespace'] = destination_namespace
+  dest_sa = ServiceAccount('staging', namespace=destination_namespace, name=name, spec=spec)
+  dest_sa.create()
 
 def copy_configmap(name, destination_namespace):
   ''' copy configmap from default namespace to destination namespace '''
