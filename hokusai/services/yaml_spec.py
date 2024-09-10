@@ -29,6 +29,39 @@ class YamlSpec:
   def cleanup(self):
     unlink_file_if_not_debug(self.tmp_filename)
 
+  def all_deployments_configmap_refs(self):
+    ''' return list of configmaps referenced in deployments '''
+    configmap_refs = []
+    deployment_specs = self.get_resources_by_kind('Deployment')
+    for spec in deployment_specs:
+      configmap_refs += self.deployment_configmap_refs(spec)
+    return configmap_refs
+
+  def deployment_configmap_refs(self, deployment_spec):
+    ''' return list of configmaps referenced in deployment spec '''
+    configmap_refs = []
+    pod_spec = deployment_spec['spec']['template']['spec']
+    init_container_specs = pod_spec['initContainers']
+    configmap_refs += self.containers_configmap_refs(init_container_specs)
+    container_specs = pod_spec['containers']
+    configmap_refs += self.containers_configmap_refs(container_specs)
+    return configmap_refs
+
+  def containers_configmap_refs(self, container_specs):
+    ''' return list of configmaps referenced in container specs '''
+    configmap_refs = []
+    for spec in container_specs:
+      configmap_refs += self.container_configmap_refs(spec)
+    return configmap_refs
+
+  def container_configmap_refs(self, container_spec):
+    ''' return list of configmaps referenced in container spec '''
+    configmap_refs = []
+    for envfrom_spec in container_spec['envFrom']:
+      if 'configMapRef' in envfrom_spec:
+        configmap_refs += [envfrom_spec['configMapRef']['name']]
+    return configmap_refs
+
   def extract_pod_spec(self, deployment_name):
     ''' extract pod spec from spec of specified deployment '''
     deployment_spec = self.get_resource_spec(

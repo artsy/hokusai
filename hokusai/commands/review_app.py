@@ -39,7 +39,9 @@ def create_yaml(source_file, app_name):
     create_target_dir=False
   )
   unlink_file_if_not_debug(tmp_path)
-  print_green(f'Created {HOKUSAI_CONFIG_DIR}/{app_name}.yml')
+  path = f'{HOKUSAI_CONFIG_DIR}/{app_name}.yml'
+  print_green(f'Created {path}')
+  return path
 
 def delete_review_app(context, app_name, filename):
   ''' delete review app '''
@@ -79,4 +81,8 @@ def setup_review_app(source_file, app_name):
   ns = Namespace('staging', namespace, labels)
   ns.create()
   print_green(f'Created {namespace} Kubernetes namespace.')
-  create_yaml(source_file, app_name)
+  path = create_yaml(source_file, app_name)
+
+  # get list of configmaps referenced in yaml's Deployments
+  replicate_configmaps(path)
+  configmap_refs = YamlSpec(spec_file).all_deployments_configmap_refs()
