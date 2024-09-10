@@ -29,6 +29,19 @@ class YamlSpec:
   def cleanup(self):
     unlink_file_if_not_debug(self.tmp_filename)
 
+  def all_deployments_sa_refs(self):
+    ''' return list of service accounts referenced in deployments '''
+    sa_refs = []
+    deployment_specs = self.get_resources_by_kind('Deployment')
+    for spec in deployment_specs:
+      sa_refs += [self.deployment_sa_ref(spec)]
+    return sa_refs
+
+  def deployment_sa_ref(self, deployment_spec):
+    ''' return any service account referenced in deployment spec '''
+    pod_spec = deployment_spec['spec']['template']['spec']
+    return pod_spec['serviceAccountName']
+
   def all_deployments_configmap_refs(self):
     ''' return list of configmaps referenced in deployments '''
     configmap_refs = []

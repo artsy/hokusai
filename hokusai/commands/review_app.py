@@ -84,5 +84,9 @@ def setup_review_app(source_file, app_name):
   path = create_yaml(source_file, app_name)
 
   # get list of configmaps referenced in yaml's Deployments
-  replicate_configmaps(path)
-  configmap_refs = YamlSpec(spec_file).all_deployments_configmap_refs()
+  configmap_refs = YamlSpec(path).all_deployments_configmap_refs()
+  print(configmap_refs)
+
+  # get list of service accounts referenced in yaml's Deployments
+  service_account_refs = YamlSpec(path).all_deployments_sa_refs()
+  print(service_account_refs)
