@@ -26,22 +26,6 @@ class YamlSpec:
     self.render_template = render_template
     atexit.register(self.cleanup)
 
-  def cleanup(self):
-    unlink_file_if_not_debug(self.tmp_filename)
-
-  def all_deployments_sa_refs(self):
-    ''' return list of service accounts referenced in deployments '''
-    sa_refs = []
-    deployment_specs = self.get_resources_by_kind('Deployment')
-    for spec in deployment_specs:
-      sa_refs += [self.deployment_sa_ref(spec)]
-    return sa_refs
-
-  def deployment_sa_ref(self, deployment_spec):
-    ''' return any service account referenced in deployment spec '''
-    pod_spec = deployment_spec['spec']['template']['spec']
-    return pod_spec['serviceAccountName']
-
   def all_deployments_configmap_refs(self):
     ''' return list of configmaps referenced in deployments '''
     configmap_refs = []
@@ -50,8 +34,29 @@ class YamlSpec:
       configmap_refs += self.deployment_configmap_refs(spec)
     return configmap_refs
 
+  def all_deployments_sa_refs(self):
+    ''' return list of service accounts referenced in deployments '''
+    sa_refs = []
+    deployment_specs = self.get_resources_by_kind('Deployment')
+    for spec in deployment_specs:
+      sa_ref = self.deployment_sa_ref(spec)
+      if sa_ref is not None:
+        sa_refs += [sa_ref]
+    return sa_refs
+
+  def cleanup(self):
+    unlink_file_if_not_debug(self.tmp_filename)
+
+  def deployment_sa_ref(self, deployment_spec):
+    ''' return any service account referenced in deployment spec '''
+    pod_spec = deployment_spec['spec']['template']['spec']
+    if 'serviceAccountName' in pod_spec:
+      return pod_spec['serviceAccountName']
+    else:
+      return None
+
   def deployment_configmap_refs(self, deployment_spec):
-    ''' return list of configmaps referenced in deployment spec '''
+    ''' return list of configmaps referenced in a deployment '''
     configmap_refs = []
     pod_spec = deployment_spec['spec']['template']['spec']
     init_container_specs = pod_spec['initContainers']
@@ -68,11 +73,14 @@ class YamlSpec:
     return configmap_refs
 
   def container_configmap_refs(self, container_spec):
-    ''' return list of configmaps referenced in container spec '''
+    ''' return list of configmaps referenced in a container spec '''
     configmap_refs = []
-    for envfrom_spec in container_spec['envFrom']:
-      if 'configMapRef' in envfrom_spec:
-        configmap_refs += [envfrom_spec['configMapRef']['name']]
+    if 'envFrom' in container_spec:
+      for envfrom_spec in container_spec['envFrom']:
+        if 'configMapRef' in envfrom_spec:
+          configmap_refs += [
+            envfrom_spec['configMapRef']['name']
+          ]
     return configmap_refs
 
   def extract_pod_spec(self, deployment_name):

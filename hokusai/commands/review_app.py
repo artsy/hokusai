@@ -19,6 +19,36 @@ from hokusai.services.namespace import Namespace
 from hokusai.services.service_account import ServiceAccount
 from hokusai.services.yaml_spec import YamlSpec
 
+import json
+
+import pdb
+
+def copy_configmap(name, destination_namespace):
+  ''' copy configmap from default namespace to destination namespace '''
+  source_configmap = ConfigMap('staging', name=name)
+  destination_configmap = ConfigMap(
+    'staging',
+    name=name,
+    namespace=destination_namespace
+  )
+  source_configmap.load()
+  destination_configmap.struct['data'] = source_configmap.struct['data']
+  destination_configmap.save()
+
+def copy_sa(name, destination_namespace):
+  ''' copy service account from default namespace to destination namespace '''
+  source_sa = ServiceAccount('staging', name=name)
+  source_sa.load()
+  spec = source_sa.spec
+  spec['metadata']['namespace'] = destination_namespace
+  #pdb.set_trace()
+  dest_sa = ServiceAccount(
+    'staging',
+    namespace=destination_namespace,
+    name=name,
+    spec=spec
+  )
+  dest_sa.apply()
 
 def create_yaml(source_file, app_name):
   ''' create yaml for review app '''
@@ -74,46 +104,40 @@ def list_review_apps(context, labels=None):
 
 def setup_review_app(source_file, app_name):
   ''' prepare for creating a review app '''
+  namespace = clean_string(app_name)
+
   # create namespace
   labels = {
     'app-name': config.project_name,
     'app-phase': 'review'
   }
-  namespace = clean_string(app_name)
   ns = Namespace('staging', namespace, labels)
   ns.create()
   print_green(f'Created {namespace} Kubernetes namespace.')
+
+  # create yaml file
   path = create_yaml(source_file, app_name)
 
   # get list of configmaps referenced in yaml's Deployments
-  configmap_refs = YamlSpec(path).all_deployments_configmap_refs()
-
-  # get list of service accounts referenced in yaml's Deployments
-  service_account_refs = YamlSpec(path).all_deployments_sa_refs()
-
-  # copy configmaps from staging to review app namespace
+  # and copy them to review app namespace
+  configmap_refs = YamlSpec(
+    path,
+    render_template=False
+  ).all_deployments_configmap_refs()
   for configmap in configmap_refs:
-    print_green(f'Copying {configmap} ConfigMap...')
+    print_green(
+      f'Copying {configmap} ConfigMap to {namespace} namespace...'
+    )
     copy_configmap(configmap, namespace)
 
-  # copy service accounts from staging to review app namespace
+  # get list of service accounts referenced in yaml's Deployments
+  # and copy them to review app namespace
+  service_account_refs = YamlSpec(
+    path,
+    render_template=False
+  ).all_deployments_sa_refs()
   for sa in service_account_refs:
-    print_green(f'Copying {sa} ServiceAccount...')
+    print_green(
+      f'Copying {sa} ServiceAccount to {namespace} namespace...'
+    )
     copy_sa(sa, namespace)
-
-def copy_sa(name, destination_namespace):
-  ''' copy service account from default namespace to destination namespace '''
-  source_sa = ServiceAccount('staging', name=name)
-  source_sa.load()
-  spec = source_sa.clean_spec()
-  spec['metadata']['namespace'] = destination_namespace
-  dest_sa = ServiceAccount('staging', namespace=destination_namespace, name=name, spec=spec)
-  dest_sa.create()
-
-def copy_configmap(name, destination_namespace):
-  ''' copy configmap from default namespace to destination namespace '''
-  source_configmap = ConfigMap('staging', name=name)
-  destination_configmap = ConfigMap('staging', name=name, namespace=destination_namespace)
-  source_configmap.load()
-  destination_configmap.struct['data'] = source_configmap.struct['data']
-  destination_configmap.save()
