@@ -5,7 +5,6 @@ from hokusai.lib.common import delete_keys, shout, write_temp_file
 from hokusai.lib.config import HOKUSAI_TMP_DIR
 from hokusai.services.kubectl import Kubectl
 
-import pdb
 
 class ServiceAccount:
   ''' represent a Kubernetes ServiceAccount '''

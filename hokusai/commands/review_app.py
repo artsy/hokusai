@@ -19,9 +19,6 @@ from hokusai.services.namespace import Namespace
 from hokusai.services.service_account import ServiceAccount
 from hokusai.services.yaml_spec import YamlSpec
 
-import json
-
-import pdb
 
 def copy_configmap(name, destination_namespace):
   ''' copy configmap from default namespace to destination namespace '''
@@ -41,7 +38,6 @@ def copy_sa(name, destination_namespace):
   source_sa.load()
   spec = source_sa.spec
   spec['metadata']['namespace'] = destination_namespace
-  #pdb.set_trace()
   dest_sa = ServiceAccount(
     'staging',
     namespace=destination_namespace,
