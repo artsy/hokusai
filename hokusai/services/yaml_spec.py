@@ -59,10 +59,12 @@ class YamlSpec:
     ''' return list of configmaps referenced in a deployment '''
     configmap_refs = []
     pod_spec = deployment_spec['spec']['template']['spec']
-    init_container_specs = pod_spec['initContainers']
-    configmap_refs += self.containers_configmap_refs(init_container_specs)
-    container_specs = pod_spec['containers']
-    configmap_refs += self.containers_configmap_refs(container_specs)
+    if 'initContainers' in pod_spec:
+      init_container_specs = pod_spec['initContainers']
+      configmap_refs += self.containers_configmap_refs(init_container_specs)
+    if 'containers' in pod_spec:
+      container_specs = pod_spec['containers']
+      configmap_refs += self.containers_configmap_refs(container_specs)
     return configmap_refs
 
   def containers_configmap_refs(self, container_specs):
