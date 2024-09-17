@@ -62,14 +62,14 @@ function create_real_docker_config_json() {
 
 function back_up_kube_config() {
   # don't let minikube overwrite user's real k8s kubeconfig
-  local backed_up_kube_config=''
-  if ls "$KUBE_CONFIG_PATH"
+  retval=1
+  if ls "$KUBE_CONFIG_PATH" &>/dev/null
   then
-    echo "Backing up $KUBE_CONFIG_PATH ..."
     mv "$KUBE_CONFIG_PATH" "$KUBE_CONFIG_BACKUP_PATH"
-    backed_up_kube_config='true'
+    echo "Backing up $KUBE_CONFIG_PATH..."
+    retval=0
   fi
-  echo "$backed_up_kube_config"
+  return "$retval"
 }
 
 function restore_kube_config() {
@@ -102,14 +102,21 @@ function create_regcred_for_env() {
 
 ## main
 
-kube_config_is_backed_up=$(back_up_kube_config)
+back_up_kube_config
+retval=$?
+if [ "$retval" == 0 ]
+then
+  kube_config_is_backed_up=true
+fi
+
 start_minikube staging
 start_minikube production
 create_regcred
 coverage run -m pytest test/integration
 minikube stop --profile staging
 minikube stop --profile production
-if [ "$kube_config_is_backed_up" = "true" ]
+if [ "$kube_config_is_backed_up" = 'true' ]
 then
+  echo 'Restoring kube config...'
   restore_kube_config
 fi
