@@ -53,7 +53,8 @@ class ConfigMap:
   def destroy(self):
     ''' delete configmap in Kubernetes '''
     shout(
-      self.kctl.command("delete configmap %s" % self.name)
+      self.kctl.command("delete configmap %s" % self.name),
+      print_output=True
     )
 
   def load(self):

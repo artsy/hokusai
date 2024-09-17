@@ -72,7 +72,8 @@ def describe_configmap():
         'delete configmap hello-environment'
       )
       shout_spy.assert_called_once_with(
-        'the command'
+        'the command',
+        print_output=True
       )
 
   def describe_load():

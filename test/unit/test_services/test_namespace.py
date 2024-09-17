@@ -61,7 +61,8 @@ def describe_namespace():
           'delete namespace foons'
         )
         shout_spy.assert_called_once_with(
-          'kubectl --context staging delete ns foons'
+          'kubectl --context staging delete ns foons',
+          print_output=True
         )
     def describe_namespace_is_default():
       def it_raises(mocker, mock_kubectl_obj):

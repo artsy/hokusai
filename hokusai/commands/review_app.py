@@ -79,7 +79,6 @@ def delete_review_app(context, app_name, filename):
   # delete namespace
   ns = Namespace('staging', namespace)
   ns.delete()
-  print_green(f'Deleted {namespace} Kubernetes namespace.')
 
 def edit_namespace(k8s_resource, destination_namespace):
   ''' edit namespace field for a Kubernetes resource definition '''
@@ -109,7 +108,6 @@ def setup_review_app(source_file, app_name):
   }
   ns = Namespace('staging', namespace, labels)
   ns.create()
-  print_green(f'Created {namespace} Kubernetes namespace.')
 
   # create yaml file
   path = create_yaml(source_file, app_name)

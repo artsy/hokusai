@@ -2,9 +2,10 @@ import os
 import pytest
 import subprocess
 
+
 @pytest.mark.order(1010)
 def describe_setup():
-  def it_creates_yml_and_namespace():
+  def it_sets_up():
     subprocess.run(
       'hokusai staging create',
       capture_output=True,
@@ -23,7 +24,10 @@ def describe_setup():
       print(resp.stderr)
     assert resp.returncode == 0
     assert 'Created hokusai/a-review-app.yml' in resp.stdout
-    assert 'Created a-review-app Kubernetes namespace' in resp.stdout
+    assert 'namespace/a-review-app created' in resp.stdout
+    assert 'Copying hokusai-integration-test-environment ConfigMap to a-review-app namespace' in resp.stdout
+    assert 'configmap/hokusai-integration-test-environment created' in resp.stdout
+#    assert 'serviceaccount/a-review-app created' in resp.stdout
 
 @pytest.mark.order(1020)
 def describe_create():
@@ -75,4 +79,4 @@ def describe_delete():
       print(resp.stderr)
     assert resp.returncode == 0
     assert 'Deleted Kubernetes environment' in resp.stdout
-    assert 'Deleted a-review-app Kubernetes namespace' in resp.stdout
+    assert 'namespace "a-review-app" deleted' in resp.stdout
