@@ -96,7 +96,6 @@ function create_regcred_for_env() {
   kubectl --context "$environment" create secret generic regcred \
     --from-file=.dockerconfigjson="$dockercfg" \
     --type=kubernetes.io/dockerconfigjson
-  kubectl --context "$environment" patch serviceaccount default -p '{"imagePullSecrets": [{"name": "regcred"}]}'
 }
 
 

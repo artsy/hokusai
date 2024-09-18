@@ -27,13 +27,13 @@ def describe_setup():
     assert 'namespace/a-review-app created' in resp.stdout
     assert 'Copying hokusai-integration-test-environment ConfigMap to a-review-app namespace' in resp.stdout
     assert 'configmap/hokusai-integration-test-environment created' in resp.stdout
-#    assert 'serviceaccount/a-review-app created' in resp.stdout
+    assert 'serviceaccount/hokusai-integration-test created' in resp.stdout
 
 @pytest.mark.order(1020)
 def describe_create():
   def it_creates_deployment():
     subprocess.run(
-      'hokusai registry push --force --skip-latest --tag a-review-app',
+      'hokusai registry push --force --skip-latest --tag a-review-app --overwrite',
       shell=True,
       text=True,
       timeout=30

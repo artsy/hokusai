@@ -50,7 +50,7 @@ def describe_status():
 def describe_update():
   def it_reports_no_changes():
     resp = subprocess.run(
-      'hokusai staging update',
+      'hokusai staging update --skip-checks',
       capture_output=True,
       shell=True,
       text=True,
