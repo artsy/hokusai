@@ -7,8 +7,9 @@ from hokusai import CWD
 from hokusai.cli.base import base
 from hokusai.cli.staging import KUBE_CONTEXT
 from hokusai.lib.command import command
-from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
+from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string, print_yellow
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
+
 
 @base.group('review_app')
 def review_app(context_settings=CONTEXT_SETTINGS):
@@ -246,6 +247,28 @@ def restart(app_name, deployment, verbose):
 def env(context_settings=CONTEXT_SETTINGS):
   """Interact with the runtime environment for the review app"""
   pass
+
+
+@env.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('app_name', type=click.STRING)
+@click.option(
+  '--configmap',
+  type=click.STRING,
+  help="Copy the given ConfigMap (default: the project's environment ConfigMap)"
+)
+@click.option(
+  '-v',
+  '--verbose',
+  type=click.BOOL,
+  is_flag=True,
+  help='Verbose output'
+)
+def copy(app_name, configmap, verbose):
+  """Copies the app's environment config map to the namespace {APP_NAME}"""
+  set_verbosity(verbose)
+  print_yellow(
+    'This command is no longer necessary. It is deprecated and will be removed soon. Please stop using it.'
+  )
 
 
 @env.command(context_settings=CONTEXT_SETTINGS)
