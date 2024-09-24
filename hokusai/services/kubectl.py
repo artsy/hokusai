@@ -17,19 +17,19 @@ class Kubectl:
       global_config.kubectl_dir, 'kubectl'
     )
 
-  def _apply_or_create(self, action, k8s_spec_file, print_output=False):
+  def _apply_or_create(self, action, k8s_spec_file):
     ''' run kubectl apply or create on a k8s spec file '''
     try:
       shout(
         self.command(f'{action} -f {k8s_spec_file}'),
-        print_output
+        print_output=True
       )
     finally:
       unlink_file_if_not_debug(k8s_spec_file)
 
-  def apply(self, k8s_spec_file, print_output=False):
+  def apply(self, k8s_spec_file):
     ''' run kubectl apply on a k8s spec file '''
-    self._apply_or_create('apply', k8s_spec_file, print_output)
+    self._apply_or_create('apply', k8s_spec_file)
 
   def command(self, cmd):
     ''' generate kubectl command '''
@@ -50,9 +50,9 @@ class Kubectl:
       )['contexts']
     ]
 
-  def create(self, k8s_spec_file, print_output=False):
+  def create(self, k8s_spec_file):
     ''' run kubectl create on a k8s spec file '''
-    self._apply_or_create('create', k8s_spec_file, print_output)
+    self._apply_or_create('create', k8s_spec_file)
 
   def get_object(self, obj):
     ''' run kubectl get <object> '''

@@ -57,6 +57,45 @@ def clean_dict(d1, fields_to_keep):
 def clean_string(str):
   return str.lower().replace('_', '-')
 
+def delete_keys(d1, keys):
+  '''
+  given dict 'd1',
+  and dict 'keys' which specifies keys in d1 to delete,
+  delete those keys from d1, if they exist.
+  for example:
+
+  # d1
+  {
+    'a': 1,
+    'b': {
+      'ba': 2,
+      'bb': 3
+    }
+  }
+
+  # keys
+  {
+    'a': {}, # empty dict because value doesn't matter
+    'b': {
+      'ba': {}
+    },
+    'c': {} # doesn't exist in d1
+  }
+
+  # d1 after key deletion
+  {
+    'b': {
+      'bb': 3
+    }
+  }
+  '''
+  for key in keys:
+    if key in d1:
+      if keys[key] == {}:
+        del d1[key]
+      else:
+        delete_keys(d1[key], keys[key])
+
 def file_debug(dict1, file_suffix=None):
   ''' write dict to a file for debug '''
   # due to circular import

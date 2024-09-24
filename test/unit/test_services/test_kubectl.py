@@ -28,7 +28,7 @@ def describe_kubectl():
         obj._apply_or_create('apply', 'foofile')
         shout_spy.assert_called_once_with(
           '/tmp/.local/bin/kubectl --context staging apply -f foofile',
-          False
+          print_output=True
         )
         unlink_spy.assert_called_once_with('foofile')
     def describe_exception():
@@ -47,11 +47,7 @@ def describe_kubectl():
       mocker.patch.object(obj, '_apply_or_create')
       spy = mocker.spy(obj, '_apply_or_create')
       obj.apply('foofile')
-      spy.assert_called_once_with(
-        'apply',
-        'foofile',
-        False
-      )
+      spy.assert_called_once_with('apply', 'foofile')
 
   def describe_command():
     def describe_without_namespace():
@@ -85,11 +81,7 @@ def describe_kubectl():
       mocker.patch.object(obj, '_apply_or_create')
       spy = mocker.spy(obj, '_apply_or_create')
       obj.create('foofile')
-      spy.assert_called_once_with(
-        'create',
-        'foofile',
-        False
-      )
+      spy.assert_called_once_with('create', 'foofile')
 
   def describe_get_object():
     def describe_no_error():

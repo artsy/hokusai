@@ -150,11 +150,3 @@ def k8s_status(
     print_green("Top Pods", newline_before=True)
     print_green("===========")
     shout(kctl.command("top pods --selector app=%s,layer=application" % config.project_name), print_output=True)
-
-
-def k8s_copy_config(context, destination_namespace, name=None):
-  source_configmap = ConfigMap(context, name=name)
-  destination_configmap = ConfigMap(context, name=name, namespace=destination_namespace)
-  source_configmap.load()
-  destination_configmap.struct['data'] = source_configmap.struct['data']
-  destination_configmap.save()

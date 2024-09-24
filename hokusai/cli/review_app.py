@@ -7,8 +7,9 @@ from hokusai import CWD
 from hokusai.cli.base import base
 from hokusai.cli.staging import KUBE_CONTEXT
 from hokusai.lib.command import command
-from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string
+from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, clean_string, print_yellow
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, config
+
 
 @base.group('review_app')
 def review_app(context_settings=CONTEXT_SETTINGS):
@@ -265,11 +266,8 @@ def env(context_settings=CONTEXT_SETTINGS):
 def copy(app_name, configmap, verbose):
   """Copies the app's environment config map to the namespace {APP_NAME}"""
   set_verbosity(verbose)
-  command(
-    hokusai.k8s_copy_config,
-    KUBE_CONTEXT,
-    clean_string(app_name),
-    name=configmap
+  print_yellow(
+    'This command is no longer necessary. It is deprecated and will be removed soon. Please stop using it.'
   )
 
 

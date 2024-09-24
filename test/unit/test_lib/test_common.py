@@ -12,6 +12,7 @@ import test.unit.test_lib.fixtures.common
 from hokusai.lib.common import (
   ansi_escape,
   clean_dict,
+  delete_keys,
   file_debug,
   get_platform,
   key_value_list_to_dict,
@@ -51,6 +52,29 @@ def describe_clean_dict():
     }
     d2 = {}
     assert clean_dict(d2, fields_to_keep) == {}
+
+def describe_delete_keys():
+  def it_does_the_right_thing():
+    d1 = {
+      'a': 1,
+      'b': {
+        'ba': 2,
+        'bb': 3
+      }
+    }
+    keys = {
+      'a': {},
+      'b': {
+        'ba': {}
+      },
+      'c': {}
+    }
+    delete_keys(d1, keys)
+    assert d1 == {
+      'b': {
+        'bb': 3
+      }
+    }
 
 def describe_file_debug():
   def describe_when_debug_on():

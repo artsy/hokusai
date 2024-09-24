@@ -41,4 +41,7 @@ class Namespace:
     ''' delete namespace '''
     if self.name == 'default':
       raise HokusaiError(f'Cannot delete "default" namespace.')
-    shout(self.kctl.command(f'delete namespace {self.name}'))
+    shout(
+      self.kctl.command(f'delete namespace {self.name}'),
+      print_output=True
+    )
