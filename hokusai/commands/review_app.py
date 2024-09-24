@@ -32,7 +32,7 @@ def copy_configmap(name, destination_namespace):
   destination_configmap.struct['data'] = source_configmap.struct['data']
   destination_configmap.save()
 
-def copy_sa(name, destination_namespace):
+def copy_service_account(name, destination_namespace):
   ''' copy service account from default namespace to destination namespace '''
   source_sa = ServiceAccount('staging', name=name)
   source_sa.load()
@@ -134,4 +134,4 @@ def setup_review_app(source_file, app_name):
     print_green(
       f'Copying {sa} ServiceAccount to {namespace} namespace...'
     )
-    copy_sa(sa, namespace)
+    copy_service_account(sa, namespace)
