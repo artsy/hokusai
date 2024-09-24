@@ -120,7 +120,7 @@ class Deployment:
       print_green(
         f'Applying patched spec {path}...', newline_after=True
       )
-      self.kctl.apply(path, print_output=True)
+      self.kctl.apply(path)
 
     # If not updating config, patch the deployments in the cache and call kubectl patch to update
     else:
