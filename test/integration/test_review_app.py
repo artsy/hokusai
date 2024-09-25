@@ -6,13 +6,6 @@ import subprocess
 @pytest.mark.order(1010)
 def describe_setup():
   def it_sets_up():
-    subprocess.run(
-      'hokusai staging create',
-      capture_output=True,
-      shell=True,
-      text=True,
-      timeout=10
-    )
     resp = subprocess.run(
       'hokusai review_app setup a-review-app',
       capture_output=True,
