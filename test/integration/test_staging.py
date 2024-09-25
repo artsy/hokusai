@@ -7,12 +7,6 @@ from subprocess import TimeoutExpired
 @pytest.mark.order(500)
 def describe_create():
   def it_reports_created():
-    subprocess.run(
-      'hokusai registry push --force',
-      shell=True,
-      text=True,
-      timeout=30
-    )
     resp = subprocess.run(
       'hokusai staging create',
       capture_output=True,
