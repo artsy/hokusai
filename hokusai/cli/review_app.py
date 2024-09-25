@@ -26,6 +26,26 @@ def review_app(context_settings=CONTEXT_SETTINGS):
   default='hokusai/staging.yml',
   help="The source yaml file from which to create the new resource file (default: hokusai/staging.yml)"
 )
+def create_yaml(app_name, verbose, source_file):
+  """Create Review App Yaml"""
+  set_verbosity(verbose)
+  command(
+    hokusai.create_yaml_for_cli,
+    source_file,
+    app_name
+  )
+
+
+@review_app.command(context_settings=CONTEXT_SETTINGS)
+@click.argument('app_name', type=click.STRING)
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+@click.option(
+  '-sf',
+  '--source-file',
+  type=click.STRING,
+  default='hokusai/staging.yml',
+  help="The source yaml file from which to create the new resource file (default: hokusai/staging.yml)"
+)
 def setup(app_name, verbose, source_file):
   """Setup a new Review App"""
   set_verbosity(verbose)
