@@ -22,7 +22,7 @@ Tag the image with review app's name.
 hokusai registry push --tag <app-name>
 ```
 
-If there are git-ignored files in the working directory, which is likely, force push:
+If the working directory has any changed, untracked, or git-ignored files, Hokusai aborts the push in order to not copy any potentially sensitive files into the image. If you know the files are not sensitive or they are already covered by `.dockerignore` file, force the push by:
 
 ```
 hokusai registry push --force --tag <app-name>
