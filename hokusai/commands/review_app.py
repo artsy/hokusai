@@ -69,7 +69,13 @@ def create_yaml(source_file, app_name):
   unlink_file_if_not_debug(tmp_path)
   path = f'{HOKUSAI_CONFIG_DIR}/{app_name}.yml'
   print_green(f'Created {path}')
+  # this return causes Hokusai to exit with 1
+  # so this function must be wrapped if called from CLI
   return path
+
+def create_yaml_for_cli(source_file, app_name):
+  ''' wrap create_yaml function '''
+  create_yaml(source_file, app_name)
 
 def delete_review_app(context, app_name, filename):
   ''' delete review app '''
