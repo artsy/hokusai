@@ -35,10 +35,11 @@ def describe_yaml_spec():
       obj = YamlSpec('test/fixtures/kubernetes-config.yml')
       mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml[slice(5)])
       assert obj.all_deployments_configmap_refs() == [
-        'foo-deployment1-init-container-configmap',
+        'foo-common-configmap',
         'foo-deployment1-configmap1',
         'foo-deployment1-configmap2',
         'foo-deployment1-container2-configmap',
+        'foo-deployment1-init-container-configmap',
         'foo-deployment2-configmap'
       ]
 
@@ -63,8 +64,9 @@ def describe_yaml_spec():
       assert obj.container_configmap_refs(
         mock_hokusai_yaml[0]['spec']['template']['spec']['containers'][0]
       ) == [
+        'foo-common-configmap',
         'foo-deployment1-configmap1',
-        'foo-deployment1-configmap2'
+        'foo-deployment1-configmap2',
       ]
     def it_returns_empty_list_when_envfrom_empty(mocker, mock_hokusai_yaml):
       mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
@@ -92,6 +94,7 @@ def describe_yaml_spec():
       assert obj.containers_configmap_refs(
         mock_hokusai_yaml[0]['spec']['template']['spec']['containers']
       ) == [
+        'foo-common-configmap',
         'foo-deployment1-configmap1',
         'foo-deployment1-configmap2',
         'foo-deployment1-container2-configmap'
@@ -106,10 +109,11 @@ def describe_yaml_spec():
       assert obj.deployment_configmap_refs(
         mock_hokusai_yaml[0]
       ) == [
-        'foo-deployment1-init-container-configmap',
+        'foo-common-configmap',
         'foo-deployment1-configmap1',
         'foo-deployment1-configmap2',
-        'foo-deployment1-container2-configmap'
+        'foo-deployment1-container2-configmap',
+        'foo-deployment1-init-container-configmap'
       ]
 
   def describe_deployment_sa_ref():
