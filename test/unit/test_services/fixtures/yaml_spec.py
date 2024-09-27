@@ -43,6 +43,11 @@ def mock_hokusai_yaml():
                     },
                   },
                   {
+                    'configMapRef': {
+                      'name': 'foo-common-configmap'
+                    },
+                  },
+                  {
                     'someOtherRef': {
                       'name': 'foo-deployment1-blah'
                     }
@@ -82,7 +87,12 @@ def mock_hokusai_yaml():
                     'configMapRef': {
                       'name': 'foo-deployment2-configmap'
                     },
-                  }
+                  },
+                  {
+                    'configMapRef': {
+                      'name': 'foo-common-configmap'
+                    },
+                  },
                 ]
               }
             ],

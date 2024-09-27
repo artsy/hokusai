@@ -290,6 +290,12 @@ def smart_str(s, newline_before=False, newline_after=False):
 
   return s
 
+def sorted_unique_list(list1):
+  ''' return sorted list of unique elements in list1 '''
+  return sorted(
+    set(list1)
+  )
+
 def unlink_file_if_not_debug(path):
   ''' if DEBUG is off, unlink specified file '''
   if not os.environ.get('DEBUG'):

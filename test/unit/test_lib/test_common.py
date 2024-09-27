@@ -17,6 +17,7 @@ from hokusai.lib.common import (
   get_platform,
   key_value_list_to_dict,
   local_to_local,
+  sorted_unique_list,
   unlink_file_if_not_debug,
   uri_to_local,
   user,
@@ -206,6 +207,32 @@ def describe_local_to_local():
       source = os.path.join(tmp_path, 'a.yml')
       with pytest.raises(FileNotFoundError):
         local_to_local(source, tmp_path, 'b.yml')
+
+def describe_sorted_unique_list():
+  def it_returns_empty_list_when_input_list_is_empty():
+    list1 = []
+    assert sorted_unique_list(list1) == []
+  def it_returns_identical_list_when_input_list_is_good():
+    list1 = [
+      'a',
+      'b',
+      'c'
+    ]
+    assert sorted_unique_list(list1) == list1
+  def it_returns_sorted_unique_list():
+    list1 = [
+      'c',
+      'b',
+      'a',
+      'a'
+    ]
+    returned_list = sorted_unique_list(list1)
+    assert returned_list == [
+      'a',
+      'b',
+      'c'
+    ]
+    assert isinstance(returned_list, list)
 
 def describe_unlink_file_if_not_debug():
   def describe_debug_on():
