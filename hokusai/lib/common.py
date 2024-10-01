@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import json
 import os
+
+import json
 import platform
 import random
 import re
@@ -20,10 +21,7 @@ from tempfile import NamedTemporaryFile
 from termcolor import cprint
 from urllib.parse import urlparse
 
-from hokusai.lib.config import (
-  config,
-  HOKUSAI_TMP_DIR
-)
+from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import (
   CalledProcessError, HokusaiError
 )
@@ -59,8 +57,49 @@ def clean_dict(d1, fields_to_keep):
 def clean_string(str):
   return str.lower().replace('_', '-')
 
+def delete_keys(d1, keys):
+  '''
+  given dict 'd1',
+  and dict 'keys' which specifies keys in d1 to delete,
+  delete those keys from d1, if they exist.
+  for example:
+
+  # d1
+  {
+    'a': 1,
+    'b': {
+      'ba': 2,
+      'bb': 3
+    }
+  }
+
+  # keys
+  {
+    'a': {}, # empty dict because value doesn't matter
+    'b': {
+      'ba': {}
+    },
+    'c': {} # doesn't exist in d1
+  }
+
+  # d1 after key deletion
+  {
+    'b': {
+      'bb': 3
+    }
+  }
+  '''
+  for key in keys:
+    if key in d1:
+      if keys[key] == {}:
+        del d1[key]
+      else:
+        delete_keys(d1[key], keys[key])
+
 def file_debug(dict1, file_suffix=None):
   ''' write dict to a file for debug '''
+  # due to circular import
+  from hokusai.lib.config import HOKUSAI_TMP_DIR
   if os.environ.get('DEBUG'):
     with NamedTemporaryFile(
       delete=False,
@@ -158,10 +197,14 @@ def local_to_local(
   os.chmod(target_path, mode)
 
 def pick_no():
-  return random.choice(["Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"])
+  return random.choice([
+    "Nope", "No", "нет", "Ne", "नहीं", "Daabi", "Nein", "Nay", "Nē", "ні", "خیر", "Nie", "Non", "ניט", "не", "아니", "いや", "没有", "Não"
+  ])
 
 def pick_yes():
-  return random.choice(["Yep", "Si", "да", "Da", "Aane", "हाँ", "Ja", "はい", "Jā", "так", "بله", "Tak", "Wi", "Oui", "יאָ", "예", "是", "Sim"])
+  return random.choice([
+    "Yep", "Si", "да", "Da", "Aane", "हाँ", "Ja", "はい", "Jā", "так", "بله", "Tak", "Wi", "Oui", "יאָ", "예", "是", "Sim"
+  ])
 
 def print_green(msg, newline_before=False, newline_after=False):
   cprint(smart_str(msg, newline_before, newline_after), 'green')
@@ -179,6 +222,8 @@ def returncode(command, mask=()):
   return call(verbose(command, mask=mask), stderr=STDOUT, shell=True)
 
 def set_verbosity(v):
+  # due to circular import
+  from hokusai.lib.config import config
   global VERBOSE
   VERBOSE = v or config.always_verbose
 
@@ -213,7 +258,14 @@ def shout_concurrent(commands, print_output=False, mask=()):
   if print_output:
     processes = [Popen(verbose(command, mask=mask), shell=True) for command in commands]
   else:
-    processes = [Popen(verbose(command, mask=mask), shell=True, stdout=open(os.devnull, 'w'), stderr=STDOUT) for command in commands]
+    processes = [
+      Popen(
+        verbose(command, mask=mask),
+        shell=True,
+        stdout=open(os.devnull, 'w'),
+        stderr=STDOUT
+      ) for command in commands
+    ]
 
   return_codes = []
   try:
@@ -238,6 +290,20 @@ def smart_str(s, newline_before=False, newline_after=False):
 
   return s
 
+def sorted_unique_list(list1):
+  ''' return sorted list of unique elements in list1 '''
+  return sorted(
+    set(list1)
+  )
+
+def unlink_file_if_not_debug(path):
+  ''' if DEBUG is off, unlink specified file '''
+  if not os.environ.get('DEBUG'):
+    try:
+      os.unlink(path)
+    except:
+      pass
+
 def uri_to_local(uri, target_dir, target_file):
   '''
   copy file from uri to target_dir/target_file
@@ -256,7 +322,9 @@ def uri_to_local(uri, target_dir, target_file):
     elif parsed_uri.scheme == '':
       local_to_local(parsed_uri.path, target_dir, target_file)
     else:
-      raise HokusaiError(f'URI {uri} has unsupported scheme. Only "s3://" and file paths are supported.')
+      raise HokusaiError(
+        f'URI {uri} has unsupported scheme. Only "s3://" and file paths are supported.'
+      )
   except:
     print_red(
       f'Error: failed to copy {uri} to {os.path.join(target_dir, target_file)}'
@@ -294,7 +362,21 @@ def validate_key_value(key_value):
 def verbose(msg, mask=()):
   if VERBOSE:
     if mask:
-      print_yellow("==> hokusai exec `%s`" % re.sub(mask[0], mask[1], msg), newline_after=True)
+      print_yellow(
+        "==> hokusai exec `%s`" % re.sub(mask[0], mask[1], msg),
+        newline_after=True
+      )
     else:
       print_yellow("==> hokusai exec `%s`" % msg, newline_after=True)
   return msg
+
+def write_temp_file(data, dir):
+  ''' write data to temp file, return file path '''
+  obj = NamedTemporaryFile(delete=False, dir=dir, mode='w')
+  obj.write(data)
+  obj.close()
+  return obj.name
+
+def yaml_content_with_header(content_string):
+  ''' return content with yaml header prepended '''
+  return YAML_HEADER + content_string

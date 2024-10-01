@@ -12,14 +12,18 @@ import test.unit.test_lib.fixtures.common
 from hokusai.lib.common import (
   ansi_escape,
   clean_dict,
+  delete_keys,
   file_debug,
   get_platform,
   key_value_list_to_dict,
   local_to_local,
+  sorted_unique_list,
+  unlink_file_if_not_debug,
   uri_to_local,
   user,
   utc_yyyymmdd,
-  validate_key_value
+  validate_key_value,
+  write_temp_file
 )
 from hokusai.lib.exceptions import HokusaiError
 from test.unit.test_lib.fixtures.common import (
@@ -49,6 +53,29 @@ def describe_clean_dict():
     }
     d2 = {}
     assert clean_dict(d2, fields_to_keep) == {}
+
+def describe_delete_keys():
+  def it_does_the_right_thing():
+    d1 = {
+      'a': 1,
+      'b': {
+        'ba': 2,
+        'bb': 3
+      }
+    }
+    keys = {
+      'a': {},
+      'b': {
+        'ba': {}
+      },
+      'c': {}
+    }
+    delete_keys(d1, keys)
+    assert d1 == {
+      'b': {
+        'bb': 3
+      }
+    }
 
 def describe_file_debug():
   def describe_when_debug_on():
@@ -181,6 +208,52 @@ def describe_local_to_local():
       with pytest.raises(FileNotFoundError):
         local_to_local(source, tmp_path, 'b.yml')
 
+def describe_sorted_unique_list():
+  def it_returns_empty_list_when_input_list_is_empty():
+    list1 = []
+    assert sorted_unique_list(list1) == []
+  def it_returns_identical_list_when_input_list_is_good():
+    list1 = [
+      'a',
+      'b',
+      'c'
+    ]
+    assert sorted_unique_list(list1) == list1
+  def it_returns_sorted_unique_list():
+    list1 = [
+      'c',
+      'b',
+      'a',
+      'a'
+    ]
+    returned_list = sorted_unique_list(list1)
+    assert returned_list == [
+      'a',
+      'b',
+      'c'
+    ]
+    assert isinstance(returned_list, list)
+
+def describe_unlink_file_if_not_debug():
+  def describe_debug_on():
+    def it_leaves_file_alone(monkeypatch, tmp_path):
+      monkeypatch.setenv('DEBUG', '1')
+      path = os.path.join(tmp_path, 'foo.yml')
+      path_obj = Path(path)
+      path_obj.touch()
+      assert os.path.exists(path)
+      unlink_file_if_not_debug(path)
+      assert os.path.exists(path)
+  def describe_debug_off():
+    def it_deletes_file(monkeypatch, tmp_path):
+      monkeypatch.setenv('DEBUG', '')
+      path = os.path.join(tmp_path, 'foo.yml')
+      path_obj = Path(path)
+      path_obj.touch()
+      assert os.path.exists(path)
+      unlink_file_if_not_debug(path)
+      assert not os.path.exists(path)
+
 def describe_uri_to_local():
   def describe_s3_scheme():
     def it_calls_s3_interface_download(mocker, mock_s3_interface_class, tmp_path):
@@ -258,3 +331,12 @@ def describe_validate_key_value():
     def it_raises():
       with pytest.raises(HokusaiError):
         validate_key_value('foobar')
+
+def describe_write_temp_file():
+  def it_writes(mocker, tmp_path):
+    tmp_file_obj = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
+    mocker.patch('hokusai.lib.common.NamedTemporaryFile', return_value=tmp_file_obj)
+    data = 'foo'
+    assert write_temp_file(data, tmp_path) == tmp_file_obj.name
+    with open(tmp_file_obj.name, 'r') as f:
+      assert f.read().strip() == 'foo'

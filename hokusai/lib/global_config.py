@@ -1,16 +1,23 @@
 import os
 import yaml
 
-from hokusai.lib.common import print_red
+from hokusai.lib.common import (
+  local_to_local,
+  print_red,
+  unlink_file_if_not_debug,
+  write_temp_file,
+  yaml_content_with_header
+)
+from hokusai.lib.config import HOKUSAI_TMP_DIR
 from hokusai.lib.config_loader import ConfigLoader
-from hokusai.lib.constants import YAML_HEADER
 from hokusai.lib.exceptions import HokusaiError
 
 
 user_home = os.environ.get('HOME', '/')
+local_global_config_file_name = '.hokusai.yml'
 local_global_config = os.path.join(
   user_home,
-  '.hokusai.yml'
+  local_global_config_file_name
 )
 source_global_config = os.environ.get(
   'HOKUSAI_GLOBAL_CONFIG',
@@ -33,14 +40,21 @@ class HokusaiGlobalConfig:
   def save(self):
     ''' save config to local config file '''
     try:
-      with open(local_global_config, 'w') as output:
-        output.write(YAML_HEADER)
-        yaml.safe_dump(
-          self._config,
-          output,
-          default_flow_style=False
-        )
-      os.chmod(local_global_config, 0o660)
+      config_string = yaml.safe_dump(
+        self._config,
+        default_flow_style=False
+      )
+      tmp_path = write_temp_file(
+        yaml_content_with_header(config_string),
+        HOKUSAI_TMP_DIR
+      )
+      local_to_local(
+        tmp_path,
+        user_home,
+        local_global_config_file_name,
+        create_target_dir=False
+      )
+      unlink_file_if_not_debug(tmp_path)
     except:
       print_red(
         f'Error: Not able to write Hokusai config to {local_global_config}'

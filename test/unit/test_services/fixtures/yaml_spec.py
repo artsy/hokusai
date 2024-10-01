@@ -16,7 +16,56 @@ def mock_hokusai_yaml():
       'spec': {
         'template': {
           'spec': {
-            'containers': ['foo-deployment1-container']
+            'initContainers': [
+              {
+                'name': 'foo-deployment1-init-container',
+                'envFrom': [
+                  {
+                    'configMapRef': {
+                      'name': 'foo-deployment1-init-container-configmap'
+                    }
+                  }
+                ]
+              }
+            ],
+            'containers': [
+              {
+                'name': 'foo-deployment1-container',
+                'envFrom': [
+                  {
+                    'configMapRef': {
+                      'name': 'foo-deployment1-configmap1'
+                    },
+                  },
+                  {
+                    'configMapRef': {
+                      'name': 'foo-deployment1-configmap2'
+                    },
+                  },
+                  {
+                    'configMapRef': {
+                      'name': 'foo-common-configmap'
+                    },
+                  },
+                  {
+                    'someOtherRef': {
+                      'name': 'foo-deployment1-blah'
+                    }
+                  }
+                ]
+              },
+              {
+                'name': 'foo-deployment1-container2',
+                'envFrom': [
+                  {
+                    'configMapRef': {
+                      'name': 'foo-deployment1-container2-configmap'
+                    },
+                  }
+                ]
+              }
+            ],
+            'serviceAccountName': 'foo-deployment1-sa'
           }
         }
       }
@@ -30,8 +79,74 @@ def mock_hokusai_yaml():
       'spec': {
         'template': {
           'spec': {
-            'containers': ['foo-deployment2-container']
+            'containers': [
+              {
+                'name': 'foo-deployment2-container',
+                'envFrom': [
+                  {
+                    'configMapRef': {
+                      'name': 'foo-deployment2-configmap'
+                    },
+                  },
+                  {
+                    'configMapRef': {
+                      'name': 'foo-common-configmap'
+                    },
+                  },
+                ]
+              }
+            ],
+            'serviceAccountName': 'foo-deployment2-sa'
           }
+        }
+      }
+    },
+    {
+      'apiVersion': 'apps/v1',
+      'kind': 'Deployment',
+      'metadata': {
+        'name': 'foo-deployment3'
+      },
+      'spec': {
+        'template': {
+          'spec': {
+            'containers': [
+              {
+                'name': 'foo-deployment3-container',
+                'envFrom': []
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      'apiVersion': 'apps/v1',
+      'kind': 'Deployment',
+      'metadata': {
+        'name': 'foo-deployment4'
+      },
+      'spec': {
+        'template': {
+          'spec': {
+            'containers': [
+              {
+                'name': 'foo-deployment4-container'
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      'apiVersion': 'apps/v1',
+      'kind': 'Deployment',
+      'metadata': {
+        'name': 'foo-deployment5'
+      },
+      'spec': {
+        'template': {
+          'spec': {}
         }
       }
     },
@@ -43,68 +158,3 @@ def mock_hokusai_yaml():
       }
     }
   ]
-
-@pytest.fixture
-def mock_hokusai_yaml_deployment():
-  return [
-    {
-      'apiVersion': 'apps/v1',
-      'kind': 'Deployment',
-      'metadata': {
-        'name': 'foo-deployment1'
-      },
-      'spec': {
-        'template': {
-          'spec': {
-            'containers': ['foo-deployment1-container']
-          }
-        }
-      }
-    },
-    {
-      'apiVersion': 'apps/v1',
-      'kind': 'Deployment',
-      'metadata': {
-        'name': 'foo-deployment2'
-      },
-      'spec': {
-        'template': {
-          'spec': {
-            'containers': ['foo-deployment2-container']
-          }
-        }
-      }
-    }
-  ]
-
-@pytest.fixture
-def mock_hokusai_yaml_deployment_one():
-  return {
-    'apiVersion': 'apps/v1',
-    'kind': 'Deployment',
-    'metadata': {
-      'name': 'foo-deployment1'
-    },
-    'spec': {
-      'template': {
-        'spec': {
-          'containers': ['foo-deployment1-container']
-        }
-      }
-    }
-  }
-
-@pytest.fixture
-def mock_hokusai_yaml_deployment_one_bad():
-  return {
-    'apiVersion': 'apps/v1',
-    'kind': 'Deployment',
-    'metadata': {
-      'name': 'foo-deployment1'
-    },
-    'spec': {
-      'template': {
-        'spec': {}
-      }
-    }
-  }

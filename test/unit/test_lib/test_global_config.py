@@ -36,7 +36,6 @@ def describe_hokusai_global_config():
 
   def describe_merge():
     def it_merges():
-      config_file = os.path.join(os.environ['HOME'], '.hokusai.yml')
       config_obj = HokusaiGlobalConfig()
       config_obj.merge(
         kubeconfig_dir='foodir',
@@ -47,30 +46,26 @@ def describe_hokusai_global_config():
 
   def describe_save():
     def it_saves(monkeypatch, tmp_path):
-      config_file = os.path.join(os.environ['HOME'], '.hokusai.yml')
+      monkeypatch.setattr(hokusai.lib.global_config, "user_home", tmp_path)
       config_obj = HokusaiGlobalConfig()
       config_obj.merge(kubeconfig_dir='foodir')
-      file_path = os.path.join(tmp_path, '.hokusai.yml')
-      monkeypatch.setattr(hokusai.lib.global_config, "local_global_config", file_path)
       config_obj.save()
-      with open(file_path, 'r') as f:
+      path = os.path.join(tmp_path, '.hokusai.yml')
+      with open(path, 'r') as f:
         struct = yaml.safe_load(f.read())
         assert struct['kubeconfig-dir'] == 'foodir'
 
   def describe_validate_config():
     def it_raises_when_required_var_missing():
-      config_file = os.path.join(os.environ['HOME'], '.hokusai.yml')
       config_obj = HokusaiGlobalConfig()
       del config_obj._config['kubeconfig-dir']
       with pytest.raises(HokusaiError):
         config_obj.validate_config()
     def it_does_not_raise_when_otherwise():
-      config_file = os.path.join(os.environ['HOME'], '.hokusai.yml')
       config_obj = HokusaiGlobalConfig()
       config_obj.validate_config()
 
   def describe_kubeconfig_dir():
     def it_returns_the_correct_var():
-      config_file = os.path.join(os.environ['HOME'], '.hokusai.yml')
       config_obj = HokusaiGlobalConfig()
       assert config_obj.kubeconfig_dir == config_obj._config['kubeconfig-dir']

@@ -1,131 +1,135 @@
-## Working with review apps
+# Working with review apps
 
-Hokusai provides a command for managing review apps. Review apps are useful for testing feature branches that are not yet ready to be deployed to staging but need to be tested in a staging-like environment.
+Hokusai provides commands for managing review apps. Review apps are useful for testing features that are not yet ready to be deployed to staging but need to be tested in a staging-like environment.
 
-In order to start a review app you will need to follow these steps:
+Perform the following steps in order to create a review app. `app-name` refers to name of the review app.
 
-1) Create a new review app
-    ```shell
-    hokusai review_app setup <name> # we recommend using branch name or PR number as name
-    ```
-    This command will create a new `<name>.yml` under `hokusai/` folder.
+## Prepare app
 
-2) Check the newly created `<name>.yml` file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps. Basically each review app will end up being in its own namespace to not collide with staging.
+```
+hokusai review_app setup <app-name> # we recommend using branch name or PR number as name
+```
 
-3) Push an image with this review app tag:
+It creates a `<app-name>.yml` file under `hokusai/` folder. This is the review app Yaml.
 
-    ```shell
-    hokusai registry push --tag <name>
-    ```
+Check the file and make sure everything looks good. Note that we use Kubernetes [`namespace`](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) for review apps, that is, each review app is created in a dedicated namespace.
 
-    If you have git-ignored files in your working directory (likely) you will have to force push with:
-    ```shell
-    hokusai registry push --force --tag <name>
-    ```
+## Push Docker image
 
-    It may be a good idea to skip updating the `latest` tag in the registry, which you can do with:
-    ```shell
-    hokusai registry push --skip-latest --tag <name>
-    ```
+Tag the image with review app's name.
 
-4) Make sure your review app deployment will use the image you just pushed. This can be done by modifying the new `<name>.yml` file.
+```
+hokusai registry push --tag <app-name>
+```
 
-    There will be a `containers` subsection of the configuration that specifies the `image` that should be pulled from AWS Elastic Container Registry when booting up your review app. Update the value of that `image` so that it points to your newly tagged image, rather than the default staging image for that project.
+If the working directory has any changed, untracked, or git-ignored files, Hokusai aborts the push in order to not copy any potentially sensitive files into the image. If you know the files are not sensitive or they are already covered by `.dockerignore` file, force the push by:
 
-    Example:
-    ```yml
-    image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/volt:staging
+```
+hokusai registry push --force --tag <app-name>
+```
 
-    # must be changed to...
+`push` by default updates the `latest` tag in AWS ECR registry, which can be skipped by:
 
-    image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/volt:<name>
-    ```
-    ... where `<name>` is the review app name you've been using in previous steps, especially step 3.
+```
+hokusai registry push --skip-latest --tag <app-name>
+```
 
+Then, edit review app Yaml. Find the `containers` subsection of the configuration that specifies the `image` that should be pulled from AWS ECR when booting up your review app. Update the value of that `image` so that it points to your newly tagged image, rather than the default staging image for that project.
 
-5) Create new deployment on k8s based on your new local YAML config:
+For example, change:
 
-    ```shell
-    hokusai review_app create <name>
-    ```
+```
+image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/volt:staging
+```
 
-6) Copy the staging environment's `ConfigMap` to the new namespace:
+to:
 
-    ```shell
-    hokusai review_app env copy <name>
-    ```
+```
+image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/volt:<app-name>
+```
 
-7) If necessary, copy other `ConfigMaps` to the new namespace, for example:
+## Create Kubernetes resources
 
-    ```shell
-    hokusai review_app env copy <name> --configmap nginx-config
-    ```
+This step actually creates Kubernetes resources for the review app.
 
-8) Find and visit your staging app:
+```
+hokusai review_app create <app-name>
+```
 
-    - In the Kubernetes UI, find the "Namespace" dropdown in the main nav and select your chosen `<name>` from that menu
-    - Browse to the "Services" section
-    - In "Details", look for "External endpoints". These are your publicly accessible URLs.
-    - You may need to tweak the URL to use `https` instead of `http`
-    - You may need to accept a browser warning about a missing or bad certificate
+## Find and visit the app:
 
-    You can also view a summarized status of your review app with:
+- Go to https://kubernetes.stg.artsy.systems (VPN required).
+- Find the "Namespace" dropdown in the main nav and select `<app-name>`.
+- Browse to the "Services" section.
+- In "Details", look for "External endpoints". These are your publicly accessible URLs.
+- You may need to tweak the URL to use `https` instead of `http`.
+- You may need to accept a browser warning about a missing or bad certificate.
 
-    ```shell
-    hokusai review_app status <name>
-    ```
+You can also view a summarized status of your review app with:
 
-9) If you need to view or update environment variables:
+```
+hokusai review_app status <app-name>
+```
 
-    ```shell
-    hokusai review_app env get <name> FOO
-    hokusai review_app env set <name> FOO=BAR
-    ```
+## Update environment variables (optional)
 
-10) If you need to refresh your app, (e.g. after updating environment variables)
+```
+hokusai review_app env get <app-name> FOO
+hokusai review_app env set <app-name> FOO=BAR
+```
 
-    ```shell
-    hokusai review_app refresh <name>
-    ```
+## Refresh the app (optional)
 
-11) If you need to view logs for your app, (e.g. after a refresh or deploy)
+Must be done if environment variables are updated.
 
-    ```shell
-    hokusai review_app logs <name>
-    ```
+```
+hokusai review_app refresh <app-name>
+```
 
-12) If you need to get a shell in your app, (e.g. to launch a Rails console)
+## View pods' logs (optional)
 
-    ```shell
-    hokusai review_app run <name> <command> --tty
-    ```
+```
+hokusai review_app logs <app-name>
+```
 
-13) If you want to push subsequent changes to the review app,
+## Start a shell session (optional)
 
-    you can push a new build to the same tag with the `--overwrite` flag:
-    ```shell
-    hokusai registry push --overwrite --skip-latest --force --tag <name>
-    ```
+This launches a review app pod and opens a shell session (e.g. Rails console).
 
-    and you need to redeploy your app:
-    ```shell
-    hokusai review_app deploy <name> <name>
-    ```
+```
+hokusai review_app run <app-name> <command> --tty
+```
 
-14) If you have made changes to your review app's yaml file, you need to update the deployment:
+## Push code changes (optional)
 
-    ```shell
-    hokusai review_app deploy <name> <name> --update-config
-    ```
+When review app code is changed, update Docker image by:
 
-    or
+```
+hokusai registry push --overwrite --skip-latest --force --tag <app-name>
+```
 
-    ```shell
-    hokusai review_app update <name>
-    ```
+The re-deploy:
 
-15) Delete review app:
+```
+hokusai review_app deploy <app-name> <image-tag>
+```
 
-    ```shell
-    hokusai review_app delete <name>
-    ```
+## Push Yaml changes (optional)
+
+If review app Yaml is changed, do:
+
+```
+hokusai review_app deploy <app-name> <image-tag> --update-config
+```
+
+or
+
+```
+hokusai review_app update <app-name>
+```
+
+## Delete the app (optional)
+
+```
+hokusai review_app delete <app-name>
+```

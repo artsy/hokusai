@@ -1,3 +1,12 @@
+## v3.0.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v3.0.0/README.md)
+
+### Notable changes since v2.3.0
+
+* 046504f feat: review_app setup command copies configmaps and service accounts (#426) [Breaking Change]
+* 2fba5a5 feat: review app create/delete namespace outside of yaml (#425)
+
 ## v2.3.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v2.3.0/README.md)

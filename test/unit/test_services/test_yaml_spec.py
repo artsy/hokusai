@@ -1,6 +1,5 @@
+import json
 import pytest
-
-from tempfile import NamedTemporaryFile
 
 import hokusai.services.yaml_spec
 
@@ -10,9 +9,6 @@ from hokusai.services.yaml_spec import YamlSpec
 from test.unit.test_services.fixtures.ecr import mock_ecr_class
 from test.unit.test_services.fixtures.yaml_spec import (
   mock_hokusai_yaml,
-  mock_hokusai_yaml_deployment,
-  mock_hokusai_yaml_deployment_one,
-  mock_hokusai_yaml_deployment_one_bad,
   test_k8s_spec_as_string
 )
 
@@ -31,85 +27,166 @@ def describe_yaml_spec():
         mocker.call(obj.cleanup)
       ])
 
+  def describe_all_deployments_configmap_refs():
+    def it_returns_configmap_refs(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml[slice(5)])
+      assert obj.all_deployments_configmap_refs() == [
+        'foo-common-configmap',
+        'foo-deployment1-configmap1',
+        'foo-deployment1-configmap2',
+        'foo-deployment1-container2-configmap',
+        'foo-deployment1-init-container-configmap',
+        'foo-deployment2-configmap'
+      ]
+
+  def describe_all_deployments_sa_refs():
+    def it_returns_sa_ref(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml[slice(5)])
+      assert obj.all_deployments_sa_refs() == [
+        'foo-deployment1-sa',
+        'foo-deployment2-sa'
+      ]
+
+  def describe_container_configmap_refs():
+    def it_returns_configmap_refs_and_those_only(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.container_configmap_refs(
+        mock_hokusai_yaml[0]['spec']['template']['spec']['containers'][0]
+      ) == [
+        'foo-common-configmap',
+        'foo-deployment1-configmap1',
+        'foo-deployment1-configmap2',
+      ]
+    def it_returns_empty_list_when_envfrom_empty(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.container_configmap_refs(
+        mock_hokusai_yaml[2]['spec']['template']['spec']['containers'][0]
+      ) == []
+    def it_returns_empty_list_when_no_envfrom(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.container_configmap_refs(
+        mock_hokusai_yaml[3]['spec']['template']['spec']['containers'][0]
+      ) == []
+
+  def describe_containers_configmap_refs():
+    def it_returns_configmap_refs(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.containers_configmap_refs(
+        mock_hokusai_yaml[0]['spec']['template']['spec']['containers']
+      ) == [
+        'foo-common-configmap',
+        'foo-deployment1-configmap1',
+        'foo-deployment1-configmap2',
+        'foo-deployment1-container2-configmap'
+      ]
+
+  def describe_deployment_configmap_refs():
+    def it_returns_configmap_refs(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.deployment_configmap_refs(
+        mock_hokusai_yaml[0]
+      ) == [
+        'foo-common-configmap',
+        'foo-deployment1-configmap1',
+        'foo-deployment1-configmap2',
+        'foo-deployment1-container2-configmap',
+        'foo-deployment1-init-container-configmap'
+      ]
+
+  def describe_deployment_sa_ref():
+    def it_returns_sa_ref(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.deployment_sa_ref(
+        mock_hokusai_yaml[0]
+      ) == 'foo-deployment1-sa'
+    def it_returns_none_when_no_sa_ref(mocker, mock_hokusai_yaml):
+      mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
+      mocker.patch('hokusai.services.yaml_spec.atexit')
+      spy = mocker.spy(hokusai.services.yaml_spec.atexit, 'register')
+      obj = YamlSpec('test/fixtures/kubernetes-config.yml')
+      assert obj.deployment_sa_ref(
+        mock_hokusai_yaml[2]
+      ) == None
+
   def describe_extract_pod_spec():
     def describe_when_deployment_spec_is_found():
-      def it_returns_pod_spec(mocker, mock_hokusai_yaml_deployment_one):
+      def it_returns_pod_spec(mocker, mock_hokusai_yaml):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
-        mocker.patch.object(obj, 'get_resource_spec', return_value=mock_hokusai_yaml_deployment_one)
-        assert obj.extract_pod_spec('foo-deployment') == {
-          'containers': ['foo-deployment1-container']
-        }
-      def it_raises_on_bad_pod_spec(mocker, mock_hokusai_yaml_deployment_one_bad):
+        mocker.patch.object(obj, 'get_resource_spec', return_value=mock_hokusai_yaml[0])
+        assert obj.extract_pod_spec('foo-deployment1') == mock_hokusai_yaml[0]['spec']['template']['spec']
+      def it_raises_on_bad_pod_spec(mocker, mock_hokusai_yaml):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
-        mocker.patch.object(obj, 'get_resource_spec', return_value=mock_hokusai_yaml_deployment_one_bad)
+        mocker.patch.object(obj, 'get_resource_spec', return_value=mock_hokusai_yaml[4])
         with pytest.raises(HokusaiError):
           obj.extract_pod_spec('foo-deployment')
 
     def describe_when_deployment_spec_is_not_found():
-      def it_raises_key_error(mocker, mock_hokusai_yaml_deployment_one):
+      def it_raises_key_error(mocker):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
         mocker.patch.object(obj, 'get_resource_spec', return_value={})
         with pytest.raises(KeyError):
-          obj.extract_pod_spec('foo-deployment')
+          obj.extract_pod_spec('foo-deployment1')
 
   def describe_get_resource_spec():
     def describe_when_name_specified():
-      def it_returns_spec_when_name_found(mocker, mock_hokusai_yaml_deployment):
+      def it_returns_spec_when_name_found(mocker, mock_hokusai_yaml):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
-        mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml_deployment)
+        mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml[slice(5)])
         found_spec = obj.get_resource_spec('Deployment', name='foo-deployment2')
-        assert found_spec == {
-          'apiVersion': 'apps/v1',
-          'kind': 'Deployment',
-          'metadata': {
-            'name': 'foo-deployment2'
-          },
-          'spec': {
-            'template': {
-              'spec': {
-                'containers': ['foo-deployment2-container']
-              }
-            }
-          }
-        }
-      def it_raises_when_name_not_found(mocker, mock_hokusai_yaml_deployment):
+        assert found_spec == mock_hokusai_yaml[1]
+
+      def it_raises_when_name_not_found(mocker, mock_hokusai_yaml):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
-        mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml_deployment)
+        mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml[slice(5)])
         with pytest.raises(HokusaiError):
-          obj.get_resource_spec('Deployment', name='foo-deployment3')
+          obj.get_resource_spec('Deployment', name='foo-deployment100')
 
     def describe_when_name_not_specified():
-      def it_returns_first_matching_kind(mocker, mock_hokusai_yaml_deployment):
+      def it_returns_first_matching_kind(mocker, mock_hokusai_yaml):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
-        mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml_deployment)
+        mocker.patch.object(obj, 'get_resources_by_kind', return_value=mock_hokusai_yaml[slice(5)])
         found_spec = obj.get_resource_spec('Deployment')
-        assert found_spec == {
-          'apiVersion': 'apps/v1',
-          'kind': 'Deployment',
-          'metadata': {
-            'name': 'foo-deployment1'
-          },
-          'spec': {
-            'template': {
-              'spec': {
-                'containers': ['foo-deployment1-container']
-              }
-            }
-          }
-        }
-      def it_raises_when_there_is_no_matching_kind(mocker, mock_hokusai_yaml_deployment):
+        assert found_spec == mock_hokusai_yaml[0]
+
+      def it_raises_when_there_is_no_matching_kind(mocker):
         mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
         mocker.patch('hokusai.services.yaml_spec.atexit')
         obj = YamlSpec('test/fixtures/kubernetes-config.yml')
@@ -118,12 +195,12 @@ def describe_yaml_spec():
           obj.get_resource_spec('Deployment')
 
   def describe_get_resources_by_kind():
-    def it_returns_resources_when_kind_matches(mocker, mock_hokusai_yaml, mock_hokusai_yaml_deployment):
+    def it_returns_resources_when_kind_matches(mocker, mock_hokusai_yaml):
       mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
       mocker.patch('hokusai.services.yaml_spec.atexit')
       obj = YamlSpec('test/fixtures/kubernetes-config.yml')
       mocker.patch.object(obj, 'to_list', return_value=mock_hokusai_yaml)
-      assert obj.get_resources_by_kind('Deployment') == mock_hokusai_yaml_deployment
+      assert obj.get_resources_by_kind('Deployment') == mock_hokusai_yaml[slice(5)]
     def it_returns_empty_list_when_no_kind_matches(mocker, mock_hokusai_yaml):
       mocker.patch('hokusai.services.yaml_spec.ECR', return_value='foo')
       mocker.patch('hokusai.services.yaml_spec.atexit')
@@ -133,21 +210,23 @@ def describe_yaml_spec():
       assert obj.get_resources_by_kind('fake-kind') == expected_return_value
 
   def describe_to_file():
-    def it_returns_file_name(mocker, tmp_path):
+    def it_returns_file_name(mocker, monkeypatch):
       mocker.patch('hokusai.services.yaml_spec.ECR')
       mocker.patch('hokusai.services.yaml_spec.atexit')
       mocker.patch('hokusai.services.yaml_spec.ConfigLoader')
       mocker.patch('hokusai.services.yaml_spec.TemplateRenderer')
+      mocker.patch('hokusai.services.yaml_spec.write_temp_file', return_value='foofile')
+      write_temp_file_spy = mocker.spy(hokusai.services.yaml_spec, 'write_temp_file')
+      mock_hokusai_tmp_dir = 'hokusaitmpdir'
+      monkeypatch.setattr(hokusai.services.yaml_spec, "HOKUSAI_TMP_DIR", mock_hokusai_tmp_dir)
       obj = YamlSpec('test/fixtures/kubernetes-config.yml')
       mocker.patch.object(obj, 'to_string', return_value='foo')
-      f = NamedTemporaryFile(delete=False, dir=tmp_path, mode='w')
-      mocker.patch('hokusai.services.yaml_spec.NamedTemporaryFile', return_value=f)
       file_name = obj.to_file()
-      assert file_name == f.name
-      content = ''
-      with open(file_name, 'r') as f:
-        content = f.read().strip()
-      assert content == 'foo'
+      write_temp_file_spy.assert_called_once_with(
+        'foo',
+        mock_hokusai_tmp_dir
+      )
+      assert file_name == 'foofile'
 
   def describe_to_list():
     def it_returns_list(mocker):
