@@ -34,7 +34,10 @@ def check():
     return_code += 1
 
   compose_command = Docker.compose_command()
-  check_ok(compose_command)
+  print_green(
+    '\u2714 ' +
+    f'Will use "{compose_command}" command for Docker Compose'
+  )
 
   try:
     shout('which kubectl')

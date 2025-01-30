@@ -2,7 +2,7 @@ import os
 
 from hokusai import CWD
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, config
-from hokusai.lib.common import shout, get_verbosity
+from hokusai.lib.common import shout, get_verbosity, print_yellow
 from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.yaml_spec import YamlSpec
 
@@ -35,15 +35,17 @@ class Docker:
 
   @classmethod
   def compose_command(cls):
-    ''' Decide what command to use for Docker Compose '''
+    ''' decide what command to use for Docker Compose '''
     command_to_use = ''
     try:
       shout('which docker-compose')
       if get_verbosity():
-        print('Found docker-compose.')
+        print_green('Found docker-compose.')
       command_to_use = 'docker-compose'
     except CalledProcessError:
       if get_verbosity():
-        print('docker-compose command not found. Will use "docker compose"')
+        print_yellow(
+          'docker-compose command not found. Will use "docker compose".'
+        )
       command_to_use = 'docker compose'
     return command_to_use
