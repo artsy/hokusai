@@ -2,7 +2,7 @@ import os
 
 from hokusai import CWD
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, config
-from hokusai.lib.common import shout, get_verbosity, print_yellow
+from hokusai.lib.common import shout, get_verbosity, print_yellow, print_green
 from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.yaml_spec import YamlSpec
 

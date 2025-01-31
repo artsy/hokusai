@@ -24,28 +24,28 @@ def follow_extends(docker_compose_yml):
       rendered_templates.append(YamlSpec(extended_template).to_file())
     return rendered_templates
 
-def generate_compose_command(filename):
+def generate_compose_command(filename, default_yaml_file):
   ''' return Docker Compose command '''
-  docker_compose_yml = render_docker_compose_yml(filename)
+  docker_compose_yml = render_docker_compose_yml(filename, default_yaml_file)
   return (
     'COMPOSE_COMPATIBILITY=true ' +
     Docker.compose_command() +
     f' -f {docker_compose_yml}'
   )
 
-def get_yaml_template(filename):
+def get_yaml_template(filename, default_yaml_file):
   ''' return yaml template '''
   if filename is None:
     yaml_template = TemplateSelector().get(
-      os.path.join(CWD, HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE)
+      os.path.join(CWD, HOKUSAI_CONFIG_DIR, default_yaml_file)
     )
   else:
     yaml_template = TemplateSelector().get(filename)
   return yaml_template
 
-def render_docker_compose_yml(filename):
+def render_docker_compose_yml(filename, default_yaml_file):
   ''' return path of rendered Docker Compose yaml '''
-  yaml_template = get_yaml_template(filename)
+  yaml_template = get_yaml_template(filename, default_yaml_file)
   docker_compose_yml = YamlSpec(yaml_template).to_file()
   follow_extends(docker_compose_yml)
   return docker_compose_yml

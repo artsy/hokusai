@@ -2,17 +2,15 @@ import os
 import signal
 
 from hokusai import CWD
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, TEST_YML_FILE, config
+from hokusai.lib.config import config, TEST_YML_FILE
 from hokusai.lib.common import print_green, print_red, shout, EXIT_SIGNALS
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
-from hokusai.lib.template_selector import TemplateSelector
 from hokusai.lib.docker_compose_helpers import generate_compose_command, get_yaml_template
-from hokusai.services.yaml_spec import YamlSpec
 
 
 def test(build, cleanup, filename, service_name):
-  compose_command = generate_compose_command(filename)
+  compose_command = generate_compose_command(filename, default_yaml_file=TEST_YML_FILE)
 
   def on_cleanup(*args):
     shout(
@@ -26,7 +24,7 @@ def test(build, cleanup, filename, service_name):
       signal.signal(sig, on_cleanup)
 
   if build:
-    yaml_template = get_yaml_template(filename)
+    yaml_template = get_yaml_template(filename, default_yaml_file=TEST_YML_FILE)
     Docker().build(filename=yaml_template)
 
   if service_name is None:
