@@ -3,7 +3,7 @@ import os
 import yaml
 
 from hokusai import CWD
-from hokusai.lib.config import HOKUSAI_CONFIG_DIR, DEVELOPMENT_YML_FILE
+from hokusai.lib.config import HOKUSAI_CONFIG_DIR
 from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.yaml_spec import YamlSpec
 
@@ -27,9 +27,14 @@ def generate_compose_command(filename, default_yaml_file):
   ''' return Docker Compose command '''
   # this import when done globally causes circular import error
   from hokusai.services.docker import Docker
-  docker_compose_yml = render_docker_compose_yml(filename, default_yaml_file)
-  # docker-compose v2 switched to using '-' as separator in image name, resulting in 'hokusai-<project>'
-  # COMPOSE_COMPATIBILITY=true forces v2 to use '_', resulting in 'hokusai_<project>', matching v1
+  docker_compose_yml = render_docker_compose_yml(
+    filename,
+    default_yaml_file
+  )
+  # docker-compose v2 switched to using '-' as separator in image name,
+  # resulting in 'hokusai-<project>'
+  # COMPOSE_COMPATIBILITY=true forces v2 to use '_',
+  # resulting in 'hokusai_<project>', matching v1
   return (
     'COMPOSE_COMPATIBILITY=true ' +
     Docker.compose_command() +
@@ -40,7 +45,11 @@ def get_yaml_template(filename, default_yaml_file):
   ''' return yaml template '''
   if filename is None:
     yaml_template = TemplateSelector().get(
-      os.path.join(CWD, HOKUSAI_CONFIG_DIR, default_yaml_file)
+      os.path.join(
+        CWD,
+        HOKUSAI_CONFIG_DIR,
+        default_yaml_file
+      )
     )
   else:
     yaml_template = TemplateSelector().get(filename)

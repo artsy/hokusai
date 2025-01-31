@@ -1,16 +1,18 @@
 import os
 import signal
 
-from hokusai import CWD
-from hokusai.lib.config import config, TEST_YML_FILE
-from hokusai.lib.common import print_green, print_red, shout, EXIT_SIGNALS
+from hokusai.lib.common import EXIT_SIGNALS, print_green, print_red, shout
+from hokusai.lib.config import TEST_YML_FILE, config
+from hokusai.lib.docker_compose_helpers import generate_compose_command, get_yaml_template
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.services.docker import Docker
-from hokusai.lib.docker_compose_helpers import generate_compose_command, get_yaml_template
 
 
 def test(build, cleanup, filename, service_name):
-  compose_command = generate_compose_command(filename, default_yaml_file=TEST_YML_FILE)
+  compose_command = generate_compose_command(
+    filename,
+    default_yaml_file=TEST_YML_FILE
+  )
 
   def on_cleanup(*args):
     shout(
@@ -24,14 +26,20 @@ def test(build, cleanup, filename, service_name):
       signal.signal(sig, on_cleanup)
 
   if build:
-    yaml_template = get_yaml_template(filename, default_yaml_file=TEST_YML_FILE)
+    yaml_template = get_yaml_template(
+      filename,
+      default_yaml_file=TEST_YML_FILE
+    )
     Docker().build(filename=yaml_template)
 
   if service_name is None:
     service_name = config.project_name
 
   opts = " --abort-on-container-exit --exit-code-from %s" % service_name
-  print_green("Starting test environment... Press Ctrl+C to stop.", newline_after=True)
+  print_green(
+    "Starting test environment... Press Ctrl+C to stop.",
+    newline_after=True
+  )
   try:
     return_code = int(
       shout(
@@ -45,7 +53,10 @@ def test(build, cleanup, filename, service_name):
     raise HokusaiError('Tests Failed')
 
   if return_code:
-    raise HokusaiError('Tests Failed - Exit Code: %s\n' % return_code, return_code=return_code)
+    raise HokusaiError(
+      'Tests Failed - Exit Code: %s\n' % return_code,
+      return_code=return_code
+    )
   else:
     print_green("Tests Passed")
 

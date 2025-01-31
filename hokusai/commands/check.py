@@ -3,13 +3,13 @@ import botocore.exceptions as botoexceptions
 import os
 
 from hokusai import CWD
-from hokusai.lib.common import get_region_name, print_red, print_green, print_yellow, shout
+from hokusai.lib.common import get_region_name, print_green, print_red, shout
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, TEST_YML_FILE, DEVELOPMENT_YML_FILE, config
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
+from hokusai.services.docker import Docker
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
-from hokusai.services.docker import Docker
 
 def check():
   return_code = 0
