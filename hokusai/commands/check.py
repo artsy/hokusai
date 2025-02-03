@@ -33,7 +33,7 @@ def check():
     check_err('docker')
     return_code += 1
 
-  compose_command = Docker.compose_command()
+  compose_command = Docker.detect_compose_command()
   print_green(
     '\u2714 ' +
     f'Will use "{compose_command}" command for Docker Compose'

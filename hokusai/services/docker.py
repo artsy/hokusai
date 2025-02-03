@@ -8,7 +8,7 @@ from hokusai.lib.exceptions import CalledProcessError
 
 class Docker:
   @classmethod
-  def compose_command(cls):
+  def detect_compose_command(cls):
     ''' decide what command to use for Docker Compose '''
     command_to_use = ''
     try:
