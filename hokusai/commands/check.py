@@ -5,9 +5,9 @@ import os
 from hokusai import CWD
 from hokusai.lib.common import get_region_name, print_green, print_red, shout
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR, BUILD_YAML_FILE, TEST_YML_FILE, DEVELOPMENT_YML_FILE, config
+from hokusai.lib.docker_compose_helpers import detect_compose_command
 from hokusai.lib.exceptions import CalledProcessError, HokusaiError
 from hokusai.lib.template_selector import TemplateSelector
-from hokusai.services.docker import Docker
 from hokusai.services.ecr import ECR
 from hokusai.services.kubectl import Kubectl
 
@@ -33,7 +33,7 @@ def check():
     check_err('docker')
     return_code += 1
 
-  compose_command = Docker.detect_compose_command()
+  compose_command = detect_compose_command()
   print_green(
     '\u2714 ' +
     f'Will use "{compose_command}" command for Docker Compose'

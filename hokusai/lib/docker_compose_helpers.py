@@ -3,10 +3,29 @@ import os
 import yaml
 
 from hokusai import CWD
+from hokusai.lib.common import get_verbosity, print_green, print_yellow, shout
 from hokusai.lib.config import HOKUSAI_CONFIG_DIR
+from hokusai.lib.exceptions import CalledProcessError
 from hokusai.lib.template_selector import TemplateSelector
 from hokusai.services.yaml_spec import YamlSpec
 
+
+def detect_compose_command():
+  ''' decide what command to use for Docker Compose '''
+  command_to_use = ''
+  try:
+    shout('which docker-compose')
+    if get_verbosity():
+      print_green('Found docker-compose.')
+    command_to_use = 'docker-compose'
+  except CalledProcessError:
+    if get_verbosity():
+      print_yellow(
+        'docker-compose command not found. ' +
+        'Will use "docker compose" assuming it exists.'
+      )
+    command_to_use = 'docker compose'
+  return command_to_use
 
 def follow_extends(docker_compose_yml):
   with open(docker_compose_yml, 'r') as f:
@@ -25,8 +44,6 @@ def follow_extends(docker_compose_yml):
 
 def generate_compose_command(filename, default_yaml_file):
   ''' return Docker Compose command '''
-  # this import when done globally causes circular import error
-  from hokusai.services.docker import Docker
   docker_compose_yml = render_docker_compose_yml(
     filename,
     default_yaml_file
@@ -37,7 +54,7 @@ def generate_compose_command(filename, default_yaml_file):
   # resulting in 'hokusai_<project>', matching v1
   return (
     'COMPOSE_COMPATIBILITY=true ' +
-    Docker.compose_command() +
+    detect_compose_command() +
     f' -f {docker_compose_yml}'
   )
 

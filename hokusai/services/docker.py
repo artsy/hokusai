@@ -1,29 +1,11 @@
 import os
 
-from hokusai.lib.common import get_verbosity, print_green, print_yellow, shout
+from hokusai.lib.common import shout
 from hokusai.lib.config import BUILD_YAML_FILE, config
 from hokusai.lib.docker_compose_helpers import generate_compose_command
-from hokusai.lib.exceptions import CalledProcessError
 
 
 class Docker:
-  @classmethod
-  def detect_compose_command(cls):
-    ''' decide what command to use for Docker Compose '''
-    command_to_use = ''
-    try:
-      shout('which docker-compose')
-      if get_verbosity():
-        print_green('Found docker-compose.')
-      command_to_use = 'docker-compose'
-    except CalledProcessError:
-      if get_verbosity():
-        print_yellow(
-          'docker-compose command not found. Will use "docker compose" assuming it exists.'
-        )
-      command_to_use = 'docker compose'
-    return command_to_use
-
   def build(self, filename=None):
     env_vars = "DOCKER_DEFAULT_PLATFORM=linux/amd64"
     compose_command = generate_compose_command(
