@@ -1,3 +1,11 @@
+## v3.1.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v3.1.0/README.md)
+
+### Notable changes since v3.0.0
+
+* cb096d6 feat: fallback to "docker compose" when docker-compose not found (#434)
+
 ## v3.0.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v3.0.0/README.md)

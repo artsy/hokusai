@@ -97,8 +97,10 @@ def test(build, cleanup, filename, service_name, verbose):
 
 
 @base.command(context_settings=CONTEXT_SETTINGS)
-def check():
+@click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
+def check(verbose):
   """Check Hokusai dependencies and configuration"""
+  set_verbosity(verbose)
   command(
     hokusai.check
   )
