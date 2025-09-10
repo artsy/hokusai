@@ -4,7 +4,8 @@ import hokusai
 
 from hokusai.cli.base import base
 from hokusai.lib.command import command
-from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS
+from hokusai.lib.common import set_verbosity, CONTEXT_SETTINGS, confirm_delete_resources
+from hokusai.lib.config import config
 
 KUBE_CONTEXT = 'production'
 
@@ -33,9 +34,16 @@ def create(filename, environment, verbose):
 @production.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-f', '--filename', type=click.STRING, help='Use the given Kubernetes Yaml file (default ./hokusai/production.yml)')
 @click.option('-v', '--verbose', type=click.BOOL, is_flag=True, help='Verbose output')
-def delete(filename, verbose):
+@click.option('-y', '--assume-yes', type=click.BOOL, is_flag=True, help='Assume yes to confirmation prompt')
+def delete(filename, verbose, assume_yes):
   """Delete the Kubernetes resources defined in ./hokusai/production.yml"""
   set_verbosity(verbose)
+  
+  # Skip confirmation if --assume-yes is used
+  if not assume_yes:
+    if not confirm_delete_resources(config.project_name, KUBE_CONTEXT, filename):
+      return
+  
   command(
     hokusai.k8s_delete,
     KUBE_CONTEXT,
