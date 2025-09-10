@@ -1,3 +1,11 @@
+## v3.2.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v3.2.0/README.md)
+
+### Notable changes since v3.1.0
+
+* a5b37ff feat: add interactive confirmation prompt and --assume-yes flag to delete commands (#439)
+
 ## v3.1.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v3.1.0/README.md)
