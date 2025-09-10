@@ -2,6 +2,7 @@
 
 import os
 
+import click
 import json
 import platform
 import random
@@ -380,3 +381,26 @@ def write_temp_file(data, dir):
 def yaml_content_with_header(content_string):
   ''' return content with yaml header prepended '''
   return YAML_HEADER + content_string
+
+def confirm_delete_resources(project_name, environment, yaml_file):
+  ''' Display confirmation prompt for destructive delete operations '''
+  print_smart("\n" + "="*60)
+  print_red("⚠️  DESTRUCTIVE ACTION WARNING", newline_before=False, newline_after=False)
+  print_smart("="*60)
+  
+  print_smart(f"Project:     {project_name}")
+  print_smart(f"Environment: {environment}")
+  if yaml_file is not None:
+    print_smart(f"Config file: {yaml_file}")
+  print_smart("")
+  print_yellow("This will permanently delete Kubernetes resources", newline_before=False, newline_after=False)
+  print_yellow("for this project in the specified environment.", newline_before=False, newline_after=False)
+  print_smart("")
+  print_smart("This action CANNOT be undone!")
+  print_smart("="*60)
+  
+  if not click.confirm("Do you want to continue with the deletion?"):
+    print_smart("Deletion cancelled.")
+    return False
+    
+  return True
