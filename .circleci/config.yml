@@ -268,7 +268,7 @@ jobs:
 
   release_github:
     docker:
-      - image: golang:1.19
+      - image: golang:1.23
     steps:
       - checkout
       - run: apt-get -qq update

@@ -16,6 +16,9 @@ At [Artsy](http://www.artsy.net), as we began working with Kubernetes, while imp
 
 Transitioning teams to the Docker / Kubernetes ecosystem can be intimidating, and comes with a steep learning curve. We set out to create a Heroku-like CLI that would shepherd the application developer into the ecosystems of Docker and Kubernetes, and while introducing new tooling and concepts, outlining a clear practice for dependency management, local development, testing and CI, image repository structure, deployment and orchestration.
 
+### Point People
+- [@artsyjian](https://github.com/artsyjian)
+
 ## Installation
 
 ### MacOS

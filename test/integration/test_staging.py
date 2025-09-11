@@ -79,7 +79,7 @@ def describe_refresh():
 def describe_delete():
   def it_reports_deleted():
     resp = subprocess.run(
-      'hokusai staging delete',
+      'hokusai staging delete --assume-yes',
       capture_output=True,
       shell=True,
       text=True,
