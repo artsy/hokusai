@@ -10,7 +10,7 @@ RUN apk add --no-cache \
       bash \
       build-base \
       curl \
-      docker-cli \
+      'docker-cli>=25' \
       git \
       jq \
       libffi-dev \
