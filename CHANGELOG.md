@@ -1,3 +1,11 @@
+## v3.3.0
+
+[Documentation](https://github.com/artsy/hokusai/blob/v3.3.0/README.md)
+
+### Notable changes since v3.2.0
+
+* 6e9bd9b fix: fix docker-compose API version incompatibility with updated dockerd (#446)
+
 ## v3.2.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v3.2.0/README.md)
