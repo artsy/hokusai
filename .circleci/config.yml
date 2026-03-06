@@ -14,7 +14,7 @@ jobs:
   test_macos:
     macos:
       xcode: "15.3.0"
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
     steps:
       - checkout
       - run:
@@ -153,7 +153,7 @@ jobs:
   release_beta_s3_macos:
     macos:
       xcode: "15.3.0"
-    resource_class: macos.m1.medium.gen1
+    resource_class: m4pro.medium
     steps:
       - checkout
       - run:
@@ -240,7 +240,7 @@ jobs:
   release_s3_macos:
     macos:
       xcode: "15.3.0"
-      resource_class: macos.m1.medium.gen1
+      resource_class: m4pro.medium
     steps:
       - checkout
       - run:
