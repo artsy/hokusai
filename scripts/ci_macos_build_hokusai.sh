@@ -22,6 +22,7 @@ echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
 time brew install openssl xz
 
 # install python
+export PYTHON_BUILD_CURL_OPTS="--retry 3 --retry-connrefused --retry-delay 5"
 time arch -x86_64 pyenv install 3.10
 pyenv local 3.10
 time pip install --upgrade pip
