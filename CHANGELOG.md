@@ -1,3 +1,11 @@
+## v3.3.1
+
+[Documentation](https://github.com/artsy/hokusai/blob/v3.3.1/README.md)
+
+### Notable changes since v3.3.0
+
+* c542cfb feat: bump golang version in ci
+
 ## v3.3.0
 
 [Documentation](https://github.com/artsy/hokusai/blob/v3.3.0/README.md)
