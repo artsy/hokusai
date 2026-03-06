@@ -28,7 +28,7 @@ pyenv local 3.10
 time pip install --upgrade pip
 
 # install awscli
-time curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+time curl --retry 3 --retry-connrefused --retry-delay 5 "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 time sudo installer -pkg AWSCLIV2.pkg -target /
 
 # build hokusai
