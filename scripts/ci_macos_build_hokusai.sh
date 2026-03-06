@@ -14,20 +14,19 @@ time arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/H
 # set PATH to x86 executables
 export PATH="/usr/local/bin:$PATH"
 
-# install pyenv
-time brew install pyenv
+# install pyenv and python pre-reqs
+time brew install pyenv openssl xz
 echo -e '\neval "$(pyenv init --path)"' >> ~/.bash_profile
-
-# install python pre-reqs
-time brew install openssl xz
+eval "$(pyenv init --path)"
 
 # install python
+export PYTHON_BUILD_CURL_OPTS="--retry 3 --retry-connrefused --retry-delay 5"
 time arch -x86_64 pyenv install 3.10
 pyenv local 3.10
 time pip install --upgrade pip
 
 # install awscli
-time curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+time curl --retry 3 --retry-connrefused --retry-delay 5 "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 time sudo installer -pkg AWSCLIV2.pkg -target /
 
 # build hokusai
