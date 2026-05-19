@@ -121,67 +121,17 @@ A descripton of all the [files used by Hokusai](docs/hokusai_files.md).
 
 To work on Hokusai itself, please set up:
 
-### Pyenv
+### mise
 
-We recommend using [Pyenv](https://github.com/pyenv/pyenv) to install the correct version of Python. For a tutorial of Pyenv, see [this guide](https://realpython.com/intro-to-pyenv/).
-
-When installing on MacOS, please make sure to use brew-installed `openssl` and `readline` libraries, and xcode-installed `zlib` library. And make sure these libraries are correctly linked. Like so:
+We use [mise](https://mise.jdx.dev/) to manage Python, Poetry, and the virtualenv. Install mise, then run:
 
 ```
-brew install openssl readline zlib
-
-echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> ~/.bash_profile
-echo 'export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"' >> ~/.bash_profile
-echo 'export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"' >> ~/.bash_profile
-echo 'export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"' >> ~/.bash_profile
+mise install
 ```
 
-### Python
+This installs Python 3.10 and Poetry 1.2.2, and creates a `.venv` virtualenv that is activated automatically in the project directory.
 
-Hokusai is currently tested on Python 3.10 so we recommend using that Python version.
-
-If you use Pyenv to install Python, you should see an output similar to this:
-
-```
-$ pyenv install 3.10
-python-build: use openssl@1.1 from homebrew
-python-build: use readline from homebrew
-Downloading Python-3.10.13.tar.xz...
--> https://www.python.org/ftp/python/3.10.13/Python-3.10.13.tar.xz
-Installing Python-3.10.13...
-python-build: use tcl-tk from homebrew
-python-build: use readline from homebrew
-python-build: use ncurses from homebrew
-python-build: use zlib from xcode sdk
-Installed Python-3.10.13 to /Users/jxu/.pyenv/versions/3.10.13
-```
-
-With the desired Python version installed, activate it globally:
-
-```
-pyenv global 3.10
-```
-
-Note: If you want to create a PyInstaller distribution, Python must be installed with development libraries. Use the environment variable `PYTHON_CONFIGURE_OPTS="--enable-framework"` on Darwin and `PYTHON_CONFIGURE_OPTS="--enable-shared"` on Linux when running `pyenv install`.
-
-### Virtualenv
-
-We recommend using a virtual environment to isolate Hokusai's dependencies from that of other projects on your local environment.
-
-The Pyenv install comes with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) which can be used to create virtual environments.
-
-### Poetry
-
-Use [Poetry](https://python-poetry.org/) to install Hokusai's dependencies as well as Hokusai itself in [editable mode](https://pip-python3.readthedocs.io/en/latest/reference/pip_install.html#editable-installs). Please see [this guide](https://python-poetry.org/docs/basic-usage/) for working with Poetry.
-
-Install Poetry:
-
-```
-pip install --upgrade pip
-pip install poetry
-```
-
-Install dependencies and Hokusai in editable mode:
+Then install dependencies and Hokusai in editable mode:
 
 ```
 poetry install
