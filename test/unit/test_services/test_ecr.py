@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 import httpretty
 
@@ -10,11 +11,16 @@ httpretty.HTTPretty.allow_net_connect = False
 
 class TestECR(HokusaiIntegrationTestCase):
   def setUp(self):
+    self.region_patcher = patch('hokusai.services.ecr.get_region_name', return_value='us-east-1')
+    self.region_patcher.start()
     self.ecr = ECR()
+
+  def tearDown(self):
+    self.region_patcher.stop()
 
   @httpretty.activate
   def test_registry(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -27,7 +33,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_project_repo_exists(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -37,7 +43,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_get_project_repo(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -47,7 +53,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_create_project_repo(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -60,7 +66,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_get_login(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -70,7 +76,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_images(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -83,7 +89,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_tag_exists(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -94,7 +100,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_tags(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -105,7 +111,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_find_git_sha1_image_tag(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
@@ -115,7 +121,7 @@ class TestECR(HokusaiIntegrationTestCase):
 
   @httpretty.activate
   def test_image_digest_for_tag(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
