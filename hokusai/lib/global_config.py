@@ -64,16 +64,18 @@ class HokusaiGlobalConfig:
   def validate_config(self):
     ''' sanity check config '''
     required_vars = [
-      'kubectl-version',
       'kubeconfig-dir',
       'kubeconfig-source-uri',
-      'kubectl-dir'
     ]
     for var in required_vars:
       if not var in self._config:
         raise HokusaiError(
           f'{var} is missing in Hokusai global config'
         )
+    if 'kubectl-dir' in self._config and 'kubectl-version' not in self._config:
+      raise HokusaiError(
+        'kubectl-version is required in Hokusai global config when kubectl-dir is set'
+      )
 
   @property
   def kubeconfig_dir(self):
@@ -85,8 +87,8 @@ class HokusaiGlobalConfig:
 
   @property
   def kubectl_dir(self):
-    return self._config['kubectl-dir']
+    return self._config.get('kubectl-dir')
 
   @property
   def kubectl_version(self):
-    return self._config['kubectl-version']
+    return self._config.get('kubectl-version')
