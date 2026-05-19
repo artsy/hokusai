@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 from test import HokusaiUnitTestCase
 
@@ -15,14 +16,17 @@ httpretty.HTTPretty.allow_net_connect = False
 
 class TestDockerComposeHelpers(HokusaiUnitTestCase):
   def setUp(self):
+    self.region_patcher = patch('hokusai.services.ecr.get_region_name', return_value='us-east-1')
+    self.region_patcher.start()
     docker_compose_helpers.HOKUSAI_CONFIG_DIR = os.path.join(CWD, 'test/fixtures/project/hokusai')
 
   def tearDown(self):
+    self.region_patcher.stop()
     docker_compose_helpers.HOKUSAI_CONFIG_DIR = 'hokusai'
 
   @httpretty.activate
   def test_follows_extends(self):
-    httpretty.register_uri(httpretty.POST, "https://sts.amazonaws.com/",
+    httpretty.register_uri(httpretty.POST, "https://sts.us-east-1.amazonaws.com/",
                             body=self.fixture('sts-get-caller-identity-response.xml'),
                             content_type="application/xml")
     httpretty.register_uri(httpretty.POST, "https://api.ecr.us-east-1.amazonaws.com/",
