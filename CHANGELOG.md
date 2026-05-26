@@ -1,3 +1,9 @@
+## v3.4.0
+
+* d769711 chore: upgrade boto3 and update tests for aws login credential support (#453)
+
+[Documentation](https://github.com/artsy/hokusai/blob/v3.4.0/README.md)
+
 ## v3.3.1
 
 [Documentation](https://github.com/artsy/hokusai/blob/v3.3.1/README.md)
