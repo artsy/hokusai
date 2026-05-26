@@ -268,12 +268,12 @@ jobs:
 
   release_github:
     docker:
-      - image: golang:1.25
+      - image: golang:1.26
     steps:
       - checkout
       - run: apt-get -qq update
       - run: apt-get -qq install awscli
-      - run: go install github.com/tcnksm/ghr@latest
+      - run: go install github.com/tcnksm/ghr@v0.18.3
       - run: scripts/update_version_file.sh
       - run: make publish-to-github ARTIFACT_LABEL=$(cat hokusai/VERSION)
 
