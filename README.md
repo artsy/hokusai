@@ -31,7 +31,7 @@ $ brew tap artsy/formulas
 $ brew install hokusai
 ```
 
-The Homebrew build requires Apple silicon. Intel Macs are not supported.
+The Homebrew build requires Apple silicon. On an Intel Mac, install with [Pip](#pip) instead.
 
 Older releases shipped an Intel binary that ran under Rosetta, and `hokusai configure` installed an Intel `kubectl`. If your global config sets `kubectl-dir`, run `hokusai configure` again after upgrading so it replaces that `kubectl` with a native one. `file <kubectl-dir>/kubectl` should report `arm64`.
 
@@ -57,19 +57,26 @@ Note: This method installs Hokusai to `/usr/local/bin/hokusai`.
 
 ### Pip
 
-Hokusai can be installed via Pip, on MacOS or Linux. If you do so, please first go through [Pyenv](#Pyenv), [Python](#Python), and [Virtualenv](#Virtualenv) steps.
+Hokusai can be installed via Pip on MacOS (Apple silicon or Intel) or Linux. This is the supported method on Intel Macs.
 
-Python 3.7+ is required.
+Python 3.10 is required, exactly. boto3 needs 3.10 or newer, and the PyInstaller version that builds the release binaries caps it below 3.11. On Python 3.11 or newer, `pip install hokusai` does not fail. It silently installs hokusai 1.1.0, so check `hokusai version` after installing.
 
-```
-pip install hokusai
-```
-
-Note: If Pip fails at upgrading your system Python packages, try:
+The simplest route is [uv](https://docs.astral.sh/uv/), which downloads Python 3.10 for you and puts `hokusai` on your PATH:
 
 ```
-pip install hokusai --ignore-installed
+brew install uv
+uv tool install --python 3.10 hokusai
+uv tool update-shell
 ```
+
+If you already have Python 3.10, for example from `pyenv install 3.10`, install into a virtualenv:
+
+```
+python3.10 -m venv ~/.venvs/hokusai
+~/.venvs/hokusai/bin/pip install hokusai
+```
+
+Then add `~/.venvs/hokusai/bin` to your PATH.
 
 ### Docker
 
@@ -85,7 +92,7 @@ Release artifacts are also available in AWS S3. You can use this [convenience sc
 
 ### A note on Python 2.x
 
-Hokusai currently supports Python 3.7+ only. The last version that supported Python 2.x was [v0.5.18](https://github.com/artsy/hokusai/tree/v0.5.18).
+Hokusai currently supports Python 3.10 only. See [Pip](#pip). The last version that supported Python 2.x was [v0.5.18](https://github.com/artsy/hokusai/tree/v0.5.18).
 
 ## Setup
 
