@@ -14,6 +14,7 @@ from hokusai.lib.common import (
   clean_dict,
   delete_keys,
   file_debug,
+  get_arch,
   get_platform,
   key_value_list_to_dict,
   local_to_local,
@@ -113,6 +114,17 @@ def describe_get_platform():
   def it_returns_lower_case(mocker):
     mocker.patch('hokusai.lib.common.platform.system', return_value='FooPlatform')
     assert get_platform() == 'fooplatform'
+
+def describe_get_arch():
+  @pytest.mark.parametrize('machine,arch', [
+    ('x86_64', 'amd64'),
+    ('aarch64', 'arm64'),
+    ('arm64', 'arm64'),
+    ('AMD64', 'amd64'),
+  ])
+  def it_returns_kubernetes_arch(mocker, machine, arch):
+    mocker.patch('hokusai.lib.common.platform.machine', return_value=machine)
+    assert get_arch() == arch
 
 def describe_key_value_list_to_dict():
   def it_transforms(mocker):

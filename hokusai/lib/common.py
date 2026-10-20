@@ -115,6 +115,11 @@ def get_platform():
   ''' get the platform (e.g. darwin, linux) of the machine '''
   return platform.system().lower()
 
+def get_arch():
+  ''' get the arch of the machine in Go/Kubernetes naming (e.g. amd64, arm64) '''
+  machine = platform.machine().lower()
+  return {'x86_64': 'amd64', 'aarch64': 'arm64'}.get(machine, machine)
+
 def get_region_name():
   # boto3 autodiscovery
   _region = botosession.get_session().get_config_variable('region')
