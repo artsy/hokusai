@@ -207,6 +207,8 @@ jobs:
               sha256 '$SHA256'
               version 'beta'
 
+              depends_on arch: :arm64
+
               def install
                 bin.install Dir["*"]
               end
