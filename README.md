@@ -31,6 +31,10 @@ $ brew tap artsy/formulas
 $ brew install hokusai
 ```
 
+The Homebrew build requires Apple silicon. Intel Macs are not supported.
+
+Older releases shipped an Intel binary that ran under Rosetta, and `hokusai configure` installed an Intel `kubectl`. If your global config sets `kubectl-dir`, run `hokusai configure` again after upgrading so it replaces that `kubectl` with a native one. `file <kubectl-dir>/kubectl` should report `arm64`.
+
 If you previously installed Hokusai via an alternate installation method, you may need to force the `link` step.
 
 ```
