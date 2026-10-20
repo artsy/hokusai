@@ -4,7 +4,7 @@ import pytest
 import hokusai.commands.configure
 
 from hokusai.commands.configure import hokusai_configure, install, install_kubectl
-from hokusai.lib.common import get_platform
+from hokusai.lib.common import get_arch, get_platform
 from test.unit.test_commands.fixtures.configure import mock_global_config, mock_urlretrieve_raise
 
 
@@ -80,7 +80,7 @@ def describe_install_kubectl():
     local_to_local_spy = mocker.spy(hokusai.commands.configure, 'local_to_local')
     mocker.patch('hokusai.commands.configure.tempfile.mkdtemp', return_value=tmp_path)
     install_kubectl('fooversion', 'foodir')
-    url = f'https://storage.googleapis.com/kubernetes-release/release/vfooversion/bin/{get_platform()}/amd64/kubectl'
+    url = f'https://storage.googleapis.com/kubernetes-release/release/vfooversion/bin/{get_platform()}/{get_arch()}/kubectl'
     download_to = os.path.join(tmp_path, 'kubectl')
     retrieve_spy.assert_has_calls([
       mocker.call(
