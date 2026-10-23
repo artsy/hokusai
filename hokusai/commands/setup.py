@@ -3,7 +3,7 @@ import sys
 import time
 import tempfile
 
-from shutil import rmtree, copyfile
+from shutil import rmtree, copy
 from distutils.dir_util import mkpath
 
 import yaml
@@ -102,7 +102,7 @@ def setup(project_name, template_remote, template_dir, template_vars, allow_miss
             with open(os.path.join(CWD, file_path.rstrip('.j2')), 'w') as f:
               f.write(env.get_template(file_path).render(**template_context))
           else:
-            copyfile(os.path.join(custom_template_dir, file_path), os.path.join(CWD, file_path))
+            copy(os.path.join(custom_template_dir, file_path), os.path.join(CWD, file_path))
           print_green("Created %s" % file_path.rstrip('.j2'))
   finally:
     if scratch_dir:

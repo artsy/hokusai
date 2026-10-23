@@ -2,6 +2,11 @@
 
 set -e
 
+if [ "$(uname -s)" = "Darwin" ]; then
+  echo "get-hokusai.sh only supports Linux. On macOS, install with Homebrew or pip: https://github.com/artsy/hokusai#installation" >&2
+  exit 1
+fi
+
 if [ "$1" ]; then
   VERSION=$1
 else
