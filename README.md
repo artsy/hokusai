@@ -28,8 +28,11 @@ We recommend installing via Homebrew:
 ```
 $ brew update
 $ brew tap artsy/formulas
+$ brew trust --formula artsy/formulas/hokusai
 $ brew install hokusai
 ```
+
+Homebrew 7 refuses formulas from untrusted third-party taps, so `brew install` and `brew upgrade` fail with `Refusing to load formula artsy/formulas/hokusai from untrusted tap` until you run the `brew trust` step once.
 
 The Homebrew build requires Apple silicon. On an Intel Mac, install with [Pip](#pip) instead.
 
@@ -55,17 +58,19 @@ curl -sSL https://raw.githubusercontent.com/artsy/hokusai/main/get-hokusai.sh | 
 
 Note: This method installs Hokusai to `/usr/local/bin/hokusai`.
 
+The Linux binary needs glibc 2.38 or newer (for example Ubuntu 24.04). On older distributions, install with [Pip](#pip).
+
 ### Pip
 
 Hokusai can be installed via Pip on MacOS (Apple silicon or Intel) or Linux. This is the supported method on Intel Macs.
 
-Python 3.10 is required, exactly. boto3 needs 3.10 or newer, and the PyInstaller version that builds the release binaries caps it below 3.11. On Python 3.11 or newer, `pip install hokusai` does not fail. It silently installs hokusai 1.1.0, so check `hokusai version` after installing.
+Python 3.10 is required, exactly. boto3 needs 3.10 or newer, and the PyInstaller version that builds the release binaries caps it below 3.11. On any other version, pip picks an older hokusai or fails: Python 3.9 installs 3.3.1, 3.11 installs 1.1.0, and 3.12 or newer fails to build PyYAML. Check `hokusai version` after installing.
 
 The simplest route is [uv](https://docs.astral.sh/uv/), which downloads Python 3.10 for you and puts `hokusai` on your PATH:
 
 ```
 brew install uv
-uv tool install --python 3.10 hokusai
+uv tool install --python 3.10 hokusai@latest
 uv tool update-shell
 ```
 
