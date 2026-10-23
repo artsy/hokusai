@@ -5,6 +5,7 @@ import tempfile
 from urllib.request import urlretrieve
 
 from hokusai.lib.common import (
+  get_arch,
   get_platform,
   local_to_local,
   print_green,
@@ -21,7 +22,7 @@ def install_kubectl(kubectl_version, kubectl_dir):
     url = (
       f'https://storage.googleapis.com/kubernetes-release/release/v' +
       f'{kubectl_version}' +
-      f'/bin/{get_platform()}/amd64/kubectl'
+      f'/bin/{get_platform()}/{get_arch()}/kubectl'
     )
     download_to = os.path.join(tmpdir, 'kubectl')
     print_green(

@@ -38,9 +38,9 @@ pyinstaller-build-onefile: # for linux
 	mv $(DIST_DIR)hokusai $(DIST_DIR)hokusai$(BINARY_SUFFIX)
 
 # for mac (because build-onefile's binary runs too slow on mac)
+# binary arch is the Python interpreter's arch; the spec ignores --target-architecture
 pyinstaller-build-onedir:
 	pyinstaller \
-	  --target-architecture=x86_64 \
 	  --distpath=$(DIST_DIR) \
 	  --workpath=/tmp/build/ \
 	  hokusai_onedir.spec

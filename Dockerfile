@@ -1,7 +1,9 @@
 FROM python:3.10-alpine
 
 ARG COMPOSE_VERSION=2.40.3
-ARG AUTHENTICATOR_VERSION=0.4.0
+ARG AUTHENTICATOR_VERSION=0.7.22
+# Set by BuildKit/buildx; the legacy builder leaves it empty, so RUN steps fall back to amd64
+ARG TARGETARCH
 
 WORKDIR /src
 
@@ -18,11 +20,13 @@ RUN apk add --no-cache \
       openssl-dev
 
 # Install Docker Compose
-RUN curl -SL https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && \
+# Compose names its assets x86_64/aarch64 rather than amd64/arm64
+RUN case "${TARGETARCH:-amd64}" in amd64) COMPOSE_ARCH=x86_64 ;; arm64) COMPOSE_ARCH=aarch64 ;; *) echo "unsupported arch: ${TARGETARCH}" && exit 1 ;; esac && \
+  curl -fSL https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-${COMPOSE_ARCH} -o /usr/local/bin/docker-compose && \
   chmod a+x /usr/local/bin/docker-compose
 
 # Install the AWS IAM Authenticator
-RUN curl -SL https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AUTHENTICATOR_VERSION}_linux_amd64 -o /usr/local/bin/aws-iam-authenticator && \
+RUN curl -fSL https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AUTHENTICATOR_VERSION}_linux_${TARGETARCH:-amd64} -o /usr/local/bin/aws-iam-authenticator && \
       chmod a+x /usr/local/bin/aws-iam-authenticator
 
 # Install AWS CLI

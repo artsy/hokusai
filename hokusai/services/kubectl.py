@@ -1,9 +1,11 @@
 import os
+import shutil
 
 import json
 import yaml
 
 from hokusai.lib.common import shout, unlink_file_if_not_debug
+from hokusai.lib.exceptions import HokusaiError
 from hokusai.lib.global_config import HokusaiGlobalConfig
 
 
@@ -13,9 +15,15 @@ class Kubectl:
     self.context = context
     self.namespace = namespace
     global_config = HokusaiGlobalConfig()
-    self.kubectl = os.path.join(
-      global_config.kubectl_dir, 'kubectl'
-    )
+    kubectl_dir = global_config.kubectl_dir
+    if kubectl_dir:
+      self.kubectl = os.path.join(kubectl_dir, 'kubectl')
+    else:
+      self.kubectl = shutil.which('kubectl')
+      if self.kubectl is None:
+        raise HokusaiError(
+          'kubectl not found on PATH and kubectl-dir is not set in Hokusai global config'
+        )
 
   def _apply_or_create(self, action, k8s_spec_file):
     ''' run kubectl apply or create on a k8s spec file '''

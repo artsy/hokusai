@@ -61,6 +61,17 @@ def describe_hokusai_global_config():
       del config_obj._config['kubeconfig-dir']
       with pytest.raises(HokusaiError):
         config_obj.validate_config()
+    def it_raises_when_kubectl_dir_set_without_kubectl_version():
+      config_obj = HokusaiGlobalConfig()
+      config_obj._config['kubectl-dir'] = '/some/dir'
+      del config_obj._config['kubectl-version']
+      with pytest.raises(HokusaiError):
+        config_obj.validate_config()
+    def it_does_not_raise_when_kubectl_version_absent_without_kubectl_dir():
+      config_obj = HokusaiGlobalConfig()
+      del config_obj._config['kubectl-version']
+      del config_obj._config['kubectl-dir']
+      config_obj.validate_config()
     def it_does_not_raise_when_otherwise():
       config_obj = HokusaiGlobalConfig()
       config_obj.validate_config()

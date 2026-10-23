@@ -1,3 +1,21 @@
+## v4.0.0
+
+### Breaking changes
+
+* 40e2c39 fix!: build native arm64 mac binary, drop Intel macs (#460)
+  * The macOS release binary and the Homebrew formula are now native Apple silicon (arm64) only. Previously the `Darwin-arm64` asset contained an x86_64 binary that failed with `bad CPU type in executable` without Rosetta.
+  * `brew install hokusai` now refuses to install on Intel Macs. Intel Mac users should install with pip on Python 3.10 (see the README).
+  * `hokusai configure` now downloads `kubectl` for the machine's architecture. If your global config sets `kubectl-dir`, re-run `hokusai configure` after upgrading to replace the Intel `kubectl` that older releases installed.
+
+### Notable changes since v3.4.0
+
+* 972c24e feat: bump aws-iam-authenticator 0.4.0 -> 0.7.22 (#462)
+* fa09ce4 feat: pick docker-compose and aws-iam-authenticator binaries by TARGETARCH (#462)
+* f3ecf70 feat: make kubectl-dir and kubectl-version optional in global config (#455)
+* 90d975d docs: document Python 3.10 requirement and pip install for Intel Macs (#460)
+
+[Documentation](https://github.com/artsy/hokusai/blob/v4.0.0/README.md)
+
 ## v3.4.0
 
 * d769711 chore: upgrade boto3 and update tests for aws login credential support (#453)
