@@ -1,3 +1,12 @@
+## v4.0.1
+
+* 8695a51 fix: keep exec bit in setup, get-hokusai.sh linux only, update readme (#465)
+  * `hokusai setup` now keeps the file mode of copied files, so scripts like `scripts/load_secrets_and_run.sh` stay executable.
+  * `get-hokusai.sh` now exits with a pointer to the install docs on macOS instead of downloading a stale Intel build. Linux is unchanged.
+  * README install notes: `brew trust` step, corrected Python version notes, `hokusai@latest` with uv, glibc 2.38 floor for the Linux binary.
+
+[Documentation](https://github.com/artsy/hokusai/blob/v4.0.1/README.md)
+
 ## v4.0.0
 
 ### Breaking changes
