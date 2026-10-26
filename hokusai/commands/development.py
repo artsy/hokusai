@@ -38,7 +38,7 @@ def dev_start(build, detach, filename):
   )
   if detach:
     print_green(
-      "Run `hokousai dev stop` to shut down, or `hokusai dev logs --follow` to tail output."
+      "Run `hokusai dev stop` to shut down, or `hokusai dev logs --follow` to tail output."
     )
 
 def dev_stop(filename):
