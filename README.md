@@ -64,7 +64,7 @@ The Linux binary needs glibc 2.38 or newer (for example Ubuntu 24.04). On older 
 
 Hokusai can be installed via Pip on MacOS (Apple silicon or Intel) or Linux. This is the supported method on Intel Macs.
 
-If you previously installed Hokusai via Homebrew on an Intel Mac, uninstall it first. Otherwise `brew upgrade` installs the Apple silicon build, which fails with `Bad CPU type`:
+If you previously installed Hokusai via Homebrew on an Intel Mac, uninstall it first. Otherwise `brew upgrade` fails with `hokusai requires Apple silicon` and leaves you on the old version:
 
 ```
 $ brew uninstall hokusai
