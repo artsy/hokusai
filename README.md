@@ -64,6 +64,12 @@ The Linux binary needs glibc 2.38 or newer (for example Ubuntu 24.04). On older 
 
 Hokusai can be installed via Pip on MacOS (Apple silicon or Intel) or Linux. This is the supported method on Intel Macs.
 
+If you previously installed Hokusai via Homebrew on an Intel Mac, uninstall it first. Otherwise `brew upgrade` installs the Apple silicon build, which fails with `Bad CPU type`:
+
+```
+$ brew uninstall hokusai
+```
+
 Python 3.10 is required, exactly. boto3 needs 3.10 or newer, and the PyInstaller version that builds the release binaries caps it below 3.11. On any other version, pip picks an older hokusai or fails: Python 3.9 installs 3.3.1, 3.11 installs 1.1.0, and 3.12 or newer fails to build PyYAML. Check `hokusai version` after installing.
 
 The simplest route is [uv](https://docs.astral.sh/uv/), which downloads Python 3.10 for you and puts `hokusai` on your PATH:
