@@ -67,7 +67,10 @@ class ECR:
     return self.project_repo is not None
 
   def create_project_repo(self):
-    self.client.create_repository(repositoryName=config.project_name)
+    self.client.create_repository(
+      repositoryName=config.project_name,
+      tags=[{'Key': 'created_by', 'Value': 'hokusai'}]
+    )
     self.__registry = None
     return True
 
