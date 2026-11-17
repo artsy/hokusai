@@ -1,3 +1,12 @@
+## v4.0.2
+
+* f1be497 fix: tag ECR repos created by hokusai setup (#469)
+  * `hokusai setup` now tags the ECR repository it creates with `created_by=hokusai`, so ECR checks can tell it apart from repositories managed in Terraform.
+  * Repositories that already exist, including Terraform-managed ones, are untouched; setup still skips creation.
+* 042321b docs: tell Intel Homebrew users to uninstall before pip install (#468)
+
+[Documentation](https://github.com/artsy/hokusai/blob/v4.0.2/README.md)
+
 ## v4.0.1
 
 * 8695a51 fix: keep exec bit in setup, get-hokusai.sh linux only, update readme (#465)
