@@ -40,6 +40,7 @@ For example, attach the following IAM policy to `anja` IAM User.
     "Effect": "Allow",
     "Action": [
       "ecr:CreateRepository",
+      "ecr:TagResource",
       "ecr:GetAuthorizationToken",
       "ecr:ListImages",
       "ecr:DescribeImages",
