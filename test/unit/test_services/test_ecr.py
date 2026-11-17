@@ -2,6 +2,7 @@ import os
 from unittest.mock import patch
 
 import httpretty
+import json
 
 from test import HokusaiIntegrationTestCase
 from hokusai.services.ecr import ECR
@@ -63,6 +64,8 @@ class TestECR(HokusaiIntegrationTestCase):
                             body=self.fixture('ecr-empty-repositories-response.json'),
                             content_type="application/x-amz-json-1.1")
     self.assertTrue(self.ecr.create_project_repo())
+    body = json.loads(httpretty.last_request().body)
+    self.assertEqual(body['tags'], [{'Key': 'created_by', 'Value': 'hokusai'}])
 
   @httpretty.activate
   def test_get_login(self):
