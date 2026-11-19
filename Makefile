@@ -15,7 +15,9 @@ hokusai:
 	# pin version due to https://github.com/python-poetry/poetry/issues/7184
 	pip install poetry==1.2.2 --quiet --ignore-installed
 	poetry --version
-	poetry install
+	# poetry.toml installs into this interpreter, so a parallel install can swap setuptools
+	# while docopt (sdist only) is building against it
+	POETRY_INSTALLER_PARALLEL=false poetry install
 
 test:
 	coverage run -m pytest test/unit
