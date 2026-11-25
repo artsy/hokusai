@@ -13,6 +13,7 @@ RUN apk add --no-cache \
       build-base \
       curl \
       docker-cli \
+      docker-cli-buildx \
       git \
       jq \
       libffi-dev \
